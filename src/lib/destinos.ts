@@ -116,7 +116,16 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
     saida: r.saida,
     volta: r.temVolta ? r.volta : null,
     paradas: r.paradas.map((p) => p.trim()).filter(Boolean),
-    passageiros: anterior?.passageiros ?? 0,
+    convite: anterior?.convite ?? gerarConvite(),
     ativo: anterior?.ativo ?? true,
   };
+}
+
+/** Short invite code, e.g. "VAN-4821". */
+export function gerarConvite() {
+  return `VAN-${1000 + Math.floor(Math.random() * 9000)}`;
+}
+
+export function mensagemConvite(d: Pick<Destino, "origem" | "destino" | "convite">) {
+  return `Oi! Para entrar na minha van (${nomeDestino(d)}), abra o app O Vanzeiro e use o código ${d.convite}.`;
 }

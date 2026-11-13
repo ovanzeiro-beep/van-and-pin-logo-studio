@@ -28,6 +28,9 @@ import { Route as VanzeiroDestinosIndexRouteImport } from './routes/vanzeiro.des
 import { Route as VanzeiroDestinosIdRouteImport } from './routes/vanzeiro.destinos.$id'
 import { Route as VanzeiroDestinosNovoRouteImport } from './routes/vanzeiro.destinos.novo'
 import { Route as VanzeiroDestinosEditarIdRouteImport } from './routes/vanzeiro.destinos.editar.$id'
+import { Route as VanzeiroDestinosIdPassageirosPidRouteImport } from './routes/vanzeiro.destinos.$id_.passageiros.$pid'
+import { Route as VanzeiroDestinosIdPassageirosNovoRouteImport } from './routes/vanzeiro.destinos.$id_.passageiros.novo'
+import { Route as VanzeiroDestinosIdPassageirosPidEditarRouteImport } from './routes/vanzeiro.destinos.$id_.passageiros.$pid_.editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -125,6 +128,24 @@ const VanzeiroDestinosEditarIdRoute =
     path: '/editar/$id',
     getParentRoute: () => VanzeiroDestinosRoute,
   } as any)
+const VanzeiroDestinosIdPassageirosPidRoute =
+  VanzeiroDestinosIdPassageirosPidRouteImport.update({
+    id: '/$id_/passageiros/$pid',
+    path: '/$id/passageiros/$pid',
+    getParentRoute: () => VanzeiroDestinosRoute,
+  } as any)
+const VanzeiroDestinosIdPassageirosNovoRoute =
+  VanzeiroDestinosIdPassageirosNovoRouteImport.update({
+    id: '/$id_/passageiros/novo',
+    path: '/$id/passageiros/novo',
+    getParentRoute: () => VanzeiroDestinosRoute,
+  } as any)
+const VanzeiroDestinosIdPassageirosPidEditarRoute =
+  VanzeiroDestinosIdPassageirosPidEditarRouteImport.update({
+    id: '/$id_/passageiros/$pid_/editar',
+    path: '/$id/passageiros/$pid/editar',
+    getParentRoute: () => VanzeiroDestinosRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -146,6 +167,9 @@ export interface FileRoutesByFullPath {
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/destinos/': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/destinos/editar/$id': typeof VanzeiroDestinosEditarIdRoute
+  '/vanzeiro/destinos/$id/passageiros/$pid': typeof VanzeiroDestinosIdPassageirosPidRoute
+  '/vanzeiro/destinos/$id/passageiros/novo': typeof VanzeiroDestinosIdPassageirosNovoRoute
+  '/vanzeiro/destinos/$id/passageiros/$pid/editar': typeof VanzeiroDestinosIdPassageirosPidEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -164,6 +188,9 @@ export interface FileRoutesByTo {
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/destinos/editar/$id': typeof VanzeiroDestinosEditarIdRoute
+  '/vanzeiro/destinos/$id/passageiros/$pid': typeof VanzeiroDestinosIdPassageirosPidRoute
+  '/vanzeiro/destinos/$id/passageiros/novo': typeof VanzeiroDestinosIdPassageirosNovoRoute
+  '/vanzeiro/destinos/$id/passageiros/$pid/editar': typeof VanzeiroDestinosIdPassageirosPidEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -186,6 +213,9 @@ export interface FileRoutesById {
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/destinos/': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/destinos/editar/$id': typeof VanzeiroDestinosEditarIdRoute
+  '/vanzeiro/destinos/$id_/passageiros/$pid': typeof VanzeiroDestinosIdPassageirosPidRoute
+  '/vanzeiro/destinos/$id_/passageiros/novo': typeof VanzeiroDestinosIdPassageirosNovoRoute
+  '/vanzeiro/destinos/$id_/passageiros/$pid_/editar': typeof VanzeiroDestinosIdPassageirosPidEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -209,6 +239,9 @@ export interface FileRouteTypes {
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/destinos/'
     | '/vanzeiro/destinos/editar/$id'
+    | '/vanzeiro/destinos/$id/passageiros/$pid'
+    | '/vanzeiro/destinos/$id/passageiros/novo'
+    | '/vanzeiro/destinos/$id/passageiros/$pid/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,6 +260,9 @@ export interface FileRouteTypes {
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/destinos'
     | '/vanzeiro/destinos/editar/$id'
+    | '/vanzeiro/destinos/$id/passageiros/$pid'
+    | '/vanzeiro/destinos/$id/passageiros/novo'
+    | '/vanzeiro/destinos/$id/passageiros/$pid/editar'
   id:
     | '__root__'
     | '/'
@@ -248,6 +284,9 @@ export interface FileRouteTypes {
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/destinos/'
     | '/vanzeiro/destinos/editar/$id'
+    | '/vanzeiro/destinos/$id_/passageiros/$pid'
+    | '/vanzeiro/destinos/$id_/passageiros/novo'
+    | '/vanzeiro/destinos/$id_/passageiros/$pid_/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -394,6 +433,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VanzeiroDestinosEditarIdRouteImport
       parentRoute: typeof VanzeiroDestinosRoute
     }
+    '/vanzeiro/destinos/$id_/passageiros/$pid': {
+      id: '/vanzeiro/destinos/$id_/passageiros/$pid'
+      path: '/$id/passageiros/$pid'
+      fullPath: '/vanzeiro/destinos/$id/passageiros/$pid'
+      preLoaderRoute: typeof VanzeiroDestinosIdPassageirosPidRouteImport
+      parentRoute: typeof VanzeiroDestinosRoute
+    }
+    '/vanzeiro/destinos/$id_/passageiros/novo': {
+      id: '/vanzeiro/destinos/$id_/passageiros/novo'
+      path: '/$id/passageiros/novo'
+      fullPath: '/vanzeiro/destinos/$id/passageiros/novo'
+      preLoaderRoute: typeof VanzeiroDestinosIdPassageirosNovoRouteImport
+      parentRoute: typeof VanzeiroDestinosRoute
+    }
+    '/vanzeiro/destinos/$id_/passageiros/$pid_/editar': {
+      id: '/vanzeiro/destinos/$id_/passageiros/$pid_/editar'
+      path: '/$id/passageiros/$pid/editar'
+      fullPath: '/vanzeiro/destinos/$id/passageiros/$pid/editar'
+      preLoaderRoute: typeof VanzeiroDestinosIdPassageirosPidEditarRouteImport
+      parentRoute: typeof VanzeiroDestinosRoute
+    }
   }
 }
 
@@ -420,6 +480,9 @@ interface VanzeiroDestinosRouteChildren {
   VanzeiroDestinosNovoRoute: typeof VanzeiroDestinosNovoRoute
   VanzeiroDestinosIndexRoute: typeof VanzeiroDestinosIndexRoute
   VanzeiroDestinosEditarIdRoute: typeof VanzeiroDestinosEditarIdRoute
+  VanzeiroDestinosIdPassageirosPidRoute: typeof VanzeiroDestinosIdPassageirosPidRoute
+  VanzeiroDestinosIdPassageirosNovoRoute: typeof VanzeiroDestinosIdPassageirosNovoRoute
+  VanzeiroDestinosIdPassageirosPidEditarRoute: typeof VanzeiroDestinosIdPassageirosPidEditarRoute
 }
 
 const VanzeiroDestinosRouteChildren: VanzeiroDestinosRouteChildren = {
@@ -427,6 +490,11 @@ const VanzeiroDestinosRouteChildren: VanzeiroDestinosRouteChildren = {
   VanzeiroDestinosNovoRoute: VanzeiroDestinosNovoRoute,
   VanzeiroDestinosIndexRoute: VanzeiroDestinosIndexRoute,
   VanzeiroDestinosEditarIdRoute: VanzeiroDestinosEditarIdRoute,
+  VanzeiroDestinosIdPassageirosPidRoute: VanzeiroDestinosIdPassageirosPidRoute,
+  VanzeiroDestinosIdPassageirosNovoRoute:
+    VanzeiroDestinosIdPassageirosNovoRoute,
+  VanzeiroDestinosIdPassageirosPidEditarRoute:
+    VanzeiroDestinosIdPassageirosPidEditarRoute,
 }
 
 const VanzeiroDestinosRouteWithChildren =

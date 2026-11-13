@@ -5,14 +5,16 @@ export function PlaceholderTab({
   titulo,
   nome,
   icon: Icon,
+  avisos,
 }: {
+  avisos?: number | undefined;
   titulo: string;
   nome: string;
   icon: LucideIcon;
 }) {
   return (
     <>
-      <ScreenHeader titulo={titulo} nome={nome} />
+      <ScreenHeader titulo={titulo} nome={nome} avisos={avisos} />
       <div className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary-soft text-primary">
           <Icon className="h-8 w-8" />

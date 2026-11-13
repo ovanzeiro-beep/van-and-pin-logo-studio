@@ -9,13 +9,18 @@ function saudacaoPorHorario(hora: number) {
   return "Boa noite";
 }
 
+export type ScreenHeaderProps = Parameters<typeof ScreenHeader>[0];
+
 export function ScreenHeader({
   titulo,
   nome,
   subtitulo,
   children,
   compacto = false,
+  avisos,
 }: {
+  /** Number of new notices on the bell. Without it the bell keeps its simple dot. */
+  avisos?: number | undefined;
   /** Lower header, for screens that must fit without scrolling. */
   compacto?: boolean;
   titulo: string;
@@ -54,19 +59,25 @@ export function ScreenHeader({
         </div>
         <button
           type="button"
-          aria-label="Avisos"
+          aria-label={avisos ? `Avisos: ${avisos} ${avisos === 1 ? "novo" : "novos"}` : "Avisos"}
           className={cn(
             "relative flex items-center justify-center rounded-full bg-header-foreground/10 transition-colors hover:bg-header-foreground/20",
             compacto ? "h-9 w-9" : "h-11 w-11",
           )}
         >
           <Bell className="h-5 w-5" />
-          <span
-            className={cn(
-              "absolute h-2 w-2 rounded-full bg-accent ring-2 ring-primary",
-              compacto ? "right-2 top-2" : "right-2.5 top-2.5",
-            )}
-          />
+          {avisos === undefined ? (
+            <span
+              className={cn(
+                "absolute h-2 w-2 rounded-full bg-accent ring-2 ring-primary",
+                compacto ? "right-2 top-2" : "right-2.5 top-2.5",
+              )}
+            />
+          ) : avisos > 0 ? (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[0.7rem] font-bold leading-none text-accent-foreground ring-2 ring-primary">
+              {avisos}
+            </span>
+          ) : null}
         </button>
       </div>
       <div className={cn("relative", compacto ? "mt-2" : "mt-6")}>

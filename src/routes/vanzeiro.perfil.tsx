@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { User } from "lucide-react";
 import { PlaceholderTab } from "@/components/app/PlaceholderTab";
 import { vanzeiroExemplo } from "@/data/exemplo";
+import { useAvisosVanzeiro } from "@/lib/passageiros-store";
 
 export const Route = createFileRoute("/vanzeiro/perfil")({
   head: () => ({
@@ -12,5 +13,10 @@ export const Route = createFileRoute("/vanzeiro/perfil")({
       { property: "og:description", content: "Perfil no O Vanzeiro." },
     ],
   }),
-  component: () => <PlaceholderTab titulo="Perfil" nome={vanzeiroExemplo.nome} icon={User} />,
+  component: AbaPerfil,
 });
+
+function AbaPerfil() {
+  const avisos = useAvisosVanzeiro();
+  return <PlaceholderTab titulo="Perfil" nome={vanzeiroExemplo.nome} icon={User} avisos={avisos} />;
+}

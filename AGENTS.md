@@ -35,4 +35,6 @@ use the editor.
 - Sample data lives only in `src/data/exemplo.ts` until a real backend exists, so it can be swapped in one place.
 - The logo is hand-built SVG in `src/components/brand/Logo.tsx` (color, light and single-color variants via theme tokens); `public/favicon.svg` mirrors it.
 - The vanzeiro layout is a fixed-height shell where `<main>` scrolls, so a screen can pin its header and scroll only its list (Destinos).
-- Destinos live in an in-memory store (`src/lib/destinos-store.ts`) seeded from sample data, so create/edit/pause work across screens without a backend.
+- Destinos, passageiros and pedidos live in in-memory stores (`src/lib/destinos-store.ts`, `src/lib/passageiros-store.ts`) seeded from sample data, so changes work across screens without a backend; passenger counts are derived from the passenger list, never stored.
+- Multi-step forms share `PassosLayout` (header with "Passo X de 3", progress bar, Voltar/Continuar/Salvar) so every wizard looks the same.
+- Passenger pages are un-nested children of a destino (`vanzeiro.destinos.$id_.passageiros.*`) because the destino detail page has no `<Outlet />`.

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Wallet } from "lucide-react";
 import { PlaceholderTab } from "@/components/app/PlaceholderTab";
 import { vanzeiroExemplo } from "@/data/exemplo";
+import { useAvisosVanzeiro } from "@/lib/passageiros-store";
 
 export const Route = createFileRoute("/vanzeiro/financeiro")({
   head: () => ({
@@ -12,5 +13,10 @@ export const Route = createFileRoute("/vanzeiro/financeiro")({
       { property: "og:description", content: "Financeiro no O Vanzeiro." },
     ],
   }),
-  component: () => <PlaceholderTab titulo="Financeiro" nome={vanzeiroExemplo.nome} icon={Wallet} />,
+  component: AbaFinanceiro,
 });
+
+function AbaFinanceiro() {
+  const avisos = useAvisosVanzeiro();
+  return <PlaceholderTab titulo="Financeiro" nome={vanzeiroExemplo.nome} icon={Wallet} avisos={avisos} />;
+}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Clock, MapPinPlus, Route as RouteIcon, Users, Wallet } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
-import { ScreenHeader } from "@/components/app/ScreenHeader";
+import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { formatarReais, vanzeiroExemplo as v } from "@/data/exemplo";
 
 export const Route = createFileRoute("/vanzeiro/")({
@@ -22,7 +22,7 @@ function InicioVanzeiro() {
 
   return (
     <>
-      <ScreenHeader compacto titulo="Início" nome={v.nome} subtitulo="Veja como está o seu dia." />
+      <VanzeiroHeader compacto titulo="Início" subtitulo="Veja como está o seu dia." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-3">
         <InfoCard
           compacto

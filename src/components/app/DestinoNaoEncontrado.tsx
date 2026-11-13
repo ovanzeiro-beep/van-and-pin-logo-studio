@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
-import { ScreenHeader } from "@/components/app/ScreenHeader";
-import { vanzeiroExemplo } from "@/data/exemplo";
+import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 
 export function DestinoNaoEncontrado() {
   return (
     <>
-      <ScreenHeader compacto titulo="Destino" nome={vanzeiroExemplo.nome} />
+      <VanzeiroHeader compacto titulo="Destino" />
       <div className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary-soft text-primary">
           <MapPin className="h-8 w-8" />

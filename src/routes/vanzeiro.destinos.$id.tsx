@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, Clock, Pause, Pencil, Play, Repeat, Route as RouteIcon, Users, type LucideIcon } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, Pause, Pencil, Play, Repeat, Route as RouteIcon, type LucideIcon } from "lucide-react";
+import { CodigoConvite, PassageirosDoDestino, PedidosParaEntrar } from "@/components/app/PassageirosDoDestino";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { CaminhoParadas } from "@/components/app/CaminhoParadas";
 import { DestinoNaoEncontrado } from "@/components/app/DestinoNaoEncontrado";
-import { ScreenHeader } from "@/components/app/ScreenHeader";
+import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
-import { vanzeiroExemplo } from "@/data/exemplo";
 import { TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { alternarAtivo, useDestino } from "@/lib/destinos-store";
 
@@ -13,9 +13,9 @@ export const Route = createFileRoute("/vanzeiro/destinos/$id")({
   head: () => ({
     meta: [
       { title: "Detalhe do destino — O Vanzeiro" },
-      { name: "description", content: "Dias, horários, caminho e passageiros de um destino." },
+      { name: "description", content: "Dias, horários, caminho, código de convite e passageiros de um destino." },
       { property: "og:title", content: "Detalhe do destino — O Vanzeiro" },
-      { property: "og:description", content: "Dias, horários, caminho e passageiros de um destino." },
+      { property: "og:description", content: "Dias, horários, caminho, código de convite e passageiros de um destino." },
     ],
   }),
   component: DetalheDestino,
@@ -28,14 +28,14 @@ function DetalheDestino() {
 
   return (
     <>
-      <ScreenHeader compacto titulo={nomeDestino(d)} nome={vanzeiroExemplo.nome}>
+      <VanzeiroHeader compacto titulo={nomeDestino(d)}>
         <Link
           to="/vanzeiro/destinos"
           className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
         >
           <ArrowLeft className="h-4 w-4" /> Todos os destinos
         </Link>
-      </ScreenHeader>
+      </VanzeiroHeader>
 
       <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
         <section className="rounded-3xl bg-card p-4 shadow-card">
@@ -63,17 +63,9 @@ function DetalheDestino() {
           <CaminhoParadas pontos={caminhoCompleto(d)} />
         </section>
 
-        <section className="rounded-3xl bg-card p-4 shadow-card">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success-soft text-success">
-              <Users className="h-5 w-5" />
-            </span>
-            <div className="min-w-0">
-              <p className="font-display text-base font-bold text-foreground">Passageiros deste destino</p>
-              <p className="text-sm text-muted-foreground">Os passageiros serão cadastrados na próxima etapa.</p>
-            </div>
-          </div>
-        </section>
+        <CodigoConvite destino={d} />
+        <PedidosParaEntrar destinoId={d.id} />
+        <PassageirosDoDestino destinoId={d.id} />
 
         <div className="grid grid-cols-2 gap-3 pt-1">
           <Button asChild size="lg" variant="outline">

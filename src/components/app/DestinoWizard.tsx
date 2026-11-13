@@ -2,11 +2,8 @@ import { useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowDown,
-  ArrowLeft,
-  ArrowRight,
   ArrowUp,
   CalendarDays,
-  Check,
   Clock,
   Flag,
   MapPin,
@@ -17,10 +14,10 @@ import {
 } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { CaminhoParadas, PontoDoCaminho } from "@/components/app/CaminhoParadas";
-import { ScreenHeader } from "@/components/app/ScreenHeader";
+import { PassosLayout } from "@/components/app/PassosLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { vanzeiroExemplo, type Destino } from "@/data/exemplo";
+import type { Destino } from "@/data/exemplo";
 import {
   DIAS_DA_SEMANA,
   TIPO_ROTULO,
@@ -36,6 +33,7 @@ import {
 } from "@/lib/destinos";
 import { salvarDestino } from "@/lib/destinos-store";
 import { cn } from "@/lib/utils";
+export { Rotulo, ItemResumo };
 
 const PERGUNTAS = [
   "De onde sai e para onde vai?",
@@ -62,58 +60,22 @@ export function DestinoWizard({ inicial }: { inicial?: Destino }) {
     else navigate({ to: "/vanzeiro/destinos" });
   };
 
-  const resumo = passo === 4;
-
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <ScreenHeader
-        compacto
-        titulo={inicial ? "Editar destino" : "Novo destino"}
-        nome={vanzeiroExemplo.nome}
-        subtitulo={PERGUNTAS[passo - 1] ?? ""}
-      >
-        <div className="relative mt-3">
-          <p className="text-xs font-bold uppercase tracking-wider text-header-muted">
-            {resumo ? "Resumo" : `Passo ${passo} de 3`}
-          </p>
-          <div className="mt-1.5 flex gap-1.5">
-            {[1, 2, 3].map((i) => (
-              <span
-                key={i}
-                className={cn(
-                  "h-1.5 flex-1 rounded-full",
-                  i <= passo ? "bg-header-foreground" : "bg-header-foreground/20",
-                )}
-              />
-            ))}
-          </div>
-        </div>
-      </ScreenHeader>
-
-      <div className="relative z-10 -mt-4 min-h-0 flex-1 overflow-y-auto px-5 pb-2">
-        <section className="space-y-4 rounded-3xl bg-card p-4 shadow-card [@media(max-height:700px)]:space-y-3 [@media(max-height:700px)]:p-3.5">
-          {passo === 1 && <Passo1 r={r} mudar={mudar} />}
-          {passo === 2 && <Passo2 r={r} mudar={mudar} />}
-          {passo === 3 && <Passo3 r={r} mudar={mudar} />}
-          {resumo && <Resumo r={r} />}
-        </section>
-      </div>
-
-      <div className="grid shrink-0 grid-cols-2 gap-3 px-5 pb-3 pt-2 [@media(max-height:700px)]:pt-1">
-        <Button size="lg" variant="outline" onClick={() => (passo === 1 ? sair() : setPasso(passo - 1))}>
-          <ArrowLeft className="!h-5 !w-5" /> Voltar
-        </Button>
-        {resumo ? (
-          <Button size="lg" variant="cta" onClick={salvar}>
-            <Check className="!h-5 !w-5" /> Salvar destino
-          </Button>
-        ) : (
-          <Button size="lg" variant="cta" disabled={!passoCompleto(passo, r)} onClick={() => setPasso(passo + 1)}>
-            Continuar <ArrowRight className="!h-5 !w-5" />
-          </Button>
-        )}
-      </div>
-    </div>
+    <PassosLayout
+      titulo={inicial ? "Editar destino" : "Novo destino"}
+      subtitulo={PERGUNTAS[passo - 1] ?? ""}
+      passo={passo}
+      podeContinuar={passoCompleto(passo, r)}
+      onVoltar={() => (passo === 1 ? sair() : setPasso(passo - 1))}
+      onContinuar={() => setPasso(passo + 1)}
+      onSalvar={salvar}
+      rotuloSalvar="Salvar destino"
+    >
+      {passo === 1 && <Passo1 r={r} mudar={mudar} />}
+      {passo === 2 && <Passo2 r={r} mudar={mudar} />}
+      {passo === 3 && <Passo3 r={r} mudar={mudar} />}
+      {passo === 4 && <Resumo r={r} />}
+    </PassosLayout>
   );
 }
 
