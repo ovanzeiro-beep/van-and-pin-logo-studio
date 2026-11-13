@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { viagemDeHoje } from "@/lib/viagem";
 import { destinosExemplo, passageirosExemplo, vanzeiroExemplo } from "@/data/exemplo";
 import {
   chegarAoDestino,
@@ -173,5 +174,26 @@ describe("Conferência pelo celular do passageiro", () => {
     v = seguirViagem(confirmarPeloCelular(confirmarPeloCelular(v, "a"), "b"));
     expect(v.fase).toBe("volta");
     expect(v.peloCelular).toEqual([]);
+  });
+});
+
+
+describe("Viagem de hoje (Início e aba Viagem)", () => {
+  const hoje = "2026-11-13"; // sexta: Londrina 06:00 e Cambará 06:40
+  it("uses the chosen trip when it happens today", () => {
+    expect(viagemDeHoje(destinosExemplo, "centro-unisul", hoje)?.id).toBe("centro-unisul");
+  });
+  it("falls back to the first trip of the day", () => {
+    expect(viagemDeHoje(destinosExemplo, "", hoje)?.id).toBe("jacarezinho-londrina");
+    expect(viagemDeHoje(destinosExemplo, "excursao-beto-carrero", hoje)?.id).toBe("jacarezinho-londrina");
+  });
+  it("never picks a paused destino", () => {
+    const pausado = destinosExemplo.map((d) => (d.id === "centro-unisul" ? { ...d, ativo: false } : d));
+    expect(viagemDeHoje(pausado, "centro-unisul", hoje)?.id).toBe("jacarezinho-londrina");
+  });
+  it("returns nothing on a day without trips", () => {
+    const soExcursao = destinosExemplo.filter((d) => d.id === "excursao-beto-carrero");
+    expect(viagemDeHoje(soExcursao, "excursao-beto-carrero", "2026-11-17")).toBeUndefined();
+    expect(viagemDeHoje(soExcursao, "", "2026-11-28")?.id).toBe("excursao-beto-carrero");
   });
 });

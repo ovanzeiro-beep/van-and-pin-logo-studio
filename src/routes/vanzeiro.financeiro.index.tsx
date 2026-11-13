@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ReceiptText } from "lucide-react";
+import { List, MapPin, ReceiptText } from "lucide-react";
 import { CobrancaItem } from "@/components/app/CobrancaItem";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
+import { TelaVazia } from "@/components/app/TelaVazia";
+import { buttonVariants } from "@/components/ui/button";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { DATA_DE_HOJE, formatarReais } from "@/data/exemplo";
 import { filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
@@ -98,12 +100,22 @@ function Financeiro() {
       </div>
 
       {lista.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center px-8 py-10 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary-soft text-primary">
-            <ReceiptText className="h-7 w-7" />
-          </div>
-          <p className="mt-3 font-semibold text-foreground">{VAZIO[filtro]}</p>
-        </div>
+        <TelaVazia
+          icon={ReceiptText}
+          titulo={VAZIO[filtro]}
+          texto={filtro === "todas" ? "O app cria as cobranças sozinho, pelo plano de cada passageiro." : undefined}
+          botao={
+            filtro === "todas" ? (
+              <Link to="/vanzeiro/destinos" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+                <MapPin className="!h-5 !w-5" /> Ver destinos
+              </Link>
+            ) : (
+              <Link to="/vanzeiro/financeiro" search={{}} replace className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+                <List className="!h-5 !w-5" /> Ver todas
+              </Link>
+            )
+          }
+        />
       ) : (
         <ul className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 pb-4 pt-3">
           {lista.map((c) => (

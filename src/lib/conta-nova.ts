@@ -5,9 +5,10 @@ import { limparRespostas } from "@/lib/respostas-store";
 import { perfilNovo } from "@/lib/vanzeiro-store";
 import { limparViagens } from "@/lib/viagem-store";
 
-// "Criar conta" makes a new person. The first time they open the vanzeiro panel,
-// it starts empty (no destinos, passengers, pedidos, charges or trips) with their name.
-// "Entrar" keeps the sample data. Reloading the page brings the samples back.
+// "Criar conta" makes a new person. When their first choice is "Sou vanzeiro", the vanzeiro panel
+// starts empty (no destinos, passengers, pedidos, charges or trips) with their name.
+// Choosing "Sou passageiro" first, or using "Entrar", keeps the sample data, so a new passenger can
+// still switch to the sample vanzeiro to accept their own pedido. Reloading brings the samples back.
 let contaNova: { nome: string } | null = null;
 
 export function marcarContaNova(nome: string) {
@@ -23,5 +24,10 @@ export function abrirPainelVanzeiro() {
   limparPassageiros();
   limparDestinos();
   perfilNovo(contaNova.nome);
+  contaNova = null;
+}
+
+/** "Sou passageiro" or "Entrar": the sample vanzeiro panel stays as it is. */
+export function esquecerContaNova() {
   contaNova = null;
 }

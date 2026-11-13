@@ -23,6 +23,12 @@ export function viagensDoDia<T extends Destino>(destinos: T[], iso: string): T[]
   return destinos.filter((d) => aconteceEm(d, iso)).sort((a, b) => a.saida.localeCompare(b.saida));
 }
 
+/** The trip of today that Início and Viagem talk about: the chosen one, or the first of the day. Paused destinos never count. */
+export function viagemDeHoje<T extends Destino>(destinos: T[], escolhida: string, hoje: string): T | undefined {
+  const lista = viagensDoDia(destinos, hoje);
+  return lista.find((d) => d.id === escolhida) ?? lista[0];
+}
+
 /** First trip after today (looks up to 90 days ahead). */
 export function proximaViagem<T extends Destino>(destinos: T[], hoje: string): { data: string; destino: T } | null {
   for (let i = 1; i <= 90; i++) {

@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ReceiptText } from "lucide-react";
+import { MessageCircle, ReceiptText } from "lucide-react";
 import { CobrancaItem } from "@/components/app/CobrancaItem";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
+import { TelaVazia } from "@/components/app/TelaVazia";
+import { buttonVariants } from "@/components/ui/button";
+import { linkWhatsApp } from "@/lib/passageiros";
+import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { formatarReais } from "@/data/exemplo";
 import { ordenarRecentes, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
@@ -30,6 +34,7 @@ function MeusPagamentos() {
   const cobrancas = useCobrancasDasMatriculas(matriculas.map((p) => p.id));
   const devido = matriculas.reduce((s, p) => s + totalDevido(cobrancas, p.id), 0);
   const lista = ordenarRecentes(cobrancas);
+  const vanzeiro = usePerfilVanzeiro();
   const nomes = Object.fromEntries(destinos.map((d) => [d.id, nomeDestino(d)]));
 
   return (
@@ -45,12 +50,16 @@ function MeusPagamentos() {
         </section>
       </div>
       {lista.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center px-8 py-10 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary-soft text-primary">
-            <ReceiptText className="h-7 w-7" />
-          </div>
-          <p className="mt-3 font-semibold text-foreground">Nenhuma cobrança ainda.</p>
-        </div>
+        <TelaVazia
+          icon={ReceiptText}
+          titulo="Nenhuma cobrança ainda."
+          texto="Quando houver, ela aparece aqui."
+          botao={
+            <a href={linkWhatsApp(vanzeiro.telefone)} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}>
+              <MessageCircle className="!h-5 !w-5 text-success" /> Falar com o vanzeiro
+            </a>
+          }
+        />
       ) : (
         <ul className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 pb-4 pt-3">
           {lista.map((c) => (

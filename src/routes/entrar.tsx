@@ -4,6 +4,7 @@ import { AuthLayout, OuDivisor } from "@/components/app/AuthLayout";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { GoogleButton } from "@/components/app/GoogleButton";
 import { Button } from "@/components/ui/button";
+import { esquecerContaNova } from "@/lib/conta-nova";
 
 export const Route = createFileRoute("/entrar")({
   head: () => ({
@@ -21,7 +22,10 @@ export const Route = createFileRoute("/entrar")({
 
 function Entrar() {
   const navigate = useNavigate();
-  const avancar = () => navigate({ to: "/como-vai-usar" });
+  const avancar = () => {
+    esquecerContaNova();
+    navigate({ to: "/como-vai-usar" });
+  };
 
   return (
     <AuthLayout

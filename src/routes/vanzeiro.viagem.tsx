@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarClock, Home } from "lucide-react";
+import { CalendarClock, Home, MapPin, UserPlus } from "lucide-react";
 import { AntesDeSair } from "@/components/app/viagem/AntesDeSair";
 import { EscolhaDaViagem } from "@/components/app/viagem/partes";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
+import { TelaVazia } from "@/components/app/TelaVazia";
 import { ResumoDaViagem } from "@/components/app/viagem/ResumoDaViagem";
 import { ViagemEmCurso } from "@/components/app/viagem/ViagemEmCurso";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
@@ -13,7 +14,7 @@ import { formatarData, nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
-import { listaDaViagem, proximaViagem, viagensDoDia, type FaseViagem } from "@/lib/viagem";
+import { listaDaViagem, proximaViagem, viagemDeHoje, viagensDoDia, type FaseViagem } from "@/lib/viagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
@@ -89,15 +90,19 @@ function AbaViagem() {
           ) : (
             <p className="mt-2 text-muted-foreground">Nenhuma viagem marcada.</p>
           )}
+          <Link to="/vanzeiro/destinos" className={cn(buttonVariants({ size: "lg" }), "mt-6 w-full")}>
+            <MapPin className="!h-5 !w-5" /> Ver destinos
+          </Link>
         </div>
       </div>
     );
   }
 
-  const destino = hoje.find((d) => d.id === estado.escolhida) ?? hoje[0]!;
+  const destino = viagemDeHoje(destinos, estado.escolhida, DATA_DE_HOJE)!;
   const feita = estado.viagens[destino.id];
   const feitas = hoje.filter((d) => estado.viagens[d.id]).map((d) => d.id);
   const lista = listaDaViagem(passageiros, destino, respostas);
+  const semPassageiros = lista.vao.length + lista.semResposta.length + lista.naoVao.length === 0;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -120,6 +125,17 @@ function AbaViagem() {
               </Link>
             </div>
           </>
+        ) : semPassageiros ? (
+          <TelaVazia
+            icon={UserPlus}
+            titulo="Este destino ainda não tem passageiros."
+            texto={nomeDestino(destino)}
+            botao={
+              <Link to="/vanzeiro/destinos/$id" params={{ id: destino.id }} className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+                <UserPlus className="!h-5 !w-5" /> Convidar passageiros
+              </Link>
+            }
+          />
         ) : (
           <AntesDeSair
             destino={destino}

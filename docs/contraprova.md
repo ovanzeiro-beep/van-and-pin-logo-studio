@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita em 13/11/2026 (lista entregue, aguardando aprovação) |
-| B — Fluxos que faltam | Em andamento (itens 1 e 2 feitos em 13/11/2026; aguardando aprovação para o item 3) |
+| B — Fluxos que faltam | Em andamento (itens 1, 2 e 3 feitos em 13/11/2026; aguardando aprovação para o item 4) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -150,7 +150,7 @@ O que mudou: telas Início, Destinos, Viagem e Financeiro do vanzeiro (só quand
 
 Pendências do item 1:
 - Depois do primeiro destino, se não houver viagem hoje, o Início mostra "Sem viagem hoje" com "Às --:--" e números zerados. Isso é a tela "dia sem viagem" do item 3.
-- Sem banco, só existe um painel de vanzeiro: se uma conta nova entrar como passageiro na van do Carlos e depois tocar em "Sou vanzeiro", o painel começa vazio e os dados de exemplo somem até recarregar a página.
+- ~~Sem banco, só existe um painel de vanzeiro: se uma conta nova entrar como passageiro na van do Carlos e depois tocar em "Sou vanzeiro", o painel começa vazio e os dados de exemplo somem até recarregar a página.~~ Corrigido no item 3 (13/11/2026): o painel só começa vazio quando a primeira escolha da conta nova é "Sou vanzeiro". Quem escolhe "Sou passageiro" primeiro, ou usa "Entrar", continua com os exemplos do Carlos e consegue trocar para vanzeiro e aceitar o próprio pedido.
 - [ ] 1. Primeiro uso do vanzeiro (tela vazia amigável, "Crie seu primeiro destino", ajuda de 3 passos).
 - [ ] 2. Primeiro uso do passageiro (tela do código, com explicação de onde conseguir).
 - [ ] 3. Telas vazias com mensagem e botão útil (destino sem passageiros, dia sem viagem, sem cobranças, sem pedidos, histórico vazio).
@@ -169,6 +169,23 @@ O que já existia: conta nova de passageiro sem van abre direto a tela "Entrar n
 - [x] Testes (104) e build passando; "Entrar em outro destino", Início e Perfil do passageiro iguais a antes, conferidos imagem por imagem.
 
 O que mudou: só a tela "Entrar na van" do passageiro sem van (arquivo `EntrarNaVan.tsx`). Não há regra nova, por isso nenhum teste novo.
+
+### Item 3 — Telas vazias com mensagem e um botão útil (feito em 13/11/2026)
+Uma peça só (`TelaVazia`) para todas, no mesmo visual da tela "Nenhum pedido novo" que já existia.
+- [x] Destino sem passageiros: no detalhe do destino já existia ("Nenhum passageiro ainda." + "Adicionar passageiro"), fica como está. Na aba Viagem, um destino de hoje sem passageiros mostra "Este destino ainda não tem passageiros." + botão "Convidar passageiros" (abre o destino, onde estão o código e o "Adicionar passageiro"). No Início, o card de passageiros mostra "Nenhum passageiro ainda" e leva ao destino.
+- [x] Dia sem viagem: no Início, o card mostra "Nenhuma viagem hoje" e a próxima viagem (sem "Às --:--" e sem o card de passageiros). Na aba Viagem, a mensagem que já existia ganha o botão "Ver destinos".
+- [x] O Início passa a escolher a viagem de hoje do mesmo jeito que a aba Viagem (corrige o item 1.1 da revisão: destino pausado não aparece mais no Início).
+- [x] Sem cobranças: no Financeiro, "Nenhuma cobrança ainda." explica que o app cria as cobranças sozinho e tem o botão "Ver destinos"; num filtro vazio (ex.: "Ninguém devendo"), o botão é "Ver todas". Nos Pagamentos do passageiro, "Nenhuma cobrança ainda." + botão "Falar com o vanzeiro".
+- [x] Sem pedidos: a tela "Nenhum pedido novo" ganha o botão "Ver destinos" (onde está o código de convite).
+- [x] Histórico vazio (Viagens do passageiro): "Suas viagens feitas aparecem aqui."; se também não há viagem nos próximos 7 dias, o botão "Falar com o vanzeiro". O histórico do vanzeiro é o item 8.
+- [x] Nenhuma dessas telas rola (390 × 844, 360 × 740, iPhone SE); o Início continua sem rolar.
+- [x] Teste automático da escolha da viagem de hoje (`src/test/viagem.test.ts`) e da conta nova que escolhe passageiro primeiro (`src/test/conta-nova.test.ts`).
+- [x] Testes (109) e build passando; telas com dados de exemplo iguais a antes, conferidas imagem por imagem (Início, Viagem, Financeiro e filtro Devendo, Pedidos, Início, Viagens e Pagamentos do passageiro).
+
+O que mudou: Início e Viagem do vanzeiro (dia sem viagem, destino sem passageiros, destino pausado), Financeiro (sem cobranças e filtro vazio), Pedidos (sem pedidos), Pagamentos e Viagens do passageiro (sem cobranças, histórico vazio). Peça nova `TelaVazia.tsx`; regra nova `viagemDeHoje` em `src/lib/viagem.ts`.
+Correção junto: o painel vazio da conta nova agora só aparece quando a primeira escolha é "Sou vanzeiro" (ver pendências do item 1).
+
+Pendência do item 3: o Início continua mostrando a viagem do dia depois que ela acaba (item 1.2 da revisão); fica para a Etapa D ou para quando você decidir a dúvida 5.
 
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
 **Situação:** a fazer.

@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AlarmClock, Check, Clock, X } from "lucide-react";
+import { AlarmClock, Check, Clock, MessageCircle, X } from "lucide-react";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { Button } from "@/components/ui/button";
+import { linkWhatsApp } from "@/lib/passageiros";
+import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { DATA_DE_HOJE, embarquesExemplo, faltasExemplo } from "@/data/exemplo";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/passageiro/viagens")({
 
 function MinhasViagens() {
   const { matriculas, destinos, proximas, proximaDistante, viagens } = useMinhasViagens();
+  const vanzeiro = usePerfilVanzeiro();
   const historico = matriculas.flatMap((eu) => {
     const destino = destinos.find((d) => d.id === eu.destinoId);
     return destino ? historicoDoPassageiro(eu, destino, DATA_DE_HOJE, { embarques: embarquesExemplo, faltas: faltasExemplo }, viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
@@ -42,6 +45,13 @@ function MinhasViagens() {
               <p className="rounded-3xl bg-card p-4 text-sm text-muted-foreground shadow-card">
                 Nenhuma viagem nos próximos 7 dias.
                 {proximaDistante && ` A próxima é ${rotuloDoDia(proximaDistante).toLowerCase()}.`}
+                {historico.length === 0 && (
+                  <Button asChild size="lg" variant="outline" className="mt-3 w-full">
+                    <a href={linkWhatsApp(vanzeiro.telefone)} target="_blank" rel="noreferrer">
+                      <MessageCircle className="!h-5 !w-5 text-success" /> Falar com o vanzeiro
+                    </a>
+                  </Button>
+                )}
               </p>
             ) : (
               proximas.map((v) => <ProximaViagem key={`${v.eu.id}_${v.data}`} v={v} saida={v.destino.saida} passageiroId={v.eu.id} />)
@@ -53,7 +63,7 @@ function MinhasViagens() {
           <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Histórico</h2>
           <div className="mt-1.5 space-y-2">
             {historico.length === 0 ? (
-              <p className="rounded-2xl bg-card px-4 py-3 text-sm text-muted-foreground shadow-card">Nenhuma viagem ainda.</p>
+              <p className="rounded-2xl bg-card px-4 py-3 text-sm text-muted-foreground shadow-card">Suas viagens feitas aparecem aqui.</p>
             ) : (
               historico.map((h) => (
                 <div key={`${h.destino.id}_${h.data}`} className="flex items-center justify-between gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">

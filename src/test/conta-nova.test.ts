@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { abrirPainelVanzeiro, marcarContaNova } from "@/lib/conta-nova";
+import { abrirPainelVanzeiro, esquecerContaNova, marcarContaNova } from "@/lib/conta-nova";
 import { obterCobrancas } from "@/lib/cobrancas-store";
 import { obterDestinos } from "@/lib/destinos-store";
 import { obterPassageiros, obterPedidos } from "@/lib/passageiros-store";
@@ -12,6 +12,13 @@ describe("Primeiro uso do vanzeiro", () => {
     abrirPainelVanzeiro();
     expect(obterDestinos().length).toBeGreaterThan(0);
     expect(obterPassageiros().length).toBeGreaterThan(0);
+  });
+
+  it("a new account that chose 'Sou passageiro' first keeps the sample vanzeiro", () => {
+    marcarContaNova("Bruno");
+    esquecerContaNova();
+    abrirPainelVanzeiro();
+    expect(obterDestinos().length).toBeGreaterThan(0);
   });
 
   it("a new account opens the vanzeiro panel empty", () => {
