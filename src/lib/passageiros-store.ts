@@ -83,6 +83,14 @@ export function recusarPedido(id: string) {
   avisar();
 }
 
+/** New vanzeiro account: no passengers, no pedidos. */
+export function limparPassageiros() {
+  passageiros = [];
+  pedidos = [];
+  aceitos = {};
+  avisar();
+}
+
 /** A person used an invite code: the request waits on the vanzeiro's bell. */
 export function adicionarPedido(pedido: Omit<PedidoEntrada, "id">) {
   const novo = { ...pedido, id: `pedido-${Date.now()}` };

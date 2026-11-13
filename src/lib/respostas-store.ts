@@ -40,3 +40,10 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
 }
 
 export const obterRespostasParaTeste = (data: string) => respostasDoDia(respostas, data);
+
+/** New vanzeiro account: no answers yet. */
+export function limparRespostas() {
+  respostas = {};
+  fechadas.clear();
+  ouvintes.forEach((o) => o());
+}

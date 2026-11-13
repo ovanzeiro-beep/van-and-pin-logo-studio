@@ -32,4 +32,12 @@ export function salvarPerfilVanzeiro(novo: PerfilVanzeiro) {
   ouvintes.forEach((o) => o());
 }
 
-export const textoDaVan = (p: PerfilVanzeiro) => `${p.van.modelo} · ${p.van.placa}`;
+/** New vanzeiro account: only the name typed in "Criar conta" is known. */
+export function perfilNovo(nome: string) {
+  salvarPerfilVanzeiro({ nome: nome.trim(), telefone: "", pix: "", van: { modelo: "", placa: "" } });
+}
+
+/** First name for the header greeting. */
+export const primeiroNome = (p: PerfilVanzeiro) => p.nome.trim().split(" ")[0] || "Vanzeiro";
+
+export const textoDaVan = (p: PerfilVanzeiro) => [p.van.modelo, p.van.placa].filter(Boolean).join(" · ");

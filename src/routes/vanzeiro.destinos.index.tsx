@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, ChevronRight, Plus, Repeat, Users } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
+import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { TIPO_ROTULO, nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
@@ -28,14 +29,18 @@ function ListaDestinos() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo="Destinos" subtitulo="As rotas e viagens que você faz.">
+        {destinos.length > 0 && (
         <Link
           to="/vanzeiro/destinos/novo"
           className="relative mt-4 flex h-12 items-center justify-center gap-2 rounded-2xl bg-accent font-display text-base font-bold text-accent-foreground shadow-cta transition-transform active:scale-[0.98]"
         >
           <Plus className="h-5 w-5" /> Novo destino
         </Link>
+        )}
       </VanzeiroHeader>
 
+      {destinos.length === 0 && <PrimeiroDestino />}
+      {destinos.length > 0 && (
       <ul className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4 pt-4">
         {destinos.map((d) => {
           const total = contarPassageiros(passageiros, d.id);
@@ -76,6 +81,7 @@ function ListaDestinos() {
           );
         })}
       </ul>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarClock, Home } from "lucide-react";
 import { AntesDeSair } from "@/components/app/viagem/AntesDeSair";
 import { EscolhaDaViagem } from "@/components/app/viagem/partes";
+import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { ResumoDaViagem } from "@/components/app/viagem/ResumoDaViagem";
 import { ViagemEmCurso } from "@/components/app/viagem/ViagemEmCurso";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
@@ -56,6 +57,15 @@ function AbaViagem() {
         <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col">
           <ViagemEmCurso v={andamento} passageiros={passageiros} />
         </div>
+      </div>
+    );
+  }
+
+  if (destinos.length === 0) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        <VanzeiroHeader compacto titulo="Viagem" subtitulo={dataDeHoje} />
+        <PrimeiroDestino />
       </div>
     );
   }

@@ -36,3 +36,9 @@ export function alternarAtivo(id: string) {
   destinos = destinos.map((d) => (d.id === id ? { ...d, ativo: !d.ativo } : d));
   avisar();
 }
+
+/** New vanzeiro account: starts with no destinos. */
+export function limparDestinos() {
+  destinos = [];
+  avisar();
+}

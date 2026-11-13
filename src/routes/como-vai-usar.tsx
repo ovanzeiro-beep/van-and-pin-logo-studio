@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import { ArrowRight, UserRound } from "lucide-react";
 import { Logo, VanIcon } from "@/components/brand/Logo";
 import { MobileScreen } from "@/components/app/MobileScreen";
+import { abrirPainelVanzeiro } from "@/lib/conta-nova";
 
 export const Route = createFileRoute("/como-vai-usar")({
   head: () => ({
@@ -35,6 +36,7 @@ function ComoVaiUsar() {
           titulo="Sou vanzeiro"
           descricao="Organize passageiros, rotas e cobranças da sua van."
           destaque
+          aoTocar={abrirPainelVanzeiro}
         />
         <OpcaoPerfil
           to="/passageiro"
@@ -53,16 +55,19 @@ function OpcaoPerfil({
   titulo,
   descricao,
   destaque,
+  aoTocar,
 }: {
   to: "/vanzeiro" | "/passageiro";
   icon: ComponentType<{ className?: string }>;
   titulo: string;
   descricao: string;
   destaque?: boolean;
+  aoTocar?: () => void;
 }) {
   return (
     <Link
       to={to}
+      onClick={aoTocar}
       className={
         destaque
           ? "group relative overflow-hidden rounded-[1.75rem] bg-header p-6 text-header-foreground shadow-card transition-transform active:scale-[0.98]"

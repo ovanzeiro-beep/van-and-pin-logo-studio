@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Clock, MapPinPlus, Route as RouteIcon, Users, Wallet } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
+import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { formatarReais } from "@/data/exemplo";
 import { nomeDestino } from "@/lib/destinos";
-import { useDestino } from "@/lib/destinos-store";
+import { useDestino, useDestinos } from "@/lib/destinos-store";
 import { presencaDaViagem } from "@/lib/passageiros";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { DATA_DE_HOJE } from "@/data/exemplo";
@@ -38,6 +39,16 @@ function InicioVanzeiro() {
   const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
   const saida = destino?.saida ?? "--:--";
   const financeiro = resumoDoMes(useCobrancas(), DATA_DE_HOJE);
+  const semDestinos = useDestinos().length === 0;
+
+  if (semDestinos) {
+    return (
+      <>
+        <VanzeiroHeader compacto titulo="Início" subtitulo="Veja como está o seu dia." />
+        <PrimeiroDestino />
+      </>
+    );
+  }
 
   return (
     <>

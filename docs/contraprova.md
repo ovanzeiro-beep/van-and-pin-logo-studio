@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita em 13/11/2026 (lista entregue, aguardando aprovação) |
-| B — Fluxos que faltam | A fazer |
+| B — Fluxos que faltam | Em andamento (item 1 feito em 13/11/2026; aguardando aprovação para o item 2) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -133,7 +133,24 @@ Conferência técnica
 ---
 
 ## Etapa B — Fluxos que faltam
-**Situação:** a fazer.
+**Situação:** em andamento. A Etapa A foi aprovada em 13/11/2026 ("pode seguir"). As instruções do projeto foram salvas em `CLAUDE.md`.
+Os itens são feitos um por um, cada um com conferência, merge e aprovação.
+
+### Item 1 — Primeiro uso do vanzeiro (feito em 13/11/2026)
+- [x] Conta nova: "Criar conta" → "Sou vanzeiro" abre o painel sem destinos, passageiros, pedidos, cobranças e viagens, com o nome digitado no cadastro (os exemplos do Carlos continuam valendo para quem usa "Entrar").
+- [x] Cabeçalho do vanzeiro mostra o nome do perfil (corrige o item 1.3 da revisão, necessário para a conta nova).
+- [x] Início sem destinos: ajuda curta de 3 passos (criar destino → convidar passageiros → fazer a viagem) e um só botão, "Crie seu primeiro destino".
+- [x] Abas Destinos, Viagem e Financeiro sem destinos: a mesma tela, com o mesmo único botão (em Destinos, some o botão "Novo destino" do cabeçalho enquanto não há destinos).
+- [x] Perfil da conta nova: o que ainda não foi preenchido aparece como "Não informado".
+- [x] Início sem destinos não rola (390 × 844, 360 × 740, iPhone SE). Destinos, Viagem e Financeiro também não rolam.
+- [x] Teste automático da conta nova vazia (`src/test/conta-nova.test.ts`).
+- [x] Testes (104) e build passando; telas com dados de exemplo iguais a antes, conferidas imagem por imagem (Início, Destinos, Viagem, Financeiro, Perfil dos dois painéis).
+
+O que mudou: telas Início, Destinos, Viagem e Financeiro do vanzeiro (só quando não há destinos), Perfil do vanzeiro ("Não informado"), cabeçalho do vanzeiro (nome do perfil), Criar conta e "Como você vai usar o app?" (marcam e abrem a conta nova).
+
+Pendências do item 1:
+- Depois do primeiro destino, se não houver viagem hoje, o Início mostra "Sem viagem hoje" com "Às --:--" e números zerados. Isso é a tela "dia sem viagem" do item 3.
+- Sem banco, só existe um painel de vanzeiro: se uma conta nova entrar como passageiro na van do Carlos e depois tocar em "Sou vanzeiro", o painel começa vazio e os dados de exemplo somem até recarregar a página.
 - [ ] 1. Primeiro uso do vanzeiro (tela vazia amigável, "Crie seu primeiro destino", ajuda de 3 passos).
 - [ ] 2. Primeiro uso do passageiro (tela do código, com explicação de onde conseguir).
 - [ ] 3. Telas vazias com mensagem e botão útil (destino sem passageiros, dia sem viagem, sem cobranças, sem pedidos, histórico vazio).

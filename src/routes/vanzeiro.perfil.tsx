@@ -24,6 +24,9 @@ export const Route = createFileRoute("/vanzeiro/perfil")({
   component: AbaPerfil,
 });
 
+/** New account: what the vanzeiro has not filled in yet. */
+const ou = (valor: string) => valor.trim() || "Não informado";
+
 function AbaPerfil() {
   const perfil = usePerfilVanzeiro();
   const [editando, setEditando] = useState(false);
@@ -39,9 +42,9 @@ function AbaPerfil() {
             <section className="rounded-3xl bg-card p-4 shadow-card">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Você</p>
               <dl className="mt-2 space-y-2">
-                <LinhaPerfil icon={User} rotulo="Nome" valor={perfil.nome} />
-                <LinhaPerfil icon={Phone} rotulo="Telefone" valor={formatarTelefone(perfil.telefone)} />
-                <LinhaPerfil icon={QrCode} rotulo="Chave Pix (os passageiros veem esta)" valor={perfil.pix} />
+                <LinhaPerfil icon={User} rotulo="Nome" valor={ou(perfil.nome)} />
+                <LinhaPerfil icon={Phone} rotulo="Telefone" valor={ou(formatarTelefone(perfil.telefone))} />
+                <LinhaPerfil icon={QrCode} rotulo="Chave Pix (os passageiros veem esta)" valor={ou(perfil.pix)} />
               </dl>
             </section>
             <section className="rounded-3xl bg-card p-4 shadow-card">
@@ -51,8 +54,8 @@ function AbaPerfil() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sua van</p>
-                  <p className="font-display text-lg font-bold leading-tight text-foreground">{perfil.van.modelo}</p>
-                  <p className="text-sm text-muted-foreground">Placa {perfil.van.placa}</p>
+                  <p className="font-display text-lg font-bold leading-tight text-foreground">{ou(perfil.van.modelo)}</p>
+                  <p className="text-sm text-muted-foreground">{perfil.van.placa ? `Placa ${perfil.van.placa}` : "Placa não informada"}</p>
                 </div>
               </div>
             </section>

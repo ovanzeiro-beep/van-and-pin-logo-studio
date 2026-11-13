@@ -91,6 +91,13 @@ export function garantirProximaCobranca(p: Passageiro, hoje = DATA_DE_HOJE) {
 // Trip results already sent to the money, so a day is never counted twice.
 const registrados = new Set<string>();
 
+/** New vanzeiro account: no charges yet. */
+export function limparCobrancas() {
+  cobrancas = [];
+  registrados.clear();
+  avisar();
+}
+
 /** "Embarcou" on a trip: counts as a trip made (Por viagem and Diário get that day's charge). */
 export function registrarEmbarque(p: Passageiro, data = DATA_DE_HOJE, viagemId?: string) {
   const chave = `embarque_${p.id}_${p.plano === "viagem" ? (viagemId ?? data) : data}`;

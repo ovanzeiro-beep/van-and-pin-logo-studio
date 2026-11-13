@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ScreenHeader, type ScreenHeaderProps } from "@/components/app/ScreenHeader";
-import { vanzeiroExemplo } from "@/data/exemplo";
 import { useAvisosVanzeiro } from "@/lib/passageiros-store";
+import { primeiroNome, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 /** Tapping the bell opens the screen with every join request. */
 export function useAbrirPedidos() {
@@ -13,5 +13,6 @@ export function useAbrirPedidos() {
 export function VanzeiroHeader(props: Omit<ScreenHeaderProps, "nome" | "avisos" | "aoTocarAvisos">) {
   const avisos = useAvisosVanzeiro();
   const abrirPedidos = useAbrirPedidos();
-  return <ScreenHeader {...props} nome={vanzeiroExemplo.nome} avisos={avisos} aoTocarAvisos={abrirPedidos} />;
+  const perfil = usePerfilVanzeiro();
+  return <ScreenHeader {...props} nome={primeiroNome(perfil)} avisos={avisos} aoTocarAvisos={abrirPedidos} />;
 }

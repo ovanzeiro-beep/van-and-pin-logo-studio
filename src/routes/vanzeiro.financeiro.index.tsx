@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ReceiptText } from "lucide-react";
 import { CobrancaItem } from "@/components/app/CobrancaItem";
+import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { DATA_DE_HOJE, formatarReais } from "@/data/exemplo";
 import { filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
@@ -54,6 +55,15 @@ function Financeiro() {
     const d = destinos.find((x) => x.id === id);
     return d ? nomeDestino(d) : undefined;
   };
+
+  if (destinos.length === 0) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        <VanzeiroHeader compacto titulo="Financeiro" subtitulo={`Resumo de ${mes}.`} />
+        <PrimeiroDestino />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
