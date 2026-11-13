@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Clock, KeyRound, LogOut, Phone, Search, User, XCircle } from "lucide-react";
+import { Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, XCircle } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
     <div className="flex min-h-0 flex-1 flex-col">
       <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo="Use o código que o vanzeiro te enviou." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
-        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo />}
+        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
         <Link
           to={outro ? "/passageiro/perfil" : "/entrar"}
           className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground"
@@ -38,7 +38,7 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
   );
 }
 
-function Codigo() {
+function Codigo({ primeiroUso }: { primeiroUso: boolean }) {
   const destinos = useDestinos();
   const [codigo, setCodigo] = useState("");
   const [achado, setAchado] = useState<Destino | null | undefined>(undefined);
@@ -48,6 +48,7 @@ function Codigo() {
   if (achado) return <Confirmar destino={achado} voltar={() => setAchado(undefined)} />;
 
   return (
+    <>
     <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card">
       <div className="flex items-center gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
@@ -82,6 +83,25 @@ function Codigo() {
           <Search className="!h-5 !w-5" /> Procurar van
         </Button>
       </form>
+    </section>
+    {primeiroUso && <OndeConseguir />}
+    </>
+  );
+}
+
+/** First use: where the invite code comes from. */
+function OndeConseguir() {
+  return (
+    <section className="flex items-start gap-3 rounded-3xl bg-card p-4 shadow-card">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success-soft text-success">
+        <MessageCircle className="h-5 w-5" />
+      </div>
+      <div className="min-w-0">
+        <p className="font-bold leading-snug text-foreground">Onde consigo o código?</p>
+        <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
+          Peça ao seu vanzeiro. Ele envia o código pelo WhatsApp.
+        </p>
+      </div>
     </section>
   );
 }

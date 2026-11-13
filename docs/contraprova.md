@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita em 13/11/2026 (lista entregue, aguardando aprovação) |
-| B — Fluxos que faltam | Em andamento (item 1 feito em 13/11/2026; aguardando aprovação para o item 2) |
+| B — Fluxos que faltam | Em andamento (itens 1 e 2 feitos em 13/11/2026; aguardando aprovação para o item 3) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -160,6 +160,15 @@ Pendências do item 1:
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 - [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
 - [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.
+
+### Item 2 — Primeiro uso do passageiro (feito em 13/11/2026)
+O que já existia: conta nova de passageiro sem van abre direto a tela "Entrar na van", com o campo do código (feito antes desta etapa).
+- [x] Na tela do código (passageiro sem van), um quadro curto "Onde consigo o código?" explicando que o código vem do vanzeiro, pelo WhatsApp.
+- [x] O quadro aparece só no primeiro uso (sem van). A tela "Entrar em outro destino" fica como está.
+- [x] Tela do código não rola (390 × 844, 360 × 740, iPhone SE), nem com a mensagem "Código não encontrado". O quadro some quando o código é encontrado.
+- [x] Testes (104) e build passando; "Entrar em outro destino", Início e Perfil do passageiro iguais a antes, conferidos imagem por imagem.
+
+O que mudou: só a tela "Entrar na van" do passageiro sem van (arquivo `EntrarNaVan.tsx`). Não há regra nova, por isso nenhum teste novo.
 
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
 **Situação:** a fazer.
