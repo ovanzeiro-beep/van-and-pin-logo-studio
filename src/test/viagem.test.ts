@@ -151,7 +151,7 @@ describe("Conferência pelo celular do passageiro", () => {
 
   it("'Estou na van' checks the person as in the van, confirmed by phone", () => {
     const v = confirmarPeloCelular(naParada(), "a");
-    expect(v.conferencia.a).toBe("na-van");
+    expect(v.conferencia["a"]).toBe("na-van");
     expect(v.peloCelular).toEqual(["a"]);
     expect(conferenciaDoPassageiro(v, "a")).toBe("confirmado");
     // still needs everyone checked to go on
