@@ -11,7 +11,7 @@ import {
   type FormaPagamento,
   type Passageiro,
 } from "@/data/exemplo";
-import { gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
+import { aplicarEmbarque, aplicarFalta, gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
 
 /** Sample history: charges the app created from each plan since the start of the history. */
 function cobrancasDeExemplo(): Cobranca[] {
@@ -85,5 +85,26 @@ export function garantirProximaCobranca(p: Passageiro, hoje = DATA_DE_HOJE) {
   const proxima = proximaCobranca(p, hoje);
   if (!proxima || cobrancas.some((c) => c.id === proxima.id)) return;
   cobrancas = [...cobrancas, proxima];
+  avisar();
+}
+
+// Trip results already sent to the money, so a day is never counted twice.
+const registrados = new Set<string>();
+
+/** "Embarcou" on a trip: counts as a trip made (Por viagem and Diário get that day's charge). */
+export function registrarEmbarque(p: Passageiro, data = DATA_DE_HOJE) {
+  const chave = `${p.id}_${data}`;
+  if (registrados.has(chave)) return;
+  registrados.add(chave);
+  cobrancas = aplicarEmbarque(cobrancas, p, data, DATA_DE_HOJE);
+  avisar();
+}
+
+/** "Não estava no ponto": counts as a falta (discounted on the next charge when the plan says so). */
+export function registrarFalta(p: Passageiro, data = DATA_DE_HOJE) {
+  const chave = `${p.id}_${data}`;
+  if (registrados.has(chave)) return;
+  registrados.add(chave);
+  cobrancas = aplicarFalta(cobrancas, p, data, DATA_DE_HOJE);
   avisar();
 }

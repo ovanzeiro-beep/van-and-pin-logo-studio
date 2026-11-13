@@ -163,3 +163,43 @@ describe("Pagar e cancelar", () => {
     expect(proximaCobranca({ ...base, plano: "viagem" }, hoje)).toBeNull();
   });
 });
+
+import { aplicarEmbarque, aplicarFalta } from "@/lib/cobrancas";
+
+describe("Viagem → Financeiro", () => {
+  const p = (extra: Partial<Passageiro>): Passageiro => ({ ...base, id: "x", ...extra });
+
+  it("'Embarcou' creates that day's charge for Por viagem and Diário, only once", () => {
+    const porViagem = p({ plano: "viagem", valor: 45, vencimento: null, descontaFaltas: false, valorFalta: null });
+    const lista = aplicarEmbarque([], porViagem, "2026-11-13", "2026-11-13");
+    expect(lista.map((c) => [c.vencimento, c.valorBase, c.referencia])).toEqual([["2026-11-13", 45, "Viagem de 13/11"]]);
+    expect(aplicarEmbarque(lista, porViagem, "2026-11-13", "2026-11-13")).toHaveLength(1);
+    const diario = p({ plano: "diario", valor: 80, vencimento: null, descontaFaltas: false, valorFalta: null });
+    expect(aplicarEmbarque([], diario, "2026-11-13", "2026-11-13")[0]?.referencia).toBe("Diária de 13/11");
+  });
+
+  it("'Embarcou' doesn't create charges for mensal or quinzenal", () => {
+    expect(aplicarEmbarque([], p({ plano: "mensal" }), "2026-11-13", "2026-11-13")).toEqual([]);
+  });
+
+  it("'Não estava no ponto' adds a falta to the next open charge when the plan discounts", () => {
+    const quinzenal = p({ plano: "quinzenal", valor: 140, vencimento: 5, descontaFaltas: true, valorFalta: 10 });
+    const aberta = cobranca({ id: "q", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-19", valorBase: 140 });
+    const paga = cobranca({ id: "old", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-04", valorBase: 140, pagamento: { data: "2026-11-04", forma: "pix" } });
+    const [antiga, nova] = aplicarFalta([paga, aberta], quinzenal, "2026-11-13", "2026-11-13");
+    expect(antiga).toBe(paga);
+    expect(valorFinal(nova!)).toBe(130);
+  });
+
+  it("without an open charge, the falta goes into the next one created", () => {
+    const mensal = p({ plano: "mensal", valor: 280, vencimento: 10, descontaFaltas: true, valorFalta: 15 });
+    const [c] = aplicarFalta([], mensal, "2026-11-13", "2026-11-13");
+    expect(c?.vencimento).toBe("2026-12-10");
+    expect(c?.faltas).toBe(1);
+    expect(valorFinal(c!)).toBe(265);
+  });
+
+  it("no discount, no change", () => {
+    expect(aplicarFalta([], p({ plano: "mensal", descontaFaltas: false }), "2026-11-13", "2026-11-13")).toEqual([]);
+  });
+});

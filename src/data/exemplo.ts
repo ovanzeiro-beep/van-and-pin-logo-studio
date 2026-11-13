@@ -14,6 +14,10 @@ export const vanzeiroExemplo = {
     "p-fernanda": "vai",
     "p-thiago": "vai",
     "p-camila": "nao-vai",
+    "p-mariana": "vai",
+    "p-pedro": "vai",
+    "p-ana": "vai",
+    "p-lucas": "vai",
   } as Record<string, RespostaViagem>,
 };
 
@@ -166,20 +170,17 @@ export const INICIO_DO_HISTORICO = "2026-10-01";
 
 export type FormaPagamento = "dinheiro" | "pix";
 
-/** Dias em que passageiros de "Por viagem" e "Diário" embarcaram (geram cobranças). */
+/** Dias em que passageiros de "Por viagem" e "Diário" embarcaram (geram cobranças). As viagens de hoje são feitas na aba Viagem. */
 export const embarquesExemplo: { passageiroId: string; data: string }[] = [
   { passageiroId: "p-ana", data: "2026-11-06" },
   { passageiroId: "p-ana", data: "2026-11-08" },
-  { passageiroId: "p-ana", data: "2026-11-13" },
   { passageiroId: "p-lucas", data: "2026-11-01" },
   { passageiroId: "p-lucas", data: "2026-11-06" },
   { passageiroId: "p-lucas", data: "2026-11-07" },
-  { passageiroId: "p-lucas", data: "2026-11-13" },
   { passageiroId: "p-rafael", data: "2026-11-09" },
   { passageiroId: "p-rafael", data: "2026-11-10" },
   { passageiroId: "p-rafael", data: "2026-11-11" },
   { passageiroId: "p-rafael", data: "2026-11-12" },
-  { passageiroId: "p-rafael", data: "2026-11-13" },
   { passageiroId: "p-camila", data: "2026-11-09" },
   { passageiroId: "p-camila", data: "2026-11-11" },
   { passageiroId: "p-camila", data: "2026-11-12" },

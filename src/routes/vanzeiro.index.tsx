@@ -10,6 +10,7 @@ import { usePassageiros } from "@/lib/passageiros-store";
 import { DATA_DE_HOJE } from "@/data/exemplo";
 import { resumoDoMes } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
+import { useViagensDoDia } from "@/lib/viagem-store";
 
 export const Route = createFileRoute("/vanzeiro/")({
   head: () => ({
@@ -24,13 +25,11 @@ export const Route = createFileRoute("/vanzeiro/")({
 });
 
 function InicioVanzeiro() {
-  const destino = useDestino(v.viagemHoje.destinoId);
+  // Same trip the Viagem tab has chosen, so both screens always talk about the same one.
+  const { escolhida } = useViagensDoDia();
+  const destino = useDestino(escolhida);
   const passageiros = usePassageiros();
-  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(
-    passageiros,
-    v.viagemHoje.destinoId,
-    v.respostasHoje,
-  );
+  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, escolhida, v.respostasHoje);
   const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
   const saida = destino?.saida ?? "--:--";
   const financeiro = resumoDoMes(useCobrancas(), DATA_DE_HOJE);
@@ -39,6 +38,7 @@ function InicioVanzeiro() {
     <>
       <VanzeiroHeader compacto titulo="Início" subtitulo="Veja como está o seu dia." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-3">
+        <Link to="/vanzeiro/viagem" className="block rounded-3xl transition-transform active:scale-[0.98]">
         <InfoCard
           compacto
           icon={RouteIcon}
@@ -56,6 +56,7 @@ function InicioVanzeiro() {
             <span className="font-bold text-foreground">{destino?.volta ?? "Sem volta"}</span>
           </div>
         </InfoCard>
+        </Link>
 
         <InfoCard
           compacto
@@ -86,7 +87,7 @@ function InicioVanzeiro() {
             tone="warning"
             label="Valores a receber"
             value={formatarReais(financeiro.aReceber)}
-            detail="Referente a este mês"
+            detail="Total a receber"
           >
             <div className="grid grid-cols-3 gap-2 text-center">
               <Resumo valor={financeiro.pagos} rotulo="Pagos" className="bg-success-soft text-success" />

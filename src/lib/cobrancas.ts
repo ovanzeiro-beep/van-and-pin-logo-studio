@@ -237,3 +237,37 @@ export function proximaCobranca(p: Passageiro, hoje: string): Cobranca | null {
   const [primeira] = gerarCobrancas(p, desde, somarDias(hoje, 45), hoje, sem).filter((c) => c.vencimento >= hoje);
   return primeira ?? null;
 }
+
+// ---------- what a trip changes in the money ----------
+
+/**
+ * "Embarcou" on a trip: Por viagem and Diário passengers get the charge for that day
+ * (one per day, so the return of the same trip doesn't charge twice). Other plans don't change.
+ */
+export function aplicarEmbarque(lista: Cobranca[], p: Passageiro, data: string, hoje: string): Cobranca[] {
+  if (p.plano !== "viagem" && p.plano !== "diario") return lista;
+  const [c] = gerarCobrancas(p, data, data, hoje, { embarques: [{ passageiroId: p.id, data }], faltas: [] });
+  if (!c || lista.some((x) => x.id === c.id)) return lista;
+  return [...lista, c];
+}
+
+/**
+ * "Não estava no ponto": for mensal/quinzenal passengers with the faltas discount, the falta goes into
+ * their next open charge (created now if it doesn't exist yet). Charges already due, paid or
+ * cancelled are never touched.
+ */
+export function aplicarFalta(lista: Cobranca[], p: Passageiro, data: string, hoje: string): Cobranca[] {
+  if ((p.plano !== "mensal" && p.plano !== "quinzenal") || !p.descontaFaltas) return lista;
+  const aberta = (c: Cobranca) =>
+    c.passageiroId === p.id && c.tipo === p.plano && !c.pagamento && !c.cancelamento && c.vencimento >= data;
+  const [alvo] = lista.filter(aberta).sort((a, b) => a.vencimento.localeCompare(b.vencimento));
+  const valorFalta = p.valorFalta ?? 0;
+  if (alvo) {
+    return lista.map((c) => (c.id === alvo.id ? { ...c, faltas: c.faltas + 1, valorFalta } : c));
+  }
+  const desde = p.plano === "mensal" ? data : somarMeses(data, -1, 1);
+  const sem = { embarques: [], faltas: [] };
+  const [nova] = gerarCobrancas(p, desde, somarDias(data, 45), hoje, sem).filter((c) => c.vencimento >= data);
+  if (!nova || lista.some((c) => c.id === nova.id)) return lista;
+  return [...lista, { ...nova, faltas: 1, valorFalta }];
+}
