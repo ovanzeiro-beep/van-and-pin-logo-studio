@@ -29,7 +29,7 @@ export function ScreenHeader({
   return (
     <header
       className={cn(
-        "relative overflow-hidden rounded-b-[2rem] bg-header px-5 text-header-foreground",
+        "relative shrink-0 overflow-hidden rounded-b-[2rem] bg-header px-5 text-header-foreground",
         compacto ? "pb-6 pt-3" : "pb-8 pt-6",
       )}
     >

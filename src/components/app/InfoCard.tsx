@@ -82,6 +82,7 @@ const badgeVariants = cva(
         deve: "bg-destructive-soft text-destructive",
         pendente: "bg-warning-soft text-warning",
         info: "bg-primary-soft text-primary",
+        neutro: "bg-muted text-muted-foreground",
       },
     },
     defaultVariants: { status: "info" },

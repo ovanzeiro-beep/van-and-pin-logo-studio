@@ -17,8 +17,9 @@ export const Route = createFileRoute("/vanzeiro")({
 
 function PainelVanzeiro() {
   return (
-    <MobileScreen>
-      <main className="flex flex-1 flex-col">
+    // Fixed-height shell: pages scroll inside <main>, so screens like Destinos can pin their header.
+    <MobileScreen className="h-dvh md:h-[calc(100dvh-3rem)]">
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <Outlet />
       </main>
       <BottomNav items={itens} />

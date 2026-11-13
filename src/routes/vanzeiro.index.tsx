@@ -80,7 +80,7 @@ function InicioVanzeiro() {
         </InfoCard>
 
         <Link
-          to="/vanzeiro/destinos"
+          to="/vanzeiro/destinos/novo"
           className="flex h-11 items-center gap-3 rounded-2xl bg-accent px-4 text-accent-foreground shadow-cta transition-transform active:scale-[0.98]"
         >
           <MapPinPlus className="h-5 w-5 shrink-0" />

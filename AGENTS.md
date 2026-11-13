@@ -34,3 +34,5 @@ use the editor.
 - Role dashboards are layout routes (`vanzeiro.tsx`, `passageiro.tsx`) that own the fixed `BottomNav`; each tab is a child route file.
 - Sample data lives only in `src/data/exemplo.ts` until a real backend exists, so it can be swapped in one place.
 - The logo is hand-built SVG in `src/components/brand/Logo.tsx` (color, light and single-color variants via theme tokens); `public/favicon.svg` mirrors it.
+- The vanzeiro layout is a fixed-height shell where `<main>` scrolls, so a screen can pin its header and scroll only its list (Destinos).
+- Destinos live in an in-memory store (`src/lib/destinos-store.ts`) seeded from sample data, so create/edit/pause work across screens without a backend.
