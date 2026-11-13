@@ -3,12 +3,18 @@
 export const vanzeiroExemplo = {
   nome: "Carlos",
   viagemHoje: {
-    rota: "Centro → Faculdade Unisul",
-    saida: "06:40",
-    chegadaPrevista: "07:25",
+    /** Destino da viagem de hoje: nome e horários vêm do cadastro dele. */
+    destinoId: "centro-unisul",
     van: "Sprinter · ABC-1D23",
   },
-  passageiros: { confirmados: 12, total: 15, semResposta: 2, naoVao: 1 },
+  /** Resposta de cada passageiro para a viagem de hoje. Quem não está aqui ainda não respondeu. */
+  respostasHoje: {
+    "p-juliana": "vai",
+    "p-gabriel": "vai",
+    "p-fernanda": "vai",
+    "p-thiago": "vai",
+    "p-camila": "nao-vai",
+  } as Record<string, RespostaViagem>,
   financeiro: { aReceber: 1840, pagos: 9, pendentes: 4, atrasados: 2 },
 };
 
@@ -94,6 +100,8 @@ export const destinosExemplo: Destino[] = [
     ativo: true,
   },
 ];
+
+export type RespostaViagem = "vai" | "nao-vai";
 
 export type PlanoPagamento = "viagem" | "diario" | "quinzenal" | "mensal";
 

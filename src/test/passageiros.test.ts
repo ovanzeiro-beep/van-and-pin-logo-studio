@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { destinosExemplo, passageirosExemplo, pedidosExemplo } from "@/data/exemplo";
+import { destinosExemplo, passageirosExemplo, pedidosExemplo, vanzeiroExemplo } from "@/data/exemplo";
 import {
   contarPassageiros,
   descricaoPlano,
@@ -7,6 +7,7 @@ import {
   lerValor,
   passageiroDeRascunho,
   passoPassageiroCompleto,
+  presencaDaViagem,
   rascunhoPassageiroVazio,
 } from "@/lib/passageiros";
 import { obterPassageiros, obterPedidos, salvarPassageiro } from "@/lib/passageiros-store";
@@ -75,5 +76,23 @@ describe("Passos de adicionar passageiro", () => {
     salvarPassageiro(passageiroDeRascunho(r, pedido.destinoId), pedido.id);
     expect(contarPassageiros(obterPassageiros(), pedido.destinoId)).toBe(antes + 1);
     expect(obterPedidos().some((p) => p.id === pedido.id)).toBe(false);
+  });
+});
+
+describe("Passageiros da viagem de hoje no Início", () => {
+  it("Centro → Unisul shows its 6 sample passengers split into vão, sem resposta and não vão", () => {
+    const r = presencaDaViagem(passageirosExemplo, "centro-unisul", vanzeiroExemplo.respostasHoje);
+    expect(r).toEqual({ total: 6, vao: 4, semResposta: 1, naoVao: 1 });
+  });
+  it("a new passenger counts in the total as sem resposta", () => {
+    const novo = { id: "p-novo", destinoId: "centro-unisul" };
+    const r = presencaDaViagem([...passageirosExemplo, novo], "centro-unisul", vanzeiroExemplo.respostasHoje);
+    expect(r.total).toBe(7);
+    expect(r.semResposta).toBe(2);
+  });
+  it("a removed passenger leaves the count", () => {
+    const lista = passageirosExemplo.filter((p) => p.id !== "p-juliana");
+    const r = presencaDaViagem(lista, "centro-unisul", vanzeiroExemplo.respostasHoje);
+    expect(r).toEqual({ total: 5, vao: 3, semResposta: 1, naoVao: 1 });
   });
 });

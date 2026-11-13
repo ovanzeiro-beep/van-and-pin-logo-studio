@@ -3,6 +3,10 @@ import { ChevronRight, Clock, MapPinPlus, Route as RouteIcon, Users, Wallet } fr
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { formatarReais, vanzeiroExemplo as v } from "@/data/exemplo";
+import { nomeDestino } from "@/lib/destinos";
+import { useDestino } from "@/lib/destinos-store";
+import { presencaDaViagem } from "@/lib/passageiros";
+import { usePassageiros } from "@/lib/passageiros-store";
 
 export const Route = createFileRoute("/vanzeiro/")({
   head: () => ({
@@ -17,8 +21,15 @@ export const Route = createFileRoute("/vanzeiro/")({
 });
 
 function InicioVanzeiro() {
-  const { confirmados, total, semResposta, naoVao } = v.passageiros;
-  const pct = Math.round((confirmados / total) * 100);
+  const destino = useDestino(v.viagemHoje.destinoId);
+  const passageiros = usePassageiros();
+  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(
+    passageiros,
+    v.viagemHoje.destinoId,
+    v.respostasHoje,
+  );
+  const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
+  const saida = destino?.saida ?? "--:--";
 
   return (
     <>
@@ -28,17 +39,17 @@ function InicioVanzeiro() {
           compacto
           icon={RouteIcon}
           label="Viagem de hoje"
-          value={v.viagemHoje.rota}
+          value={destino ? nomeDestino(destino) : "Sem viagem hoje"}
           detail={v.viagemHoje.van}
-          aside={<StatusBadge status="pendente">Às {v.viagemHoje.saida}</StatusBadge>}
+          aside={<StatusBadge status="pendente">Às {saida}</StatusBadge>}
         >
           <div className="flex items-center gap-3 rounded-2xl bg-surface px-3.5 py-1.5 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Saída</span>
-            <span className="font-bold text-foreground">{v.viagemHoje.saida}</span>
+            <span className="font-bold text-foreground">{saida}</span>
             <span className="mx-1 h-4 w-px bg-border" />
-            <span className="text-muted-foreground">Chegada</span>
-            <span className="font-bold text-foreground">{v.viagemHoje.chegadaPrevista}</span>
+            <span className="text-muted-foreground">Volta</span>
+            <span className="font-bold text-foreground">{destino?.volta ?? "Sem volta"}</span>
           </div>
         </InfoCard>
 

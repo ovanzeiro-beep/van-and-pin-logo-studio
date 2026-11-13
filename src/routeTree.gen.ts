@@ -22,6 +22,7 @@ import { Route as PassageiroViagensRouteImport } from './routes/passageiro.viage
 import { Route as VanzeiroIndexRouteImport } from './routes/vanzeiro.index'
 import { Route as VanzeiroDestinosRouteImport } from './routes/vanzeiro.destinos'
 import { Route as VanzeiroFinanceiroRouteImport } from './routes/vanzeiro.financeiro'
+import { Route as VanzeiroPedidosRouteImport } from './routes/vanzeiro.pedidos'
 import { Route as VanzeiroPerfilRouteImport } from './routes/vanzeiro.perfil'
 import { Route as VanzeiroViagemRouteImport } from './routes/vanzeiro.viagem'
 import { Route as VanzeiroDestinosIndexRouteImport } from './routes/vanzeiro.destinos.index'
@@ -97,6 +98,11 @@ const VanzeiroFinanceiroRoute = VanzeiroFinanceiroRouteImport.update({
   path: '/financeiro',
   getParentRoute: () => VanzeiroRoute,
 } as any)
+const VanzeiroPedidosRoute = VanzeiroPedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => VanzeiroRoute,
+} as any)
 const VanzeiroPerfilRoute = VanzeiroPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRoute
+  '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro/': typeof PassageiroIndexRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRoute
+  '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro': typeof PassageiroIndexRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRoute
+  '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro/': typeof PassageiroIndexRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
     | '/vanzeiro/viagem'
     | '/passageiro/'
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/passageiro/perfil'
     | '/passageiro/viagens'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
     | '/vanzeiro/viagem'
     | '/passageiro'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
     | '/vanzeiro/viagem'
     | '/passageiro/'
@@ -391,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VanzeiroFinanceiroRouteImport
       parentRoute: typeof VanzeiroRoute
     }
+    '/vanzeiro/pedidos': {
+      id: '/vanzeiro/pedidos'
+      path: '/pedidos'
+      fullPath: '/vanzeiro/pedidos'
+      preLoaderRoute: typeof VanzeiroPedidosRouteImport
+      parentRoute: typeof VanzeiroRoute
+    }
     '/vanzeiro/perfil': {
       id: '/vanzeiro/perfil'
       path: '/perfil'
@@ -503,6 +522,7 @@ const VanzeiroDestinosRouteWithChildren =
 interface VanzeiroRouteChildren {
   VanzeiroDestinosRoute: typeof VanzeiroDestinosRouteWithChildren
   VanzeiroFinanceiroRoute: typeof VanzeiroFinanceiroRoute
+  VanzeiroPedidosRoute: typeof VanzeiroPedidosRoute
   VanzeiroPerfilRoute: typeof VanzeiroPerfilRoute
   VanzeiroViagemRoute: typeof VanzeiroViagemRoute
   VanzeiroIndexRoute: typeof VanzeiroIndexRoute
@@ -511,6 +531,7 @@ interface VanzeiroRouteChildren {
 const VanzeiroRouteChildren: VanzeiroRouteChildren = {
   VanzeiroDestinosRoute: VanzeiroDestinosRouteWithChildren,
   VanzeiroFinanceiroRoute: VanzeiroFinanceiroRoute,
+  VanzeiroPedidosRoute: VanzeiroPedidosRoute,
   VanzeiroPerfilRoute: VanzeiroPerfilRoute,
   VanzeiroViagemRoute: VanzeiroViagemRoute,
   VanzeiroIndexRoute: VanzeiroIndexRoute,

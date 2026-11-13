@@ -18,9 +18,12 @@ export function ScreenHeader({
   children,
   compacto = false,
   avisos,
+  aoTocarAvisos,
 }: {
   /** Number of new notices on the bell. Without it the bell keeps its simple dot. */
   avisos?: number | undefined;
+  /** What happens when the bell is tapped. */
+  aoTocarAvisos?: (() => void) | undefined;
   /** Lower header, for screens that must fit without scrolling. */
   compacto?: boolean;
   titulo: string;
@@ -59,6 +62,7 @@ export function ScreenHeader({
         </div>
         <button
           type="button"
+          onClick={aoTocarAvisos}
           aria-label={avisos ? `Avisos: ${avisos} ${avisos === 1 ? "novo" : "novos"}` : "Avisos"}
           className={cn(
             "relative flex items-center justify-center rounded-full bg-header-foreground/10 transition-colors hover:bg-header-foreground/20",

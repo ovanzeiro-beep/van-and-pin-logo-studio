@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Route as RouteIcon } from "lucide-react";
 import { PlaceholderTab } from "@/components/app/PlaceholderTab";
 import { vanzeiroExemplo } from "@/data/exemplo";
+import { useAbrirPedidos } from "@/components/app/VanzeiroHeader";
 import { useAvisosVanzeiro } from "@/lib/passageiros-store";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
@@ -18,5 +19,6 @@ export const Route = createFileRoute("/vanzeiro/viagem")({
 
 function AbaViagem() {
   const avisos = useAvisosVanzeiro();
-  return <PlaceholderTab titulo="Viagem" nome={vanzeiroExemplo.nome} icon={RouteIcon} avisos={avisos} />;
+  const abrirPedidos = useAbrirPedidos();
+  return <PlaceholderTab titulo="Viagem" nome={vanzeiroExemplo.nome} icon={RouteIcon} avisos={avisos} aoTocarAvisos={abrirPedidos} />;
 }

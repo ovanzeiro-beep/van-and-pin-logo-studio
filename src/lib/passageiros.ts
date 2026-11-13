@@ -1,4 +1,11 @@
-import { formatarReais, type Destino, type Passageiro, type PedidoEntrada, type PlanoPagamento } from "@/data/exemplo";
+import {
+  formatarReais,
+  type Destino,
+  type Passageiro,
+  type PedidoEntrada,
+  type PlanoPagamento,
+  type RespostaViagem,
+} from "@/data/exemplo";
 import { caminhoCompleto } from "@/lib/destinos";
 
 export const PLANOS: { id: PlanoPagamento; rotulo: string; texto: string; rotuloValor: string }[] = [
@@ -135,4 +142,16 @@ export function passageiroDeRascunho(r: RascunhoPassageiro, destinoId: string, a
     valor: lerValor(r.valor) ?? 0,
     vencimento: planoTemVencimento(plano) ? lerVencimento(r.vencimento) : null,
   };
+}
+
+/** Who goes, who did not answer and who does not go on a trip, counting only the destino's current passengers. */
+export function presencaDaViagem(
+  lista: Pick<Passageiro, "id" | "destinoId">[],
+  destinoId: string,
+  respostas: Record<string, RespostaViagem>,
+) {
+  const doDestino = lista.filter((p) => p.destinoId === destinoId);
+  const vao = doDestino.filter((p) => respostas[p.id] === "vai").length;
+  const naoVao = doDestino.filter((p) => respostas[p.id] === "nao-vai").length;
+  return { total: doDestino.length, vao, naoVao, semResposta: doDestino.length - vao - naoVao };
 }

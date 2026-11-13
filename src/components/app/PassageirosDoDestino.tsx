@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, ChevronRight, Copy, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Destino } from "@/data/exemplo";
+import type { Destino, PedidoEntrada } from "@/data/exemplo";
 import { mensagemConvite } from "@/lib/destinos";
 import { descricaoPlano, formatarTelefone } from "@/lib/passageiros";
 import { recusarPedido, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
@@ -53,6 +53,36 @@ export function CodigoConvite({ destino }: { destino: Destino }) {
   );
 }
 
+/** One join request with Aceitar (opens the add-passenger steps prefilled) and Recusar. */
+export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; destino?: string | undefined }) {
+  return (
+    <li className={destino ? "rounded-3xl bg-card p-4 shadow-card" : "rounded-2xl bg-surface p-3"}>
+      <p className="font-bold leading-snug text-foreground">{p.nome}</p>
+      <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <Phone className="h-3.5 w-3.5" /> {formatarTelefone(p.telefone)}
+      </p>
+      {destino && (
+        <p className="mt-1 flex items-start gap-1.5 text-sm text-foreground">
+          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <span>
+            Quer entrar em <span className="font-bold">{destino}</span>
+          </span>
+        </p>
+      )}
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        <Button asChild size="lg" variant="success">
+          <Link to="/vanzeiro/destinos/$id/passageiros/novo" params={{ id: p.destinoId }} search={{ pedido: p.id }}>
+            <Check className="!h-5 !w-5" /> Aceitar
+          </Link>
+        </Button>
+        <Button size="lg" variant="outline" onClick={() => recusarPedido(p.id)}>
+          <X className="!h-5 !w-5" /> Recusar
+        </Button>
+      </div>
+    </li>
+  );
+}
+
 export function PedidosParaEntrar({ destinoId }: { destinoId: string }) {
   const pedidos = usePedidosDoDestino(destinoId);
   if (pedidos.length === 0) return null;
@@ -70,26 +100,7 @@ export function PedidosParaEntrar({ destinoId }: { destinoId: string }) {
       </div>
       <ul className="space-y-2.5">
         {pedidos.map((p) => (
-          <li key={p.id} className="rounded-2xl bg-surface p-3">
-            <p className="font-bold leading-snug text-foreground">{p.nome}</p>
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Phone className="h-3.5 w-3.5" /> {formatarTelefone(p.telefone)}
-            </p>
-            <div className="mt-2.5 grid grid-cols-2 gap-2">
-              <Button asChild size="lg" variant="success">
-                <Link
-                  to="/vanzeiro/destinos/$id/passageiros/novo"
-                  params={{ id: destinoId }}
-                  search={{ pedido: p.id }}
-                >
-                  <Check className="!h-5 !w-5" /> Aceitar
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => recusarPedido(p.id)}>
-                <X className="!h-5 !w-5" /> Recusar
-              </Button>
-            </div>
-          </li>
+          <PedidoCard key={p.id} pedido={p} />
         ))}
       </ul>
     </section>
