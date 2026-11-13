@@ -13,7 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ComoVaiUsarRouteImport } from './routes/como-vai-usar'
 import { Route as CriarContaRouteImport } from './routes/criar-conta'
 import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as PassageiroRouteImport } from './routes/passageiro'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VanzeiroRouteImport } from './routes/vanzeiro'
 import { Route as PassageiroIndexRouteImport } from './routes/passageiro.index'
 import { Route as PassageiroPagamentosRouteImport } from './routes/passageiro.pagamentos'
@@ -57,9 +60,24 @@ const EntrarRoute = EntrarRouteImport.update({
   path: '/entrar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
+  id: '/esqueci-senha',
+  path: '/esqueci-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PassageiroRoute = PassageiroRouteImport.update({
   id: '/passageiro',
   path: '/passageiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VanzeiroRoute = VanzeiroRouteImport.update({
@@ -183,7 +201,10 @@ export interface FileRoutesByFullPath {
   '/como-vai-usar': typeof ComoVaiUsarRoute
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/passageiro': typeof PassageiroRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
   '/vanzeiro': typeof VanzeiroRouteWithChildren
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
@@ -212,6 +233,9 @@ export interface FileRoutesByTo {
   '/como-vai-usar': typeof ComoVaiUsarRoute
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
@@ -237,7 +261,10 @@ export interface FileRoutesById {
   '/como-vai-usar': typeof ComoVaiUsarRoute
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/passageiro': typeof PassageiroRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
   '/vanzeiro': typeof VanzeiroRouteWithChildren
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
@@ -268,7 +295,10 @@ export interface FileRouteTypes {
     | '/como-vai-usar'
     | '/criar-conta'
     | '/entrar'
+    | '/esqueci-senha'
     | '/passageiro'
+    | '/privacidade'
+    | '/termos'
     | '/vanzeiro'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
@@ -297,6 +327,9 @@ export interface FileRouteTypes {
     | '/como-vai-usar'
     | '/criar-conta'
     | '/entrar'
+    | '/esqueci-senha'
+    | '/privacidade'
+    | '/termos'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
     | '/vanzeiro/pedidos'
@@ -321,7 +354,10 @@ export interface FileRouteTypes {
     | '/como-vai-usar'
     | '/criar-conta'
     | '/entrar'
+    | '/esqueci-senha'
     | '/passageiro'
+    | '/privacidade'
+    | '/termos'
     | '/vanzeiro'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
@@ -351,7 +387,10 @@ export interface RootRouteChildren {
   ComoVaiUsarRoute: typeof ComoVaiUsarRoute
   CriarContaRoute: typeof CriarContaRoute
   EntrarRoute: typeof EntrarRoute
+  EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   PassageiroRoute: typeof PassageiroRouteWithChildren
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  TermosRoute: typeof TermosRoute
   VanzeiroRoute: typeof VanzeiroRouteWithChildren
 }
 
@@ -385,11 +424,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EntrarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/esqueci-senha': {
+      id: '/esqueci-senha'
+      path: '/esqueci-senha'
+      fullPath: '/esqueci-senha'
+      preLoaderRoute: typeof EsqueciSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/passageiro': {
       id: '/passageiro'
       path: '/passageiro'
       fullPath: '/passageiro'
       preLoaderRoute: typeof PassageiroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vanzeiro': {
@@ -645,7 +705,10 @@ const rootRouteChildren: RootRouteChildren = {
   ComoVaiUsarRoute: ComoVaiUsarRoute,
   CriarContaRoute: CriarContaRoute,
   EntrarRoute: EntrarRoute,
+  EsqueciSenhaRoute: EsqueciSenhaRoute,
   PassageiroRoute: PassageiroRouteWithChildren,
+  PrivacidadeRoute: PrivacidadeRoute,
+  TermosRoute: TermosRoute,
   VanzeiroRoute: VanzeiroRouteWithChildren,
 }
 export const routeTree = rootRouteImport

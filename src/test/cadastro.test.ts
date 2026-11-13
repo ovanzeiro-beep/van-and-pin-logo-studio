@@ -1,0 +1,38 @@
+import { describe, expect, it } from "vitest";
+import { cadastroOk, erroDoEmail, validarCadastro, type DadosCadastro } from "@/lib/cadastro";
+
+const certo: DadosCadastro = {
+  nome: "Bruna",
+  email: "bruna@email.com",
+  senha: "12345678",
+  confirmar: "12345678",
+  aceitouTermos: true,
+};
+
+describe("Criar conta", () => {
+  it("accepts a complete form", () => {
+    expect(cadastroOk(validarCadastro(certo))).toBe(true);
+  });
+
+  it("requires every field", () => {
+    const erros = validarCadastro({ nome: " ", email: "", senha: "", confirmar: "", aceitouTermos: true });
+    expect(Object.keys(erros).sort()).toEqual(["confirmar", "email", "nome", "senha"]);
+  });
+
+  it("rejects an invalid e-mail", () => {
+    expect(validarCadastro({ ...certo, email: "bruna@email" }).email).toBe("E-mail inválido");
+    expect(erroDoEmail("bruna.email.com")).toBe("E-mail inválido");
+  });
+
+  it("rejects a password with fewer than 8 characters", () => {
+    expect(validarCadastro({ ...certo, senha: "1234567", confirmar: "1234567" }).senha).toMatch(/8 caracteres/);
+  });
+
+  it("says when the passwords are different", () => {
+    expect(validarCadastro({ ...certo, confirmar: "87654321" }).confirmar).toBe("As senhas não são iguais");
+  });
+
+  it("does not create the account without accepting the terms", () => {
+    expect(cadastroOk(validarCadastro({ ...certo, aceitouTermos: false }))).toBe(false);
+  });
+});

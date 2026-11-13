@@ -20,6 +20,9 @@ describe("O Vanzeiro screens", () => {
   const telas = [
     "/entrar",
     "/criar-conta",
+    "/esqueci-senha",
+    "/termos",
+    "/privacidade",
     "/como-vai-usar",
     "/vanzeiro",
     "/vanzeiro/destinos",

@@ -1,6 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { LogOut, MapPin, MessageCircle, Phone, Route as RouteIcon, User } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { MapPin, MessageCircle, Phone, Route as RouteIcon, User } from "lucide-react";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
+import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,6 @@ function PerfilPassageiro() {
   const eu = useEu();
   const destino = useDestino(eu.destinoId);
   const vanzeiro = usePerfilVanzeiro();
-  const navigate = useNavigate();
 
   return (
     <>
@@ -60,9 +60,7 @@ function PerfilPassageiro() {
           </Button>
         </section>
 
-        <Button size="lg" variant="outline" className="w-full" onClick={() => navigate({ to: "/entrar" })}>
-          <LogOut className="!h-5 !w-5" /> Sair
-        </Button>
+        <OpcoesDaConta trocarPara="vanzeiro" />
       </div>
     </>
   );

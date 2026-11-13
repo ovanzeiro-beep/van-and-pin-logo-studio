@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Car, Check, LogOut, Pencil, Phone, QrCode, RectangleHorizontal, User, X } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Car, Check, Pencil, Phone, QrCode, RectangleHorizontal, User, X } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
+import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,6 @@ export const Route = createFileRoute("/vanzeiro/perfil")({
 function AbaPerfil() {
   const perfil = usePerfilVanzeiro();
   const [editando, setEditando] = useState(false);
-  const navigate = useNavigate();
 
   return (
     <>
@@ -57,9 +57,7 @@ function AbaPerfil() {
             <Button size="lg" variant="outline" className="w-full" onClick={() => setEditando(true)}>
               <Pencil className="!h-5 !w-5" /> Editar
             </Button>
-            <Button size="lg" variant="ghost" className="w-full" onClick={() => navigate({ to: "/entrar" })}>
-              <LogOut className="!h-5 !w-5" /> Sair
-            </Button>
+            <OpcoesDaConta trocarPara="passageiro" varianteSair="ghost" />
           </>
         )}
       </div>

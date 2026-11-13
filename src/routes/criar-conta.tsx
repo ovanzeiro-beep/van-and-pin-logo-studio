@@ -1,9 +1,19 @@
+import { useEffect, useState, type ChangeEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Lock, Mail, User } from "lucide-react";
 import { AuthLayout, OuDivisor } from "@/components/app/AuthLayout";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { GoogleButton } from "@/components/app/GoogleButton";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  cadastroOk,
+  guardarRascunhoDoCadastro,
+  limparRascunhoDoCadastro,
+  rascunhoDoCadastro,
+  validarCadastro,
+  type DadosCadastro,
+} from "@/lib/cadastro";
 import { criarContaNova } from "@/lib/sessao-passageiro";
 
 export const Route = createFileRoute("/criar-conta")({
@@ -21,6 +31,14 @@ export const Route = createFileRoute("/criar-conta")({
 function CriarConta() {
   const navigate = useNavigate();
   const avancar = () => navigate({ to: "/como-vai-usar" });
+  const [dados, setDados] = useState<DadosCadastro>(rascunhoDoCadastro);
+  const [tentou, setTentou] = useState(false);
+  // Keeps what was typed while the person reads the Termos or the Política and comes back.
+  useEffect(() => guardarRascunhoDoCadastro(dados), [dados]);
+
+  const erros = tentou ? validarCadastro(dados) : {};
+  const mudar = (campo: keyof DadosCadastro) => (e: ChangeEvent<HTMLInputElement>) =>
+    setDados((d) => ({ ...d, [campo]: e.target.value }));
 
   return (
     <AuthLayout
@@ -37,23 +55,88 @@ function CriarConta() {
     >
       <form
         className="space-y-4"
+        noValidate
         onSubmit={(e) => {
           e.preventDefault();
+          setTentou(true);
+          if (!cadastroOk(validarCadastro(dados))) return;
           // A new account is not in any van yet: as a passenger it starts at "Entrar na van".
-          criarContaNova(String(new FormData(e.currentTarget).get("nome") ?? ""));
+          criarContaNova(dados.nome);
+          limparRascunhoDoCadastro();
           avancar();
         }}
       >
-        <CampoComIcone id="nome" name="nome" label="Nome" icon={User} placeholder="Seu nome" autoComplete="name" />
-        <CampoComIcone id="email" label="E-mail" type="email" icon={Mail} placeholder="voce@email.com" autoComplete="email" />
-        <CampoComIcone id="senha" label="Senha" type="password" icon={Lock} placeholder="Crie uma senha" autoComplete="new-password" />
-        <Button type="submit" variant="cta" size="xl" className="mt-2 w-full">
+        <CampoComIcone
+          id="nome"
+          name="nome"
+          label="Nome"
+          icon={User}
+          placeholder="Seu nome"
+          autoComplete="name"
+          value={dados.nome}
+          onChange={mudar("nome")}
+          erro={erros.nome}
+        />
+        <CampoComIcone
+          id="email"
+          label="E-mail"
+          type="email"
+          icon={Mail}
+          placeholder="voce@email.com"
+          autoComplete="email"
+          value={dados.email}
+          onChange={mudar("email")}
+          erro={erros.email}
+        />
+        <CampoComIcone
+          id="senha"
+          label="Senha"
+          type="password"
+          olhinho
+          icon={Lock}
+          placeholder="Pelo menos 8 caracteres"
+          autoComplete="new-password"
+          value={dados.senha}
+          onChange={mudar("senha")}
+          erro={erros.senha}
+        />
+        <CampoComIcone
+          id="confirmar"
+          label="Confirmar senha"
+          type="password"
+          olhinho
+          icon={Lock}
+          placeholder="Digite a senha de novo"
+          autoComplete="new-password"
+          value={dados.confirmar}
+          onChange={mudar("confirmar")}
+          erro={erros.confirmar}
+        />
+        <div className="flex items-start gap-3 pt-1">
+          <Checkbox
+            id="termos"
+            checked={dados.aceitouTermos}
+            onCheckedChange={(v) => setDados((d) => ({ ...d, aceitouTermos: v === true }))}
+            className="mt-0.5 h-5 w-5 rounded-md"
+          />
+          <label htmlFor="termos" className="text-sm leading-snug text-foreground">
+            Li e aceito os{" "}
+            <Link to="/termos" className="font-bold text-primary underline underline-offset-2">
+              Termos de Uso
+            </Link>{" "}
+            e a{" "}
+            <Link to="/privacidade" className="font-bold text-primary underline underline-offset-2">
+              Política de Privacidade
+            </Link>
+          </label>
+        </div>
+        <Button type="submit" variant="cta" size="xl" className="mt-2 w-full" disabled={!dados.aceitouTermos}>
           Criar conta
         </Button>
       </form>
       <OuDivisor />
       <GoogleButton
-        label="Entrar com Google"
+        label="Continuar com Google"
         onClick={() => {
           criarContaNova("");
           avancar();

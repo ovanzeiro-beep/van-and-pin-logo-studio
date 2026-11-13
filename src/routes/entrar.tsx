@@ -44,9 +44,9 @@ function Entrar() {
         <CampoComIcone id="email" label="E-mail" type="email" icon={Mail} placeholder="voce@email.com" autoComplete="email" />
         <CampoComIcone id="senha" label="Senha" type="password" icon={Lock} placeholder="Sua senha" autoComplete="current-password" />
         <div className="flex justify-end">
-          <button type="button" className="text-sm font-semibold text-primary">
+          <Link to="/esqueci-senha" className="text-sm font-semibold text-primary">
             Esqueci minha senha
-          </button>
+          </Link>
         </div>
         <Button type="submit" variant="cta" size="xl" className="w-full">
           Entrar
