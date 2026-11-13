@@ -1,6 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
-import { identidadePassageiro } from "@/lib/passageiros";
+import { atualizarMeusDados, identidadePassageiro, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
@@ -71,6 +71,14 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
   }
   avisar();
   garantirProximaCobranca(p);
+}
+
+/** The passenger's own "Editar" on their Perfil (all destinos of the same person). */
+export function salvarDadosDoPassageiro(euId: string, dados: MeusDados) {
+  const eu = passageiros.find((p) => p.id === euId);
+  if (!eu) return;
+  passageiros = atualizarMeusDados(passageiros, eu, dados);
+  avisar();
 }
 
 export function removerPassageiro(id: string) {

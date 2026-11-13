@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { passageiroExemplo, passageirosExemplo, type Passageiro } from "@/data/exemplo";
-import { adicionarPedido, obterPassageiros, useAceitos, usePassageiros, usePedidos } from "@/lib/passageiros-store";
+import { adicionarPedido, obterPassageiros, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos } from "@/lib/passageiros-store";
 
-import { matriculasDaPessoa, identidadePassageiro } from "@/lib/passageiros";
+import { matriculasDaPessoa, identidadePassageiro, somenteDigitos, type MeusDados } from "@/lib/passageiros";
 
 // Who is using the passenger panel on this phone. Starts as the sample passenger (Juliana);
 // a new account starts with no van and joins one with an invite code.
@@ -41,6 +41,12 @@ export function pedirParaEntrar(destinoId: string, nome: string, telefone: strin
   const eu = obterMinhasMatriculas()[0];
   const pedidoId = adicionarPedido({ destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
   mudar({ ...sessao, nome: nome.trim(), telefone, pedidoId });
+}
+
+/** "Editar" on the passenger's Perfil: saves on every destino of this person and in this session. */
+export function salvarMeusDados(euId: string, dados: MeusDados) {
+  salvarDadosDoPassageiro(euId, dados);
+  mudar({ ...sessao, nome: dados.nome.trim(), telefone: somenteDigitos(dados.telefone) });
 }
 
 export function tentarOutroCodigo() {

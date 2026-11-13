@@ -178,3 +178,24 @@ export function pessoasParaDestino(lista: Passageiro[], destinoId: string) {
   const ja = new Set(lista.filter((p) => p.destinoId === destinoId).map(identidadePassageiro));
   return lista.filter((p, i) => !ja.has(identidadePassageiro(p)) && lista.findIndex((x) => identidadePassageiro(x) === identidadePassageiro(p)) === i);
 }
+
+/** What the passenger changes in "Editar" on their Perfil. Endereços are per membership (passenger id). */
+export type MeusDados = { nome: string; telefone: string; enderecos: Record<string, string> };
+
+/** Saving needs a name, a phone with DDD and every boarding address filled in. */
+export function meusDadosValidos(d: MeusDados) {
+  return d.nome.trim() !== "" && telefoneValido(d.telefone) && Object.values(d.enderecos).every((e) => e.trim() !== "");
+}
+
+/**
+ * The passenger's own edit: name and phone change in every destino of this person, the address only
+ * in its destino. City, plan and value stay with the vanzeiro. Other people are never touched.
+ */
+export function atualizarMeusDados(lista: Passageiro[], eu: Passageiro, d: MeusDados): Passageiro[] {
+  const minhas = new Set(matriculasDaPessoa(lista, eu).map((p) => p.id));
+  return lista.map((p) =>
+    minhas.has(p.id)
+      ? { ...p, nome: d.nome.trim(), telefone: somenteDigitos(d.telefone), endereco: d.enderecos[p.id]?.trim() || p.endereco }
+      : p,
+  );
+}

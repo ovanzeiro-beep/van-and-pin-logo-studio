@@ -7,8 +7,8 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 
 | Etapa | Situação |
 | --- | --- |
-| A — Revisão do que existe | Feita em 13/11/2026 (lista entregue, aguardando aprovação) |
-| B — Fluxos que faltam | Em andamento (itens 1, 2 e 3 feitos em 13/11/2026; aguardando aprovação para o item 4) |
+| A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
+| B — Fluxos que faltam | Em andamento (itens 1 a 4 feitos em 13/11/2026; aguardando aprovação para o item 5) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -151,10 +151,10 @@ O que mudou: telas Início, Destinos, Viagem e Financeiro do vanzeiro (só quand
 Pendências do item 1:
 - Depois do primeiro destino, se não houver viagem hoje, o Início mostra "Sem viagem hoje" com "Às --:--" e números zerados. Isso é a tela "dia sem viagem" do item 3.
 - ~~Sem banco, só existe um painel de vanzeiro: se uma conta nova entrar como passageiro na van do Carlos e depois tocar em "Sou vanzeiro", o painel começa vazio e os dados de exemplo somem até recarregar a página.~~ Corrigido no item 3 (13/11/2026): o painel só começa vazio quando a primeira escolha da conta nova é "Sou vanzeiro". Quem escolhe "Sou passageiro" primeiro, ou usa "Entrar", continua com os exemplos do Carlos e consegue trocar para vanzeiro e aceitar o próprio pedido.
-- [ ] 1. Primeiro uso do vanzeiro (tela vazia amigável, "Crie seu primeiro destino", ajuda de 3 passos).
-- [ ] 2. Primeiro uso do passageiro (tela do código, com explicação de onde conseguir).
-- [ ] 3. Telas vazias com mensagem e botão útil (destino sem passageiros, dia sem viagem, sem cobranças, sem pedidos, histórico vazio).
-- [ ] 4. Editar perfil (vanzeiro e passageiro): nome, telefone, chave Pix, van, endereço de embarque.
+- [x] 1. Primeiro uso do vanzeiro (tela vazia amigável, "Crie seu primeiro destino", ajuda de 3 passos).
+- [x] 2. Primeiro uso do passageiro (tela do código, com explicação de onde conseguir).
+- [x] 3. Telas vazias com mensagem e botão útil (destino sem passageiros, dia sem viagem, sem cobranças, sem pedidos, histórico vazio).
+- [x] 4. Editar perfil (vanzeiro e passageiro): nome, telefone, chave Pix, van, endereço de embarque.
 - [ ] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
 - [ ] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara.
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
@@ -186,6 +186,21 @@ O que mudou: Início e Viagem do vanzeiro (dia sem viagem, destino sem passageir
 Correção junto: o painel vazio da conta nova agora só aparece quando a primeira escolha é "Sou vanzeiro" (ver pendências do item 1).
 
 Pendência do item 3: o Início continua mostrando a viagem do dia depois que ela acaba (item 1.2 da revisão); fica para a Etapa D ou para quando você decidir a dúvida 5.
+
+### Item 4 — Editar perfil (feito em 13/11/2026)
+O que já existia: o Perfil do vanzeiro tem "Editar" com nome, telefone, chave Pix, modelo e placa da van, e o que é salvo já aparece para o passageiro. O passageiro não tinha como editar.
+- [x] Vanzeiro: conferir que o "Editar" que já existe funciona (salva, cancela, o nome novo aparece no cabeçalho e o Pix novo aparece para o passageiro). Nada muda na tela.
+- [x] Passageiro: botão "Editar" no Perfil, igual ao do vanzeiro (mesmo lugar, mesmo visual, Cancelar e Salvar), com nome, telefone (WhatsApp) e o endereço de embarque de cada destino.
+- [x] Nome e telefone valem para todos os destinos da pessoa; o endereço é de cada destino. A cidade de embarque não muda (ela define a ordem da busca e fica com o vanzeiro).
+- [x] O vanzeiro vê os dados novos no detalhe do passageiro e na busca da viagem. As cobranças já criadas guardam o nome e o telefone de quando foram criadas (a cobrança nunca é editada).
+- [x] Salvar só funciona com nome, telefone válido (com DDD) e endereços preenchidos.
+- [x] A regra fica em `src/lib/passageiros.ts`, com teste automático (`src/test/meus-dados.test.ts`).
+- [x] O formulário do passageiro não rola (390 × 844, 360 × 740, iPhone SE).
+- [x] Testes (112) e build passando; Início do passageiro, Perfil do vanzeiro e detalhe do passageiro iguais a antes, conferidos imagem por imagem. O Perfil do passageiro ganhou só o botão "Editar".
+
+O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras novas `meusDadosValidos` e `atualizarMeusDados` em `src/lib/passageiros.ts`; gravação em `passageiros-store.ts` e `sessao-passageiro.ts`.
+
+Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
 
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
 **Situação:** a fazer.
