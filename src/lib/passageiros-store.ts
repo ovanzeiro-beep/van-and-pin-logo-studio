@@ -1,5 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro } from "@/data/exemplo";
+import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
 let passageiros = passageirosExemplo;
@@ -56,6 +57,7 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
     : [...passageiros, p];
   if (pedidoId) pedidos = pedidos.filter((x) => x.id !== pedidoId);
   avisar();
+  garantirProximaCobranca(p);
 }
 
 export function removerPassageiro(id: string) {

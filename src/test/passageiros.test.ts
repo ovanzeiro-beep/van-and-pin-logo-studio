@@ -96,3 +96,19 @@ describe("Passageiros da viagem de hoje no Início", () => {
     expect(r).toEqual({ total: 5, vao: 3, semResposta: 1, naoVao: 1 });
   });
 });
+
+describe("Descontar faltas no cadastro", () => {
+  const r = { ...rascunhoPassageiroVazio(), plano: "mensal" as const, valor: "280", vencimento: "10" };
+  it("starts as Não", () => {
+    expect(rascunhoPassageiroVazio().descontaFaltas).toBe(false);
+  });
+  it("with Sim, the value of each falta is required", () => {
+    expect(passoPassageiroCompleto(3, { ...r, descontaFaltas: true }, pontos)).toBe(false);
+    expect(passoPassageiroCompleto(3, { ...r, descontaFaltas: true, valorFalta: "15" }, pontos)).toBe(true);
+  });
+  it("is never saved for por viagem or diário", () => {
+    const p = passageiroDeRascunho({ ...r, plano: "diario", descontaFaltas: true, valorFalta: "15" }, "d");
+    expect(p.descontaFaltas).toBe(false);
+    expect(p.valorFalta).toBeNull();
+  });
+});

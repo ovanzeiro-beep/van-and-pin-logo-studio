@@ -7,6 +7,9 @@ import { nomeDestino } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { presencaDaViagem } from "@/lib/passageiros";
 import { usePassageiros } from "@/lib/passageiros-store";
+import { DATA_DE_HOJE } from "@/data/exemplo";
+import { resumoDoMes } from "@/lib/cobrancas";
+import { useCobrancas } from "@/lib/cobrancas-store";
 
 export const Route = createFileRoute("/vanzeiro/")({
   head: () => ({
@@ -30,6 +33,7 @@ function InicioVanzeiro() {
   );
   const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
   const saida = destino?.saida ?? "--:--";
+  const financeiro = resumoDoMes(useCobrancas(), DATA_DE_HOJE);
 
   return (
     <>
@@ -75,20 +79,22 @@ function InicioVanzeiro() {
           </div>
         </InfoCard>
 
-        <InfoCard
-          compacto
-          icon={Wallet}
-          tone="warning"
-          label="Valores a receber"
-          value={formatarReais(v.financeiro.aReceber)}
-          detail="Referente a este mês"
-        >
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <Resumo valor={v.financeiro.pagos} rotulo="Pagos" className="bg-success-soft text-success" />
-            <Resumo valor={v.financeiro.pendentes} rotulo="Pendentes" className="bg-warning-soft text-warning" />
-            <Resumo valor={v.financeiro.atrasados} rotulo="Devendo" className="bg-destructive-soft text-destructive" />
-          </div>
-        </InfoCard>
+        <Link to="/vanzeiro/financeiro" className="block rounded-3xl transition-transform active:scale-[0.98]">
+          <InfoCard
+            compacto
+            icon={Wallet}
+            tone="warning"
+            label="Valores a receber"
+            value={formatarReais(financeiro.aReceber)}
+            detail="Referente a este mês"
+          >
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <Resumo valor={financeiro.pagos} rotulo="Pagos" className="bg-success-soft text-success" />
+              <Resumo valor={financeiro.pendentes} rotulo="Pendentes" className="bg-warning-soft text-warning" />
+              <Resumo valor={financeiro.devendoQtd} rotulo="Devendo" className="bg-destructive-soft text-destructive" />
+            </div>
+          </InfoCard>
+        </Link>
 
         <Link
           to="/vanzeiro/destinos/novo"

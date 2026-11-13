@@ -15,7 +15,6 @@ export const vanzeiroExemplo = {
     "p-thiago": "vai",
     "p-camila": "nao-vai",
   } as Record<string, RespostaViagem>,
-  financeiro: { aReceber: 1840, pagos: 9, pendentes: 4, atrasados: 2 },
 };
 
 export const passageiroExemplo = {
@@ -119,6 +118,10 @@ export type Passageiro = {
   valor: number;
   /** Dia do mês do vencimento (só quinzenal e mensal). */
   vencimento: number | null;
+  /** Só mensal e quinzenal: desconta as faltas da cobrança. */
+  descontaFaltas: boolean;
+  /** Valor descontado por falta, quando desconta faltas. */
+  valorFalta: number | null;
 };
 
 /** Pessoa que usou o código de convite e espera o vanzeiro aceitar. */
@@ -131,26 +134,80 @@ export type PedidoEntrada = {
 
 export const passageirosExemplo: Passageiro[] = [
   // Jacarezinho → Londrina
-  { id: "p-mariana", destinoId: "jacarezinho-londrina", nome: "Mariana Souza", telefone: "43998123456", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa, em frente à igreja", plano: "mensal", valor: 280, vencimento: 10 },
-  { id: "p-pedro", destinoId: "jacarezinho-londrina", nome: "Pedro Henrique Lima", telefone: "43999874512", cidade: "Jacarezinho", endereco: "Rua Paraná, 455", plano: "quinzenal", valor: 150, vencimento: 15 },
-  { id: "p-ana", destinoId: "jacarezinho-londrina", nome: "Ana Clara Ribeiro", telefone: "43996541230", cidade: "Santo Antônio da Platina", endereco: "Rodoviária", plano: "viagem", valor: 45, vencimento: null },
-  { id: "p-lucas", destinoId: "jacarezinho-londrina", nome: "Lucas Ferreira", telefone: "43991237788", cidade: "Santo Antônio da Platina", endereco: "Posto na entrada da cidade", plano: "diario", valor: 80, vencimento: null },
-  { id: "p-beatriz", destinoId: "jacarezinho-londrina", nome: "Beatriz Martins", telefone: "43988452301", cidade: "Jacarezinho", endereco: "Av. Getúlio Vargas, 1020", plano: "mensal", valor: 280, vencimento: 5 },
+  { id: "p-mariana", destinoId: "jacarezinho-londrina", nome: "Mariana Souza", telefone: "43998123456", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa, em frente à igreja", plano: "mensal", valor: 280, vencimento: 10, descontaFaltas: true, valorFalta: 15 },
+  { id: "p-pedro", destinoId: "jacarezinho-londrina", nome: "Pedro Henrique Lima", telefone: "43999874512", cidade: "Jacarezinho", endereco: "Rua Paraná, 455", plano: "quinzenal", valor: 150, vencimento: 15, descontaFaltas: false, valorFalta: null },
+  { id: "p-ana", destinoId: "jacarezinho-londrina", nome: "Ana Clara Ribeiro", telefone: "43996541230", cidade: "Santo Antônio da Platina", endereco: "Rodoviária", plano: "viagem", valor: 45, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-lucas", destinoId: "jacarezinho-londrina", nome: "Lucas Ferreira", telefone: "43991237788", cidade: "Santo Antônio da Platina", endereco: "Posto na entrada da cidade", plano: "diario", valor: 80, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-beatriz", destinoId: "jacarezinho-londrina", nome: "Beatriz Martins", telefone: "43988452301", cidade: "Jacarezinho", endereco: "Av. Getúlio Vargas, 1020", plano: "mensal", valor: 280, vencimento: 5, descontaFaltas: false, valorFalta: null },
   // Centro → Faculdade Unisul
-  { id: "p-juliana", destinoId: "centro-unisul", nome: "Juliana Alves", telefone: "48998771234", cidade: "Bairro Pedra Branca", endereco: "Rua das Flores, 210", plano: "mensal", valor: 280, vencimento: 20 },
-  { id: "p-gabriel", destinoId: "centro-unisul", nome: "Gabriel Rocha", telefone: "48999125566", cidade: "Centro", endereco: "Praça XV, ponto de ônibus", plano: "mensal", valor: 260, vencimento: 10 },
-  { id: "p-fernanda", destinoId: "centro-unisul", nome: "Fernanda Costa", telefone: "48996654321", cidade: "Centro", endereco: "Rua Felipe Schmidt, 88", plano: "quinzenal", valor: 140, vencimento: 5 },
-  { id: "p-rafael", destinoId: "centro-unisul", nome: "Rafael Mendes", telefone: "48991478523", cidade: "Bairro Pedra Branca", endereco: "Av. Pedra Branca, 1500", plano: "diario", valor: 22, vencimento: null },
-  { id: "p-camila", destinoId: "centro-unisul", nome: "Camila Duarte", telefone: "48988236547", cidade: "Centro", endereco: "Terminal Central", plano: "viagem", valor: 12, vencimento: null },
-  { id: "p-thiago", destinoId: "centro-unisul", nome: "Thiago Nunes", telefone: "48997563214", cidade: "Bairro Pedra Branca", endereco: "Rua dos Ipês, 37", plano: "mensal", valor: 280, vencimento: 20 },
+  { id: "p-juliana", destinoId: "centro-unisul", nome: "Juliana Alves", telefone: "48998771234", cidade: "Bairro Pedra Branca", endereco: "Rua das Flores, 210", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: false, valorFalta: null },
+  { id: "p-gabriel", destinoId: "centro-unisul", nome: "Gabriel Rocha", telefone: "48999125566", cidade: "Centro", endereco: "Praça XV, ponto de ônibus", plano: "mensal", valor: 260, vencimento: 10, descontaFaltas: false, valorFalta: null },
+  { id: "p-fernanda", destinoId: "centro-unisul", nome: "Fernanda Costa", telefone: "48996654321", cidade: "Centro", endereco: "Rua Felipe Schmidt, 88", plano: "quinzenal", valor: 140, vencimento: 5, descontaFaltas: true, valorFalta: 10 },
+  { id: "p-rafael", destinoId: "centro-unisul", nome: "Rafael Mendes", telefone: "48991478523", cidade: "Bairro Pedra Branca", endereco: "Av. Pedra Branca, 1500", plano: "diario", valor: 22, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-camila", destinoId: "centro-unisul", nome: "Camila Duarte", telefone: "48988236547", cidade: "Centro", endereco: "Terminal Central", plano: "viagem", valor: 12, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-thiago", destinoId: "centro-unisul", nome: "Thiago Nunes", telefone: "48997563214", cidade: "Bairro Pedra Branca", endereco: "Rua dos Ipês, 37", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: false, valorFalta: null },
   // Excursão Beto Carrero
-  { id: "p-rosana", destinoId: "excursao-beto-carrero", nome: "Rosana Pereira", telefone: "43998012233", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "viagem", valor: 320, vencimento: null },
-  { id: "p-jose", destinoId: "excursao-beto-carrero", nome: "José Carlos Silva", telefone: "43999347788", cidade: "Jacarezinho", endereco: "Rodoviária", plano: "viagem", valor: 320, vencimento: null },
-  { id: "p-patricia", destinoId: "excursao-beto-carrero", nome: "Patrícia Gomes", telefone: "41998456123", cidade: "Curitiba", endereco: "Rodoferroviária", plano: "viagem", valor: 280, vencimento: null },
-  { id: "p-marcos", destinoId: "excursao-beto-carrero", nome: "Marcos Antunes", telefone: "43991113344", cidade: "Jacarezinho", endereco: "Rua Paraná, 120", plano: "viagem", valor: 320, vencimento: null },
+  { id: "p-rosana", destinoId: "excursao-beto-carrero", nome: "Rosana Pereira", telefone: "43998012233", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-jose", destinoId: "excursao-beto-carrero", nome: "José Carlos Silva", telefone: "43999347788", cidade: "Jacarezinho", endereco: "Rodoviária", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-patricia", destinoId: "excursao-beto-carrero", nome: "Patrícia Gomes", telefone: "41998456123", cidade: "Curitiba", endereco: "Rodoferroviária", plano: "viagem", valor: 280, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-marcos", destinoId: "excursao-beto-carrero", nome: "Marcos Antunes", telefone: "43991113344", cidade: "Jacarezinho", endereco: "Rua Paraná, 120", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
 ];
 
 export const pedidosExemplo: PedidoEntrada[] = [
   { id: "pedido-larissa", destinoId: "jacarezinho-londrina", nome: "Larissa Moreira", telefone: "43997012345" },
   { id: "pedido-joao", destinoId: "jacarezinho-londrina", nome: "João Vitor Santos", telefone: "43998456721" },
 ];
+
+/** "Hoje" da etapa visual, para os exemplos de cobrança ficarem coerentes (sexta, 13 de nov). */
+export const DATA_DE_HOJE = "2026-11-13";
+
+/** Primeiro dia do histórico de exemplo: as cobranças começam a ser criadas a partir daqui. */
+export const INICIO_DO_HISTORICO = "2026-10-01";
+
+export type FormaPagamento = "dinheiro" | "pix";
+
+/** Dias em que passageiros de "Por viagem" e "Diário" embarcaram (geram cobranças). */
+export const embarquesExemplo: { passageiroId: string; data: string }[] = [
+  { passageiroId: "p-ana", data: "2026-11-06" },
+  { passageiroId: "p-ana", data: "2026-11-08" },
+  { passageiroId: "p-ana", data: "2026-11-13" },
+  { passageiroId: "p-lucas", data: "2026-11-01" },
+  { passageiroId: "p-lucas", data: "2026-11-06" },
+  { passageiroId: "p-lucas", data: "2026-11-07" },
+  { passageiroId: "p-lucas", data: "2026-11-13" },
+  { passageiroId: "p-rafael", data: "2026-11-09" },
+  { passageiroId: "p-rafael", data: "2026-11-10" },
+  { passageiroId: "p-rafael", data: "2026-11-11" },
+  { passageiroId: "p-rafael", data: "2026-11-12" },
+  { passageiroId: "p-rafael", data: "2026-11-13" },
+  { passageiroId: "p-camila", data: "2026-11-09" },
+  { passageiroId: "p-camila", data: "2026-11-11" },
+  { passageiroId: "p-camila", data: "2026-11-12" },
+];
+
+/** Dias em que passageiros de mensal ou quinzenal faltaram (descontados quando o plano desconta faltas). */
+export const faltasExemplo: { passageiroId: string; data: string }[] = [
+  { passageiroId: "p-mariana", data: "2026-10-17" },
+  { passageiroId: "p-mariana", data: "2026-10-24" },
+  { passageiroId: "p-fernanda", data: "2026-10-28" },
+];
+
+/** Cobranças com vencimento até esta data foram pagas por Pix no próprio vencimento. */
+export const PAGAS_ATE_EXEMPLO = "2026-10-31";
+
+/** Outras cobranças pagas, pela chave "passageiro_vencimento". */
+export const pagamentosExemplo: Record<string, { data: string; forma: FormaPagamento }> = {
+  "p-ana_2026-11-06": { data: "2026-11-06", forma: "dinheiro" },
+  "p-lucas_2026-11-01": { data: "2026-11-01", forma: "dinheiro" },
+  "p-lucas_2026-11-06": { data: "2026-11-06", forma: "pix" },
+  "p-gabriel_2026-11-10": { data: "2026-11-10", forma: "pix" },
+  "p-fernanda_2026-11-04": { data: "2026-11-04", forma: "dinheiro" },
+  "p-rafael_2026-11-09": { data: "2026-11-09", forma: "pix" },
+  "p-rafael_2026-11-10": { data: "2026-11-10", forma: "pix" },
+  "p-camila_2026-11-09": { data: "2026-11-09", forma: "pix" },
+  "p-camila_2026-11-11": { data: "2026-11-11", forma: "dinheiro" },
+};
+
+export const cancelamentosExemplo: Record<string, { data: string; motivo: string }> = {
+  "p-lucas_2026-11-07": { data: "2026-11-08", motivo: "Dia de cortesia" },
+};

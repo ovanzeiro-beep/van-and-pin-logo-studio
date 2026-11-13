@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, MapPin, MessageCircle, Pencil, Phone, Trash2, Wallet, type LucideIcon } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, MessageCircle, Pencil, Phone, Trash2, UserX, Wallet, type LucideIcon } from "lucide-react";
+import { CobrancaItem } from "@/components/app/CobrancaItem";
 import { DestinoNaoEncontrado } from "@/components/app/DestinoNaoEncontrado";
 import { PassageiroNaoEncontrado } from "@/components/app/PassageiroNaoEncontrado";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
@@ -15,10 +16,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { formatarReais } from "@/data/exemplo";
+import { DATA_DE_HOJE, formatarReais, type PlanoPagamento } from "@/data/exemplo";
+import { ordenarRecentes, situacao, totalDevido } from "@/lib/cobrancas";
+import { useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
-import { PLANO_ROTULO, formatarTelefone, linkWhatsApp } from "@/lib/passageiros";
+import { PLANO_ROTULO, formatarTelefone, linkWhatsApp, planoTemVencimento } from "@/lib/passageiros";
+import { cn } from "@/lib/utils";
 import { removerPassageiro, usePassageiro } from "@/lib/passageiros-store";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")({
@@ -80,8 +84,17 @@ function DetalhePassageiro() {
           <dl className="mt-3 space-y-2.5">
             <Linha icon={Wallet} rotulo={PLANO_ROTULO[p.plano]} valor={formatarReais(p.valor)} />
             {p.vencimento && <Linha icon={CalendarDays} rotulo="Vencimento" valor={`Todo dia ${p.vencimento}`} />}
+            {planoTemVencimento(p.plano) && (
+              <Linha
+                icon={UserX}
+                rotulo="Desconto de faltas"
+                valor={p.descontaFaltas && p.valorFalta ? `${formatarReais(p.valorFalta)} por falta` : "Não"}
+              />
+            )}
           </dl>
         </section>
+
+        <PagamentosDoPassageiro passageiroId={p.id} plano={p.plano} />
 
         <div className="space-y-3 pt-1">
           <Button asChild size="lg" variant="success" className="w-full">
@@ -120,6 +133,50 @@ function DetalhePassageiro() {
         </div>
       </div>
     </>
+  );
+}
+
+function PagamentosDoPassageiro({ passageiroId, plano }: { passageiroId: string; plano: PlanoPagamento }) {
+  const cobrancas = useCobrancasDoPassageiro(passageiroId);
+  const lista = ordenarRecentes(cobrancas);
+  const deve = totalDevido(cobrancas, passageiroId);
+  const temDevendo = cobrancas.some((c) => situacao(c, DATA_DE_HOJE) === "devendo");
+
+  return (
+    <section className="rounded-3xl bg-card p-4 shadow-card">
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pagamentos</p>
+      <div
+        className={cn(
+          "mt-3 flex items-center justify-between rounded-2xl px-3.5 py-3",
+          deve === 0 ? "bg-success-soft" : temDevendo ? "bg-destructive-soft" : "bg-warning-soft",
+        )}
+      >
+        <p className="text-sm font-semibold text-foreground">Deve no total</p>
+        <p
+          className={cn(
+            "font-display text-xl font-bold",
+            deve === 0 ? "text-success" : temDevendo ? "text-destructive" : "text-warning",
+          )}
+        >
+          {formatarReais(deve)}
+        </p>
+      </div>
+      {lista.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">
+          {plano === "viagem" || plano === "diario"
+            ? "As cobranças aparecem quando a pessoa embarcar."
+            : "Nenhuma cobrança ainda."}
+        </p>
+      ) : (
+        <ul className="mt-3 space-y-2">
+          {lista.map((c) => (
+            <li key={c.id}>
+              <CobrancaItem c={c} compacto />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

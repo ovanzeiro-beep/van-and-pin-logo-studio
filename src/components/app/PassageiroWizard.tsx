@@ -4,7 +4,9 @@ import { CalendarDays, CalendarRange, MapPin, Phone, Sun, Ticket, User, Wallet, 
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { ItemResumo, Rotulo } from "@/components/app/DestinoWizard";
 import { PassosLayout } from "@/components/app/PassosLayout";
-import type { Destino, Passageiro, PedidoEntrada, PlanoPagamento } from "@/data/exemplo";
+import { formatarReais, type Destino, type Passageiro, type PedidoEntrada, type PlanoPagamento } from "@/data/exemplo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { nomeDestino } from "@/lib/destinos";
 import {
   PLANOS,
@@ -176,7 +178,7 @@ function Passo3({ r, mudar }: PassoProps) {
                   <Icon className={cn("h-4 w-4", ativo ? "text-primary" : "text-muted-foreground")} />
                   {p.rotulo}
                 </span>
-                <span className="mt-0.5 text-xs text-muted-foreground">{p.texto}</span>
+                <span className="mt-0.5 text-xs text-muted-foreground [@media(max-height:700px)]:hidden">{p.texto}</span>
               </button>
             );
           })}
@@ -206,6 +208,49 @@ function Passo3({ r, mudar }: PassoProps) {
           )}
         </div>
       )}
+      {comVencimento && (
+        <div className="flex items-center gap-3">
+          <p className="flex-1 text-sm font-semibold text-foreground">Descontar faltas?</p>
+          <div className="grid w-40 shrink-0 grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant={!r.descontaFaltas ? "default" : "outline"}
+              aria-pressed={!r.descontaFaltas}
+              onClick={() => mudar({ descontaFaltas: false })}
+            >
+              Não
+            </Button>
+            <Button
+              type="button"
+              variant={r.descontaFaltas ? "default" : "outline"}
+              aria-pressed={r.descontaFaltas}
+              onClick={() => mudar({ descontaFaltas: true })}
+            >
+              Sim
+            </Button>
+          </div>
+        </div>
+      )}
+      {comVencimento && r.descontaFaltas && (
+        <div className="flex items-center gap-3">
+          <label htmlFor="valor-falta" className="flex-1 text-sm font-semibold text-foreground">
+            Valor de cada falta
+          </label>
+          <div className="relative w-40 shrink-0">
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
+              R$
+            </span>
+            <Input
+              id="valor-falta"
+              inputMode="decimal"
+              placeholder="15,00"
+              value={r.valorFalta}
+              onChange={(e) => mudar({ valorFalta: e.target.value.replace(/[^\d.,]/g, "") })}
+              className="h-11 rounded-xl border-input bg-surface pl-10 text-base shadow-none focus-visible:bg-card md:text-base"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -228,6 +273,13 @@ function Resumo({ r, destino }: { r: RascunhoPassageiro; destino: Destino }) {
         <ItemResumo rotulo="Plano" valor={descricaoPlano(p)} />
         {p.vencimento && <ItemResumo rotulo="Vencimento" valor={`Todo dia ${p.vencimento}`} />}
       </dl>
+      {planoTemVencimento(p.plano) && (
+        <p className="rounded-2xl bg-surface px-3.5 py-2 text-sm text-foreground">
+          {p.descontaFaltas && p.valorFalta
+            ? `Desconta faltas: ${formatarReais(p.valorFalta)} por falta`
+            : "Não desconta faltas"}
+        </p>
+      )}
     </>
   );
 }

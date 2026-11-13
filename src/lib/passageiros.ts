@@ -91,6 +91,9 @@ export type RascunhoPassageiro = {
   plano: PlanoPagamento | null;
   valor: string;
   vencimento: string;
+  /** Mensal/quinzenal only. Starts as "Não". */
+  descontaFaltas: boolean;
+  valorFalta: string;
 };
 
 /** Empty form, or prefilled with the name and phone of an accepted pedido. */
@@ -103,6 +106,8 @@ export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "t
     plano: null,
     valor: "",
     vencimento: "",
+    descontaFaltas: false,
+    valorFalta: "",
   };
 }
 
@@ -115,6 +120,8 @@ export function rascunhoDePassageiro(p: Passageiro): RascunhoPassageiro {
     plano: p.plano,
     valor: p.valor.toFixed(2).replace(".", ","),
     vencimento: p.vencimento ? String(p.vencimento) : "",
+    descontaFaltas: p.descontaFaltas,
+    valorFalta: p.valorFalta ? p.valorFalta.toFixed(2).replace(".", ",") : "",
   };
 }
 
@@ -124,7 +131,8 @@ export function passoPassageiroCompleto(passo: number, r: RascunhoPassageiro, po
   if (passo === 2) return pontos.includes(r.cidade) && r.endereco.trim() !== "";
   if (passo === 3) {
     if (r.plano === null || lerValor(r.valor) === null) return false;
-    return !planoTemVencimento(r.plano) || lerVencimento(r.vencimento) !== null;
+    if (!planoTemVencimento(r.plano)) return true;
+    return lerVencimento(r.vencimento) !== null && (!r.descontaFaltas || lerValor(r.valorFalta) !== null);
   }
   return true;
 }
@@ -141,6 +149,8 @@ export function passageiroDeRascunho(r: RascunhoPassageiro, destinoId: string, a
     plano,
     valor: lerValor(r.valor) ?? 0,
     vencimento: planoTemVencimento(plano) ? lerVencimento(r.vencimento) : null,
+    descontaFaltas: planoTemVencimento(plano) && r.descontaFaltas,
+    valorFalta: planoTemVencimento(plano) && r.descontaFaltas ? lerValor(r.valorFalta) : null,
   };
 }
 

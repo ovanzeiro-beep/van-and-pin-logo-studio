@@ -1,0 +1,89 @@
+import { useMemo, useSyncExternalStore } from "react";
+import {
+  DATA_DE_HOJE,
+  INICIO_DO_HISTORICO,
+  PAGAS_ATE_EXEMPLO,
+  cancelamentosExemplo,
+  embarquesExemplo,
+  faltasExemplo,
+  pagamentosExemplo,
+  passageirosExemplo,
+  type FormaPagamento,
+  type Passageiro,
+} from "@/data/exemplo";
+import { gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
+
+/** Sample history: charges the app created from each plan since the start of the history. */
+function cobrancasDeExemplo(): Cobranca[] {
+  const fimDoMes = somarDias(`${DATA_DE_HOJE.slice(0, 7)}-01`, 40).slice(0, 7) + "-01";
+  const ate = somarDias(fimDoMes, -1);
+  return passageirosExemplo
+    .flatMap((p) =>
+      gerarCobrancas(p, INICIO_DO_HISTORICO, ate, DATA_DE_HOJE, { embarques: embarquesExemplo, faltas: faltasExemplo }),
+    )
+    .map((c) => {
+      const pago = pagamentosExemplo[c.id];
+      const cancelado = cancelamentosExemplo[c.id];
+      if (cancelado) return { ...c, cancelamento: cancelado };
+      if (pago) return { ...c, pagamento: pago };
+      if (c.vencimento <= PAGAS_ATE_EXEMPLO) return { ...c, pagamento: { data: c.vencimento, forma: "pix" as const } };
+      return c;
+    });
+}
+
+// In-memory list for the visual stage: changes last until the page is reloaded.
+const inicial = cobrancasDeExemplo();
+let cobrancas = inicial;
+const ouvintes = new Set<() => void>();
+
+function avisar() {
+  ouvintes.forEach((o) => o());
+}
+
+function inscrever(o: () => void) {
+  ouvintes.add(o);
+  return () => ouvintes.delete(o);
+}
+
+export const obterCobrancas = () => cobrancas;
+
+export function useCobrancas() {
+  return useSyncExternalStore(inscrever, obterCobrancas, () => inicial);
+}
+
+export function useCobranca(id: string) {
+  return useCobrancas().find((c) => c.id === id);
+}
+
+export function useCobrancasDoPassageiro(passageiroId: string) {
+  const lista = useCobrancas();
+  return useMemo(() => lista.filter((c) => c.passageiroId === passageiroId), [lista, passageiroId]);
+}
+
+/** The only change a charge accepts besides cancelling: it becomes paid, with the payment date. */
+export function marcarComoPago(id: string, forma: FormaPagamento, data = DATA_DE_HOJE) {
+  cobrancas = cobrancas.map((c) =>
+    c.id === id && !c.pagamento && !c.cancelamento ? { ...c, pagamento: { data, forma } } : c,
+  );
+  avisar();
+}
+
+/** Leaves the totals but stays in the history. */
+export function cancelarCobranca(id: string, motivo: string, data = DATA_DE_HOJE) {
+  cobrancas = cobrancas.map((c) =>
+    c.id === id && !c.pagamento && !c.cancelamento ? { ...c, cancelamento: { data, motivo: motivo.trim() } } : c,
+  );
+  avisar();
+}
+
+/** After saving a mensal/quinzenal passenger with nothing coming, the app creates their next charge. */
+export function garantirProximaCobranca(p: Passageiro, hoje = DATA_DE_HOJE) {
+  const temFutura = cobrancas.some(
+    (c) => c.passageiroId === p.id && !c.cancelamento && c.vencimento >= hoje && c.tipo === p.plano,
+  );
+  if (temFutura) return;
+  const proxima = proximaCobranca(p, hoje);
+  if (!proxima || cobrancas.some((c) => c.id === proxima.id)) return;
+  cobrancas = [...cobrancas, proxima];
+  avisar();
+}
