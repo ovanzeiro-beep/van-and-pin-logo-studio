@@ -31,6 +31,8 @@ export function limparViagens() {
   mudar({ escolhida: "", viagens: {} });
 }
 
+export const obterViagensDoDia = () => estado;
+
 /** The trip in progress, if any (only one at a time). */
 export function emAndamento(e: Estado) {
   return Object.values(e.viagens).find((v) => v.fase !== "encerrada");

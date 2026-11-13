@@ -9,7 +9,7 @@ import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { formatarReais } from "@/data/exemplo";
 import { ordenarRecentes, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
-import { useMinhasMatriculas } from "@/lib/sessao-passageiro";
+import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { useDestinos } from "@/lib/destinos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { cn } from "@/lib/utils";
@@ -29,10 +29,10 @@ export const Route = createFileRoute("/passageiro/pagamentos/")({
 });
 
 function MeusPagamentos() {
-  const matriculas = useMinhasMatriculas();
+  const ids = useIdsDasMinhasCobrancas();
   const destinos = useDestinos();
-  const cobrancas = useCobrancasDasMatriculas(matriculas.map((p) => p.id));
-  const devido = matriculas.reduce((s, p) => s + totalDevido(cobrancas, p.id), 0);
+  const cobrancas = useCobrancasDasMatriculas(ids);
+  const devido = ids.reduce((s, id) => s + totalDevido(cobrancas, id), 0);
   const lista = ordenarRecentes(cobrancas);
   const vanzeiro = usePerfilVanzeiro();
   const nomes = Object.fromEntries(destinos.map((d) => [d.id, nomeDestino(d)]));

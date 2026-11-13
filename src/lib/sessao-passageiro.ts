@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { passageiroExemplo, passageirosExemplo, type Passageiro } from "@/data/exemplo";
-import { adicionarPedido, obterPassageiros, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos } from "@/lib/passageiros-store";
+import { adicionarPedido, obterPassageiros, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos, useSaidas } from "@/lib/passageiros-store";
 
 import { matriculasDaPessoa, identidadePassageiro, somenteDigitos, type MeusDados } from "@/lib/passageiros";
 
@@ -86,6 +86,15 @@ export function useEu(): Passageiro {
 export function useMinhasMatriculas() {
   const eu = useEu();
   return matriculasDaPessoa(usePassageiros(), eu);
+}
+
+/** Whose charges the passenger sees: current destinos plus destinos they left (what they still owe there). */
+export function useIdsDasMinhasCobrancas() {
+  const eu = useEu();
+  const matriculas = useMinhasMatriculas();
+  const saidas = useSaidas();
+  const minhas = saidas.filter((p) => identidadePassageiro(p) === identidadePassageiro(eu));
+  return [...matriculas, ...minhas].map((p) => p.id);
 }
 function obterMinhasMatriculas() {
   const lista = obterPassageiros();

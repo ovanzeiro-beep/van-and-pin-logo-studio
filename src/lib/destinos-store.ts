@@ -37,6 +37,12 @@ export function alternarAtivo(id: string) {
   avisar();
 }
 
+/** "Excluir destino". */
+export function removerDestino(id: string) {
+  destinos = destinos.filter((d) => d.id !== id);
+  avisar();
+}
+
 /** New vanzeiro account: starts with no destinos. */
 export function limparDestinos() {
   destinos = [];

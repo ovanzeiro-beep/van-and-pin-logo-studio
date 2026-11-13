@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
-| B — Fluxos que faltam | Em andamento (itens 1 a 4 feitos em 13/11/2026; aguardando aprovação para o item 5) |
+| B — Fluxos que faltam | Em andamento (itens 1 a 5 feitos em 13/11/2026; aguardando aprovação para o item 6) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -155,7 +155,7 @@ Pendências do item 1:
 - [x] 2. Primeiro uso do passageiro (tela do código, com explicação de onde conseguir).
 - [x] 3. Telas vazias com mensagem e botão útil (destino sem passageiros, dia sem viagem, sem cobranças, sem pedidos, histórico vazio).
 - [x] 4. Editar perfil (vanzeiro e passageiro): nome, telefone, chave Pix, van, endereço de embarque.
-- [ ] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
+- [x] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
 - [ ] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara.
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 - [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
@@ -201,6 +201,25 @@ O que já existia: o Perfil do vanzeiro tem "Editar" com nome, telefone, chave P
 O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras novas `meusDadosValidos` e `atualizarMeusDados` em `src/lib/passageiros.ts`; gravação em `passageiros-store.ts` e `sessao-passageiro.ts`.
 
 Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
+
+### Item 5 — Excluir destino e sair de um destino (feito em 13/11/2026)
+Decisão 6 da fonte da verdade (aprovada em 13/11/2026): pagas e canceladas ficam no histórico; devendo continuam a receber; pendentes são canceladas sozinhas, com o motivo registrado.
+- [x] Vanzeiro, detalhe do destino: botão "Excluir destino" (vermelho discreto, embaixo de Editar/Pausar), com confirmação que diz quantos passageiros saem e o que acontece com as cobranças, e que não dá para desfazer.
+- [x] Ao excluir: o destino some da lista, das viagens e do Início; os passageiros e os pedidos daquele destino saem; as cobranças pendentes viram "Cancelada — Destino excluído"; devendo, pagas e canceladas ficam como estão; volta para a lista de Destinos.
+- [x] Passageiro, Perfil: "Sair deste destino" em cada destino, com confirmação (o que acontece com as cobranças e que, para voltar, precisa de um código novo).
+- [x] Ao sair: a pessoa sai só daquele destino; as pendentes dela ali viram "Cancelada — Saiu do destino"; as que estão devendo continuam a receber e continuam aparecendo nos Pagamentos dela; se era o único destino, o painel volta para "Entrar na van".
+- [x] Nenhum dos dois funciona com a viagem de hoje daquele destino em andamento (aviso "Termine a viagem antes").
+- [x] Mensagem do "Cobrar no WhatsApp" continua certa quando o destino foi excluído.
+- [x] Regras em `src/lib/` (`exclusoes.ts`, `cancelarPendentes` e `resumoDaSaida` em `cobrancas.ts`), com teste automático (`src/test/exclusoes.test.ts`).
+- [x] Testes (118) e build passando. Início e Financeiro do vanzeiro, Início e Pagamentos do passageiro iguais a antes, conferidos imagem por imagem. Detalhe do destino e Perfil do passageiro só ganharam os botões novos (as duas telas já rolavam).
+
+Conferido no app (exemplo "Excluir Jacarezinho → Londrina"): a confirmação diz "6 passageiros saem deste destino. 2 pedidos para entrar são recusados. 3 cobranças pendentes são canceladas. 3 cobranças que estão devendo continuam a receber. As cobranças pagas ficam no histórico. Não dá para desfazer."; o "A receber" cai de R$ 1.811,00 para R$ 1.331,00 (as 3 pendentes: R$ 150 + R$ 150 + R$ 180); o "Devendo" continua R$ 631,00; o sininho zera; a Juliana passa a ver a mensalidade de Londrina como "Cancelada" nos Pagamentos.
+
+O que mudou: detalhe do destino (botão e confirmação "Excluir destino"), Perfil do passageiro ("Sair deste destino" em cada destino), Início e Pagamentos do passageiro (passam a mostrar também as cobranças dos destinos que a pessoa deixou), mensagem do "Cobrar no WhatsApp" sem destino.
+
+Pendências do item 5:
+- Quem sai do último destino volta para "Entrar na van" e deixa de ver o painel, inclusive os Pagamentos. Se ainda estiver devendo, só o vanzeiro vê (e cobra pelo WhatsApp). Mostrar os Pagamentos a quem não tem mais van fica para decidir.
+- "Remover deste destino" (feito pelo vanzeiro) continua como antes: as cobranças ficam todas. É a decisão 2 da fonte da verdade, ainda sem resposta.
 
 ### Fonte da verdade (feita em 13/11/2026, entre o item 4 e o item 5)
 Pedido do dono do projeto: uma análise ponta a ponta do app, sem corrigir nada, escrita em `docs/fonte-da-verdade.md`.

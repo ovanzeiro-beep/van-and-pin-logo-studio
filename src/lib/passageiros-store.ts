@@ -9,6 +9,9 @@ let pedidos = pedidosExemplo;
 /** Accepted pedido → the passenger created from it, so the person who asked finds their van. */
 let aceitos: Record<string, string> = {};
 const SEM_ACEITOS: Record<string, string> = {};
+/** Memberships that ended (destino deleted or the person left), so the person still sees what they owe there. */
+let saidas: Passageiro[] = [];
+const SEM_SAIDAS: Passageiro[] = [];
 const ouvintes = new Set<() => void>();
 
 function avisar() {
@@ -22,6 +25,11 @@ function inscrever(o: () => void) {
 
 export const obterPassageiros = () => passageiros;
 export const obterPedidos = () => pedidos;
+export const obterSaidas = () => saidas;
+
+export function useSaidas() {
+  return useSyncExternalStore(inscrever, obterSaidas, () => SEM_SAIDAS);
+}
 
 export function useAceitos() {
   return useSyncExternalStore(inscrever, () => aceitos, () => SEM_ACEITOS);
@@ -86,6 +94,23 @@ export function removerPassageiro(id: string) {
   avisar();
 }
 
+/** A destino was deleted: its passengers and pedidos leave with it. */
+export function removerDoDestino(destinoId: string) {
+  saidas = [...saidas, ...passageiros.filter((p) => p.destinoId === destinoId)];
+  passageiros = passageiros.filter((p) => p.destinoId !== destinoId);
+  pedidos = pedidos.filter((p) => p.destinoId !== destinoId);
+  avisar();
+}
+
+/** "Sair deste destino": the person leaves only this membership. */
+export function sairDaMatricula(id: string) {
+  const p = passageiros.find((x) => x.id === id);
+  if (!p) return;
+  saidas = [...saidas, p];
+  passageiros = passageiros.filter((x) => x.id !== id);
+  avisar();
+}
+
 export function recusarPedido(id: string) {
   pedidos = pedidos.filter((p) => p.id !== id);
   avisar();
@@ -96,6 +121,7 @@ export function limparPassageiros() {
   passageiros = [];
   pedidos = [];
   aceitos = {};
+  saidas = [];
   avisar();
 }
 

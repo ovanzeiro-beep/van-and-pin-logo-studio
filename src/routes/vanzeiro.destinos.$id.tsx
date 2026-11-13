@@ -4,6 +4,7 @@ import { CodigoConvite, PassageirosDoDestino, PedidosParaEntrar } from "@/compon
 import { StatusBadge } from "@/components/app/InfoCard";
 import { CaminhoParadas } from "@/components/app/CaminhoParadas";
 import { DestinoNaoEncontrado } from "@/components/app/DestinoNaoEncontrado";
+import { ExcluirDestino } from "@/components/app/ExcluirDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
 import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece } from "@/lib/destinos";
@@ -81,6 +82,7 @@ function DetalheDestino() {
             {d.ativo ? "Pausar" : "Ativar"}
           </Button>
         </div>
+        <ExcluirDestino d={d} />
       </div>
     </>
   );

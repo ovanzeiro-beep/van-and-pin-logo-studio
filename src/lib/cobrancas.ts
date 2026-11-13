@@ -149,7 +149,7 @@ export function mensagemCobranca(c: Cobranca, destino: string, hoje: string) {
   const venceu = situacao(c, hoje) === "devendo";
   return (
     `Olá, ${nome}! Tudo bem? Passando para lembrar da ${c.referencia.charAt(0).toLowerCase()}${c.referencia.slice(1)} ` +
-    `da van (${destino}), no valor de ${formatarReais(valorFinal(c))}, ` +
+    `da van${destino ? ` (${destino})` : ""}, no valor de ${formatarReais(valorFinal(c))}, ` +
     `${venceu ? "que venceu" : "com vencimento"} em ${diaMes(c.vencimento)}. ` +
     `Se já pagou, pode desconsiderar. Obrigado!`
   );
@@ -277,6 +277,29 @@ export function aplicarFalta(lista: Cobranca[], p: Passageiro, data: string, hoj
   const [nova] = gerarCobrancas(p, desde, somarDias(data, 45), hoje, sem).filter((c) => c.vencimento > hoje && c.vencimento >= data);
   if (!nova || lista.some((c) => c.id === nova.id)) return lista;
   return [...lista, { ...nova, faltas: 1, valorFalta }];
+}
+
+// ---------- leaving a destino (excluir destino / sair deste destino) ----------
+
+/** What happens to the charges of these passengers: how many pendentes get cancelled and how many devendo stay. */
+export function resumoDaSaida(lista: Cobranca[], passageiroIds: string[], hoje: string) {
+  const delas = lista.filter((c) => passageiroIds.includes(c.passageiroId));
+  return {
+    pendentes: delas.filter((c) => situacao(c, hoje) === "pendente").length,
+    devendo: delas.filter((c) => situacao(c, hoje) === "devendo").length,
+  };
+}
+
+/**
+ * Decision 6: pendentes are cancelled with the reason; devendo keep being collected; paid and
+ * cancelled ones stay in the history untouched.
+ */
+export function cancelarPendentes(lista: Cobranca[], passageiroIds: string[], motivo: string, hoje: string): Cobranca[] {
+  return lista.map((c) =>
+    passageiroIds.includes(c.passageiroId) && situacao(c, hoje) === "pendente"
+      ? { ...c, cancelamento: { data: hoje, motivo } }
+      : c,
+  );
 }
 
 /** Message the passenger sends after paying, so the vanzeiro can check and mark it as paid. */

@@ -11,7 +11,7 @@ import {
   type FormaPagamento,
   type Passageiro,
 } from "@/data/exemplo";
-import { aplicarEmbarque, aplicarFalta, gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
+import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
 
 /** Sample history: charges the app created from each plan since the start of the history. */
 function cobrancasDeExemplo(): Cobranca[] {
@@ -73,6 +73,12 @@ export function cancelarCobranca(id: string, motivo: string, data = DATA_DE_HOJE
   cobrancas = cobrancas.map((c) =>
     c.id === id && !c.pagamento && !c.cancelamento ? { ...c, cancelamento: { data, motivo: motivo.trim() } } : c,
   );
+  avisar();
+}
+
+/** A destino was deleted or a passenger left it: their pendentes are cancelled with the reason. */
+export function cancelarPendentesDe(passageiroIds: string[], motivo: string, hoje = DATA_DE_HOJE) {
+  cobrancas = cancelarPendentes(cobrancas, passageiroIds, motivo, hoje);
   avisar();
 }
 

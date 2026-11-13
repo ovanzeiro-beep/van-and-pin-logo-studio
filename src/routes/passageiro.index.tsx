@@ -10,6 +10,7 @@ import { diaMes, situacao, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
+import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { responder } from "@/lib/respostas-store";
 import { cn } from "@/lib/utils";
@@ -34,9 +35,10 @@ export const Route = createFileRoute("/passageiro/")({
 const etapas = ["Saiu da garagem", "A caminho", "No seu ponto"];
 
 function InicioPassageiro() {
-  const { eu, destino, matriculas, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
+  const { eu, destino, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
   const vanzeiro = usePerfilVanzeiro();
-  const cobrancas = useCobrancasDasMatriculas(matriculas.map((p) => p.id));
+  const idsDasCobrancas = useIdsDasMinhasCobrancas();
+  const cobrancas = useCobrancasDasMatriculas(idsDasCobrancas);
   const prox = proximas[0];
   const hojeAberta = proximas.find((v) => v.data === DATA_DE_HOJE)?.aberta ?? false;
   const van = destino
@@ -51,7 +53,7 @@ function InicioPassageiro() {
       })
     : { situacao: "Aguardando o dia da viagem", detalhe: "Nenhuma viagem marcada", etapa: -1, alerta: false };
 
-  const devido = matriculas.reduce((s, p) => s + totalDevido(cobrancas, p.id), 0);
+  const devido = idsDasCobrancas.reduce((s, id) => s + totalDevido(cobrancas, id), 0);
   const [aberta] = cobrancas
     .filter((c) => !c.pagamento && !c.cancelamento)
     .sort((a, b) => a.vencimento.localeCompare(b.vencimento));

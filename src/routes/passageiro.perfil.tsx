@@ -5,6 +5,7 @@ import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
 import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
+import { SairDoDestino } from "@/components/app/passageiro/SairDoDestino";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { nomeDestino } from "@/lib/destinos";
@@ -53,6 +54,7 @@ function PerfilPassageiro() {
               return <div key={p.id} className="space-y-2">
                 {d && <LinhaPerfil icon={RouteIcon} rotulo="Destino" valor={nomeDestino(d)} />}
                 <LinhaPerfil icon={MapPin} rotulo="Onde embarca" valor={`${p.cidade} · ${p.endereco}`} />
+                {d && <SairDoDestino p={p} d={d} />}
               </div>;
             })}
           </dl>
