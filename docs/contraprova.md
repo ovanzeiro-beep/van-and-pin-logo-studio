@@ -202,6 +202,22 @@ O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras nova
 
 Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
 
+### Fonte da verdade (feita em 13/11/2026, entre o item 4 e o item 5)
+Pedido do dono do projeto: uma análise ponta a ponta do app, sem corrigir nada, escrita em `docs/fonte-da-verdade.md`.
+- [x] Lido todo o código (telas, regras, dados de exemplo, testes) e conferidos no app os pontos que vieram só da leitura.
+- [x] Seção 1 a 3: cada tela dos dois painéis — para que serve, o que mostra, cada botão, estado vazio.
+- [x] Seção 4: cada regra da seção 6 do `CLAUDE.md` conferida no código (certa, diferente ou faltando, com exemplo).
+- [x] Seção 5: como cada número é calculado e onde aparece, com as 32 cobranças de exemplo e os números que não batem.
+- [x] Seção 6: as palavras da seção 5 e os lugares com sentido trocado.
+- [x] Seção 7: 15 decisões pendentes numeradas (as 5 da revisão + 10 novas, incluindo as cobranças ao excluir destino ou sair dele).
+- [x] Seção 8: o que o banco vai precisar guardar e quem vê o quê (só a lista).
+- [x] Nenhum código do app mudou. Testes e build passando.
+
+Problemas novos encontrados nesta análise (para corrigir nos itens certos, não agora):
+- Passageiro de conta nova (que entrou por pedido) que pede um segundo destino perde o painel: cai em "Entrar na van / Aguardando", sem a barra de baixo. (Item 5 ou 9.)
+- A recusa de um pedido de "Entrar em outro destino" não avisa a pessoa. (Item 7 ou 9.)
+- Os Termos de Uso falam de localização da van (GPS) e de apagar a conta, que ainda não existem. (Decisão 15.)
+
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
 **Situação:** a fazer.
 - [ ] 1. Toda tela lê e grava dados só por funções em `src/lib/`.
@@ -225,4 +241,4 @@ Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola
 - [ ] Contato do responsável para a Política de Privacidade (nome, e-mail, telefone). Hoje está "(a definir)".
 - [ ] Dados reais do vanzeiro do piloto (rotas, horários, van, Pix).
 - [ ] Revisão dos Termos e da Política por um advogado antes de lançar ao público.
-- [ ] Respostas às dúvidas da Etapa A (acima).
+- [ ] Respostas às 15 decisões pendentes da seção 7 de `docs/fonte-da-verdade.md` (inclui as dúvidas da Etapa A).
