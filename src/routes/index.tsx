@@ -6,6 +6,8 @@ import { MobileScreen } from "@/components/app/MobileScreen";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "O Vanzeiro — Sua van organizada" },
       { name: "description", content: "Passageiros, rotas e cobranças da van em um só lugar." },
       { property: "og:title", content: "O Vanzeiro — Sua van organizada" },

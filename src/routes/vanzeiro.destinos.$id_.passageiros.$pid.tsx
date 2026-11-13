@@ -20,14 +20,16 @@ import { DATA_DE_HOJE, formatarReais, type PlanoPagamento } from "@/data/exemplo
 import { ordenarRecentes, situacao, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
-import { useDestino } from "@/lib/destinos-store";
-import { PLANO_ROTULO, formatarTelefone, linkWhatsApp, planoTemVencimento } from "@/lib/passageiros";
+import { useDestino, useDestinos } from "@/lib/destinos-store";
+import { matriculasDaPessoa, PLANO_ROTULO, formatarTelefone, linkWhatsApp, planoTemVencimento } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
-import { removerPassageiro, usePassageiro } from "@/lib/passageiros-store";
+import { removerPassageiro, usePassageiro, usePassageiros } from "@/lib/passageiros-store";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Passageiro — O Vanzeiro" },
       { name: "description", content: "Contato, local de embarque e plano de pagamento do passageiro." },
       { property: "og:title", content: "Passageiro — O Vanzeiro" },
@@ -42,6 +44,8 @@ function DetalhePassageiro() {
   const navigate = useNavigate();
   const d = useDestino(id);
   const p = usePassageiro(pid);
+  const passageiros = usePassageiros();
+  const destinos = useDestinos();
   if (!d) return <DestinoNaoEncontrado />;
   if (!p || p.destinoId !== d.id) return <PassageiroNaoEncontrado destinoId={d.id} />;
 
@@ -92,6 +96,11 @@ function DetalhePassageiro() {
               />
             )}
           </dl>
+        </section>
+
+        <section className="rounded-3xl bg-card p-4 shadow-card">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Destinos deste passageiro</p>
+          {matriculasDaPessoa(passageiros, p).map((m) => { const d = destinos.find((d) => d.id === m.destinoId); return d && <Link key={m.id} to="/vanzeiro/destinos/$id/passageiros/$pid" params={{ id: d.id, pid: m.id }} className="mt-2 block text-sm font-semibold text-primary">{nomeDestino(d)} · {PLANO_ROTULO[m.plano]} · {formatarReais(m.valor)}</Link>; })}
         </section>
 
         <PagamentosDoPassageiro passageiroId={p.id} plano={p.plano} />

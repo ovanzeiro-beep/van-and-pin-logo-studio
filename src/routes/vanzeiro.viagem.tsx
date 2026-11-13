@@ -18,6 +18,8 @@ import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/l
 export const Route = createFileRoute("/vanzeiro/viagem")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Viagem — O Vanzeiro" },
       { name: "description", content: "Busque os passageiros na ordem, faça paradas com conferência e registre a volta." },
       { property: "og:title", content: "Viagem — O Vanzeiro" },

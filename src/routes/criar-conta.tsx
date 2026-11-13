@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   cadastroOk,
+  podeContinuarComGoogle,
   guardarRascunhoDoCadastro,
   limparRascunhoDoCadastro,
   rascunhoDoCadastro,
@@ -19,6 +20,8 @@ import { criarContaNova } from "@/lib/sessao-passageiro";
 export const Route = createFileRoute("/criar-conta")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Criar conta — O Vanzeiro" },
       { name: "description", content: "Crie sua conta grátis no O Vanzeiro." },
       { property: "og:title", content: "Criar conta — O Vanzeiro" },
@@ -137,7 +140,9 @@ function CriarConta() {
       <OuDivisor />
       <GoogleButton
         label="Continuar com Google"
+        disabled={!podeContinuarComGoogle(dados.aceitouTermos)}
         onClick={() => {
+          if (!podeContinuarComGoogle(dados.aceitouTermos)) return;
           criarContaNova("");
           avancar();
         }}

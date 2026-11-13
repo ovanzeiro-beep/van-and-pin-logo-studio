@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { DATA_DE_HOJE, vanzeiroExemplo, type Destino } from "@/data/exemplo";
 import { registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
+import { obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, type ViagemDoDia } from "@/lib/viagem";
 
@@ -37,6 +38,11 @@ export function escolherViagem(destinoId: string) {
 
 export function comecarViagem(destino: Destino, ordem: string[]) {
   if (emAndamento(estado) || estado.viagens[destino.id]) return;
+  fecharRespostas(destino.id, DATA_DE_HOJE);
+  const respostas = obterRespostasParaTeste(DATA_DE_HOJE);
+  for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
+    if (respostas[p.id] === "nao-vai") registrarFalta(p, DATA_DE_HOJE, true);
+  }
   mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: iniciarViagem(destino, ordem, DATA_DE_HOJE) } });
 }
 
@@ -55,15 +61,12 @@ export function marcarEmbarcou(id: string) {
   const antes = emAndamento(estado);
   atualizarViagem((v) => embarcou(v, id));
   const p = passageiro(id);
-  if (p && antes && emAndamento(estado) !== antes) registrarEmbarque(p, antes.data);
+  if (p && antes && emAndamento(estado) !== antes) registrarEmbarque(p, antes.data, `${antes.destinoId}_${antes.data}`);
 }
 
 /** "Não estava no ponto": a falta, which the Financeiro counts. */
 export function marcarNaoEstava(id: string) {
-  const antes = emAndamento(estado);
   atualizarViagem((v) => naoEstava(v, id));
-  const p = passageiro(id);
-  if (p && antes && emAndamento(estado) !== antes) registrarFalta(p, antes.data);
 }
 
 /** "Estou na van" tapped on the passenger's phone during a check. */

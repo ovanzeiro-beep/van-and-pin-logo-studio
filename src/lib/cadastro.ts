@@ -1,6 +1,7 @@
 // Rules of the "Criar conta" and "Esqueci minha senha" forms. Pure, so they can be tested.
 
 export const SENHA_MINIMA = 8;
+export const podeContinuarComGoogle = (aceitouTermos: boolean) => aceitouTermos;
 
 export type DadosCadastro = {
   nome: string;

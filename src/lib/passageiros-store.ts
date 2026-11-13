@@ -1,5 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
+import { identidadePassageiro } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
@@ -59,6 +60,8 @@ export function useAvisosVanzeiro() {
 
 /** Adds or replaces a passenger. When it came from a pedido, the pedido leaves the waiting list. */
 export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
+  const existente = passageiros.find((x) => x.destinoId === p.destinoId && identidadePassageiro(x) === identidadePassageiro(p));
+  if (existente && existente.id !== p.id) return;
   passageiros = passageiros.some((x) => x.id === p.id)
     ? passageiros.map((x) => (x.id === p.id ? p : x))
     : [...passageiros, p];

@@ -92,19 +92,24 @@ export function garantirProximaCobranca(p: Passageiro, hoje = DATA_DE_HOJE) {
 const registrados = new Set<string>();
 
 /** "Embarcou" on a trip: counts as a trip made (Por viagem and Diário get that day's charge). */
-export function registrarEmbarque(p: Passageiro, data = DATA_DE_HOJE) {
-  const chave = `${p.id}_${data}`;
+export function registrarEmbarque(p: Passageiro, data = DATA_DE_HOJE, viagemId?: string) {
+  const chave = `embarque_${p.id}_${p.plano === "viagem" ? (viagemId ?? data) : data}`;
   if (registrados.has(chave)) return;
   registrados.add(chave);
-  cobrancas = aplicarEmbarque(cobrancas, p, data, DATA_DE_HOJE);
+  cobrancas = aplicarEmbarque(cobrancas, p, data, DATA_DE_HOJE, viagemId);
   avisar();
 }
 
-/** "Não estava no ponto": counts as a falta (discounted on the next charge when the plan says so). */
-export function registrarFalta(p: Passageiro, data = DATA_DE_HOJE) {
-  const chave = `${p.id}_${data}`;
+/** Final on-time "Não vou": discounts only the next open charge when the plan allows it. */
+export function registrarFalta(p: Passageiro, data = DATA_DE_HOJE, avisouNoPrazo = false) {
+  if (!avisouNoPrazo) return;
+  const chave = `falta_${p.id}_${data}`;
   if (registrados.has(chave)) return;
   registrados.add(chave);
-  cobrancas = aplicarFalta(cobrancas, p, data, DATA_DE_HOJE);
+  cobrancas = aplicarFalta(cobrancas, p, data, DATA_DE_HOJE, true);
   avisar();
+}
+
+export function useCobrancasDasMatriculas(ids: string[]) {
+  return useCobrancas().filter((c) => ids.includes(c.passageiroId));
 }

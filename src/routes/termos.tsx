@@ -4,6 +4,8 @@ import { LeituraLayout, Secao } from "@/components/app/LeituraLayout";
 export const Route = createFileRoute("/termos")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Termos de Uso — O Vanzeiro" },
       { name: "description", content: "Como o O Vanzeiro funciona para o vanzeiro e para o passageiro." },
       { property: "og:title", content: "Termos de Uso — O Vanzeiro" },

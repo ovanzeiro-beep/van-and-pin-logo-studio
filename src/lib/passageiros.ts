@@ -9,8 +9,8 @@ import {
 import { caminhoCompleto } from "@/lib/destinos";
 
 export const PLANOS: { id: PlanoPagamento; rotulo: string; texto: string; rotuloValor: string }[] = [
-  { id: "viagem", rotulo: "Por viagem", texto: "Paga cada viagem", rotuloValor: "Valor por viagem" },
-  { id: "diario", rotulo: "Diário", texto: "Paga por dia", rotuloValor: "Valor por dia" },
+  { id: "viagem", rotulo: "Por viagem", texto: "Ida + volta: 1 cobrança, mesmo noutro dia.", rotuloValor: "Valor por viagem" },
+  { id: "diario", rotulo: "Diário", texto: "1 cobrança por dia que embarcou.", rotuloValor: "Valor por dia" },
   { id: "quinzenal", rotulo: "Quinzenal", texto: "A cada 15 dias", rotuloValor: "Valor da quinzena" },
   { id: "mensal", rotulo: "Mensal", texto: "Uma vez por mês", rotuloValor: "Valor do mês" },
 ];
@@ -84,6 +84,7 @@ export function contarPassageiros(lista: Pick<Passageiro, "destinoId">[], destin
 
 /** What the vanzeiro fills in while adding or editing a passenger. */
 export type RascunhoPassageiro = {
+  pessoaId?: string | undefined;
   nome: string;
   telefone: string;
   cidade: string;
@@ -97,8 +98,9 @@ export type RascunhoPassageiro = {
 };
 
 /** Empty form, or prefilled with the name and phone of an accepted pedido. */
-export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "telefone">): RascunhoPassageiro {
+export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "telefone" | "pessoaId">): RascunhoPassageiro {
   return {
+    pessoaId: pedido?.pessoaId,
     nome: pedido?.nome ?? "",
     telefone: pedido ? formatarTelefone(pedido.telefone) : "",
     cidade: "",
@@ -113,6 +115,7 @@ export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "t
 
 export function rascunhoDePassageiro(p: Passageiro): RascunhoPassageiro {
   return {
+    pessoaId: p.pessoaId ?? p.id,
     nome: p.nome,
     telefone: formatarTelefone(p.telefone),
     cidade: p.cidade,
@@ -142,6 +145,7 @@ export function passageiroDeRascunho(r: RascunhoPassageiro, destinoId: string, a
   return {
     id: anterior?.id ?? `passageiro-${Date.now()}`,
     destinoId,
+    pessoaId: anterior?.pessoaId ?? anterior?.id ?? r.pessoaId,
     nome: r.nome.trim(),
     telefone: somenteDigitos(r.telefone),
     cidade: r.cidade,
@@ -164,4 +168,13 @@ export function presencaDaViagem(
   const vao = doDestino.filter((p) => respostas[p.id] === "vai").length;
   const naoVao = doDestino.filter((p) => respostas[p.id] === "nao-vai").length;
   return { total: doDestino.length, vao, naoVao, semResposta: doDestino.length - vao - naoVao };
+}
+
+export const identidadePassageiro = (p: Passageiro) => p.pessoaId ?? p.id;
+export function matriculasDaPessoa(lista: Passageiro[], p: Passageiro) {
+  return lista.filter((x) => identidadePassageiro(x) === identidadePassageiro(p));
+}
+export function pessoasParaDestino(lista: Passageiro[], destinoId: string) {
+  const ja = new Set(lista.filter((p) => p.destinoId === destinoId).map(identidadePassageiro));
+  return lista.filter((p, i) => !ja.has(identidadePassageiro(p)) && lista.findIndex((x) => identidadePassageiro(x) === identidadePassageiro(p)) === i);
 }

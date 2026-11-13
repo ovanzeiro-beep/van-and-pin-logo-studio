@@ -14,6 +14,8 @@ function inscrever(o: () => void) {
   return () => ouvintes.delete(o);
 }
 
+export const obterDestinos = () => destinos;
+
 export function useDestinos() {
   return useSyncExternalStore(inscrever, () => destinos, () => destinosExemplo);
 }

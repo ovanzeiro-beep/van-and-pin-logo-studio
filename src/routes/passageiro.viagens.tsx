@@ -13,6 +13,8 @@ import { historicoDoPassageiro } from "@/lib/viagem";
 export const Route = createFileRoute("/passageiro/viagens")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Minhas viagens — O Vanzeiro" },
       { name: "description", content: "Confirme as viagens dos próximos 7 dias e veja o seu histórico." },
       { property: "og:title", content: "Minhas viagens — O Vanzeiro" },
@@ -23,14 +25,15 @@ export const Route = createFileRoute("/passageiro/viagens")({
 });
 
 function MinhasViagens() {
-  const { eu, destino, proximas, proximaDistante, viagemDeHoje } = useMinhasViagens();
-  const historico = destino
-    ? historicoDoPassageiro(eu, destino, DATA_DE_HOJE, { embarques: embarquesExemplo, faltas: faltasExemplo }, viagemDeHoje)
-    : [];
+  const { matriculas, destinos, proximas, proximaDistante, viagens } = useMinhasViagens();
+  const historico = matriculas.flatMap((eu) => {
+    const destino = destinos.find((d) => d.id === eu.destinoId);
+    return destino ? historicoDoPassageiro(eu, destino, DATA_DE_HOJE, { embarques: embarquesExemplo, faltas: faltasExemplo }, viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
+  }).sort((a, b) => b.data.localeCompare(a.data));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PassageiroHeader compacto titulo="Viagens" subtitulo={destino ? nomeDestino(destino) : "Suas viagens."} />
+      <PassageiroHeader compacto titulo="Viagens" subtitulo="Suas viagens." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-4">
         <section>
           <h2 className="px-1 pt-5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Próximos 7 dias</h2>
@@ -41,7 +44,7 @@ function MinhasViagens() {
                 {proximaDistante && ` A próxima é ${rotuloDoDia(proximaDistante).toLowerCase()}.`}
               </p>
             ) : (
-              proximas.map((v) => <ProximaViagem key={v.data} v={v} saida={destino?.saida ?? ""} passageiroId={eu.id} />)
+              proximas.map((v) => <ProximaViagem key={`${v.eu.id}_${v.data}`} v={v} saida={v.destino.saida} passageiroId={v.eu.id} />)
             )}
           </div>
         </section>
@@ -53,8 +56,8 @@ function MinhasViagens() {
               <p className="rounded-2xl bg-card px-4 py-3 text-sm text-muted-foreground shadow-card">Nenhuma viagem ainda.</p>
             ) : (
               historico.map((h) => (
-                <div key={h.data} className="flex items-center justify-between gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">
-                  <p className="font-semibold text-foreground">{rotuloDoDia(h.data)}</p>
+                <div key={`${h.destino.id}_${h.data}`} className="flex items-center justify-between gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">
+                  <div><p className="font-semibold text-foreground">{rotuloDoDia(h.data)}</p><p className="text-xs text-muted-foreground">{nomeDestino(h.destino)}</p></div>
                   {h.embarcou ? <StatusBadge status="pago">Embarcou</StatusBadge> : <StatusBadge status="deve">Faltou</StatusBadge>}
                 </div>
               ))
@@ -72,6 +75,7 @@ function ProximaViagem({ v, saida, passageiroId }: { v: MinhaProximaViagem; said
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="font-display text-lg font-bold leading-tight text-foreground">{rotuloDoDia(v.data)}</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{nomeDestino(v.destino)}</p>
           <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" /> Saída {saida}
           </p>

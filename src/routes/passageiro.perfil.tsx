@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, MessageCircle, Phone, Route as RouteIcon, User } from "lucide-react";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
 import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
@@ -6,14 +6,16 @@ import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { nomeDestino } from "@/lib/destinos";
-import { useDestino } from "@/lib/destinos-store";
+import { useDestinos } from "@/lib/destinos-store";
 import { formatarTelefone, linkWhatsApp } from "@/lib/passageiros";
-import { useEu } from "@/lib/sessao-passageiro";
+import { useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { textoDaVan, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/passageiro/perfil")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Meu perfil — O Vanzeiro" },
       { name: "description", content: "Seus dados, onde você embarca e o contato do seu vanzeiro." },
       { property: "og:title", content: "Meu perfil — O Vanzeiro" },
@@ -25,7 +27,8 @@ export const Route = createFileRoute("/passageiro/perfil")({
 
 function PerfilPassageiro() {
   const eu = useEu();
-  const destino = useDestino(eu.destinoId);
+  const matriculas = useMinhasMatriculas();
+  const destinos = useDestinos();
   const vanzeiro = usePerfilVanzeiro();
 
   return (
@@ -37,8 +40,13 @@ function PerfilPassageiro() {
           <dl className="mt-2 space-y-2">
             <LinhaPerfil icon={User} rotulo="Nome" valor={eu.nome} />
             <LinhaPerfil icon={Phone} rotulo="Telefone" valor={formatarTelefone(eu.telefone)} />
-            <LinhaPerfil icon={MapPin} rotulo="Onde embarca" valor={`${eu.cidade} · ${eu.endereco}`} />
-            {destino && <LinhaPerfil icon={RouteIcon} rotulo="Destino" valor={nomeDestino(destino)} />}
+            {matriculas.map((p) => {
+              const d = destinos.find((d) => d.id === p.destinoId);
+              return <div key={p.id} className="space-y-2">
+                {d && <LinhaPerfil icon={RouteIcon} rotulo="Destino" valor={nomeDestino(d)} />}
+                <LinhaPerfil icon={MapPin} rotulo="Onde embarca" valor={`${p.cidade} · ${p.endereco}`} />
+              </div>;
+            })}
           </dl>
         </section>
 
@@ -60,6 +68,7 @@ function PerfilPassageiro() {
           </Button>
         </section>
 
+        <Button asChild variant="outline" size="lg" className="w-full"><Link to="/passageiro/entrar-destino">Entrar em outro destino</Link></Button>
         <OpcoesDaConta trocarPara="vanzeiro" />
       </div>
     </>

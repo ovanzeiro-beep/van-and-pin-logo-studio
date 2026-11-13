@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/entrar")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Entrar — O Vanzeiro" },
       { name: "description", content: "Entre na sua conta do O Vanzeiro." },
       { property: "og:title", content: "Entrar — O Vanzeiro" },

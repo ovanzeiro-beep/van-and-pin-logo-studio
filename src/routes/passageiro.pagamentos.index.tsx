@@ -4,13 +4,17 @@ import { CobrancaItem } from "@/components/app/CobrancaItem";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { formatarReais } from "@/data/exemplo";
 import { ordenarRecentes, totalDevido } from "@/lib/cobrancas";
-import { useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
-import { useEu } from "@/lib/sessao-passageiro";
+import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
+import { useMinhasMatriculas } from "@/lib/sessao-passageiro";
+import { useDestinos } from "@/lib/destinos-store";
+import { nomeDestino } from "@/lib/destinos";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/passageiro/pagamentos/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Meus pagamentos — O Vanzeiro" },
       { name: "description", content: "Quanto você deve e todas as suas cobranças da van." },
       { property: "og:title", content: "Meus pagamentos — O Vanzeiro" },
@@ -21,10 +25,12 @@ export const Route = createFileRoute("/passageiro/pagamentos/")({
 });
 
 function MeusPagamentos() {
-  const eu = useEu();
-  const cobrancas = useCobrancasDoPassageiro(eu.id);
-  const devido = totalDevido(cobrancas, eu.id);
+  const matriculas = useMinhasMatriculas();
+  const destinos = useDestinos();
+  const cobrancas = useCobrancasDasMatriculas(matriculas.map((p) => p.id));
+  const devido = matriculas.reduce((s, p) => s + totalDevido(cobrancas, p.id), 0);
   const lista = ordenarRecentes(cobrancas);
+  const nomes = Object.fromEntries(destinos.map((d) => [d.id, nomeDestino(d)]));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -49,7 +55,7 @@ function MeusPagamentos() {
         <ul className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 pb-4 pt-3">
           {lista.map((c) => (
             <li key={c.id}>
-              <CobrancaItem c={c} para="passageiro" />
+              <CobrancaItem c={c} para="passageiro" destino={nomes[c.destinoId]} />
             </li>
           ))}
         </ul>

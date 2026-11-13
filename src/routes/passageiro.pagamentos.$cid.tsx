@@ -21,13 +21,15 @@ import { useCobranca } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { linkWhatsApp } from "@/lib/passageiros";
-import { useEu } from "@/lib/sessao-passageiro";
+import { useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { cn } from "@/lib/utils";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/passageiro/pagamentos/$cid")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Minha cobrança — O Vanzeiro" },
       { name: "description", content: "Valor, vencimento e como pagar uma cobrança da van." },
       { property: "og:title", content: "Minha cobrança — O Vanzeiro" },
@@ -39,10 +41,10 @@ export const Route = createFileRoute("/passageiro/pagamentos/$cid")({
 
 function MinhaCobranca() {
   const { cid } = Route.useParams();
-  const eu = useEu();
+  const matriculas = useMinhasMatriculas();
   const encontrada = useCobranca(cid);
   // A passenger only sees their own charges.
-  const c = encontrada?.passageiroId === eu.id ? encontrada : undefined;
+  const c = encontrada && matriculas.some((p) => p.id === encontrada.passageiroId) ? encontrada : undefined;
   const destino = useDestino(c?.destinoId ?? "");
   const vanzeiro = usePerfilVanzeiro();
   const router = useRouter();

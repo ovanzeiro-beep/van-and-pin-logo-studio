@@ -7,6 +7,8 @@ import { MobileScreen } from "@/components/app/MobileScreen";
 export const Route = createFileRoute("/como-vai-usar")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Como você vai usar o app? — O Vanzeiro" },
       { name: "description", content: "Escolha se você é vanzeiro ou passageiro." },
       { property: "og:title", content: "Como você vai usar o app? — O Vanzeiro" },

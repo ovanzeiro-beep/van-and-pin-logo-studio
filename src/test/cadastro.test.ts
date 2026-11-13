@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cadastroOk, erroDoEmail, validarCadastro, type DadosCadastro } from "@/lib/cadastro";
+import { cadastroOk, erroDoEmail, validarCadastro, podeContinuarComGoogle, type DadosCadastro } from "@/lib/cadastro";
 
 const certo: DadosCadastro = {
   nome: "Bruna",
@@ -10,6 +10,10 @@ const certo: DadosCadastro = {
 };
 
 describe("Criar conta", () => {
+  it("Google requires acceptance of the terms", () => {
+    expect(podeContinuarComGoogle(false)).toBe(false);
+    expect(podeContinuarComGoogle(true)).toBe(true);
+  });
   it("accepts a complete form", () => {
     expect(cadastroOk(validarCadastro(certo))).toBe(true);
   });

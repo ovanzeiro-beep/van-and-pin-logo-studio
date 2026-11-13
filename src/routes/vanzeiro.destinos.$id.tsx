@@ -12,6 +12,8 @@ import { alternarAtivo, useDestino } from "@/lib/destinos-store";
 export const Route = createFileRoute("/vanzeiro/destinos/$id")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Detalhe do destino — O Vanzeiro" },
       { name: "description", content: "Dias, horários, caminho, código de convite e passageiros de um destino." },
       { property: "og:title", content: "Detalhe do destino — O Vanzeiro" },

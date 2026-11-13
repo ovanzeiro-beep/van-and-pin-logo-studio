@@ -32,6 +32,8 @@ export const Route = createFileRoute("/vanzeiro/financeiro/")({
   },
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Financeiro — O Vanzeiro" },
       { name: "description", content: "Resumo do mês e todas as cobranças dos seus passageiros." },
       { property: "og:title", content: "Financeiro — O Vanzeiro" },

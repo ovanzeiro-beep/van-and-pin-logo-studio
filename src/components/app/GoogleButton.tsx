@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 
 /** Google sign-in button following Google's light theme guidelines. */
-export function GoogleButton({ label = "Continuar com Google", onClick }: { label?: string; onClick?: () => void }) {
+export function GoogleButton({ label = "Continuar com Google", onClick, disabled }: { label?: string; onClick?: () => void; disabled?: boolean }) {
   return (
     <Button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className="h-12 w-full gap-2.5 rounded-xl border border-google-border bg-google px-3 font-google text-sm font-medium leading-5 text-google-foreground shadow-none hover:bg-google-hover"
     >
       <svg aria-hidden="true" viewBox="0 0 24 24" className="!h-[18px] !w-[18px]">

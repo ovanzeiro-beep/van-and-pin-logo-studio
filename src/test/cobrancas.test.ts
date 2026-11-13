@@ -63,15 +63,15 @@ describe("Cobranças criadas pelo plano", () => {
 describe("Desconto de faltas", () => {
   it("shows the math of a mensal with 2 faltas", () => {
     const faltas = [
-      { passageiroId: "p-x", data: "2026-10-17" },
-      { passageiroId: "p-x", data: "2026-10-24" },
+      { passageiroId: "p-x", avisouNoPrazo: true, data: "2026-10-17" },
+      { passageiroId: "p-x", avisouNoPrazo: true, data: "2026-10-24" },
     ];
     const [, nov] = gerarCobrancas({ ...base, descontaFaltas: true, valorFalta: 15 }, "2026-10-01", "2026-11-30", hoje, { embarques: [], faltas });
     expect(valorFinal(nov!)).toBe(250);
     expect(contaDoDesconto(nov!)?.replace(/\s/g, " ")).toBe("Mensalidade R$ 280,00 − 2 faltas × R$ 15,00 = R$ 250,00");
   });
   it("does not discount faltas when the plan does not ask for it", () => {
-    const faltas = [{ passageiroId: "p-x", data: "2026-10-17" }];
+    const faltas = [{ passageiroId: "p-x", avisouNoPrazo: true, data: "2026-10-17" }];
     const [, nov] = gerarCobrancas(base, "2026-10-01", "2026-11-30", hoje, { embarques: [], faltas });
     expect(valorFinal(nov!)).toBe(280);
   });
@@ -182,18 +182,18 @@ describe("Viagem → Financeiro", () => {
     expect(aplicarEmbarque([], p({ plano: "mensal" }), "2026-11-13", "2026-11-13")).toEqual([]);
   });
 
-  it("'Não estava no ponto' adds a falta to the next open charge when the plan discounts", () => {
+  it("On-time 'Não vou' adds a falta to the next open charge when the plan discounts", () => {
     const quinzenal = p({ plano: "quinzenal", valor: 140, vencimento: 5, descontaFaltas: true, valorFalta: 10 });
     const aberta = cobranca({ id: "q", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-19", valorBase: 140 });
     const paga = cobranca({ id: "old", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-04", valorBase: 140, pagamento: { data: "2026-11-04", forma: "pix" } });
-    const [antiga, nova] = aplicarFalta([paga, aberta], quinzenal, "2026-11-13", "2026-11-13");
+    const [antiga, nova] = aplicarFalta([paga, aberta], quinzenal, "2026-11-13", "2026-11-13", true);
     expect(antiga).toBe(paga);
     expect(valorFinal(nova!)).toBe(130);
   });
 
   it("without an open charge, the falta goes into the next one created", () => {
     const mensal = p({ plano: "mensal", valor: 280, vencimento: 10, descontaFaltas: true, valorFalta: 15 });
-    const [c] = aplicarFalta([], mensal, "2026-11-13", "2026-11-13");
+    const [c] = aplicarFalta([], mensal, "2026-11-13", "2026-11-13", true);
     expect(c?.vencimento).toBe("2026-12-10");
     expect(c?.faltas).toBe(1);
     expect(valorFinal(c!)).toBe(265);

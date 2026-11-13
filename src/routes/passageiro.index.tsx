@@ -7,7 +7,7 @@ import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { DATA_DE_HOJE, formatarReais, type RespostaViagem } from "@/data/exemplo";
 import { diaMes, situacao, totalDevido } from "@/lib/cobrancas";
-import { useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
+import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { linkWhatsApp } from "@/lib/passageiros";
@@ -20,6 +20,8 @@ import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 export const Route = createFileRoute("/passageiro/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Início do passageiro — O Vanzeiro" },
       { name: "description", content: "Sua próxima viagem, a situação da van e o valor em aberto." },
       { property: "og:title", content: "Início do passageiro — O Vanzeiro" },
@@ -32,9 +34,9 @@ export const Route = createFileRoute("/passageiro/")({
 const etapas = ["Saiu da garagem", "A caminho", "No seu ponto"];
 
 function InicioPassageiro() {
-  const { eu, destino, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
+  const { eu, destino, matriculas, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
   const vanzeiro = usePerfilVanzeiro();
-  const cobrancas = useCobrancasDoPassageiro(eu.id);
+  const cobrancas = useCobrancasDasMatriculas(matriculas.map((p) => p.id));
   const prox = proximas[0];
   const hojeAberta = proximas.find((v) => v.data === DATA_DE_HOJE)?.aberta ?? false;
   const van = destino
@@ -49,7 +51,7 @@ function InicioPassageiro() {
       })
     : { situacao: "Aguardando o dia da viagem", detalhe: "Nenhuma viagem marcada", etapa: -1, alerta: false };
 
-  const devido = totalDevido(cobrancas, eu.id);
+  const devido = matriculas.reduce((s, p) => s + totalDevido(cobrancas, p.id), 0);
   const [aberta] = cobrancas
     .filter((c) => !c.pagamento && !c.cancelamento)
     .sort((a, b) => a.vencimento.localeCompare(b.vencimento));
@@ -59,7 +61,7 @@ function InicioPassageiro() {
   return (
     <>
       <PassageiroHeader compacto titulo="Início" subtitulo="Tudo sobre a sua próxima viagem." />
-      <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-3">
+      <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-2">
         {conferencia === "perguntar" ? (
           <AvisoConferencia onConfirmar={() => confirmarNaVan(eu.id)} />
         ) : conferencia === "confirmado" ? (
@@ -72,10 +74,10 @@ function InicioPassageiro() {
           compacto
           icon={CalendarClock}
           label="Próxima viagem"
-          value={destino ? nomeDestino(destino) : "Sem viagem"}
+          value={prox ? nomeDestino(prox.destino) : destino ? nomeDestino(destino) : "Sem viagem"}
           detail={
             prox && destino
-              ? `${rotuloDoDia(prox.data)} · saída ${destino.saida}`
+              ? `${rotuloDoDia(prox.data)} · saída ${prox.destino.saida}`
               : proximaDistante
                 ? rotuloDoDia(proximaDistante)
                 : "Nenhuma viagem marcada"
@@ -87,14 +89,14 @@ function InicioPassageiro() {
             <div className="mt-2 grid grid-cols-2 gap-3">
               <Button
                 variant={prox.resposta === "vai" ? "success" : "cta"}
-                onClick={() => responder(eu.id, prox.data, "vai")}
+                onClick={() => responder(prox.eu.id, prox.data, "vai")}
                 aria-pressed={prox.resposta === "vai"}
               >
                 <Check className="!h-5 !w-5" /> Vou
               </Button>
               <Button
                 variant={prox.resposta === "nao-vai" ? "destructive" : "outline"}
-                onClick={() => responder(eu.id, prox.data, "nao-vai")}
+                onClick={() => responder(prox.eu.id, prox.data, "nao-vai")}
                 aria-pressed={prox.resposta === "nao-vai"}
               >
                 <X className="!h-5 !w-5" /> Não vou

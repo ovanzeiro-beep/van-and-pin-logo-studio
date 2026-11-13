@@ -8,25 +8,30 @@ import { Input } from "@/components/ui/input";
 import type { Destino } from "@/data/exemplo";
 import { nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { useDestino, useDestinos } from "@/lib/destinos-store";
-import { formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
+import { matriculasDaPessoa, formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
 import { pedirParaEntrar, tentarOutroCodigo, useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
 import { acharPorCodigo } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
 
 /** Shown while the passenger is not in any van: invite code → "Pedir para entrar" → waiting for the vanzeiro. */
-export function EntrarNaVan() {
+export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
   const s = useMinhaSituacao();
+  const sessao = useSessaoPassageiro();
+  const destinos = useDestinos();
+  const aceitos = useAceitos();
+  const destinoPedido = !aceitos[sessao.pedidoId ?? ""] && destinos.find((d) => d.id === sPedido(sessao.pedidoId));
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PassageiroHeader compacto titulo="Entrar na van" subtitulo="Use o código que o vanzeiro te enviou." />
+      <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo="Use o código que o vanzeiro te enviou." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
-        {s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo />}
+        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo />}
         <Link
-          to="/entrar"
+          to={outro ? "/passageiro/perfil" : "/entrar"}
           className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground"
         >
-          <LogOut className="h-4 w-4" /> Sair
+          <LogOut className="h-4 w-4" /> {outro ? "Voltar ao perfil" : "Sair"}
         </Link>
       </div>
     </div>
@@ -104,10 +109,14 @@ function Confirmar({ destino, voltar }: { destino: Destino; voltar: () => void }
   const sessao = useSessaoPassageiro();
   const [nome, setNome] = useState(sessao.nome);
   const [telefone, setTelefone] = useState(sessao.telefone ? formatarTelefone(sessao.telefone) : "");
-  const pode = nome.trim() !== "" && telefoneValido(telefone);
+  const situacao = useMinhaSituacao();
+  const passageiros = usePassageiros();
+  const ja = situacao.tipo === "membro" && matriculasDaPessoa(passageiros, situacao.passageiro).some((p) => p.destinoId === destino.id);
+  const pode = !ja && nome.trim() !== "" && telefoneValido(telefone);
   return (
     <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card">
       <CardDaVan destino={destino} />
+      {ja && <p className="text-sm font-semibold text-muted-foreground">Você já está neste destino.</p>}
       <CampoComIcone id="meu-nome" label="Seu nome" icon={User} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome" />
       <CampoComIcone
         id="meu-whatsapp"
@@ -156,3 +165,5 @@ function Recusado() {
     </section>
   );
 }
+
+function sPedido(id: string | null) { return obterPedidos().find((p) => p.id === id)?.destinoId; }

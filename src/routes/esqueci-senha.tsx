@@ -9,6 +9,8 @@ import { erroDoEmail } from "@/lib/cadastro";
 export const Route = createFileRoute("/esqueci-senha")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Esqueci minha senha — O Vanzeiro" },
       { name: "description", content: "Receba um link para criar uma senha nova no O Vanzeiro." },
       { property: "og:title", content: "Esqueci minha senha — O Vanzeiro" },

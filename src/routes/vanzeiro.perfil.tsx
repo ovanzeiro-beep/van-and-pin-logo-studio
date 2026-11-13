@@ -13,6 +13,8 @@ import { salvarPerfilVanzeiro, usePerfilVanzeiro, type PerfilVanzeiro } from "@/
 export const Route = createFileRoute("/vanzeiro/perfil")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Perfil do vanzeiro — O Vanzeiro" },
       { name: "description", content: "Seus dados, a chave Pix que os passageiros veem e a sua van." },
       { property: "og:title", content: "Perfil do vanzeiro — O Vanzeiro" },

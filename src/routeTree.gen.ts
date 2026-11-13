@@ -19,6 +19,7 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VanzeiroRouteImport } from './routes/vanzeiro'
 import { Route as PassageiroIndexRouteImport } from './routes/passageiro.index'
+import { Route as PassageiroEntrarDestinoRouteImport } from './routes/passageiro.entrar-destino'
 import { Route as PassageiroPagamentosRouteImport } from './routes/passageiro.pagamentos'
 import { Route as PassageiroPerfilRouteImport } from './routes/passageiro.perfil'
 import { Route as PassageiroViagensRouteImport } from './routes/passageiro.viagens'
@@ -88,6 +89,11 @@ const VanzeiroRoute = VanzeiroRouteImport.update({
 const PassageiroIndexRoute = PassageiroIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PassageiroRoute,
+} as any)
+const PassageiroEntrarDestinoRoute = PassageiroEntrarDestinoRouteImport.update({
+  id: '/entrar-destino',
+  path: '/entrar-destino',
   getParentRoute: () => PassageiroRoute,
 } as any)
 const PassageiroPagamentosRoute = PassageiroPagamentosRouteImport.update({
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/vanzeiro': typeof VanzeiroRouteWithChildren
+  '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
+  '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/vanzeiro': typeof VanzeiroRouteWithChildren
+  '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/vanzeiro'
+    | '/passageiro/entrar-destino'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/esqueci-senha'
     | '/privacidade'
     | '/termos'
+    | '/passageiro/entrar-destino'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
     | '/vanzeiro/pedidos'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/vanzeiro'
+    | '/passageiro/entrar-destino'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
@@ -464,6 +476,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/passageiro/'
       preLoaderRoute: typeof PassageiroIndexRouteImport
+      parentRoute: typeof PassageiroRoute
+    }
+    '/passageiro/entrar-destino': {
+      id: '/passageiro/entrar-destino'
+      path: '/entrar-destino'
+      fullPath: '/passageiro/entrar-destino'
+      preLoaderRoute: typeof PassageiroEntrarDestinoRouteImport
       parentRoute: typeof PassageiroRoute
     }
     '/passageiro/pagamentos': {
@@ -623,6 +642,7 @@ const PassageiroPagamentosRouteWithChildren =
   PassageiroPagamentosRoute._addFileChildren(PassageiroPagamentosRouteChildren)
 
 interface PassageiroRouteChildren {
+  PassageiroEntrarDestinoRoute: typeof PassageiroEntrarDestinoRoute
   PassageiroPagamentosRoute: typeof PassageiroPagamentosRouteWithChildren
   PassageiroPerfilRoute: typeof PassageiroPerfilRoute
   PassageiroViagensRoute: typeof PassageiroViagensRoute
@@ -630,6 +650,7 @@ interface PassageiroRouteChildren {
 }
 
 const PassageiroRouteChildren: PassageiroRouteChildren = {
+  PassageiroEntrarDestinoRoute: PassageiroEntrarDestinoRoute,
   PassageiroPagamentosRoute: PassageiroPagamentosRouteWithChildren,
   PassageiroPerfilRoute: PassageiroPerfilRoute,
   PassageiroViagensRoute: PassageiroViagensRoute,

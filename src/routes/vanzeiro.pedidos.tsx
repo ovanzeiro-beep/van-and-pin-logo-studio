@@ -9,6 +9,8 @@ import { usePedidos } from "@/lib/passageiros-store";
 export const Route = createFileRoute("/vanzeiro/pedidos")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Pedidos para entrar — O Vanzeiro" },
       { name: "description", content: "Todas as pessoas que pediram para entrar nos seus destinos." },
       { property: "og:title", content: "Pedidos para entrar — O Vanzeiro" },

@@ -108,6 +108,8 @@ export type PlanoPagamento = "viagem" | "diario" | "quinzenal" | "mensal";
 
 export type Passageiro = {
   id: string;
+  /** Identidade compartilhada; id continua sendo a matrícula no destino. */
+  pessoaId?: string | undefined;
   destinoId: string;
   nome: string;
   /** Só números, com DDD (ex.: 43998123456). */
@@ -129,6 +131,7 @@ export type Passageiro = {
 /** Pessoa que usou o código de convite e espera o vanzeiro aceitar. */
 export type PedidoEntrada = {
   id: string;
+  pessoaId?: string | undefined;
   destinoId: string;
   nome: string;
   telefone: string;
@@ -148,6 +151,7 @@ export const passageirosExemplo: Passageiro[] = [
   { id: "p-rafael", destinoId: "centro-unisul", nome: "Rafael Mendes", telefone: "48991478523", cidade: "Bairro Pedra Branca", endereco: "Av. Pedra Branca, 1500", plano: "diario", valor: 22, vencimento: null, descontaFaltas: false, valorFalta: null },
   { id: "p-camila", destinoId: "centro-unisul", nome: "Camila Duarte", telefone: "48988236547", cidade: "Centro", endereco: "Terminal Central", plano: "viagem", valor: 12, vencimento: null, descontaFaltas: false, valorFalta: null },
   { id: "p-thiago", destinoId: "centro-unisul", nome: "Thiago Nunes", telefone: "48997563214", cidade: "Bairro Pedra Branca", endereco: "Rua dos Ipês, 37", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: false, valorFalta: null },
+  { id: "p-juliana-londrina", pessoaId: "p-juliana", destinoId: "jacarezinho-londrina", nome: "Juliana Alves", telefone: "48998771234", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "mensal", valor: 180, vencimento: 20, descontaFaltas: false, valorFalta: null },
   // Excursão Beto Carrero
   { id: "p-rosana", destinoId: "excursao-beto-carrero", nome: "Rosana Pereira", telefone: "43998012233", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
   { id: "p-jose", destinoId: "excursao-beto-carrero", nome: "José Carlos Silva", telefone: "43999347788", cidade: "Jacarezinho", endereco: "Rodoviária", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
@@ -187,12 +191,12 @@ export const embarquesExemplo: { passageiroId: string; data: string }[] = [
   { passageiroId: "p-camila", data: "2026-11-12" },
 ];
 
-/** Dias em que passageiros de mensal ou quinzenal faltaram (descontados quando o plano desconta faltas). */
-export const faltasExemplo: { passageiroId: string; data: string }[] = [
-  { passageiroId: "p-mariana", data: "2026-10-17" },
-  { passageiroId: "p-mariana", data: "2026-10-24" },
-  { passageiroId: "p-fernanda", data: "2026-10-28" },
-  { passageiroId: "p-juliana", data: "2026-11-05" },
+/** Dias de ausência; só avisos Não vou dentro do prazo dão desconto. */
+export const faltasExemplo: { passageiroId: string; data: string; avisouNoPrazo: boolean }[] = [
+  { passageiroId: "p-mariana", avisouNoPrazo: true, data: "2026-10-17" },
+  { passageiroId: "p-mariana", avisouNoPrazo: true, data: "2026-10-24" },
+  { passageiroId: "p-fernanda", avisouNoPrazo: true, data: "2026-10-28" },
+  { passageiroId: "p-juliana", avisouNoPrazo: true, data: "2026-11-05" },
 ];
 
 /** Cobranças com vencimento até esta data foram pagas por Pix no próprio vencimento. */

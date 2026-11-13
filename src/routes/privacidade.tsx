@@ -4,6 +4,8 @@ import { LeituraLayout, Secao } from "@/components/app/LeituraLayout";
 export const Route = createFileRoute("/privacidade")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Política de Privacidade — O Vanzeiro" },
       { name: "description", content: "Quais dados o O Vanzeiro guarda, para que servem e como pedir para ver, corrigir ou apagar." },
       { property: "og:title", content: "Política de Privacidade — O Vanzeiro" },

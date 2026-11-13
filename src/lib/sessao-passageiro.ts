@@ -1,6 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { passageiroExemplo, passageirosExemplo, type Passageiro } from "@/data/exemplo";
-import { adicionarPedido, useAceitos, usePassageiros, usePedidos } from "@/lib/passageiros-store";
+import { adicionarPedido, obterPassageiros, useAceitos, usePassageiros, usePedidos } from "@/lib/passageiros-store";
+
+import { matriculasDaPessoa, identidadePassageiro } from "@/lib/passageiros";
 
 // Who is using the passenger panel on this phone. Starts as the sample passenger (Juliana);
 // a new account starts with no van and joins one with an invite code.
@@ -35,7 +37,9 @@ export function criarContaNova(nome: string) {
 }
 
 export function pedirParaEntrar(destinoId: string, nome: string, telefone: string) {
-  const pedidoId = adicionarPedido({ destinoId, nome: nome.trim(), telefone });
+  if (sessao.passageiroId && obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
+  const eu = obterMinhasMatriculas()[0];
+  const pedidoId = adicionarPedido({ destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
   mudar({ ...sessao, nome: nome.trim(), telefone, pedidoId });
 }
 
@@ -56,7 +60,8 @@ export function useMinhaSituacao(): MinhaSituacao {
   const pedidos = usePedidos();
   const aceitos = useAceitos();
   const id = (s.pedidoId && aceitos[s.pedidoId]) || s.passageiroId;
-  const passageiro = passageiros.find((p) => p.id === id);
+  const ancora = passageiros.find((p) => p.id === id) ?? passageiros.find((p) => identidadePassageiro(p) === (s.passageiroId ?? id));
+  const passageiro = ancora;
   if (passageiro) return { tipo: "membro", passageiro };
   if (s.pedidoId) {
     const pedido = pedidos.find((p) => p.id === s.pedidoId);
@@ -70,4 +75,14 @@ export function useEu(): Passageiro {
   const s = useMinhaSituacao();
   if (s.tipo !== "membro") throw new Error("Passageiro sem van");
   return s.passageiro;
+}
+
+export function useMinhasMatriculas() {
+  const eu = useEu();
+  return matriculasDaPessoa(usePassageiros(), eu);
+}
+function obterMinhasMatriculas() {
+  const lista = obterPassageiros();
+  const eu = lista.find((p) => p.id === sessao.passageiroId);
+  return eu ? matriculasDaPessoa(lista, eu) : [];
 }

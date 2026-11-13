@@ -16,11 +16,12 @@ import {
   passoPassageiroCompleto,
   planoTemVencimento,
   pontosDeEmbarque,
+  pessoasParaDestino,
   rascunhoDePassageiro,
   rascunhoPassageiroVazio,
   type RascunhoPassageiro,
 } from "@/lib/passageiros";
-import { salvarPassageiro } from "@/lib/passageiros-store";
+import { salvarPassageiro, usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
 
 const PERGUNTAS = ["Nome e WhatsApp.", "Onde a pessoa embarca?", "Como a pessoa paga?", "Confira antes de salvar."];
@@ -44,6 +45,8 @@ export function PassageiroWizard({
 }) {
   const navigate = useNavigate();
   const pontos = pontosDeEmbarque(destino);
+  const pessoas = pessoasParaDestino(usePassageiros(), destino.id);
+  const [modo, setModo] = useState<"novo" | "existente">("novo");
   const [passo, setPasso] = useState(1);
   const [r, setR] = useState<RascunhoPassageiro>(() =>
     inicial ? rascunhoDePassageiro(inicial) : rascunhoPassageiroVazio(pedido),
@@ -68,13 +71,31 @@ export function PassageiroWizard({
       titulo={inicial ? "Editar passageiro" : "Novo passageiro"}
       subtitulo={PERGUNTAS[passo - 1] ?? ""}
       passo={passo}
-      podeContinuar={passoPassageiroCompleto(passo, r, pontos)}
+      podeContinuar={passoPassageiroCompleto(passo, r, pontos) && (passo !== 1 || modo === "novo" || !!r.pessoaId)}
       onVoltar={() => (passo === 1 ? sair() : setPasso(passo - 1))}
       onContinuar={() => setPasso(passo + 1)}
       onSalvar={salvar}
       rotuloSalvar="Salvar passageiro"
     >
-      {passo === 1 && <Passo1 r={r} mudar={mudar} />}
+      {passo === 1 && (
+        <>
+          {!inicial && !pedido && <div className="grid grid-cols-2 gap-2">
+            <Button variant={modo === "novo" ? "default" : "outline"} className="h-11 whitespace-normal text-xs" aria-pressed={modo === "novo"} onClick={() => { setModo("novo"); mudar({ nome: "", telefone: "", pessoaId: undefined }); }}>Passageiro novo</Button>
+            <Button variant={modo === "existente" ? "default" : "outline"} className="h-11 whitespace-normal text-xs" aria-pressed={modo === "existente"} onClick={() => { setModo("existente"); mudar({ nome: "", telefone: "", pessoaId: undefined }); }}>Já é meu passageiro</Button>
+          </div>}
+          {modo === "existente" && <div className="space-y-1.5">
+            <label htmlFor="pessoa-existente" className="text-sm font-semibold text-foreground">Escolha o passageiro</label>
+            <select id="pessoa-existente" className="h-11 w-full rounded-xl border border-input bg-surface px-3 text-sm text-foreground" value={r.pessoaId ?? ""} onChange={(e) => {
+              const p = pessoas.find((p) => (p.pessoaId ?? p.id) === e.target.value);
+              if (p) mudar({ pessoaId: p.pessoaId ?? p.id, nome: p.nome, telefone: formatarTelefone(p.telefone) });
+            }}>
+              <option value="">Selecionar</option>
+              {pessoas.map((p) => <option key={p.id} value={p.pessoaId ?? p.id}>{p.nome}</option>)}
+            </select>
+          </div>}
+          <Passo1 r={r} mudar={mudar} readonly={modo === "existente"} />
+        </>
+      )}
       {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} />}
       {passo === 3 && <Passo3 r={r} mudar={mudar} />}
       {passo === 4 && <Resumo r={r} destino={destino} />}
@@ -84,7 +105,7 @@ export function PassageiroWizard({
 
 type PassoProps = { r: RascunhoPassageiro; mudar: (p: Partial<RascunhoPassageiro>) => void };
 
-function Passo1({ r, mudar }: PassoProps) {
+function Passo1({ r, mudar, readonly }: PassoProps & { readonly?: boolean }) {
   return (
     <>
       <CampoComIcone
@@ -94,6 +115,7 @@ function Passo1({ r, mudar }: PassoProps) {
         placeholder="Ex.: Mariana Souza"
         autoComplete="off"
         value={r.nome}
+        readOnly={readonly}
         onChange={(e) => mudar({ nome: e.target.value })}
       />
       <div className="space-y-1.5">
@@ -105,6 +127,7 @@ function Passo1({ r, mudar }: PassoProps) {
           inputMode="numeric"
           placeholder="(43) 99812-3456"
           value={r.telefone}
+          readOnly={readonly}
           onChange={(e) => mudar({ telefone: formatarTelefone(e.target.value) })}
         />
         <p className="text-xs text-muted-foreground">Com DDD.</p>
@@ -156,21 +179,22 @@ function Passo3({ r, mudar }: PassoProps) {
   const plano = PLANOS.find((p) => p.id === r.plano);
   const comVencimento = planoTemVencimento(r.plano);
   return (
-    <>
+    <div className="space-y-3 [@media(max-height:700px)]:space-y-1 [&_input]:[@media(max-height:700px)]:h-10">
       <div>
         <Rotulo>Qual o plano de pagamento?</Rotulo>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1">
           {PLANOS.map((p) => {
             const ativo = r.plano === p.id;
             const Icon = ICONE_PLANO[p.id];
             return (
-              <button
+              <Button
                 key={p.id}
                 type="button"
+                variant="outline"
                 onClick={() => mudar({ plano: p.id })}
                 aria-pressed={ativo}
                 className={cn(
-                  "flex flex-col items-start rounded-2xl border-2 px-3 py-2.5 text-left transition-colors",
+                  "h-auto w-full gap-0 whitespace-normal flex flex-col items-start rounded-2xl border-2 px-2.5 py-2 text-left transition-colors [@media(max-height:700px)]:py-0.5",
                   ativo ? "border-primary bg-primary-soft" : "border-border bg-surface",
                 )}
               >
@@ -178,14 +202,14 @@ function Passo3({ r, mudar }: PassoProps) {
                   <Icon className={cn("h-4 w-4", ativo ? "text-primary" : "text-muted-foreground")} />
                   {p.rotulo}
                 </span>
-                <span className="mt-0.5 text-xs text-muted-foreground [@media(max-height:700px)]:hidden">{p.texto}</span>
-              </button>
+                <span className="mt-0.5 whitespace-normal text-xs leading-tight text-muted-foreground">{p.texto}</span>
+              </Button>
             );
           })}
         </div>
       </div>
       {plano && (
-        <div className={cn("grid gap-3", comVencimento ? "grid-cols-2" : "grid-cols-1")}>
+        <div className={cn("grid gap-3 [&_input]:h-11", comVencimento ? "grid-cols-2" : "grid-cols-1")}>
           <CampoComIcone
             id="valor"
             label={plano.rotuloValor}
@@ -209,6 +233,7 @@ function Passo3({ r, mudar }: PassoProps) {
         </div>
       )}
       {comVencimento && (
+        <div className="space-y-1">
         <div className="flex items-center gap-3">
           <p className="flex-1 text-sm font-semibold text-foreground">Descontar faltas?</p>
           <div className="grid w-40 shrink-0 grid-cols-2 gap-2">
@@ -229,6 +254,8 @@ function Passo3({ r, mudar }: PassoProps) {
               Sim
             </Button>
           </div>
+        </div>
+        <p className="text-xs leading-snug text-muted-foreground">Só desconta quem avisar 'Não vou' dentro do prazo.</p>
         </div>
       )}
       {comVencimento && r.descontaFaltas && (
@@ -251,7 +278,7 @@ function Passo3({ r, mudar }: PassoProps) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

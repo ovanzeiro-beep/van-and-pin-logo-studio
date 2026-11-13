@@ -8,6 +8,8 @@ import { usePassageiro } from "@/lib/passageiros-store";
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid_/editar")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Editar passageiro — O Vanzeiro" },
       { name: "description", content: "Altere o contato, o embarque ou o plano de pagamento do passageiro." },
       { property: "og:title", content: "Editar passageiro — O Vanzeiro" },

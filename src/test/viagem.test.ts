@@ -35,7 +35,7 @@ describe("Viagens do dia", () => {
   it("who goes is ordered by the destino's stops", () => {
     const l = listaDaViagem(passageirosExemplo, jacarezinho, vanzeiroExemplo.respostasHoje);
     expect(l.vao.map((p) => p.cidade)).toEqual(["Jacarezinho", "Jacarezinho", "Santo Antônio da Platina", "Santo Antônio da Platina"]);
-    expect(l.semResposta.map((p) => p.id)).toEqual(["p-beatriz"]);
+    expect(l.semResposta.map((p) => p.id)).toEqual(["p-beatriz", "p-juliana-londrina"]);
   });
 });
 

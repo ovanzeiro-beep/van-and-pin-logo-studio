@@ -17,6 +17,8 @@ import { textoDaVan, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 export const Route = createFileRoute("/vanzeiro/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Início do vanzeiro — O Vanzeiro" },
       { name: "description", content: "Resumo do dia: viagem, passageiros e valores a receber." },
       { property: "og:title", content: "Início do vanzeiro — O Vanzeiro" },

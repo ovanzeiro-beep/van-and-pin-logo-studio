@@ -9,6 +9,8 @@ export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/novo")
     typeof search["pedido"] === "string" ? { pedido: search["pedido"] } : {},
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Adicionar passageiro — O Vanzeiro" },
       { name: "description", content: "Cadastre um passageiro em 3 passos: contato, embarque e plano de pagamento." },
       { property: "og:title", content: "Adicionar passageiro — O Vanzeiro" },

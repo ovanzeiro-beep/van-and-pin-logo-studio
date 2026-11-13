@@ -6,6 +6,8 @@ import { useDestino } from "@/lib/destinos-store";
 export const Route = createFileRoute("/vanzeiro/destinos/editar/$id")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Editar destino — O Vanzeiro" },
       { name: "description", content: "Altere os dias, horários e paradas deste destino." },
       { property: "og:title", content: "Editar destino — O Vanzeiro" },
