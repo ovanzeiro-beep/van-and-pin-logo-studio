@@ -17,21 +17,22 @@ export const Route = createFileRoute("/vanzeiro/")({
 });
 
 function InicioVanzeiro() {
-  const { confirmados, total, pendentes, faltando } = v.passageiros;
+  const { confirmados, total, semResposta, naoVao } = v.passageiros;
   const pct = Math.round((confirmados / total) * 100);
 
   return (
     <>
-      <ScreenHeader titulo="Início" nome={v.nome} subtitulo="Veja como está o seu dia." />
-      <div className="relative z-10 -mt-4 space-y-4 px-5 pb-6">
+      <ScreenHeader compacto titulo="Início" nome={v.nome} subtitulo="Veja como está o seu dia." />
+      <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-3">
         <InfoCard
+          compacto
           icon={RouteIcon}
           label="Viagem de hoje"
           value={v.viagemHoje.rota}
           detail={v.viagemHoje.van}
           aside={<StatusBadge status="pendente">Às {v.viagemHoje.saida}</StatusBadge>}
         >
-          <div className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3 text-sm">
+          <div className="flex items-center gap-3 rounded-2xl bg-surface px-3.5 py-1.5 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Saída</span>
             <span className="font-bold text-foreground">{v.viagemHoje.saida}</span>
@@ -42,6 +43,7 @@ function InicioVanzeiro() {
         </InfoCard>
 
         <InfoCard
+          compacto
           icon={Users}
           tone="success"
           label="Passageiros confirmados"
@@ -55,14 +57,15 @@ function InicioVanzeiro() {
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full bg-success" style={{ width: `${pct}%` }} />
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             <StatusBadge status="pago">{confirmados} confirmados</StatusBadge>
-            <StatusBadge status="pendente">{pendentes} pendentes</StatusBadge>
-            <StatusBadge status="deve">{faltando} faltando</StatusBadge>
+            <StatusBadge status="pendente">{semResposta} sem resposta</StatusBadge>
+            <StatusBadge status="deve">{naoVao} não vão</StatusBadge>
           </div>
         </InfoCard>
 
         <InfoCard
+          compacto
           icon={Wallet}
           tone="warning"
           label="Valores a receber"
@@ -78,16 +81,11 @@ function InicioVanzeiro() {
 
         <Link
           to="/vanzeiro/destinos"
-          className="flex items-center gap-3.5 rounded-3xl bg-accent p-4 text-accent-foreground shadow-cta transition-transform active:scale-[0.98]"
+          className="flex h-11 items-center gap-3 rounded-2xl bg-accent px-4 text-accent-foreground shadow-cta transition-transform active:scale-[0.98]"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-foreground/10">
-            <MapPinPlus className="h-6 w-6" />
-          </span>
-          <span className="flex-1">
-            <span className="block font-display text-lg font-bold">Novo destino</span>
-            <span className="block text-sm opacity-80">Cadastre um novo ponto de chegada</span>
-          </span>
-          <ChevronRight className="h-5 w-5" />
+          <MapPinPlus className="h-5 w-5 shrink-0" />
+          <span className="flex-1 font-display text-base font-bold">Novo destino</span>
+          <ChevronRight className="h-5 w-5 shrink-0" />
         </Link>
       </div>
     </>
@@ -96,8 +94,8 @@ function InicioVanzeiro() {
 
 function Resumo({ valor, rotulo, className }: { valor: number; rotulo: string; className: string }) {
   return (
-    <div className={`rounded-2xl px-2 py-2.5 ${className}`}>
-      <p className="font-display text-lg font-bold leading-none">{valor}</p>
+    <div className={`rounded-2xl px-2 py-1.5 ${className}`}>
+      <p className="font-display text-base font-bold leading-none">{valor}</p>
       <p className="mt-1 text-[0.7rem] font-semibold">{rotulo}</p>
     </div>
   );

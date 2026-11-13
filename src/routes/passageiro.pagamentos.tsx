@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Receipt } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { PlaceholderTab } from "@/components/app/PlaceholderTab";
 import { passageiroExemplo } from "@/data/exemplo";
 
@@ -12,5 +12,5 @@ export const Route = createFileRoute("/passageiro/pagamentos")({
       { property: "og:description", content: "Pagamentos no O Vanzeiro." },
     ],
   }),
-  component: () => <PlaceholderTab titulo="Pagamentos" nome={passageiroExemplo.nome} icon={Receipt} />,
+  component: () => <PlaceholderTab titulo="Pagamentos" nome={passageiroExemplo.nome} icon={Wallet} />,
 });

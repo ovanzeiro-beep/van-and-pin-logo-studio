@@ -1,12 +1,12 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { CalendarDays, Home, Receipt, User } from "lucide-react";
+import { CalendarDays, Home, User, Wallet } from "lucide-react";
 import { BottomNav, type NavItem } from "@/components/app/BottomNav";
 import { MobileScreen } from "@/components/app/MobileScreen";
 
 const itens: NavItem[] = [
   { to: "/passageiro", label: "Início", icon: Home, exact: true },
   { to: "/passageiro/viagens", label: "Viagens", icon: CalendarDays },
-  { to: "/passageiro/pagamentos", label: "Pagamentos", icon: Receipt },
+  { to: "/passageiro/pagamentos", label: "Pagamentos", icon: Wallet },
   { to: "/passageiro/perfil", label: "Perfil", icon: User },
 ];
 

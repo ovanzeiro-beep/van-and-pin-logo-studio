@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Bell } from "lucide-react";
 import { LogoMark } from "@/components/brand/Logo";
+import { cn } from "@/lib/utils";
 
 function saudacaoPorHorario(hora: number) {
   if (hora < 12) return "Bom dia";
@@ -13,7 +14,10 @@ export function ScreenHeader({
   nome,
   subtitulo,
   children,
+  compacto = false,
 }: {
+  /** Lower header, for screens that must fit without scrolling. */
+  compacto?: boolean;
   titulo: string;
   nome: string;
   subtitulo?: string;
@@ -23,14 +27,24 @@ export function ScreenHeader({
   useEffect(() => setSaudacao(saudacaoPorHorario(new Date().getHours())), []);
 
   return (
-    <header className="relative overflow-hidden rounded-b-[2rem] bg-header px-5 pb-8 pt-6 text-header-foreground">
+    <header
+      className={cn(
+        "relative overflow-hidden rounded-b-[2rem] bg-header px-5 text-header-foreground",
+        compacto ? "pb-6 pt-3" : "pb-8 pt-6",
+      )}
+    >
       <LogoMark
         variant="light"
         className="pointer-events-none absolute -bottom-4 -right-10 h-36 opacity-[0.06]"
       />
       <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-header-foreground/15 font-display text-base font-semibold">
+          <div
+            className={cn(
+              "flex items-center justify-center rounded-full bg-header-foreground/15 font-display text-base font-semibold",
+              compacto ? "h-9 w-9" : "h-11 w-11",
+            )}
+          >
             {nome.charAt(0)}
           </div>
           <div>
@@ -41,15 +55,23 @@ export function ScreenHeader({
         <button
           type="button"
           aria-label="Avisos"
-          className="relative flex h-11 w-11 items-center justify-center rounded-full bg-header-foreground/10 transition-colors hover:bg-header-foreground/20"
+          className={cn(
+            "relative flex items-center justify-center rounded-full bg-header-foreground/10 transition-colors hover:bg-header-foreground/20",
+            compacto ? "h-9 w-9" : "h-11 w-11",
+          )}
         >
           <Bell className="h-5 w-5" />
-          <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-accent ring-2 ring-primary" />
+          <span
+            className={cn(
+              "absolute h-2 w-2 rounded-full bg-accent ring-2 ring-primary",
+              compacto ? "right-2 top-2" : "right-2.5 top-2.5",
+            )}
+          />
         </button>
       </div>
-      <div className="relative mt-6">
-        <h1 className="text-[1.75rem] font-bold leading-tight">{titulo}</h1>
-        {subtitulo && <p className="mt-1 text-sm text-header-muted">{subtitulo}</p>}
+      <div className={cn("relative", compacto ? "mt-2" : "mt-6")}>
+        <h1 className={cn("font-bold leading-tight", compacto ? "text-2xl" : "text-[1.75rem]")}>{titulo}</h1>
+        {subtitulo && <p className={cn("text-sm text-header-muted", compacto ? "mt-0.5 [@media(max-height:700px)]:hidden" : "mt-1")}>{subtitulo}</p>}
       </div>
       {children}
     </header>

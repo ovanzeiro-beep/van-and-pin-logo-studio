@@ -77,6 +77,17 @@ export function Logo({
   );
 }
 
+/** Van-only icon drawn from the logo's van, single color (`currentColor`), sized like a Lucide icon. */
+export function VanIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="4 9 56 56" className={cn("h-6 w-6", className)} aria-hidden="true">
+      <path className="fill-current" fillRule="evenodd" d={VAN_BODY} />
+      <path className="fill-current" fillRule="evenodd" d={WHEEL(18)} />
+      <path className="fill-current" fillRule="evenodd" d={WHEEL(47)} />
+    </svg>
+  );
+}
+
 /** Rounded-square app icon (navy tile, white van, amber pin). */
 export function AppIcon({ className }: { className?: string }) {
   return (

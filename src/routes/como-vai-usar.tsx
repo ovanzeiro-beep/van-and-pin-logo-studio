@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Bus, UserRound, type LucideIcon } from "lucide-react";
-import { Logo } from "@/components/brand/Logo";
+import type { ComponentType } from "react";
+import { ArrowRight, UserRound } from "lucide-react";
+import { Logo, VanIcon } from "@/components/brand/Logo";
 import { MobileScreen } from "@/components/app/MobileScreen";
 
 export const Route = createFileRoute("/como-vai-usar")({
@@ -28,7 +29,7 @@ function ComoVaiUsar() {
       <div className="flex flex-1 flex-col gap-4 px-6 pb-10 pt-8">
         <OpcaoPerfil
           to="/vanzeiro"
-          icon={Bus}
+          icon={VanIcon}
           titulo="Sou vanzeiro"
           descricao="Organize passageiros, rotas e cobranças da sua van."
           destaque
@@ -52,7 +53,7 @@ function OpcaoPerfil({
   destaque,
 }: {
   to: "/vanzeiro" | "/passageiro";
-  icon: LucideIcon;
+  icon: ComponentType<{ className?: string }>;
   titulo: string;
   descricao: string;
   destaque?: boolean;
