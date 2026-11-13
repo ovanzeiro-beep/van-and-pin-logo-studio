@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { DATA_DE_HOJE, vanzeiroExemplo, type Destino } from "@/data/exemplo";
 import { registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
-import { embarcou, iniciarViagem, naoEstava, type ViagemDoDia } from "@/lib/viagem";
+import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, type ViagemDoDia } from "@/lib/viagem";
 
 // In-memory trips of the day for the visual stage: they last until the page is reloaded,
 // and survive switching tabs in the middle of a trip.
@@ -64,4 +64,9 @@ export function marcarNaoEstava(id: string) {
   atualizarViagem((v) => naoEstava(v, id));
   const p = passageiro(id);
   if (p && antes && emAndamento(estado) !== antes) registrarFalta(p, antes.data);
+}
+
+/** "Estou na van" tapped on the passenger's phone during a check. */
+export function confirmarNaVan(id: string) {
+  atualizarViagem((v) => confirmarPeloCelular(v, id));
 }

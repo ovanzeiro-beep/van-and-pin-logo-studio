@@ -69,6 +69,8 @@ export type ViagemDoDia = {
   ficaram: string[];
   /** Current check, while it is open. */
   conferencia: Record<string, Conferido>;
+  /** Who answered the current check on their own phone ("Estou na van"). */
+  peloCelular: string[];
   paradasIda: number;
   paradasVolta: number;
   /** Who boarded at the destino for the return. */
@@ -87,6 +89,7 @@ export function iniciarViagem(destino: Pick<Destino, "id" | "volta">, ordem: str
     naoEstavam: [],
     ficaram: [],
     conferencia: {},
+    peloCelular: [],
     paradasIda: 0,
     paradasVolta: 0,
     naVolta: [],
@@ -143,13 +146,30 @@ export function fazerParada(v: ViagemDoDia): ViagemDoDia {
 export function retomarViagem(v: ViagemDoDia): ViagemDoDia {
   if (v.fase !== "parada") return v;
   if (aBordo(v).length === 0) return { ...v, fase: emTrecho(v) === "volta" ? "volta" : "busca" };
-  return { ...v, fase: "conferencia", conferencia: {} };
+  return { ...v, fase: "conferencia", conferencia: {}, peloCelular: [] };
 }
 
 export function conferir(v: ViagemDoDia, id: string, estado: Conferido): ViagemDoDia {
   if (v.fase !== "conferencia" && v.fase !== "conferencia-volta") return v;
   if (!listaDaConferencia(v).includes(id)) return v;
-  return { ...v, conferencia: { ...v.conferencia, [id]: estado } };
+  if (v.conferencia[id] === estado) return v;
+  // A tap by the vanzeiro is "Conferido pelo vanzeiro", even over a phone answer.
+  return { ...v, conferencia: { ...v.conferencia, [id]: estado }, peloCelular: v.peloCelular.filter((x) => x !== id) };
+}
+
+/** "Estou na van" on the passenger's phone: only while the check is open and nobody checked them yet. */
+export function confirmarPeloCelular(v: ViagemDoDia, id: string): ViagemDoDia {
+  if (v.fase !== "conferencia" && v.fase !== "conferencia-volta") return v;
+  if (!listaDaConferencia(v).includes(id) || v.conferencia[id] !== undefined) return v;
+  return { ...v, conferencia: { ...v.conferencia, [id]: "na-van" }, peloCelular: [...v.peloCelular, id] };
+}
+
+/** What the passenger's phone shows about the open check: ask, already confirmed by phone, or nothing. */
+export function conferenciaDoPassageiro(v: ViagemDoDia | undefined, id: string): "perguntar" | "confirmado" | null {
+  if (!v || (v.fase !== "conferencia" && v.fase !== "conferencia-volta")) return null;
+  if (!listaDaConferencia(v).includes(id)) return null;
+  if (v.conferencia[id] === undefined) return "perguntar";
+  return v.peloCelular.includes(id) ? "confirmado" : null;
 }
 
 /** Only works when everyone was checked. */
@@ -159,9 +179,9 @@ export function seguirViagem(v: ViagemDoDia): ViagemDoDia {
   const ficaram = lista.filter((id) => v.conferencia[id] === "ficou");
   if (v.fase === "conferencia-volta") {
     const naVolta = lista.filter((id) => v.conferencia[id] === "na-van");
-    return { ...v, ficaram: [...v.ficaram, ...ficaram], naVolta, conferencia: {}, fase: naVolta.length ? "volta" : "encerrada" };
+    return { ...v, ficaram: [...v.ficaram, ...ficaram], naVolta, conferencia: {}, peloCelular: [], fase: naVolta.length ? "volta" : "encerrada" };
   }
-  return { ...v, ficaram: [...v.ficaram, ...ficaram], conferencia: {}, fase: emTrecho(v) === "volta" ? "volta" : "busca" };
+  return { ...v, ficaram: [...v.ficaram, ...ficaram], conferencia: {}, peloCelular: [], fase: emTrecho(v) === "volta" ? "volta" : "busca" };
 }
 
 export function chegarAoDestino(v: ViagemDoDia): ViagemDoDia {
@@ -173,7 +193,7 @@ export function chegarAoDestino(v: ViagemDoDia): ViagemDoDia {
 export function iniciarVolta(v: ViagemDoDia): ViagemDoDia {
   if (v.fase !== "chegada" || !v.temVolta) return v;
   const lista = v.ordem.filter((id) => v.embarcaram.includes(id) && !v.ficaram.includes(id));
-  return lista.length ? { ...v, fase: "conferencia-volta", conferencia: {} } : { ...v, fase: "encerrada" };
+  return lista.length ? { ...v, fase: "conferencia-volta", conferencia: {}, peloCelular: [] } : { ...v, fase: "encerrada" };
 }
 
 export function desceu(v: ViagemDoDia, id: string): ViagemDoDia {

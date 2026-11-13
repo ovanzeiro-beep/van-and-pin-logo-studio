@@ -138,3 +138,40 @@ describe("Histórico do passageiro", () => {
     expect(h.some((i) => i.data === "2026-11-08")).toBe(false);
   });
 });
+
+import { conferenciaDoPassageiro, confirmarPeloCelular } from "@/lib/viagem";
+
+describe("Conferência pelo celular do passageiro", () => {
+  const naParada = () => retomarViagem(fazerParada(embarcou(embarcou(iniciarViagem(jacarezinho, ["a", "b"], "2026-11-13"), "a"), "b")));
+
+  it("the passenger is asked only while the check is open", () => {
+    expect(conferenciaDoPassageiro(embarcou(iniciarViagem(jacarezinho, ["a"], "2026-11-13"), "a"), "a")).toBeNull();
+    expect(conferenciaDoPassageiro(naParada(), "a")).toBe("perguntar");
+  });
+
+  it("'Estou na van' checks the person as in the van, confirmed by phone", () => {
+    const v = confirmarPeloCelular(naParada(), "a");
+    expect(v.conferencia.a).toBe("na-van");
+    expect(v.peloCelular).toEqual(["a"]);
+    expect(conferenciaDoPassageiro(v, "a")).toBe("confirmado");
+    // still needs everyone checked to go on
+    expect(seguirViagem(v)).toBe(v);
+  });
+
+  it("a person the vanzeiro already checked can't answer by phone, and a vanzeiro tap counts as his", () => {
+    const manual = conferir(naParada(), "a", "ficou");
+    expect(confirmarPeloCelular(manual, "a")).toBe(manual);
+    expect(conferenciaDoPassageiro(manual, "a")).toBeNull();
+    const trocado = conferir(confirmarPeloCelular(naParada(), "a"), "a", "ficou");
+    expect(trocado.peloCelular).toEqual([]);
+  });
+
+  it("the return check also asks on the phone, and the next check starts clean", () => {
+    let v = chegarAoDestino(embarcou(embarcou(iniciarViagem(jacarezinho, ["a", "b"], "2026-11-13"), "a"), "b"));
+    v = iniciarVolta(v);
+    expect(conferenciaDoPassageiro(v, "b")).toBe("perguntar");
+    v = seguirViagem(confirmarPeloCelular(confirmarPeloCelular(v, "a"), "b"));
+    expect(v.fase).toBe("volta");
+    expect(v.peloCelular).toEqual([]);
+  });
+});

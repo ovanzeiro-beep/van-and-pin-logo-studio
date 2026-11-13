@@ -1,4 +1,4 @@
-import { CircleCheck, Coffee, Flag, Home, Play, UserCheck, UserX } from "lucide-react";
+import { CircleCheck, Coffee, Flag, Home, Play, Smartphone, UserCheck, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Passageiro } from "@/data/exemplo";
 import { cn } from "@/lib/utils";
@@ -136,18 +136,29 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
           {lista.map((id) => {
             const estado = v.conferencia[id];
             const p = achar(id);
+            const celular = v.peloCelular.includes(id);
             return (
               <li
                 key={id}
                 className={cn(
                   "rounded-2xl border-2 bg-card p-3 shadow-card",
                   estado === undefined && "border-destructive bg-destructive-soft",
-                  estado === "na-van" && "border-success",
+                  estado === "na-van" && "border-success bg-success-soft",
                   estado === "ficou" && "border-transparent opacity-70",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <p className="min-w-0 truncate font-semibold text-foreground">{p?.nome ?? "Passageiro removido"}</p>
+                  <div className="min-w-0">
+                    <p className={cn("truncate font-semibold", estado === "na-van" ? "text-success" : "text-foreground")}>
+                      {p?.nome ?? "Passageiro removido"}
+                    </p>
+                    {estado !== undefined && (
+                      <p className={cn("flex items-center gap-1 text-xs font-semibold", celular ? "text-success" : "text-muted-foreground")}>
+                        {celular && <Smartphone className="h-3.5 w-3.5" />}
+                        {celular ? "Confirmou pelo celular" : "Conferido pelo vanzeiro"}
+                      </p>
+                    )}
+                  </div>
                   <span
                     className={cn(
                       "shrink-0 text-xs font-bold",

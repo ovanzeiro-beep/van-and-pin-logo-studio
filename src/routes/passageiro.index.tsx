@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AlarmClock, CalendarClock, Check, MessageCircle, Wallet, X } from "lucide-react";
+import { AlarmClock, CalendarClock, Check, CircleCheck, MessageCircle, UserCheck, Wallet, X } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
@@ -13,7 +13,8 @@ import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/mi
 import { linkWhatsApp } from "@/lib/passageiros";
 import { responder } from "@/lib/respostas-store";
 import { cn } from "@/lib/utils";
-import { situacaoParaPassageiro } from "@/lib/viagem";
+import { conferenciaDoPassageiro, situacaoParaPassageiro } from "@/lib/viagem";
+import { confirmarNaVan } from "@/lib/viagem-store";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/passageiro/")({
@@ -53,11 +54,20 @@ function InicioPassageiro() {
     .filter((c) => !c.pagamento && !c.cancelamento)
     .sort((a, b) => a.vencimento.localeCompare(b.vencimento));
   const sAberta = aberta ? situacao(aberta, DATA_DE_HOJE) : null;
+  const conferencia = conferenciaDoPassageiro(viagemDeHoje, eu.id);
 
   return (
     <>
       <PassageiroHeader compacto titulo="Início" subtitulo="Tudo sobre a sua próxima viagem." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-3">
+        {conferencia === "perguntar" ? (
+          <AvisoConferencia onConfirmar={() => confirmarNaVan(eu.id)} />
+        ) : conferencia === "confirmado" ? (
+          <section className="flex items-center gap-3 rounded-3xl border-2 border-success bg-success-soft p-4 shadow-card" role="status">
+            <CircleCheck className="h-8 w-8 shrink-0 text-success" />
+            <p className="font-display text-lg font-bold leading-tight text-success">Confirmado — boa viagem!</p>
+          </section>
+        ) : (
         <InfoCard
           compacto
           icon={CalendarClock}
@@ -99,6 +109,7 @@ function InicioPassageiro() {
             </Button>
           )}
         </InfoCard>
+        )}
 
         <InfoCard
           compacto
@@ -141,6 +152,23 @@ function InicioPassageiro() {
         />
       </div>
     </>
+  );
+}
+
+/** Shown while the vanzeiro checks who is in the van: the passenger answers on their own phone. */
+function AvisoConferencia({ onConfirmar }: { onConfirmar: () => void }) {
+  return (
+    <section className="rounded-3xl border-2 border-warning bg-card p-4 shadow-card" role="alert">
+      <div className="flex items-center gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-warning-soft text-warning">
+          <AlarmClock className="h-6 w-6" />
+        </div>
+        <p className="font-display text-lg font-bold leading-tight text-foreground">Conferência da van — você está na van?</p>
+      </div>
+      <Button variant="success" size="xl" className="mt-3 h-[3.25rem] w-full rounded-2xl font-display text-base font-bold" onClick={onConfirmar}>
+        <UserCheck className="!h-6 !w-6" /> Estou na van
+      </Button>
+    </section>
   );
 }
 
