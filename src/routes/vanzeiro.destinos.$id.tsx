@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, Clock, Pause, Pencil, Play, Repeat, Route as RouteIcon, type LucideIcon } from "lucide-react";
+import { AlarmClock, ArrowLeft, CalendarDays, Clock, Pause, Pencil, Play, Repeat, Route as RouteIcon, type LucideIcon } from "lucide-react";
 import { CodigoConvite, PassageirosDoDestino, PedidosParaEntrar } from "@/components/app/PassageirosDoDestino";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { CaminhoParadas } from "@/components/app/CaminhoParadas";
 import { DestinoNaoEncontrado } from "@/components/app/DestinoNaoEncontrado";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
-import { TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece } from "@/lib/destinos";
+import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { alternarAtivo, useDestino } from "@/lib/destinos-store";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id")({
@@ -52,6 +52,7 @@ function DetalheDestino() {
             <Linha icon={CalendarDays} rotulo={d.tipo === "fixa" ? "Dias" : "Data"} valor={quandoAcontece(d)} />
             <Linha icon={Clock} rotulo="Saída da ida" valor={d.saida} />
             <Linha icon={Clock} rotulo="Volta" valor={d.volta ?? "Sem volta"} />
+            <Linha icon={AlarmClock} rotulo="Confirmar até" valor={PRAZO_TEXTO[d.prazo]} />
           </dl>
         </section>
 

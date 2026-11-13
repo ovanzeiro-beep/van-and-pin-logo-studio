@@ -1,16 +1,7 @@
 import type { Destino, DiaSemana, Passageiro, RespostaViagem } from "@/data/exemplo";
 import { somarDias } from "@/lib/cobrancas";
 import { pontosDeEmbarque } from "@/lib/passageiros";
-
-export type SituacaoVan = { situacao: string; detalhe: string; etapa: number };
-
-/** The van's live status ("A caminho" etc.) only applies on the day of the trip. */
-export function situacaoDaVan(viagem: { ehHoje: boolean }, van: SituacaoVan): SituacaoVan {
-  if (!viagem.ehHoje) {
-    return { situacao: "Aguardando o dia da viagem", detalhe: "A van ainda não saiu para a sua viagem", etapa: -1 };
-  }
-  return { situacao: van.situacao, detalhe: van.detalhe, etapa: van.etapa };
-}
+import { formatarData, prazoPassou } from "@/lib/destinos";
 
 // ---------- the vanzeiro's trip of the day ----------
 
@@ -198,4 +189,108 @@ export function encerrarViagem(v: ViagemDoDia): ViagemDoDia {
 /** Opens the address in Google Maps (the app on the phone). */
 export function linkDoMapa(p: Pick<Passageiro, "endereco" | "cidade">) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.endereco}, ${p.cidade}`)}`;
+}
+
+// ---------- the passenger's side ----------
+
+export type Agora = { data: string; hora: string };
+
+/** "Vou" / "Não vou" can change until the deadline, and never after the van has left. */
+export function confirmacaoAberta(
+  d: Pick<Destino, "saida" | "prazo">,
+  data: string,
+  agora: Agora,
+  viagemComecou: boolean,
+) {
+  return !viagemComecou && !prazoPassou(d, data, agora);
+}
+
+/** Trip days of a destino in the next `dias` days, today included. */
+export function proximasDatas(d: Destino, hoje: string, dias = 7) {
+  const datas: string[] = [];
+  for (let i = 0; i < dias; i++) {
+    const data = somarDias(hoje, i);
+    if (aconteceEm(d, data)) datas.push(data);
+  }
+  return datas;
+}
+
+export type ItemHistorico = { data: string; embarcou: boolean };
+
+/**
+ * Past trips of a passenger (last `dias` days, plus today once the trip has their result):
+ * a falta is "Faltou"; Por viagem/Diário only went on days they boarded; mensal/quinzenal went otherwise.
+ */
+export function historicoDoPassageiro(
+  p: Pick<Passageiro, "id" | "plano">,
+  d: Destino,
+  hoje: string,
+  h: { embarques: { passageiroId: string; data: string }[]; faltas: { passageiroId: string; data: string }[] },
+  viagemDeHoje: ViagemDoDia | undefined,
+  dias = 14,
+): ItemHistorico[] {
+  const itens: ItemHistorico[] = [];
+  if (viagemDeHoje) {
+    if (viagemDeHoje.embarcaram.includes(p.id)) itens.push({ data: hoje, embarcou: true });
+    else if (viagemDeHoje.naoEstavam.includes(p.id)) itens.push({ data: hoje, embarcou: false });
+  }
+  const porDia = p.plano === "viagem" || p.plano === "diario";
+  for (let i = 1; i <= dias; i++) {
+    const data = somarDias(hoje, -i);
+    if (!aconteceEm({ ...d, ativo: true }, data)) continue;
+    const faltou = h.faltas.some((f) => f.passageiroId === p.id && f.data === data);
+    const foi = h.embarques.some((e) => e.passageiroId === p.id && e.data === data);
+    if (faltou) itens.push({ data, embarcou: false });
+    else if (!porDia || foi) itens.push({ data, embarcou: true });
+  }
+  return itens;
+}
+
+export type SituacaoParaPassageiro = {
+  situacao: string;
+  detalhe: string;
+  /** 0 = saiu da garagem, 1 = a caminho do seu ponto, 2 = você está na van; -1 = nada ainda. */
+  etapa: number;
+  alerta: boolean;
+};
+
+/** The van card on the passenger's Início follows the vanzeiro's Viagem tab. */
+export function situacaoParaPassageiro(a: {
+  passageiroId: string;
+  destino: Destino;
+  hoje: string;
+  /** Next trip date (today included), or null. */
+  proximaData: string | null;
+  viagem: ViagemDoDia | undefined;
+  resposta: RespostaViagem | undefined;
+  aberta: boolean;
+}): SituacaoParaPassageiro {
+  const { passageiroId: id, viagem: v } = a;
+  if (!aconteceEm(a.destino, a.hoje) && !v) {
+    const detalhe = a.proximaData ? `Próxima viagem: ${formatarData(a.proximaData)}` : "Nenhuma viagem marcada";
+    return { situacao: "Aguardando o dia da viagem", detalhe, etapa: -1, alerta: false };
+  }
+  if (!v) {
+    if (a.resposta === "nao-vai") return { situacao: "Você não vai hoje", detalhe: "O vanzeiro já sabe", etapa: -1, alerta: false };
+    if (!a.resposta && !a.aberta) return { situacao: "A van não vai passar", detalhe: "Você não confirmou a tempo", etapa: -1, alerta: true };
+    return { situacao: "Aguardando a saída", detalhe: `A van sai às ${a.destino.saida}`, etapa: -1, alerta: false };
+  }
+  if (v.naoEstavam.includes(id)) return { situacao: "Você não estava no ponto", detalhe: "A van passou e seguiu viagem", etapa: -1, alerta: true };
+  if (v.embarcaram.includes(id)) {
+    if (v.desceram.includes(id) || v.fase === "encerrada") return { situacao: "Viagem encerrada", detalhe: "Até a próxima!", etapa: 2, alerta: false };
+    return { situacao: "Na van", detalhe: "Boa viagem!", etapa: 2, alerta: false };
+  }
+  if (!v.ordem.includes(id)) {
+    return a.resposta === "nao-vai"
+      ? { situacao: "Você não vai hoje", detalhe: "O vanzeiro já sabe", etapa: -1, alerta: false }
+      : { situacao: "A van não vai passar", detalhe: "Você não confirmou a tempo", etapa: -1, alerta: true };
+  }
+  if (proximoDaBusca(v) === id) return { situacao: "Você é o próximo", detalhe: "Fique pronto no seu ponto", etapa: 1, alerta: false };
+  const antes = v.ordem.slice(0, v.ordem.indexOf(id)).filter((x) => !v.embarcaram.includes(x) && !v.naoEstavam.includes(x)).length;
+  return {
+    situacao: "Viagem começou",
+    detalhe: antes === 1 ? "Falta 1 pessoa antes de você" : `Faltam ${antes} pessoas antes de você`,
+    etapa: 0,
+    alerta: false,
+  };
 }

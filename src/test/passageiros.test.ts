@@ -82,13 +82,13 @@ describe("Passos de adicionar passageiro", () => {
 describe("Passageiros da viagem de hoje no Início", () => {
   it("Centro → Unisul shows its 6 sample passengers split into vão, sem resposta and não vão", () => {
     const r = presencaDaViagem(passageirosExemplo, "centro-unisul", vanzeiroExemplo.respostasHoje);
-    expect(r).toEqual({ total: 6, vao: 4, semResposta: 1, naoVao: 1 });
+    expect(r).toEqual({ total: 6, vao: 3, semResposta: 2, naoVao: 1 });
   });
   it("a new passenger counts in the total as sem resposta", () => {
     const novo = { id: "p-novo", destinoId: "centro-unisul" };
     const r = presencaDaViagem([...passageirosExemplo, novo], "centro-unisul", vanzeiroExemplo.respostasHoje);
     expect(r.total).toBe(7);
-    expect(r.semResposta).toBe(2);
+    expect(r.semResposta).toBe(3);
   });
   it("a removed passenger leaves the count", () => {
     const lista = passageirosExemplo.filter((p) => p.id !== "p-juliana");
@@ -110,5 +110,15 @@ describe("Descontar faltas no cadastro", () => {
     const p = passageiroDeRascunho({ ...r, plano: "diario", descontaFaltas: true, valorFalta: "15" }, "d");
     expect(p.descontaFaltas).toBe(false);
     expect(p.valorFalta).toBeNull();
+  });
+});
+
+import { obterRespostasParaTeste, responder } from "@/lib/respostas-store";
+
+describe("Resposta do passageiro chega ao vanzeiro", () => {
+  it("Juliana answering 'Vou' counts as vão for today's trip", () => {
+    responder("p-juliana", "2026-11-13", "vai");
+    const r = presencaDaViagem(passageirosExemplo, "centro-unisul", obterRespostasParaTeste("2026-11-13"));
+    expect(r).toEqual({ total: 6, vao: 4, semResposta: 1, naoVao: 1 });
   });
 });

@@ -1,10 +1,13 @@
 import { useMemo, useSyncExternalStore } from "react";
-import { passageirosExemplo, pedidosExemplo, type Passageiro } from "@/data/exemplo";
+import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
 let passageiros = passageirosExemplo;
 let pedidos = pedidosExemplo;
+/** Accepted pedido → the passenger created from it, so the person who asked finds their van. */
+let aceitos: Record<string, string> = {};
+const SEM_ACEITOS: Record<string, string> = {};
 const ouvintes = new Set<() => void>();
 
 function avisar() {
@@ -18,6 +21,10 @@ function inscrever(o: () => void) {
 
 export const obterPassageiros = () => passageiros;
 export const obterPedidos = () => pedidos;
+
+export function useAceitos() {
+  return useSyncExternalStore(inscrever, () => aceitos, () => SEM_ACEITOS);
+}
 
 export function usePassageiros() {
   return useSyncExternalStore(inscrever, obterPassageiros, () => passageirosExemplo);
@@ -55,7 +62,10 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
   passageiros = passageiros.some((x) => x.id === p.id)
     ? passageiros.map((x) => (x.id === p.id ? p : x))
     : [...passageiros, p];
-  if (pedidoId) pedidos = pedidos.filter((x) => x.id !== pedidoId);
+  if (pedidoId) {
+    pedidos = pedidos.filter((x) => x.id !== pedidoId);
+    aceitos = { ...aceitos, [pedidoId]: p.id };
+  }
   avisar();
   garantirProximaCobranca(p);
 }
@@ -68,4 +78,12 @@ export function removerPassageiro(id: string) {
 export function recusarPedido(id: string) {
   pedidos = pedidos.filter((p) => p.id !== id);
   avisar();
+}
+
+/** A person used an invite code: the request waits on the vanzeiro's bell. */
+export function adicionarPedido(pedido: Omit<PedidoEntrada, "id">) {
+  const novo = { ...pedido, id: `pedido-${Date.now()}` };
+  pedidos = [...pedidos, novo];
+  avisar();
+  return novo.id;
 }

@@ -25,6 +25,8 @@ import { Route as VanzeiroFinanceiroRouteImport } from './routes/vanzeiro.financ
 import { Route as VanzeiroPedidosRouteImport } from './routes/vanzeiro.pedidos'
 import { Route as VanzeiroPerfilRouteImport } from './routes/vanzeiro.perfil'
 import { Route as VanzeiroViagemRouteImport } from './routes/vanzeiro.viagem'
+import { Route as PassageiroPagamentosIndexRouteImport } from './routes/passageiro.pagamentos.index'
+import { Route as PassageiroPagamentosCidRouteImport } from './routes/passageiro.pagamentos.$cid'
 import { Route as VanzeiroDestinosIndexRouteImport } from './routes/vanzeiro.destinos.index'
 import { Route as VanzeiroDestinosIdRouteImport } from './routes/vanzeiro.destinos.$id'
 import { Route as VanzeiroDestinosNovoRouteImport } from './routes/vanzeiro.destinos.novo'
@@ -115,6 +117,17 @@ const VanzeiroViagemRoute = VanzeiroViagemRouteImport.update({
   path: '/viagem',
   getParentRoute: () => VanzeiroRoute,
 } as any)
+const PassageiroPagamentosIndexRoute =
+  PassageiroPagamentosIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PassageiroPagamentosRoute,
+  } as any)
+const PassageiroPagamentosCidRoute = PassageiroPagamentosCidRouteImport.update({
+  id: '/$cid',
+  path: '/$cid',
+  getParentRoute: () => PassageiroPagamentosRoute,
+} as any)
 const VanzeiroDestinosIndexRoute = VanzeiroDestinosIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -172,7 +185,7 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/passageiro': typeof PassageiroRouteWithChildren
   '/vanzeiro': typeof VanzeiroRouteWithChildren
-  '/passageiro/pagamentos': typeof PassageiroPagamentosRoute
+  '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
@@ -182,9 +195,11 @@ export interface FileRoutesByFullPath {
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro/': typeof PassageiroIndexRoute
   '/vanzeiro/': typeof VanzeiroIndexRoute
+  '/passageiro/pagamentos/$cid': typeof PassageiroPagamentosCidRoute
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/financeiro/$cid': typeof VanzeiroFinanceiroCidRoute
+  '/passageiro/pagamentos/': typeof PassageiroPagamentosIndexRoute
   '/vanzeiro/destinos/': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/financeiro/': typeof VanzeiroFinanceiroIndexRoute
   '/vanzeiro/destinos/editar/$id': typeof VanzeiroDestinosEditarIdRoute
@@ -197,7 +212,6 @@ export interface FileRoutesByTo {
   '/como-vai-usar': typeof ComoVaiUsarRoute
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
-  '/passageiro/pagamentos': typeof PassageiroPagamentosRoute
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
@@ -205,9 +219,11 @@ export interface FileRoutesByTo {
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro': typeof PassageiroIndexRoute
   '/vanzeiro': typeof VanzeiroIndexRoute
+  '/passageiro/pagamentos/$cid': typeof PassageiroPagamentosCidRoute
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/financeiro/$cid': typeof VanzeiroFinanceiroCidRoute
+  '/passageiro/pagamentos': typeof PassageiroPagamentosIndexRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroIndexRoute
   '/vanzeiro/destinos/editar/$id': typeof VanzeiroDestinosEditarIdRoute
@@ -223,7 +239,7 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/passageiro': typeof PassageiroRouteWithChildren
   '/vanzeiro': typeof VanzeiroRouteWithChildren
-  '/passageiro/pagamentos': typeof PassageiroPagamentosRoute
+  '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
@@ -233,9 +249,11 @@ export interface FileRoutesById {
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro/': typeof PassageiroIndexRoute
   '/vanzeiro/': typeof VanzeiroIndexRoute
+  '/passageiro/pagamentos/$cid': typeof PassageiroPagamentosCidRoute
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/financeiro/$cid': typeof VanzeiroFinanceiroCidRoute
+  '/passageiro/pagamentos/': typeof PassageiroPagamentosIndexRoute
   '/vanzeiro/destinos/': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/financeiro/': typeof VanzeiroFinanceiroIndexRoute
   '/vanzeiro/destinos/editar/$id': typeof VanzeiroDestinosEditarIdRoute
@@ -262,9 +280,11 @@ export interface FileRouteTypes {
     | '/vanzeiro/viagem'
     | '/passageiro/'
     | '/vanzeiro/'
+    | '/passageiro/pagamentos/$cid'
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/financeiro/$cid'
+    | '/passageiro/pagamentos/'
     | '/vanzeiro/destinos/'
     | '/vanzeiro/financeiro/'
     | '/vanzeiro/destinos/editar/$id'
@@ -277,7 +297,6 @@ export interface FileRouteTypes {
     | '/como-vai-usar'
     | '/criar-conta'
     | '/entrar'
-    | '/passageiro/pagamentos'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
     | '/vanzeiro/pedidos'
@@ -285,9 +304,11 @@ export interface FileRouteTypes {
     | '/vanzeiro/viagem'
     | '/passageiro'
     | '/vanzeiro'
+    | '/passageiro/pagamentos/$cid'
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/financeiro/$cid'
+    | '/passageiro/pagamentos'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
     | '/vanzeiro/destinos/editar/$id'
@@ -312,9 +333,11 @@ export interface FileRouteTypes {
     | '/vanzeiro/viagem'
     | '/passageiro/'
     | '/vanzeiro/'
+    | '/passageiro/pagamentos/$cid'
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/financeiro/$cid'
+    | '/passageiro/pagamentos/'
     | '/vanzeiro/destinos/'
     | '/vanzeiro/financeiro/'
     | '/vanzeiro/destinos/editar/$id'
@@ -446,6 +469,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VanzeiroViagemRouteImport
       parentRoute: typeof VanzeiroRoute
     }
+    '/passageiro/pagamentos/': {
+      id: '/passageiro/pagamentos/'
+      path: '/'
+      fullPath: '/passageiro/pagamentos/'
+      preLoaderRoute: typeof PassageiroPagamentosIndexRouteImport
+      parentRoute: typeof PassageiroPagamentosRoute
+    }
+    '/passageiro/pagamentos/$cid': {
+      id: '/passageiro/pagamentos/$cid'
+      path: '/$cid'
+      fullPath: '/passageiro/pagamentos/$cid'
+      preLoaderRoute: typeof PassageiroPagamentosCidRouteImport
+      parentRoute: typeof PassageiroPagamentosRoute
+    }
     '/vanzeiro/destinos/': {
       id: '/vanzeiro/destinos/'
       path: '/'
@@ -512,15 +549,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PassageiroPagamentosRouteChildren {
+  PassageiroPagamentosCidRoute: typeof PassageiroPagamentosCidRoute
+  PassageiroPagamentosIndexRoute: typeof PassageiroPagamentosIndexRoute
+}
+
+const PassageiroPagamentosRouteChildren: PassageiroPagamentosRouteChildren = {
+  PassageiroPagamentosCidRoute: PassageiroPagamentosCidRoute,
+  PassageiroPagamentosIndexRoute: PassageiroPagamentosIndexRoute,
+}
+
+const PassageiroPagamentosRouteWithChildren =
+  PassageiroPagamentosRoute._addFileChildren(PassageiroPagamentosRouteChildren)
+
 interface PassageiroRouteChildren {
-  PassageiroPagamentosRoute: typeof PassageiroPagamentosRoute
+  PassageiroPagamentosRoute: typeof PassageiroPagamentosRouteWithChildren
   PassageiroPerfilRoute: typeof PassageiroPerfilRoute
   PassageiroViagensRoute: typeof PassageiroViagensRoute
   PassageiroIndexRoute: typeof PassageiroIndexRoute
 }
 
 const PassageiroRouteChildren: PassageiroRouteChildren = {
-  PassageiroPagamentosRoute: PassageiroPagamentosRoute,
+  PassageiroPagamentosRoute: PassageiroPagamentosRouteWithChildren,
   PassageiroPerfilRoute: PassageiroPerfilRoute,
   PassageiroViagensRoute: PassageiroViagensRoute,
   PassageiroIndexRoute: PassageiroIndexRoute,

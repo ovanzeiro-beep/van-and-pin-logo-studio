@@ -2,14 +2,17 @@
 
 export const vanzeiroExemplo = {
   nome: "Carlos",
+  nomeCompleto: "Carlos Pereira",
+  telefone: "48999551234",
+  /** Chave Pix que aparece para os passageiros. */
+  pix: "carlos.vanzeiro@email.com",
+  van: { modelo: "Sprinter", placa: "ABC-1D23" },
   viagemHoje: {
     /** Destino da viagem de hoje: nome e horários vêm do cadastro dele. */
     destinoId: "centro-unisul",
-    van: "Sprinter · ABC-1D23",
   },
   /** Resposta de cada passageiro para a viagem de hoje. Quem não está aqui ainda não respondeu. */
   respostasHoje: {
-    "p-juliana": "vai",
     "p-gabriel": "vai",
     "p-fernanda": "vai",
     "p-thiago": "vai",
@@ -21,20 +24,8 @@ export const vanzeiroExemplo = {
   } as Record<string, RespostaViagem>,
 };
 
-export const passageiroExemplo = {
-  nome: "Juliana",
-  proximaViagem: {
-    ehHoje: true,
-    data: "Hoje, 13 de nov",
-    rota: "Bairro Pedra Branca → Faculdade Unisul",
-    embarque: "06:52",
-    ponto: "Rua das Flores, 210",
-    motorista: "Carlos",
-  },
-  // etapa: 0 = saiu da garagem, 1 = a caminho, 2 = no seu ponto
-  van: { situacao: "A caminho", detalhe: "Chega no seu ponto em cerca de 8 min", etapa: 1, placa: "ABC-1D23" },
-  emAberto: { valor: 280, vencimento: "20 de nov", referencia: "Mensalidade de novembro" },
-};
+/** A passageira de exemplo é a Juliana, cadastrada no destino Centro → Faculdade Unisul. */
+export const passageiroExemplo = { passageiroId: "p-juliana" };
 
 export function formatarReais(valor: number) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -42,6 +33,8 @@ export function formatarReais(valor: number) {
 
 export type DiaSemana = "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
 export type TipoDestino = "fixa" | "avulsa";
+/** Até quando o passageiro confirma "Vou": tempo antes da saída, ou a noite anterior às 20h. */
+export type PrazoConfirmacao = "30min" | "1h" | "2h" | "noite-anterior";
 
 export type Destino = {
   id: string;
@@ -59,6 +52,8 @@ export type Destino = {
   paradas: string[];
   /** Código curto que o vanzeiro envia para quem quer entrar (ex.: VAN-4821). */
   convite: string;
+  /** Quem não confirmar "Vou" até este prazo não entra na busca. */
+  prazo: PrazoConfirmacao;
   ativo: boolean;
 };
 
@@ -74,6 +69,7 @@ export const destinosExemplo: Destino[] = [
     volta: "18:30",
     paradas: ["Santo Antônio da Platina"],
     convite: "VAN-4821",
+    prazo: "1h",
     ativo: true,
   },
   {
@@ -87,6 +83,7 @@ export const destinosExemplo: Destino[] = [
     volta: "17:50",
     paradas: ["Bairro Pedra Branca"],
     convite: "VAN-3175",
+    prazo: "1h",
     ativo: true,
   },
   {
@@ -100,6 +97,7 @@ export const destinosExemplo: Destino[] = [
     volta: "19:00",
     paradas: ["Curitiba", "Joinville"],
     convite: "VAN-9064",
+    prazo: "noite-anterior",
     ativo: true,
   },
 ];
@@ -165,6 +163,9 @@ export const pedidosExemplo: PedidoEntrada[] = [
 /** "Hoje" da etapa visual, para os exemplos de cobrança ficarem coerentes (sexta, 13 de nov). */
 export const DATA_DE_HOJE = "2026-11-13";
 
+/** Horário de "agora" na etapa visual: o prazo da viagem das 06:40 (05:40) ainda está aberto, o das 06:00 (05:00) já fechou. */
+export const HORA_DE_AGORA = "05:10";
+
 /** Primeiro dia do histórico de exemplo: as cobranças começam a ser criadas a partir daqui. */
 export const INICIO_DO_HISTORICO = "2026-10-01";
 
@@ -191,6 +192,7 @@ export const faltasExemplo: { passageiroId: string; data: string }[] = [
   { passageiroId: "p-mariana", data: "2026-10-17" },
   { passageiroId: "p-mariana", data: "2026-10-24" },
   { passageiroId: "p-fernanda", data: "2026-10-28" },
+  { passageiroId: "p-juliana", data: "2026-11-05" },
 ];
 
 /** Cobranças com vencimento até esta data foram pagas por Pix no próprio vencimento. */

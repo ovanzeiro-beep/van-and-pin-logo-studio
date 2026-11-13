@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Clock, MapPinPlus, Route as RouteIcon, Users, Wallet } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
-import { formatarReais, vanzeiroExemplo as v } from "@/data/exemplo";
+import { formatarReais } from "@/data/exemplo";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { presencaDaViagem } from "@/lib/passageiros";
@@ -11,6 +11,8 @@ import { DATA_DE_HOJE } from "@/data/exemplo";
 import { resumoDoMes } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { useViagensDoDia } from "@/lib/viagem-store";
+import { useRespostasDoDia } from "@/lib/respostas-store";
+import { textoDaVan, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/vanzeiro/")({
   head: () => ({
@@ -29,7 +31,8 @@ function InicioVanzeiro() {
   const { escolhida } = useViagensDoDia();
   const destino = useDestino(escolhida);
   const passageiros = usePassageiros();
-  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, escolhida, v.respostasHoje);
+  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, escolhida, useRespostasDoDia(DATA_DE_HOJE));
+  const perfil = usePerfilVanzeiro();
   const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
   const saida = destino?.saida ?? "--:--";
   const financeiro = resumoDoMes(useCobrancas(), DATA_DE_HOJE);
@@ -44,7 +47,7 @@ function InicioVanzeiro() {
           icon={RouteIcon}
           label="Viagem de hoje"
           value={destino ? nomeDestino(destino) : "Sem viagem hoje"}
-          detail={v.viagemHoje.van}
+          detail={textoDaVan(perfil)}
           aside={<StatusBadge status="pendente">Às {saida}</StatusBadge>}
         >
           <div className="flex items-center gap-3 rounded-2xl bg-surface px-3.5 py-1.5 text-sm">

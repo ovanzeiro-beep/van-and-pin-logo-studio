@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { DATA_DE_HOJE, formatarReais } from "@/data/exemplo";
-import { FORMA_ROTULO, SITUACAO_ROTULO, diaMes, situacao, valorFinal, type Cobranca, type Situacao } from "@/lib/cobrancas";
+import { FORMA_ROTULO, SITUACAO_ROTULO, contaDoDesconto, diaMes, situacao, valorFinal, type Cobranca, type Situacao } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
 
 export const BADGE_DA_SITUACAO = {
@@ -27,11 +27,24 @@ export function linhaDaData(c: Cobranca, hoje = DATA_DE_HOJE) {
 }
 
 /** One charge in a list. `compacto` is the lighter row used inside a card (passenger detail). */
-export function CobrancaItem({ c, destino, compacto = false }: { c: Cobranca; destino?: string | undefined; compacto?: boolean }) {
+export function CobrancaItem({
+  c,
+  destino,
+  compacto = false,
+  para = "vanzeiro",
+}: {
+  c: Cobranca;
+  destino?: string | undefined;
+  compacto?: boolean;
+  /** Passenger list: opens the passenger's charge detail, without the name and with the discount math. */
+  para?: "vanzeiro" | "passageiro";
+}) {
   const s = situacao(c, DATA_DE_HOJE);
+  const doPassageiro = para === "passageiro";
+  const conta = doPassageiro ? contaDoDesconto(c) : null;
   return (
     <Link
-      to="/vanzeiro/financeiro/$cid"
+      to={doPassageiro ? "/passageiro/pagamentos/$cid" : "/vanzeiro/financeiro/$cid"}
       params={{ cid: c.id }}
       className={cn(
         "block transition-transform active:scale-[0.98]",
@@ -41,9 +54,9 @@ export function CobrancaItem({ c, destino, compacto = false }: { c: Cobranca; de
     >
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          {!compacto && <p className="truncate font-bold leading-snug text-foreground">{c.nome}</p>}
+          {!compacto && !doPassageiro && <p className="truncate font-bold leading-snug text-foreground">{c.nome}</p>}
           {destino && <p className="truncate text-xs text-muted-foreground">{destino}</p>}
-          <p className={cn("text-sm text-foreground", compacto ? "font-semibold" : "mt-1")}>{c.referencia}</p>
+          <p className={cn("text-sm text-foreground", compacto || doPassageiro ? "font-semibold" : "mt-1")}>{c.referencia}</p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           <p
@@ -62,6 +75,7 @@ export function CobrancaItem({ c, destino, compacto = false }: { c: Cobranca; de
         <CalendarDays className="h-3.5 w-3.5 shrink-0" />
         {linhaDaData(c)}
       </p>
+      {conta && <p className="mt-1.5 rounded-xl bg-surface px-2.5 py-1.5 text-xs font-semibold text-foreground">{conta}</p>}
     </Link>
   );
 }

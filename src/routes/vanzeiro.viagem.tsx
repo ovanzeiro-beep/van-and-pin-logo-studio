@@ -6,7 +6,8 @@ import { ResumoDaViagem } from "@/components/app/viagem/ResumoDaViagem";
 import { ViagemEmCurso } from "@/components/app/viagem/ViagemEmCurso";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { DATA_DE_HOJE, vanzeiroExemplo } from "@/data/exemplo";
+import { DATA_DE_HOJE } from "@/data/exemplo";
+import { useRespostasDoDia } from "@/lib/respostas-store";
 import { formatarData, nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { usePassageiros } from "@/lib/passageiros-store";
@@ -40,6 +41,7 @@ function AbaViagem() {
   const estado = useViagensDoDia();
   const destinos = useDestinos();
   const passageiros = usePassageiros();
+  const respostas = useRespostasDoDia(DATA_DE_HOJE);
   const hoje = viagensDoDia(destinos, DATA_DE_HOJE);
   const andamento = emAndamento(estado);
   const dataDeHoje = `Hoje, ${formatarData(DATA_DE_HOJE).toLowerCase()}`;
@@ -83,7 +85,7 @@ function AbaViagem() {
   const destino = hoje.find((d) => d.id === estado.escolhida) ?? hoje[0]!;
   const feita = estado.viagens[destino.id];
   const feitas = hoje.filter((d) => estado.viagens[d.id]).map((d) => d.id);
-  const lista = listaDaViagem(passageiros, destino, vanzeiroExemplo.respostasHoje);
+  const lista = listaDaViagem(passageiros, destino, respostas);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">

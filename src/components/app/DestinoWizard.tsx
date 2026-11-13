@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import type { Destino } from "@/data/exemplo";
 import {
   DIAS_DA_SEMANA,
+  PRAZOS,
+  PRAZO_TEXTO,
   TIPO_ROTULO,
   caminhoCompleto,
   destinoDeRascunho,
@@ -205,14 +207,6 @@ function Passo2({ r, mudar }: PassoProps) {
           onChange={(e) => mudar({ data: e.target.value })}
         />
       )}
-      <CampoComIcone
-        id="saida"
-        label="Horário de saída da ida"
-        icon={Clock}
-        type="time"
-        value={r.saida}
-        onChange={(e) => mudar({ saida: e.target.value })}
-      />
       <div>
         <Rotulo>Tem volta?</Rotulo>
         <div className="grid grid-cols-2 gap-3">
@@ -236,16 +230,50 @@ function Passo2({ r, mudar }: PassoProps) {
           </Button>
         </div>
       </div>
-      {r.temVolta && (
+      {/* Side by side when there is a volta, so the step still fits without scrolling. */}
+      <div className={cn("grid gap-3", r.temVolta && "grid-cols-2")}>
         <CampoComIcone
-          id="volta"
-          label="Horário da volta"
+          id="saida"
+          label={r.temVolta ? "Saída da ida" : "Horário de saída da ida"}
           icon={Clock}
           type="time"
-          value={r.volta}
-          onChange={(e) => mudar({ volta: e.target.value })}
+          value={r.saida}
+          onChange={(e) => mudar({ saida: e.target.value })}
         />
-      )}
+        {r.temVolta && (
+          <CampoComIcone
+            id="volta"
+            label="Horário da volta"
+            icon={Clock}
+            type="time"
+            value={r.volta}
+            onChange={(e) => mudar({ volta: e.target.value })}
+          />
+        )}
+      </div>
+      <div>
+        <Rotulo>Confirmar até</Rotulo>
+        <div className="grid grid-cols-4 gap-1.5" role="group" aria-label="Confirmar até">
+          {PRAZOS.map((p) => {
+            const ativo = r.prazo === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => mudar({ prazo: p.id })}
+                aria-pressed={ativo}
+                aria-label={p.texto}
+                className={cn(
+                  "h-11 rounded-xl px-1 text-[0.72rem] font-bold leading-tight transition-colors",
+                  ativo ? "bg-primary text-primary-foreground" : "border border-border bg-surface text-foreground",
+                )}
+              >
+                {p.curto}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 }
@@ -360,6 +388,10 @@ function Resumo({ r }: { r: Rascunho }) {
         <ItemResumo rotulo="Ida" valor={d.saida} />
         <ItemResumo rotulo="Volta" valor={d.volta ?? "Sem volta"} />
       </dl>
+      <p className="rounded-2xl bg-surface px-3 py-2 text-sm text-foreground">
+        <span className="text-muted-foreground">Confirmar até: </span>
+        <span className="font-bold">{PRAZO_TEXTO[d.prazo]}</span>
+      </p>
       <CaminhoParadas pontos={caminhoCompleto(d)} />
     </>
   );

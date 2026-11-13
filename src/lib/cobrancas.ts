@@ -271,3 +271,12 @@ export function aplicarFalta(lista: Cobranca[], p: Passageiro, data: string, hoj
   if (!nova || lista.some((c) => c.id === nova.id)) return lista;
   return [...lista, { ...nova, faltas: 1, valorFalta }];
 }
+
+/** Message the passenger sends after paying, so the vanzeiro can check and mark it as paid. */
+export function mensagemJaPaguei(c: Cobranca, vanzeiro: string) {
+  const nome = vanzeiro.split(" ")[0] ?? vanzeiro;
+  return (
+    `Olá, ${nome}! Aqui é ${c.nome.split(" ")[0] ?? c.nome}. Já paguei a ${c.referencia.charAt(0).toLowerCase()}${c.referencia.slice(1)} ` +
+    `da van, no valor de ${formatarReais(valorFinal(c))}. Pode conferir e marcar como pago, por favor? Obrigado!`
+  );
+}

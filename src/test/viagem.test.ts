@@ -1,20 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { situacaoDaVan } from "@/lib/viagem";
-
-const vanAoVivo = { situacao: "A caminho", detalhe: "Chega em 8 min", etapa: 1 };
-
-describe("Situação da van", () => {
-  it("shows 'A caminho' when the trip is today", () => {
-    expect(situacaoDaVan({ ehHoje: true }, vanAoVivo).situacao).toBe("A caminho");
-  });
-
-  it("never shows 'A caminho' when the trip is not today", () => {
-    const s = situacaoDaVan({ ehHoje: false }, vanAoVivo);
-    expect(s.situacao).not.toBe("A caminho");
-    expect(s.etapa).toBe(-1);
-  });
-});
-
 import { destinosExemplo, passageirosExemplo, vanzeiroExemplo } from "@/data/exemplo";
 import {
   chegarAoDestino,
@@ -96,5 +80,61 @@ describe("Durante a viagem", () => {
     v = desceu(v, "c");
     expect(proximoDaVolta(v)).toBe("a");
     expect(desceu(v, "a").fase).toBe("encerrada");
+  });
+});
+
+import { acharPorCodigo } from "@/lib/convite";
+import { prazoDaViagem, prazoPassou, textoDoPrazo } from "@/lib/destinos";
+import { confirmacaoAberta, historicoDoPassageiro, situacaoParaPassageiro } from "@/lib/viagem";
+
+const centro = destinosExemplo.find((d) => d.id === "centro-unisul")!;
+
+describe("Prazo de confirmação", () => {
+  it("defaults to 1 hour before departure: 06:40 → 05:40", () => {
+    expect(textoDoPrazo(centro, "2026-11-13")).toBe("05:40");
+  });
+  it("30 min, 2 h and the night before at 20h", () => {
+    expect(prazoDaViagem({ ...centro, prazo: "30min" }, "2026-11-13").hora).toBe("06:10");
+    expect(prazoDaViagem({ ...centro, prazo: "2h" }, "2026-11-13").hora).toBe("04:40");
+    expect(prazoDaViagem({ ...centro, prazo: "noite-anterior" }, "2026-11-13")).toEqual({ data: "2026-11-12", hora: "20:00" });
+  });
+  it("closes at the deadline, and when the van has left", () => {
+    expect(prazoPassou(centro, "2026-11-13", { data: "2026-11-13", hora: "05:39" })).toBe(false);
+    expect(prazoPassou(centro, "2026-11-13", { data: "2026-11-13", hora: "05:40" })).toBe(true);
+    expect(confirmacaoAberta(centro, "2026-11-13", { data: "2026-11-13", hora: "05:10" }, true)).toBe(false);
+  });
+});
+
+describe("Código de convite", () => {
+  it("finds the van by code, and nothing for a wrong code", () => {
+    expect(acharPorCodigo(destinosExemplo, "van-4821")?.id).toBe("jacarezinho-londrina");
+    expect(acharPorCodigo(destinosExemplo, "VAN-0000")).toBeUndefined();
+  });
+});
+
+describe("Situação da van para o passageiro", () => {
+  const base = { passageiroId: "a", destino: centro, hoje: "2026-11-13", proximaData: "2026-11-13", resposta: "vai" as const, aberta: true };
+  const v = () => iniciarViagem(centro, ["b", "a", "c"], "2026-11-13");
+
+  it("follows the vanzeiro's trip", () => {
+    expect(situacaoParaPassageiro({ ...base, viagem: v() }).situacao).toBe("Viagem começou");
+    expect(situacaoParaPassageiro({ ...base, viagem: embarcou(v(), "b") }).situacao).toBe("Você é o próximo");
+    expect(situacaoParaPassageiro({ ...base, viagem: embarcou(embarcou(v(), "b"), "a") }).situacao).toBe("Na van");
+    expect(situacaoParaPassageiro({ ...base, viagem: naoEstava(embarcou(v(), "b"), "a") }).situacao).toBe("Você não estava no ponto");
+  });
+  it("without an answer after the deadline, the van doesn't pass", () => {
+    expect(situacaoParaPassageiro({ ...base, resposta: undefined, aberta: false, viagem: undefined }).situacao).toBe("A van não vai passar");
+  });
+  it("on a day without trip it waits for the trip day", () => {
+    expect(situacaoParaPassageiro({ ...base, hoje: "2026-11-14", viagem: undefined }).situacao).toBe("Aguardando o dia da viagem");
+  });
+});
+
+describe("Histórico do passageiro", () => {
+  it("marks faltas as Faltou and the other trip days as Embarcou", () => {
+    const h = historicoDoPassageiro({ id: "p-juliana", plano: "mensal" }, centro, "2026-11-13", { embarques: [], faltas: [{ passageiroId: "p-juliana", data: "2026-11-05" }] }, undefined);
+    expect(h.find((i) => i.data === "2026-11-05")?.embarcou).toBe(false);
+    expect(h.find((i) => i.data === "2026-11-06")?.embarcou).toBe(true);
+    expect(h.some((i) => i.data === "2026-11-08")).toBe(false);
   });
 });

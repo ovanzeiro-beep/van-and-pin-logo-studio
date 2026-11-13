@@ -1,4 +1,4 @@
-import type { DiaSemana, Destino, TipoDestino } from "@/data/exemplo";
+import type { DiaSemana, Destino, PrazoConfirmacao, TipoDestino } from "@/data/exemplo";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "seg", curto: "Seg" },
@@ -9,6 +9,48 @@ export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "sab", curto: "Sáb" },
   { id: "dom", curto: "Dom" },
 ];
+
+export const PRAZOS: { id: PrazoConfirmacao; curto: string; texto: string }[] = [
+  { id: "30min", curto: "30 min antes", texto: "30 min antes da saída" },
+  { id: "1h", curto: "1 h antes", texto: "1 hora antes da saída" },
+  { id: "2h", curto: "2 h antes", texto: "2 horas antes da saída" },
+  { id: "noite-anterior", curto: "Noite anterior, 20h", texto: "Na noite anterior, às 20h" },
+];
+
+export const PRAZO_TEXTO = Object.fromEntries(PRAZOS.map((p) => [p.id, p.texto])) as Record<PrazoConfirmacao, string>;
+
+const MINUTOS_ANTES: Record<Exclude<PrazoConfirmacao, "noite-anterior">, number> = { "30min": 30, "1h": 60, "2h": 120 };
+
+function somarDiasIso(iso: string, dias: number) {
+  const [a = 0, m = 1, d = 1] = iso.split("-").map(Number);
+  return new Date(Date.UTC(a, m - 1, d + dias)).toISOString().slice(0, 10);
+}
+
+/** Exact moment confirmations close for the trip on `data` (AAAA-MM-DD + HH:MM). */
+export function prazoDaViagem(d: Pick<Destino, "saida" | "prazo">, data: string): { data: string; hora: string } {
+  if (d.prazo === "noite-anterior") return { data: somarDiasIso(data, -1), hora: "20:00" };
+  const [h = 0, min = 0] = d.saida.split(":").map(Number);
+  let total = h * 60 + min - MINUTOS_ANTES[d.prazo];
+  let dia = data;
+  if (total < 0) {
+    total += 24 * 60;
+    dia = somarDiasIso(data, -1);
+  }
+  const hora = `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+  return { data: dia, hora };
+}
+
+/** "05:40", or "20:00 do dia anterior" when the deadline falls on the day before. */
+export function textoDoPrazo(d: Pick<Destino, "saida" | "prazo">, data: string) {
+  const p = prazoDaViagem(d, data);
+  return p.data === data ? p.hora : `${p.hora} do dia anterior`;
+}
+
+/** Whether "agora" is already past the deadline. */
+export function prazoPassou(d: Pick<Destino, "saida" | "prazo">, data: string, agora: { data: string; hora: string }) {
+  const p = prazoDaViagem(d, data);
+  return `${agora.data}T${agora.hora}` >= `${p.data}T${p.hora}`;
+}
 
 export const TIPO_ROTULO: Record<TipoDestino, string> = { fixa: "Rota fixa", avulsa: "Viagem avulsa" };
 
@@ -74,10 +116,11 @@ export type Rascunho = {
   temVolta: boolean | null;
   volta: string;
   paradas: string[];
+  prazo: PrazoConfirmacao;
 };
 
 export function rascunhoVazio(): Rascunho {
-  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", paradas: [] };
+  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", paradas: [], prazo: "1h" };
 }
 
 export function rascunhoDeDestino(d: Destino): Rascunho {
@@ -91,6 +134,7 @@ export function rascunhoDeDestino(d: Destino): Rascunho {
     temVolta: d.volta !== null,
     volta: d.volta ?? "",
     paradas: d.paradas,
+    prazo: d.prazo,
   };
 }
 
@@ -117,6 +161,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
     volta: r.temVolta ? r.volta : null,
     paradas: r.paradas.map((p) => p.trim()).filter(Boolean),
     convite: anterior?.convite ?? gerarConvite(),
+    prazo: r.prazo,
     ativo: anterior?.ativo ?? true,
   };
 }
