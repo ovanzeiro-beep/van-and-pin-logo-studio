@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Screens are phone-first: every page renders inside `MobileScreen` (max ~430px, centered on desktop) so the app reads as native mobile.
+- Role dashboards are layout routes (`vanzeiro.tsx`, `passageiro.tsx`) that own the fixed `BottomNav`; each tab is a child route file.
+- Sample data lives only in `src/data/exemplo.ts` until a real backend exists, so it can be swapped in one place.
+- The logo is hand-built SVG in `src/components/brand/Logo.tsx` (color, light and single-color variants via theme tokens); `public/favicon.svg` mirrors it.

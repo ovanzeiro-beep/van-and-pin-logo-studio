@@ -15,3 +15,27 @@ describe("App routing", () => {
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
 });
+
+describe("O Vanzeiro screens", () => {
+  const telas = [
+    "/entrar",
+    "/criar-conta",
+    "/como-vai-usar",
+    "/vanzeiro",
+    "/vanzeiro/destinos",
+    "/vanzeiro/viagem",
+    "/vanzeiro/financeiro",
+    "/vanzeiro/perfil",
+    "/passageiro",
+    "/passageiro/viagens",
+    "/passageiro/pagamentos",
+    "/passageiro/perfil",
+  ];
+
+  it.each(telas)("has a page for %s", (path) => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    const leaf = router.matchRoutes(path).at(-1)?.routeId;
+    expect(leaf).not.toBe(rootRouteId);
+    expect(leaf?.replace(/\/$/, "")).toBe(path);
+  });
+});
