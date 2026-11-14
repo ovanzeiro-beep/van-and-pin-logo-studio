@@ -701,3 +701,22 @@ Números dos exemplos (13/11), conferidos no app:
 - O teste que congela os números (`etapa7c.test.ts`) foi atualizado com os valores novos e o motivo de cada mudança.
 - Conferência: testes (168), tipos, build; 15 telas sem erro; 5 caminhos de entrada sem erro; Início sem rolar no celular comum.
 
+
+---
+
+## App instalável em tela cheia (iniciado em 14/11/2026)
+**Situação:** em andamento, na branch `app-instalavel`. Pedido do dono do projeto: quem abre pelo link pode instalar ("baixar") o app, que abre em tela cheia usando a tela toda. Sem banco de dados. Não é o "App Android" da Play Store (lista "Depois").
+Decisões do dono (14/11/2026): o convite para instalar fica na tela de abertura; fazer agora, antes do E14.
+Achado: a tela de abertura passa sozinha para "Entrar" em 2,6 segundos; por isso o botão "Instalar o app" fica no cabeçalho azul da primeira tela com botões (Entrar e Criar conta), sem ocupar espaço.
+
+Limites que não dependem do app:
+- Android (Chrome): instala pelo botão e abre em tela cheia total (sem a barra do navegador e sem a barra de hora e bateria).
+- iPhone: a Apple não deixa o site mostrar o botão de instalar; o app mostra como fazer ("Compartilhar → Adicionar à Tela de Início"). Instalado, abre sem o navegador, mas a hora e a bateria continuam aparecendo.
+- Antes de instalar, no navegador, nenhum site fica 100% em tela cheia sozinho.
+
+Plano:
+- [ ] I1. Arquivo de instalação `public/manifest.webmanifest` (nome, ícones, tela cheia, retrato, cores do app) e as marcações no `__root.tsx`.
+- [ ] I2. Ícones PNG (192, 512, 512 com margem para Android, 180 para iPhone) feitos a partir do logo (van com pino).
+- [ ] I3. Área de cima segura: cabeçalhos azuis e "Como você vai usar o app?" com espaço para a hora e a câmera, só nos aparelhos que têm (no computador nada muda).
+- [ ] I4. Botão "Instalar o app" no cabeçalho de Entrar e Criar conta (Android: abre a instalação; iPhone: mostra como adicionar). Some quando o app já está instalado. Regra em `src/lib/instalar.ts`, com teste.
+- [ ] I5. Conferir: o Chrome reconhece o app como instalável (sem erros); telas iguais no computador; Entrar e Criar conta sem passar a rolar.
