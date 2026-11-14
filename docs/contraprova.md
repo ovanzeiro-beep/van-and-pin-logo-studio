@@ -311,8 +311,18 @@ Problemas novos encontrados nesta análise (para corrigir nos itens certos, não
 - Os Termos de Uso falam de localização da van (GPS) e de apagar a conta, que ainda não existem. (Decisão 15.)
 
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
-**Situação:** a fazer. Escopo grande — análise de arquitetura necessária.
-- [ ] 1. Toda tela lê e grava dados só por funções em `src/lib/`.
+**Situação:** em andamento. Refatoração de arquitetura, começando do Item 1.
+
+### Item 1 — Toda tela lê/grava dados só por funções (feito em 14/11/2026)
+- [x] Análise: 42 rotas já usam stores; nenhuma rota importa dados de exemplo **exceto** `passageiro.viagens.tsx` que importava `embarquesExemplo, faltasExemplo`.
+- [x] Criar função `historicoDoPassageiroComDados()` em `src/lib/viagem.ts` que encapsula embarques/faltas.
+- [x] Atualizar `passageiro.viagens.tsx`: remover imports de `embarques/faltasExemplo`, usar nova função.
+- [x] Verificação: nenhuma rota importa dados de exemplo agora. Tudo por funções em `src/lib/`.
+- [x] Testes (120 passando) e build OK.
+
+O que mudou: função nova `historicoDoPassageiroComDados()` em `viagem.ts`; rota `passageiro.viagens.tsx` refatorada.
+
+### Próximos itens
 - [ ] 2. Data e hora atuais de uma única função (DATA_DE_HOJE e HORA_DE_AGORA já existem).
 - [ ] 3. Todo dado (destino, passageiro, cobrança, viagem, pedido, aviso) leva vanzeiroId.
 - [ ] 4. Usuário logado e papel (vanzeiro ou passageiro) num lugar só.
