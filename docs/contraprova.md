@@ -332,8 +332,16 @@ O que mudou: função nova `historicoDoPassageiroComDados()` em `viagem.ts`; rot
 
 O que mudou: arquivo novo `agora.ts`, atualizado `minha-viagem.ts`.
 
+### Item 3 — Todo dado leva vanzeiroId (feito em 14/11/2026)
+- [x] 7 tipos atualizados: Destino, Passageiro, PedidoEntrada, Cobranca, ViagemDoDia, ViagemEncerrada, Aviso.
+- [x] Todos os dados de exemplo com vanzeiroId "vanzeiro-carlos".
+- [x] Função `iniciarViagem()` recebe e passa vanzeiroId do destino.
+- [x] Função `nova()` em cobrancas.ts adiciona vanzeiroId da passageiro.
+- [x] Testes (120 passando) e build OK.
+
+O que mudou: tipos em exemplo.ts, cobrancas.ts, viagem.ts; dados de exemplo (50+ linhas); funções iniciarViagem() e nova().
+
 ### Próximos itens
-- [ ] 3. Todo dado (destino, passageiro, cobrança, viagem, pedido, aviso) leva vanzeiroId.
 - [ ] 4. Usuário logado e papel (vanzeiro ou passageiro) num lugar só.
 - [ ] 5. Códigos de convite que não se repetem.
 - [ ] 6. Testes para todas as regras da seção 6.
