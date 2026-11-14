@@ -541,3 +541,24 @@ Pendências que continuam (decisão do dono do projeto em 14/11/2026: ficam para
 - [ ] Dados reais do vanzeiro do piloto (rotas, horários, van, Pix).
 - [ ] Revisão dos Termos e da Política por um advogado antes de lançar ao público.
 - [ ] Respostas às 15 decisões pendentes da seção 7 de `docs/fonte-da-verdade.md` (inclui as dúvidas da Etapa A).
+
+---
+
+## Pendências depois da Etapa D (iniciado em 14/11/2026)
+**Situação:** em andamento, na branch `pendencias`. Pedido do dono do projeto: resolver as pendências anotadas. Sem banco de dados.
+
+Achados ao conferir no app antes de começar:
+- O sininho do vanzeiro mostra um número (pedidos + avisos), mas abre só "Pedidos para entrar": os avisos do vanzeiro nunca aparecem.
+- As telas Notificações e Histórico de viagens do vanzeiro (Etapa B, itens 7 e 8) existem, mas **nenhum botão leva até elas**. A Etapa B as marcou como feitas sem esse caminho.
+- A tela Notificações do vanzeiro mostra os avisos de **todo mundo** (inclusive os da passageira Juliana) e não lista os pedidos.
+
+Decisões do dono do projeto (14/11/2026):
+- O sininho do vanzeiro abre **Notificações**, com os pedidos para entrar no topo (Aceitar / Recusar) e os avisos do vanzeiro embaixo.
+- O caminho para o Histórico de viagens fica **na aba Viagem** ("Viagens feitas").
+
+Plano, item por item:
+- [ ] P1. Conta nova de vanzeiro não herda os avisos nem as viagens feitas do Carlos (exemplo).
+- [ ] P2. Notificações (os dois painéis): data como "13/11"; aviso de exemplo da Juliana com o texto certo (a mensalidade dela vence em 20/11); aviso de exemplo do Gabriel com a data de hoje (estava 14/11, que é amanhã nos exemplos).
+- [ ] P3. Sininho do vanzeiro abre Notificações: pedidos no topo, avisos só do vanzeiro embaixo.
+- [ ] P4. Aba Viagem com o caminho "Viagens feitas" para o Histórico.
+- [ ] P5. "Criar conta" rolando a tela inteira: analisar e propor ao dono do projeto antes de mexer.
