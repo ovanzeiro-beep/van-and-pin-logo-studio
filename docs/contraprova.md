@@ -369,6 +369,20 @@ O que mudou: funções em `convite.ts`, inicialização em `destinos-store.ts`, 
 
 O que mudou: novo arquivo `regras-negocio.test.ts`. Análise: ~18 regras já testadas, +15 novas testadas, ~2 regras são de UI (não testáveis como regras de lógica).
 
+### Revisão dos itens 1 a 6 (14/11/2026) — itens reabertos
+Conferência no app (telas abertas no navegador, 390 × 844) e no código, antes do item 7.
+
+Erros encontrados e já corrigidos:
+- [x] A tela **Viagens do passageiro** não abria ("Esta tela não carregou") por causa da mudança do item 1. Corrigido.
+- [x] Todas as telas davam um erro escondido ao serem montadas, por causa dos avisos do sininho e do histórico (Etapa B, itens 7 e 8). Corrigido. As 15 telas principais dos dois painéis abrem sem erro.
+
+Itens marcados como feitos que **não estão completos** (voltam para "a fazer"):
+- [ ] Item 1: 15 telas ainda pegam coisas direto de `exemplo.ts` (a data de hoje e o formato de dinheiro). Só uma tela foi corrigida.
+- [ ] Item 2: a função única da data existe, mas só 1 arquivo usa; 19 arquivos ainda pegam a data direto.
+- [ ] Item 4: o arquivo novo do usuário logado não é usado por nenhuma tela. O login continua espalhado como antes, e agora há uma cópia a mais. Precisa ser refeito.
+- [ ] Item 6: os testes novos conferem mais os dados de exemplo do que as regras. Faltam testes de regras: mudar a resposta até o prazo, volta na ordem inversa, "Ficou aqui" só do vanzeiro, viagem só segue com todos conferidos.
+- Itens 3 e 5: conferidos, estão certos.
+
 ### Próximo item
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
 
