@@ -6,7 +6,7 @@ import { TelaVazia } from "@/components/app/TelaVazia";
 import { buttonVariants } from "@/components/ui/button";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
-import { formatarReais } from "@/data/exemplo";
+import { formatarReais } from "@/lib/dinheiro";
 import { ordenarRecentes, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";

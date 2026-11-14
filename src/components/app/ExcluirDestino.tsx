@@ -12,7 +12,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { DATA_DE_HOJE, type Destino } from "@/data/exemplo";
+import { type Destino } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import { resumoDaSaida } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
@@ -27,7 +28,7 @@ export function ExcluirDestino({ d }: { d: Destino }) {
   const navigate = useNavigate();
   const passageiros = usePassageirosDoDestino(d.id);
   const pedidos = usePedidosDoDestino(d.id);
-  const { pendentes, devendo } = resumoDaSaida(useCobrancas(), passageiros.map((p) => p.id), DATA_DE_HOJE);
+  const { pendentes, devendo } = resumoDaSaida(useCobrancas(), passageiros.map((p) => p.id), dataDeHoje());
   const emViagem = emAndamento(useViagensDoDia())?.destinoId === d.id;
 
   const excluir = async () => {

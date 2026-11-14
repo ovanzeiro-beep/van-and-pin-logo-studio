@@ -3,12 +3,12 @@ import { ChevronRight, Clock, MapPinPlus, Route as RouteIcon, Users, Wallet } fr
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
-import { formatarReais } from "@/data/exemplo";
+import { formatarReais } from "@/lib/dinheiro";
 import { formatarData, nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { presencaDaViagem } from "@/lib/passageiros";
 import { usePassageiros } from "@/lib/passageiros-store";
-import { DATA_DE_HOJE } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import { resumoDoMes } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { useViagensDoDia } from "@/lib/viagem-store";
@@ -34,15 +34,15 @@ function InicioVanzeiro() {
   // Same trip the Viagem tab has chosen, so both screens always talk about the same one.
   const { escolhida } = useViagensDoDia();
   const destinos = useDestinos();
-  const destino = viagemDeHoje(destinos, escolhida, DATA_DE_HOJE);
+  const destino = viagemDeHoje(destinos, escolhida, dataDeHoje());
   const passageiros = usePassageiros();
-  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, destino?.id ?? "", useRespostasDoDia(DATA_DE_HOJE));
+  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, destino?.id ?? "", useRespostasDoDia(dataDeHoje()));
   const perfil = usePerfilVanzeiro();
   const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
   const saida = destino?.saida ?? "--:--";
-  const financeiro = resumoDoMes(useCobrancas(), DATA_DE_HOJE);
+  const financeiro = resumoDoMes(useCobrancas(), dataDeHoje());
   const semDestinos = destinos.length === 0;
-  const proxima = destino ? null : proximaViagem(destinos, DATA_DE_HOJE);
+  const proxima = destino ? null : proximaViagem(destinos, dataDeHoje());
 
   if (semDestinos) {
     return (

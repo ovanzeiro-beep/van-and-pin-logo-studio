@@ -5,7 +5,9 @@ import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
-import { DATA_DE_HOJE, formatarReais, type RespostaViagem } from "@/data/exemplo";
+import { type RespostaViagem } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { formatarReais } from "@/lib/dinheiro";
 import { diaMes, situacao, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
@@ -40,12 +42,12 @@ function InicioPassageiro() {
   const idsDasCobrancas = useIdsDasMinhasCobrancas();
   const cobrancas = useCobrancasDasMatriculas(idsDasCobrancas);
   const prox = proximas[0];
-  const hojeAberta = proximas.find((v) => v.data === DATA_DE_HOJE)?.aberta ?? false;
+  const hojeAberta = proximas.find((v) => v.data === dataDeHoje())?.aberta ?? false;
   const van = destino
     ? situacaoParaPassageiro({
         passageiroId: eu.id,
         destino,
-        hoje: DATA_DE_HOJE,
+        hoje: dataDeHoje(),
         proximaData: prox?.data ?? proximaDistante,
         viagem: viagemDeHoje,
         resposta: respostaDeHoje,
@@ -57,7 +59,7 @@ function InicioPassageiro() {
   const [aberta] = cobrancas
     .filter((c) => !c.pagamento && !c.cancelamento)
     .sort((a, b) => a.vencimento.localeCompare(b.vencimento));
-  const sAberta = aberta ? situacao(aberta, DATA_DE_HOJE) : null;
+  const sAberta = aberta ? situacao(aberta, dataDeHoje()) : null;
   const conferencia = conferenciaDoPassageiro(viagemDeHoje, eu.id);
 
   return (

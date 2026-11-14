@@ -4,7 +4,8 @@ import { CalendarDays, CalendarRange, MapPin, Phone, Sun, Ticket, User, Wallet, 
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { ItemResumo, Rotulo } from "@/components/app/DestinoWizard";
 import { PassosLayout } from "@/components/app/PassosLayout";
-import { formatarReais, type Destino, type Passageiro, type PedidoEntrada, type PlanoPagamento } from "@/data/exemplo";
+import { type Destino, type Passageiro, type PedidoEntrada, type PlanoPagamento } from "@/data/exemplo";
+import { formatarReais } from "@/lib/dinheiro";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { nomeDestino } from "@/lib/destinos";

@@ -1,4 +1,5 @@
-import { formatarReais, type FormaPagamento, type Passageiro, type PlanoPagamento } from "@/data/exemplo";
+import { type FormaPagamento, type Passageiro, type PlanoPagamento } from "@/data/exemplo";
+import { formatarReais } from "@/lib/dinheiro";
 
 /** A charge. Its values never change after creation: it can only be paid or cancelled. */
 export type Cobranca = {

@@ -5,14 +5,14 @@ import { respostasDoDia, useRespostas } from "@/lib/respostas-store";
 import { useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { confirmacaoAberta, proximasDatas, proximaViagem } from "@/lib/viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
-import { agora, hoje as hojeFunc } from "@/lib/agora";
+import { agora, dataDeHoje } from "@/lib/agora";
 
 export const AGORA = agora();
 export type MinhaProximaViagem = {
   data: string; resposta: RespostaViagem | undefined; aberta: boolean; prazo: string; emAndamento: boolean;
   eu: Passageiro; destino: Destino;
 };
-export function rotuloDoDia(data: string, hoje = hojeFunc()) {
+export function rotuloDoDia(data: string, hoje = dataDeHoje()) {
   const texto = formatarData(data);
   return data === hoje ? `Hoje, ${texto.split(", ")[1] ?? texto}` : texto;
 }

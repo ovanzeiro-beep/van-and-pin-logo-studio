@@ -381,7 +381,18 @@ Itens marcados como feitos que **não estão completos** (voltam para "a fazer")
 - [ ] Item 2: a função única da data existe, mas só 1 arquivo usa; 19 arquivos ainda pegam a data direto.
 - [ ] Item 4: o arquivo novo do usuário logado não é usado por nenhuma tela. O login continua espalhado como antes, e agora há uma cópia a mais. Precisa ser refeito.
 - [ ] Item 6: os testes novos conferem mais os dados de exemplo do que as regras. Faltam testes de regras: mudar a resposta até o prazo, volta na ordem inversa, "Ficou aqui" só do vanzeiro, viagem só segue com todos conferidos.
-- Itens 3 e 5: conferidos, estão certos.
+- Itens 3 e 5: conferidos, estão certos. **Correção:** o item 3 também está incompleto (ver abaixo).
+
+### Item 1 refeito (14/11/2026)
+- [x] O formato de dinheiro saiu de `exemplo.ts` e foi para `src/lib/dinheiro.ts` (é uma ajuda, não um dado).
+- [x] As telas pegam a data de hoje pela função `dataDeHoje()` de `src/lib/agora.ts` (nomes trocados para `dataDeHoje()` e `horaDeAgora()`).
+- [x] Nenhuma tela (`src/routes`, `src/components`) pega dado de `exemplo.ts`; só a descrição do formato dos dados (tipos).
+- [x] Testes (135) passando. Conferência de tipos sem erro novo deste item.
+- [x] 15 telas abertas no navegador sem erro; o texto de 13 telas comparado com o da `main`: **idêntico**.
+
+Achado na conferência de tipos (que o build não faz):
+- [ ] Item 3: quando o app **cria** um destino, um passageiro ou um pedido novo, o identificador do vanzeiro fica vazio. Só os dados de exemplo têm o identificador. Precisa ser corrigido.
+- [ ] Etapa B, item 7 (já estava assim na `main`): o sininho do passageiro procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
 
 ### Próximo item
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.

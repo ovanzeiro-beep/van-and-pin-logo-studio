@@ -15,7 +15,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { DATA_DE_HOJE, formatarReais } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { formatarReais } from "@/lib/dinheiro";
 import { FORMA_ROTULO, diaMes, mensagemJaPaguei, situacao, valorFinal } from "@/lib/cobrancas";
 import { useCobranca } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
@@ -82,7 +83,7 @@ function MinhaCobranca() {
     );
   }
 
-  const s = situacao(c, DATA_DE_HOJE);
+  const s = situacao(c, dataDeHoje());
   const aberta = s === "pendente" || s === "devendo";
 
   return (

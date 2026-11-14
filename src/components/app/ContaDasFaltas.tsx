@@ -1,4 +1,4 @@
-import { formatarReais } from "@/data/exemplo";
+import { formatarReais } from "@/lib/dinheiro";
 import { contaDoDesconto, diaMes, valorFinal, type Cobranca } from "@/lib/cobrancas";
 
 /** The faltas discount math of a charge, shown the same way to the vanzeiro and the passenger. */

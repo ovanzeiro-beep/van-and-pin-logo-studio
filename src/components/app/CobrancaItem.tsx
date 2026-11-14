@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { StatusBadge } from "@/components/app/InfoCard";
-import { DATA_DE_HOJE, formatarReais } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { formatarReais } from "@/lib/dinheiro";
 import { FORMA_ROTULO, SITUACAO_ROTULO, contaDoDesconto, diaMes, situacao, valorFinal, type Cobranca, type Situacao } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,7 @@ export function BadgeSituacao({ s }: { s: Situacao }) {
 }
 
 /** "Vence em 20/11", "Venceu em 05/11", "Vencimento 10/11 · Pago em 10/11 · Pix". */
-export function linhaDaData(c: Cobranca, hoje = DATA_DE_HOJE) {
+export function linhaDaData(c: Cobranca, hoje = dataDeHoje()) {
   const s = situacao(c, hoje);
   if (s === "pago" && c.pagamento)
     return `Vencimento ${diaMes(c.vencimento)} · Pago em ${diaMes(c.pagamento.data)} · ${FORMA_ROTULO[c.pagamento.forma]}`;
@@ -39,7 +40,7 @@ export function CobrancaItem({
   /** Passenger list: opens the passenger's charge detail, without the name and with the discount math. */
   para?: "vanzeiro" | "passageiro";
 }) {
-  const s = situacao(c, DATA_DE_HOJE);
+  const s = situacao(c, dataDeHoje());
   const doPassageiro = para === "passageiro";
   const conta = doPassageiro ? contaDoDesconto(c) : null;
   return (

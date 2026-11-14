@@ -16,7 +16,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { DATA_DE_HOJE, formatarReais, type PlanoPagamento } from "@/data/exemplo";
+import { type PlanoPagamento } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { formatarReais } from "@/lib/dinheiro";
 import { ordenarRecentes, situacao, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
@@ -149,7 +151,7 @@ function PagamentosDoPassageiro({ passageiroId, plano }: { passageiroId: string;
   const cobrancas = useCobrancasDoPassageiro(passageiroId);
   const lista = ordenarRecentes(cobrancas);
   const deve = totalDevido(cobrancas, passageiroId);
-  const temDevendo = cobrancas.some((c) => situacao(c, DATA_DE_HOJE) === "devendo");
+  const temDevendo = cobrancas.some((c) => situacao(c, dataDeHoje()) === "devendo");
 
   return (
     <section className="rounded-3xl bg-card p-4 shadow-card">

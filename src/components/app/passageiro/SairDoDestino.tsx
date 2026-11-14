@@ -11,7 +11,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { DATA_DE_HOJE, type Destino, type Passageiro } from "@/data/exemplo";
+import { type Destino, type Passageiro } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import { resumoDaSaida } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
@@ -22,7 +23,7 @@ const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um :
 
 /** "Sair deste destino" on the passenger's Perfil, with what happens to their charges (decision 6). */
 export function SairDoDestino({ p, d }: { p: Passageiro; d: Destino }) {
-  const { pendentes, devendo } = resumoDaSaida(useCobrancas(), [p.id], DATA_DE_HOJE);
+  const { pendentes, devendo } = resumoDaSaida(useCobrancas(), [p.id], dataDeHoje());
   const emViagem = emAndamento(useViagensDoDia())?.destinoId === d.id;
 
   return (

@@ -29,7 +29,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DATA_DE_HOJE, formatarReais, type FormaPagamento } from "@/data/exemplo";
+import { type FormaPagamento } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { formatarReais } from "@/lib/dinheiro";
 import {
   FORMA_ROTULO,
   contaDoDesconto,
@@ -98,7 +100,7 @@ function DetalheCobranca() {
     );
   }
 
-  const s = situacao(c, DATA_DE_HOJE);
+  const s = situacao(c, dataDeHoje());
   const aberta = s === "pendente" || s === "devendo";
   const nomeDoDestino = destino ? nomeDestino(destino) : "";
 
@@ -150,7 +152,7 @@ function DetalheCobranca() {
             <MarcarComoPago c={c} />
             <Button asChild size="lg" variant="outline" className="w-full">
               <a
-                href={linkWhatsApp(c.telefone, mensagemCobranca(c, nomeDoDestino, DATA_DE_HOJE))}
+                href={linkWhatsApp(c.telefone, mensagemCobranca(c, nomeDoDestino, dataDeHoje()))}
                 target="_blank"
                 rel="noreferrer"
               >

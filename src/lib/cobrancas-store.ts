@@ -1,16 +1,5 @@
 import { useMemo, useSyncExternalStore } from "react";
-import {
-  DATA_DE_HOJE,
-  INICIO_DO_HISTORICO,
-  PAGAS_ATE_EXEMPLO,
-  cancelamentosExemplo,
-  embarquesExemplo,
-  faltasExemplo,
-  pagamentosExemplo,
-  passageirosExemplo,
-  type FormaPagamento,
-  type Passageiro,
-} from "@/data/exemplo";
+import { DATA_DE_HOJE, INICIO_DO_HISTORICO, PAGAS_ATE_EXEMPLO, cancelamentosExemplo, embarquesExemplo, faltasExemplo, pagamentosExemplo, passageirosExemplo, type FormaPagamento, type Passageiro } from "@/data/exemplo";
 import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
 
 /** Sample history: charges the app created from each plan since the start of the history. */

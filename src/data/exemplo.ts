@@ -27,10 +27,6 @@ export const vanzeiroExemplo = {
 /** A passageira de exemplo é a Juliana, cadastrada em Cambará → UENP Jacarezinho e Jacarezinho → Londrina. */
 export const passageiroExemplo = { passageiroId: "p-juliana" };
 
-export function formatarReais(valor: number) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
 export type DiaSemana = "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
 export type TipoDestino = "fixa" | "avulsa";
 /** Até quando o passageiro confirma "Vou": tempo antes da saída, ou a noite anterior às 20h. */

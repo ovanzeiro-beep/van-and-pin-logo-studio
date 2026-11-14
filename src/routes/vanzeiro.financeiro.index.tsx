@@ -5,7 +5,8 @@ import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { buttonVariants } from "@/components/ui/button";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
-import { DATA_DE_HOJE, formatarReais } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { formatarReais } from "@/lib/dinheiro";
 import { filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
@@ -50,9 +51,9 @@ function Financeiro() {
   const { filtro = "todas" } = Route.useSearch();
   const cobrancas = useCobrancas();
   const destinos = useDestinos();
-  const resumo = resumoDoMes(cobrancas, DATA_DE_HOJE);
-  const lista = filtrarCobrancas(cobrancas, filtro, DATA_DE_HOJE);
-  const mes = MESES[Number(DATA_DE_HOJE.slice(5, 7)) - 1] ?? "";
+  const resumo = resumoDoMes(cobrancas, dataDeHoje());
+  const lista = filtrarCobrancas(cobrancas, filtro, dataDeHoje());
+  const mes = MESES[Number(dataDeHoje().slice(5, 7)) - 1] ?? "";
   const nomeDoDestino = (id: string) => {
     const d = destinos.find((x) => x.id === id);
     return d ? nomeDestino(d) : undefined;

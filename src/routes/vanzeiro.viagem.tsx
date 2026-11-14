@@ -8,7 +8,7 @@ import { ResumoDaViagem } from "@/components/app/viagem/ResumoDaViagem";
 import { ViagemEmCurso } from "@/components/app/viagem/ViagemEmCurso";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { DATA_DE_HOJE } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import { useRespostasDoDia } from "@/lib/respostas-store";
 import { formatarData, nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
@@ -45,16 +45,16 @@ function AbaViagem() {
   const estado = useViagensDoDia();
   const destinos = useDestinos();
   const passageiros = usePassageiros();
-  const respostas = useRespostasDoDia(DATA_DE_HOJE);
-  const hoje = viagensDoDia(destinos, DATA_DE_HOJE);
+  const respostas = useRespostasDoDia(dataDeHoje());
+  const hoje = viagensDoDia(destinos, dataDeHoje());
   const andamento = emAndamento(estado);
-  const dataDeHoje = `Hoje, ${formatarData(DATA_DE_HOJE).toLowerCase()}`;
+  const textoDeHoje = `Hoje, ${formatarData(dataDeHoje()).toLowerCase()}`;
 
   if (andamento) {
     const destino = destinos.find((d) => d.id === andamento.destinoId);
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <VanzeiroHeader compacto titulo={TITULO[andamento.fase]} subtitulo={destino ? nomeDestino(destino) : dataDeHoje} />
+        <VanzeiroHeader compacto titulo={TITULO[andamento.fase]} subtitulo={destino ? nomeDestino(destino) : textoDeHoje} />
         <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col">
           <ViagemEmCurso v={andamento} passageiros={passageiros} />
         </div>
@@ -65,17 +65,17 @@ function AbaViagem() {
   if (destinos.length === 0) {
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <VanzeiroHeader compacto titulo="Viagem" subtitulo={dataDeHoje} />
+        <VanzeiroHeader compacto titulo="Viagem" subtitulo={textoDeHoje} />
         <PrimeiroDestino />
       </div>
     );
   }
 
   if (hoje.length === 0) {
-    const proxima = proximaViagem(destinos, DATA_DE_HOJE);
+    const proxima = proximaViagem(destinos, dataDeHoje());
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <VanzeiroHeader compacto titulo="Viagem" subtitulo={dataDeHoje} />
+        <VanzeiroHeader compacto titulo="Viagem" subtitulo={textoDeHoje} />
         <div className="flex flex-1 flex-col items-center justify-center px-8 py-10 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary-soft text-primary">
             <CalendarClock className="h-8 w-8" />
@@ -98,7 +98,7 @@ function AbaViagem() {
     );
   }
 
-  const destino = viagemDeHoje(destinos, estado.escolhida, DATA_DE_HOJE)!;
+  const destino = viagemDeHoje(destinos, estado.escolhida, dataDeHoje())!;
   const feita = estado.viagens[destino.id];
   const feitas = hoje.filter((d) => estado.viagens[d.id]).map((d) => d.id);
   const lista = listaDaViagem(passageiros, destino, respostas);
@@ -106,7 +106,7 @@ function AbaViagem() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <VanzeiroHeader compacto titulo={feita ? "Viagem encerrada" : "Viagem"} subtitulo={dataDeHoje} />
+      <VanzeiroHeader compacto titulo={feita ? "Viagem encerrada" : "Viagem"} subtitulo={textoDeHoje} />
       {hoje.length > 1 && (
         <div className="relative z-10 -mt-4 shrink-0 px-5">
           <EscolhaDaViagem viagens={hoje} escolhida={destino.id} feitas={feitas} aoEscolher={escolherViagem} />
