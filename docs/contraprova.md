@@ -603,3 +603,12 @@ Como ficou:
 - L3 no app: passageira, sininho 1 → abre (aviso de cobrança com "Novo") → volta: sininho sem número → abre de novo: os 2 avisos, sem "Novo". Vanzeiro: sininho 3 → abre ("Novo" na cobrança da Beatriz) → sininho 2 (os 2 pedidos continuam contando até aceitar ou recusar).
 
 Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas sem erro; texto de 13 telas idêntico à `main`; caminhos de entrada sem erro.
+
+---
+
+## Apagar a tela antiga "Pedidos para entrar" (14/11/2026)
+**Situação:** feita em 14/11/2026, na branch `apagar-pedidos`, com merge na `main`. Pedido do dono do projeto (decisão B). Sem banco de dados.
+- O conteúdo dela (pedidos com Aceitar / Recusar) já está em Notificações, e nenhum botão levava mais até ela. Só a lista de rotas gerada automaticamente a citava.
+- [x] Apagar `src/routes/vanzeiro.pedidos.tsx` e deixar o build gerar a lista de rotas de novo.
+- [x] Conferir: o endereço antigo não abre mais a tela; sininho, Notificações, Aceitar e Recusar continuam funcionando; testes, tipos e build passando.
+- Conferido: o endereço antigo mostra "Página não encontrada"; da lista de rotas saíram só as 21 linhas da tela apagada; sininho abre Notificações; Recusar pede confirmação; Aceitar abre o cadastro preenchido; 14 telas principais sem erro; testes (150), tipos e build passando.
