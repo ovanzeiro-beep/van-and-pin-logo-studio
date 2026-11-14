@@ -173,6 +173,17 @@ function OpcaoTipo({
 function Passo2({ r, mudar }: PassoProps) {
   const alternarDia = (id: (typeof DIAS_DA_SEMANA)[number]["id"]) =>
     mudar({ dias: r.dias.includes(id) ? r.dias.filter((d) => d !== id) : [...r.dias, id] });
+  const opcoesDeVolta: { rotulo: string; ativo: boolean; valor: Partial<Rascunho> }[] =
+    r.tipo === "avulsa"
+      ? [
+          { rotulo: "Não", ativo: r.temVolta === false, valor: { temVolta: false, voltaOutroDia: false } },
+          { rotulo: "Mesmo dia", ativo: r.temVolta === true && !r.voltaOutroDia, valor: { temVolta: true, voltaOutroDia: false } },
+          { rotulo: "Outro dia", ativo: r.temVolta === true && r.voltaOutroDia, valor: { temVolta: true, voltaOutroDia: true } },
+        ]
+      : [
+          { rotulo: "Sim", ativo: r.temVolta === true, valor: { temVolta: true } },
+          { rotulo: "Não", ativo: r.temVolta === false, valor: { temVolta: false } },
+        ];
 
   return (
     <>
@@ -224,50 +235,23 @@ function Passo2({ r, mudar }: PassoProps) {
       )}
       <div>
         <Rotulo>Tem volta?</Rotulo>
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            type="button"
-            size="lg"
-            variant={r.temVolta === true ? "default" : "outline"}
-            aria-pressed={r.temVolta === true}
-            onClick={() => mudar({ temVolta: true })}
-          >
-            Sim
-          </Button>
-          <Button
-            type="button"
-            size="lg"
-            variant={r.temVolta === false ? "default" : "outline"}
-            aria-pressed={r.temVolta === false}
-            onClick={() => mudar({ temVolta: false })}
-          >
-            Não
-          </Button>
+        {/* Viagem avulsa answers when the volta is in the same row, so the step fits without scrolling. */}
+        <div className={cn("grid gap-3", opcoesDeVolta.length === 3 ? "grid-cols-3" : "grid-cols-2")}>
+          {opcoesDeVolta.map((o) => (
+            <Button
+              key={o.rotulo}
+              type="button"
+              size="lg"
+              className="px-2"
+              variant={o.ativo ? "default" : "outline"}
+              aria-pressed={o.ativo}
+              onClick={() => mudar(o.valor)}
+            >
+              {o.rotulo}
+            </Button>
+          ))}
         </div>
       </div>
-      {r.tipo === "avulsa" && r.temVolta && (
-        <div>
-          <Rotulo>A volta é</Rotulo>
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              type="button"
-              variant={!r.voltaOutroDia ? "default" : "outline"}
-              aria-pressed={!r.voltaOutroDia}
-              onClick={() => mudar({ voltaOutroDia: false })}
-            >
-              No mesmo dia
-            </Button>
-            <Button
-              type="button"
-              variant={r.voltaOutroDia ? "default" : "outline"}
-              aria-pressed={r.voltaOutroDia}
-              onClick={() => mudar({ voltaOutroDia: true })}
-            >
-              Em outro dia
-            </Button>
-          </div>
-        </div>
-      )}
       {/* Side by side when there is a volta, so the step still fits without scrolling. */}
       <div className={cn("grid gap-3", r.temVolta && "grid-cols-2")}>
         <CampoComIcone

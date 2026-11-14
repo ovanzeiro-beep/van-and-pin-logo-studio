@@ -742,7 +742,7 @@ Como ficou (14/11/2026):
 ---
 
 ## Volta em outro dia (iniciado em 14/11/2026)
-**Situação:** em andamento, na branch `volta-outro-dia`. Decisão do dono (14/11/2026, sugestão 1): na viagem avulsa, "A volta é: No mesmo dia / Em outro dia" (com a data); na rota fixa, se a volta for mais cedo que a saída (ex.: sai 22:00, volta 06:00), ela é no dia seguinte, sem pergunta nova. Sem banco de dados.
+**Situação:** feita em 14/11/2026, na branch `volta-outro-dia`, com merge na `main`. Decisão do dono (14/11/2026, sugestão 1): na viagem avulsa, "A volta é: No mesmo dia / Em outro dia" (com a data); na rota fixa, se a volta for mais cedo que a saída (ex.: sai 22:00, volta 06:00), ela é no dia seguinte, sem pergunta nova. Sem banco de dados.
 
 Mapa (antes de começar):
 - A cobrança já está certa: é criada no embarque da ida, com a identidade daquela viagem; a volta em outro dia não cria outra (Por viagem: ida e volta = 1 cobrança). Diário: conta o dia da ida.
@@ -750,8 +750,18 @@ Mapa (antes de começar):
 - A aba Viagem já continua a viagem em andamento em qualquer dia; o Início só olhava as viagens de hoje.
 
 Plano:
-- [ ] V1. Regra: data da volta da viagem avulsa (\`voltaData\`, vazia = mesmo dia); volta no dia seguinte na rota fixa quando a volta é mais cedo que a saída; texto da volta ("19:00", "29/11, 19:00", "06:00 do dia seguinte"). Em \`src/lib/destinos.ts\`, com testes.
-- [ ] V2. Cadastro, passo 2: na viagem avulsa com volta, "A volta é: No mesmo dia / Em outro dia" + "Data da volta" (depois da data da ida); na rota fixa, aviso "A volta é no dia seguinte" quando for o caso. Resumo mostra a volta certa. O passo não pode passar a rolar.
-- [ ] V3. Onde a volta aparece (Início, detalhe do destino, antes de sair, histórico) usa o texto da volta.
-- [ ] V4. Viagem: o Início mostra a viagem em andamento mesmo fora do dia dela; "Chegou ao destino" diz quando é a volta.
-- [ ] V5. Conferência no app (cadastro de excursão com volta em outro dia; viagem até a volta), testes, tipos, build.
+- [x] V1. Regra: data da volta da viagem avulsa (\`voltaData\`, vazia = mesmo dia); volta no dia seguinte na rota fixa quando a volta é mais cedo que a saída; texto da volta ("19:00", "29/11, 19:00", "06:00 do dia seguinte"). Em \`src/lib/destinos.ts\`, com testes.
+- [x] V2. Cadastro, passo 2: na viagem avulsa com volta, "A volta é: No mesmo dia / Em outro dia" + "Data da volta" (depois da data da ida); na rota fixa, aviso "A volta é no dia seguinte" quando for o caso. Resumo mostra a volta certa. O passo não pode passar a rolar.
+- [x] V3. Onde a volta aparece (Início, detalhe do destino, antes de sair, histórico) usa o texto da volta.
+- [x] V4. Viagem: o Início mostra a viagem em andamento mesmo fora do dia dela; "Chegou ao destino" diz quando é a volta.
+- [x] V5. Conferência no app (cadastro de excursão com volta em outro dia; viagem até a volta), testes, tipos, build.
+
+Como ficou (14/11/2026):
+- V1: campo `voltaData` no destino (só viagem avulsa; vazio = mesmo dia). Regras em `src/lib/destinos.ts`: `voltaNoDiaSeguinte` (rota fixa com volta mais cedo que a saída), `dataDaVolta`, `textoDaVolta` ("19:00", "29/11, 19:00", "06:00 do dia seguinte", "Sem volta"). Testes em `destinos.test.ts`.
+- V2: com "Em outro dia" em duas perguntas, o passo 2 rolava (44px a 171px). **Decisão do dono (14/11/2026): juntar numa linha.** Viagem avulsa: "Tem volta?" com 3 botões — Não · Mesmo dia · Outro dia; com "Outro dia", "Data da volta" aparece ao lado de "Data da ida" (só aceita data depois da ida). Rota fixa continua Sim / Não, com o aviso "A volta é no dia seguinte." quando for o caso. O passo 2 não rola em nenhum dos 3 tamanhos. Resumo e detalhe mostram "Volta 29/11, 18:00".
+- V3: Início, detalhe do destino, antes de sair, resumo do cadastro e histórico usam `textoDaVolta`.
+- V4: o Início mostra a viagem em andamento mesmo fora do dia dela (teste em `viagem.test.ts`); "Chegou ao destino" mostra "Volta: 29/11, 19:00" acima de "Iniciar volta" quando a volta é em outro dia (teste da tela em `chegada-volta.test.tsx`).
+- A cobrança não mudou: já era uma só por viagem (ida e volta), criada no embarque da ida.
+- V5 conferido: cadastro de excursão Jacarezinho → Aparecida com volta em 29/11 no navegador (3 tamanhos); rota fixa 22:00 → 06:00; testes (181), tipos, build; 14 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; percurso da viagem completo.
+- Não conferido no app (os exemplos não têm uma excursão de hoje com passageiro): a viagem atravessando de um dia para o outro na tela. Conferido por teste.
+
