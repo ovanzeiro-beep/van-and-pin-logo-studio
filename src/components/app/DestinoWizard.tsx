@@ -316,13 +316,14 @@ function Passo3({ r, mudar }: PassoProps) {
     <>
       <p className="text-sm text-muted-foreground">Coloque as cidades ou paradas na ordem do caminho.</p>
       <ol>
-        <PontoDoCaminho nome={r.origem} indice={0} total={total} />
+        <PontoDoCaminho nome={r.origem} indice={0} total={total} compacto />
         {r.paradas.map((p, i) => (
           <PontoDoCaminho
             key={`${i}-${p}`}
             nome={p}
             indice={i + 1}
             total={total}
+            compacto
             acoes={
               <>
                 <BotaoIcone
@@ -347,7 +348,7 @@ function Passo3({ r, mudar }: PassoProps) {
             }
           />
         ))}
-        <PontoDoCaminho nome={r.destino} indice={total - 1} total={total} />
+        <PontoDoCaminho nome={r.destino} indice={total - 1} total={total} compacto />
       </ol>
       <form
         className="flex gap-2"
@@ -417,7 +418,7 @@ function Resumo({ r }: { r: Rascunho }) {
         <span className="text-muted-foreground">Confirmar até: </span>
         <span className="font-bold">{PRAZO_TEXTO[d.prazo]}</span>
       </p>
-      <CaminhoParadas pontos={caminhoCompleto(d)} />
+      <CaminhoParadas pontos={caminhoCompleto(d)} compacto />
     </>
   );
 }

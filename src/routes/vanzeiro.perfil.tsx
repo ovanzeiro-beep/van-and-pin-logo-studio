@@ -104,14 +104,17 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
         onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
       />
       <CampoComIcone id="v-pix" label="Chave Pix" icon={QrCode} value={pix} onChange={(e) => setPix(e.target.value)} />
-      <CampoComIcone id="v-modelo" label="Modelo da van" icon={Car} value={modelo} onChange={(e) => setModelo(e.target.value)} />
-      <CampoComIcone
-        id="v-placa"
-        label="Placa"
-        icon={RectangleHorizontal}
-        value={placa}
-        onChange={(e) => setPlaca(e.target.value.toUpperCase())}
-      />
+      {/* Side by side so the form fits without scrolling. */}
+      <div className="grid grid-cols-2 gap-3">
+        <CampoComIcone id="v-modelo" label="Modelo da van" icon={Car} value={modelo} onChange={(e) => setModelo(e.target.value)} />
+        <CampoComIcone
+          id="v-placa"
+          label="Placa"
+          icon={RectangleHorizontal}
+          value={placa}
+          onChange={(e) => setPlaca(e.target.value.toUpperCase())}
+        />
+      </div>
       <div className="grid grid-cols-2 gap-3 pt-1">
         <Button size="lg" variant="outline" onClick={fechar}>
           <X className="!h-5 !w-5" /> Cancelar
