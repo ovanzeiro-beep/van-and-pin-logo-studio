@@ -9,6 +9,7 @@ import type { Destino } from "@/data/exemplo";
 import { nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { useDestino, useDestinos } from "@/lib/destinos-store";
 import { matriculasDaPessoa, formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
+import { sair } from "@/lib/acesso";
 import { pedirParaEntrar, tentarOutroCodigo, useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
@@ -29,6 +30,7 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
         {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
         <Link
           to={outro ? "/passageiro/perfil" : "/entrar"}
+          onClick={outro ? undefined : sair}
           className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground"
         >
           <LogOut className="h-4 w-4" /> {outro ? "Voltar ao perfil" : "Sair"}

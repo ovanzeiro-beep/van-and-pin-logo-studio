@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { sair } from "@/lib/acesso";
 import { excluirMinhaConta } from "@/lib/exclusoes";
 
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
@@ -21,7 +22,8 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
   const navigate = useNavigate();
 
   const excluir = async () => {
-    excluirMinhaConta(papel);
+    if (!excluirMinhaConta(papel)) return;
+    sair();
     await navigate({ to: "/entrar" });
   };
 

@@ -1,59 +1,34 @@
-import { useSyncExternalStore } from "react";
-import { passageiroExemplo, passageirosExemplo, type Passageiro } from "@/data/exemplo";
+import { type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { obterDestinos } from "@/lib/destinos-store";
-import { adicionarPedido, obterPassageiros, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos, useSaidas } from "@/lib/passageiros-store";
+import { adicionarPedido, obterAceitos, obterPassageiros, obterPedidos, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos, useSaidas } from "@/lib/passageiros-store";
 
 import { matriculasDaPessoa, identidadePassageiro, somenteDigitos, type MeusDados } from "@/lib/passageiros";
+import { mudarSessaoPassageiro, obterSessao, useSessao, type SessaoPassageiro } from "@/lib/sessao";
 
-// Who is using the passenger panel on this phone. Starts as the sample passenger (Juliana);
-// a new account starts with no van and joins one with an invite code.
-type Sessao = { nome: string; telefone: string; passageiroId: string | null; pedidoId: string | null };
-const juliana = passageirosExemplo.find((p) => p.id === passageiroExemplo.passageiroId);
-const inicial: Sessao = {
-  nome: juliana?.nome ?? "",
-  telefone: juliana?.telefone ?? "",
-  passageiroId: passageiroExemplo.passageiroId,
-  pedidoId: null,
-};
-let sessao = inicial;
-const ouvintes = new Set<() => void>();
-
-function mudar(nova: Sessao) {
-  sessao = nova;
-  ouvintes.forEach((o) => o());
-}
-
-function inscrever(o: () => void) {
-  ouvintes.add(o);
-  return () => ouvintes.delete(o);
-}
+// The passenger panel of whoever is using the app (saved in sessao.ts). Starts as the sample
+// passenger (Juliana); a new account starts with no van and joins one with an invite code.
 
 export function useSessaoPassageiro() {
-  return useSyncExternalStore(inscrever, () => sessao, () => inicial);
-}
-
-/** "Criar conta": a new person, not in any van yet. */
-export function criarContaNova(nome: string) {
-  mudar({ nome: nome.trim(), telefone: "", passageiroId: null, pedidoId: null });
+  return useSessao().passageiro;
 }
 
 export function pedirParaEntrar(destinoId: string, nome: string, telefone: string) {
-  if (sessao.passageiroId && obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
+  if (obterSessao().passageiro.passageiroId && obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
   const destino = obterDestinos().find((d) => d.id === destinoId);
   if (!destino) return;
   const eu = obterMinhasMatriculas()[0];
   const pedidoId = adicionarPedido({ vanzeiroId: destino.vanzeiroId, destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
-  mudar({ ...sessao, nome: nome.trim(), telefone, pedidoId });
+  mudarSessaoPassageiro({ nome: nome.trim(), telefone, pedidoId });
 }
 
 /** "Editar" on the passenger's Perfil: saves on every destino of this person and in this session. */
 export function salvarMeusDados(euId: string, dados: MeusDados) {
   salvarDadosDoPassageiro(euId, dados);
-  mudar({ ...sessao, nome: dados.nome.trim(), telefone: somenteDigitos(dados.telefone) });
+  mudarSessaoPassageiro({ nome: dados.nome.trim(), telefone: somenteDigitos(dados.telefone) });
 }
 
 export function tentarOutroCodigo() {
-  mudar({ ...sessao, pedidoId: null });
+  mudarSessaoPassageiro({ pedidoId: null });
 }
 
 export type MinhaSituacao =
@@ -64,10 +39,10 @@ export type MinhaSituacao =
 
 /** Whether this person is in a van, waiting for the vanzeiro, or still needs an invite code. */
 export function useMinhaSituacao(): MinhaSituacao {
-  const s = useSessaoPassageiro();
-  const passageiros = usePassageiros();
-  const pedidos = usePedidos();
-  const aceitos = useAceitos();
+  return situacaoDe(useSessaoPassageiro(), usePassageiros(), usePedidos(), useAceitos());
+}
+
+function situacaoDe(s: SessaoPassageiro, passageiros: Passageiro[], pedidos: PedidoEntrada[], aceitos: Record<string, string>): MinhaSituacao {
   const id = (s.pedidoId && aceitos[s.pedidoId]) || s.passageiroId;
   const ancora = passageiros.find((p) => p.id === id) ?? passageiros.find((p) => identidadePassageiro(p) === (s.passageiroId ?? id));
   const passageiro = ancora;
@@ -99,8 +74,9 @@ export function useIdsDasMinhasCobrancas() {
   const minhas = saidas.filter((p) => identidadePassageiro(p) === identidadePassageiro(eu));
   return [...matriculas, ...minhas].map((p) => p.id);
 }
-function obterMinhasMatriculas() {
+/** The memberships of whoever is using the passenger panel. */
+export function obterMinhasMatriculas() {
   const lista = obterPassageiros();
-  const eu = lista.find((p) => p.id === sessao.passageiroId);
-  return eu ? matriculasDaPessoa(lista, eu) : [];
+  const s = situacaoDe(obterSessao().passageiro, lista, obterPedidos(), obterAceitos());
+  return s.tipo === "membro" ? matriculasDaPessoa(lista, s.passageiro) : [];
 }

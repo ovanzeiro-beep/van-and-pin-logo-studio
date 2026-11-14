@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants, type ButtonProps } from "@/components/ui/button";
+import { sair } from "@/lib/acesso";
 
 /** Profile options shared by both panels: switch role, Termos, Política and "Sair" with confirmation. */
 export function OpcoesDaConta({
@@ -52,7 +53,10 @@ export function OpcoesDaConta({
             <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className={buttonVariants({ variant: "destructive", size: "lg" })}
-              onClick={() => navigate({ to: "/entrar" })}
+              onClick={() => {
+                sair();
+                navigate({ to: "/entrar" });
+              }}
             >
               Sair
             </AlertDialogAction>

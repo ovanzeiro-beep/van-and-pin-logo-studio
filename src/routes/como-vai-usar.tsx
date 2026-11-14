@@ -3,7 +3,7 @@ import type { ComponentType } from "react";
 import { ArrowRight, UserRound } from "lucide-react";
 import { Logo, VanIcon } from "@/components/brand/Logo";
 import { MobileScreen } from "@/components/app/MobileScreen";
-import { abrirPainelVanzeiro, esquecerContaNova } from "@/lib/conta-nova";
+import { escolherPapel } from "@/lib/acesso";
 
 export const Route = createFileRoute("/como-vai-usar")({
   head: () => ({
@@ -36,14 +36,14 @@ function ComoVaiUsar() {
           titulo="Sou vanzeiro"
           descricao="Organize passageiros, rotas e cobranças da sua van."
           destaque
-          aoTocar={abrirPainelVanzeiro}
+          aoTocar={() => escolherPapel("vanzeiro")}
         />
         <OpcaoPerfil
           to="/passageiro"
           icon={UserRound}
           titulo="Sou passageiro"
           descricao="Acompanhe a van, confirme presença e veja seus pagamentos."
-          aoTocar={esquecerContaNova}
+          aoTocar={() => escolherPapel("passageiro")}
         />
       </div>
     </MobileScreen>

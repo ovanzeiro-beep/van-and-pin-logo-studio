@@ -5,6 +5,7 @@ import { Bell, Compass } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
+import { identidadePassageiro } from "@/lib/passageiros";
 import { useMinhaSituacao } from "@/lib/sessao-passageiro";
 
 const tipoAviso: Record<string, { label: string; cor: string }> = {
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/passageiro/notificacoes")({
 
 function PaginaNotificacoes() {
   const s = useMinhaSituacao();
-  const meuId = s.tipo === "membro" ? s.passageiro.pessoaId : s.pessoaId;
+  const meuId = s.tipo === "membro" ? identidadePassageiro(s.passageiro) : "";
   const avisos = useAvisosNaoLidos(meuId);
   const noAvisos = avisos.length === 0;
 

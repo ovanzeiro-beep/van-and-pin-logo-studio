@@ -3,7 +3,7 @@ import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada
 import { atualizarMeusDados, identidadePassageiro, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
-import { idDoVanzeiro } from "@/lib/vanzeiro-store";
+import { idDoVanzeiro } from "@/lib/sessao";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
 let passageiros = passageirosExemplo;
@@ -28,6 +28,7 @@ function inscrever(o: () => void) {
 export const obterPassageiros = () => passageiros;
 export const obterPedidos = () => pedidos;
 export const obterSaidas = () => saidas;
+export const obterAceitos = () => aceitos;
 
 export function useSaidas() {
   return useSyncExternalStore(inscrever, obterSaidas, () => SEM_SAIDAS);

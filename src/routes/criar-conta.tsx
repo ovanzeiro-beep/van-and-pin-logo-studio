@@ -15,8 +15,7 @@ import {
   validarCadastro,
   type DadosCadastro,
 } from "@/lib/cadastro";
-import { marcarContaNova } from "@/lib/conta-nova";
-import { criarContaNova } from "@/lib/sessao-passageiro";
+import { criarConta } from "@/lib/acesso";
 
 export const Route = createFileRoute("/criar-conta")({
   head: () => ({
@@ -65,8 +64,7 @@ function CriarConta() {
           setTentou(true);
           if (!cadastroOk(validarCadastro(dados))) return;
           // A new account is not in any van yet: as a passenger it starts at "Entrar na van".
-          criarContaNova(dados.nome);
-          marcarContaNova(dados.nome);
+          criarConta(dados.nome);
           limparRascunhoDoCadastro();
           avancar();
         }}
@@ -145,8 +143,7 @@ function CriarConta() {
         disabled={!podeContinuarComGoogle(dados.aceitouTermos)}
         onClick={() => {
           if (!podeContinuarComGoogle(dados.aceitouTermos)) return;
-          criarContaNova("");
-          marcarContaNova("");
+          criarConta("");
           avancar();
         }}
       />

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { abrirPainelVanzeiro, esquecerContaNova, marcarContaNova } from "@/lib/conta-nova";
+import { criarConta, entrar, escolherPapel } from "@/lib/acesso";
 import { obterCobrancas } from "@/lib/cobrancas-store";
 import { obterDestinos } from "@/lib/destinos-store";
 import { obterPassageiros, obterPedidos } from "@/lib/passageiros-store";
@@ -9,21 +9,22 @@ import { DATA_DE_HOJE } from "@/data/exemplo";
 
 describe("Primeiro uso do vanzeiro", () => {
   it("'Entrar' (no new account) keeps the sample data", () => {
-    abrirPainelVanzeiro();
+    entrar();
+    escolherPapel("vanzeiro");
     expect(obterDestinos().length).toBeGreaterThan(0);
     expect(obterPassageiros().length).toBeGreaterThan(0);
   });
 
   it("a new account that chose 'Sou passageiro' first keeps the sample vanzeiro", () => {
-    marcarContaNova("Bruno");
-    esquecerContaNova();
-    abrirPainelVanzeiro();
+    criarConta("Bruno");
+    escolherPapel("passageiro");
+    escolherPapel("vanzeiro");
     expect(obterDestinos().length).toBeGreaterThan(0);
   });
 
   it("a new account opens the vanzeiro panel empty", () => {
-    marcarContaNova("Bruna Lima");
-    abrirPainelVanzeiro();
+    criarConta("Bruna Lima");
+    escolherPapel("vanzeiro");
     expect(obterDestinos()).toEqual([]);
     expect(obterPassageiros()).toEqual([]);
     expect(obterPedidos()).toEqual([]);

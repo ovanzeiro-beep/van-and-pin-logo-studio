@@ -412,7 +412,26 @@ Achado na conferência de tipos (que o build não faz):
 - [x] Teste novo `src/test/dono.test.ts` (5 testes). Testes (143) passando. Conferência de tipos: só sobram os 2 erros antigos do sininho do passageiro e os do item 6.
 - [x] No app: criado o destino "Ourinhos → Assis" pelo formulário; aparece na lista e abre com código novo (VAN-7160). 15 telas sem erro; texto de 13 telas idêntico ao da `main`.
 
-- [ ] (continuação) Sininho do passageiro procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
+### Item 4 refeito (14/11/2026)
+- [x] `src/lib/sessao.ts` é o lugar só de quem usa o app: papel escolhido, conta recém-criada, identificador do vanzeiro e os dados do passageiro que usa o app. Não depende de nenhum outro arquivo de regras (com login de verdade, só ele muda).
+- [x] `src/lib/acesso.ts` (era `conta-nova.ts`) junta as ações de entrada: Entrar, Criar conta, "Sou vanzeiro / Sou passageiro" (primeira vez e troca no Perfil) e Sair. Todas gravam no `sessao.ts`.
+- [x] `sessao-passageiro.ts` continua com as regras do painel do passageiro, mas lê e grava no `sessao.ts`. Tela e ações usam a mesma regra para saber quem é o passageiro (inclui quem entrou por pedido).
+- [x] Apagado `sessao-usuario.ts` (a cópia que não era usada).
+- [x] "Sair" (Perfil e tela "Entrar na van") e "Excluir minha conta" apagam o papel guardado.
+- [x] Teste novo `src/test/sessao.test.ts` (5 testes); `conta-nova.test.ts` virou `acesso.test.ts`. Testes (148) passando. Conferência de tipos: nenhum erro fora dos testes do item 6 (os 2 erros antigos do sininho sumiram).
+- [x] No app (comparado com a `main`): Entrar → Sou vanzeiro; Perfil → Trocar para passageiro; Criar conta → Sou vanzeiro (painel vazio com o nome); Criar conta → Sou passageiro → código → Pedir para entrar → Sair; Perfil → Sair. Tudo igual, sem erro. 15 telas sem erro; texto de 13 telas idêntico.
+- Nenhuma tela muda de comportamento por causa do papel guardado (não foi pedido). Ele fica pronto para o banco.
+
+Erros corrigidos junto (mesma causa: o app não sabia quem estava usando):
+- [x] **"Excluir minha conta" do passageiro tirava 15 passageiros de todos os destinos** (pegava o primeiro da lista, não a pessoa). Agora sai só a própria pessoa. Conferido no app: na `main`, Cambará → UENP fica sem ninguém; agora ficam 5.
+- [x] "Excluir minha conta" do vanzeiro exclui só os destinos dele.
+- [x] Se a exclusão da conta não pode acontecer (viagem em andamento), o app não vai mais para "Entrar" fingindo que excluiu; nada muda.
+- [x] **Sininho do passageiro**: procurava os avisos por um campo vazio e a Juliana nunca via os avisos dela. Agora o sininho mostra 1 e a tela Notificações mostra "Cobrança vencendo".
+
+Pendências para o dono do projeto (não mexi):
+- [ ] Sugestão: em "Excluir minha conta" com viagem em andamento, mostrar o aviso "Termine a viagem antes", igual ao "Excluir destino". Hoje o botão simplesmente não faz nada.
+- [ ] Conta nova de vanzeiro abre o painel vazio, mas o sininho mostra 1 (um aviso de exemplo do Carlos). Já era assim na `main`.
+- [ ] Tela Notificações: a data aparece como "2026-11-13" e o aviso de exemplo da Juliana diz "vence hoje", mas a mensalidade dela vence em 20/11. procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
 
 ### Próximo item
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.

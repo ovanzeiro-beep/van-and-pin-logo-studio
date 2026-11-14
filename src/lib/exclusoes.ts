@@ -2,6 +2,8 @@ import { dataDeHoje } from "@/lib/agora";
 import { cancelarPendentesDe } from "@/lib/cobrancas-store";
 import { obterDestinos, removerDestino } from "@/lib/destinos-store";
 import { obterPassageiros, removerDoDestino, sairDaMatricula } from "@/lib/passageiros-store";
+import { obterMinhasMatriculas } from "@/lib/sessao-passageiro";
+import { idDoVanzeiro } from "@/lib/sessao";
 import { emAndamento, obterViagensDoDia } from "@/lib/viagem-store";
 
 // Excluir destino (vanzeiro) and Sair deste destino (passageiro), following decision 6:
@@ -34,22 +36,17 @@ export function sairDoDestino(passageiroId: string, hoje = dataDeHoje()) {
   return true;
 }
 
-/** Delete the account entirely: vanzeiro deletes all destinos; passenger leaves all destinos.
- * Returns false if any trip is in progress. */
+/** Delete the account entirely: the vanzeiro deletes all their destinos; the passenger leaves all
+ * their destinos. Returns false (and changes nothing) while one of those trips is in progress. */
 export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = dataDeHoje()) {
   if (papel === "vanzeiro") {
-    const destinos = obterDestinos();
-    for (const d of destinos) {
-      if (!excluirDestino(d.id, hoje)) return false;
-    }
+    const meus = obterDestinos().filter((d) => d.vanzeiroId === idDoVanzeiro());
+    if (meus.some((d) => viagemEmAndamentoNoDestino(d.id))) return false;
+    meus.forEach((d) => excluirDestino(d.id, hoje));
   } else {
-    const passageiros = obterPassageiros();
-    const eu = passageiros[0]; // All my memberships have same identity, pick first
-    if (!eu) return true; // No memberships, nothing to delete
-    const minhas = passageiros.filter((p) => p.pessoaId === eu.pessoaId);
-    for (const p of minhas) {
-      if (!sairDoDestino(p.id, hoje)) return false;
-    }
+    const minhas = obterMinhasMatriculas();
+    if (minhas.some((p) => viagemEmAndamentoNoDestino(p.destinoId))) return false;
+    minhas.forEach((p) => sairDoDestino(p.id, hoje));
   }
   return true;
 }

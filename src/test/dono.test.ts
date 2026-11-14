@@ -4,8 +4,9 @@ import { gerarCobrancas } from "@/lib/cobrancas";
 import { destinoDeRascunho, rascunhoVazio } from "@/lib/destinos";
 import { passageiroDeRascunho, rascunhoPassageiroVazio } from "@/lib/passageiros";
 import { obterPedidos } from "@/lib/passageiros-store";
-import { criarContaNova, pedirParaEntrar } from "@/lib/sessao-passageiro";
-import { idDoVanzeiro } from "@/lib/vanzeiro-store";
+import { criarConta } from "@/lib/acesso";
+import { pedirParaEntrar } from "@/lib/sessao-passageiro";
+import { idDoVanzeiro } from "@/lib/sessao";
 import { iniciarViagem } from "@/lib/viagem";
 
 const rascunhoDestino = { ...rascunhoVazio(), origem: "A", destino: "B", tipo: "fixa" as const, dias: ["seg" as const], saida: "06:00", temVolta: false };
@@ -31,7 +32,7 @@ describe("Todo dado leva o vanzeiro dono", () => {
   });
 
   it("pedido para entrar é do dono do destino do código", () => {
-    criarContaNova("Bruna");
+    criarConta("Bruna");
     pedirParaEntrar("centro-unisul", "Bruna", "43999991111");
     const pedido = obterPedidos().at(-1);
     expect(pedido?.nome).toBe("Bruna");

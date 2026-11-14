@@ -1,6 +1,6 @@
 import type { DiaSemana, Destino, PrazoConfirmacao, TipoDestino } from "@/data/exemplo";
 import { gerarConviteUnico } from "@/lib/convite";
-import { idDoVanzeiro } from "@/lib/vanzeiro-store";
+import { idDoVanzeiro } from "@/lib/sessao";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "seg", curto: "Seg" },
