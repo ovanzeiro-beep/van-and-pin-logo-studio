@@ -45,7 +45,7 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
           feitos={v.embarcaram.length}
           total={v.ordem.length}
           texto="embarcados"
-          extra={v.naoEstavam.length > 0 && <span className="text-sm font-bold text-destructive">{v.naoEstavam.length} faltou</span>}
+          extra={v.naoEstavam.length > 0 && <span className="text-sm font-bold text-destructive">{v.naoEstavam.length} {v.naoEstavam.length === 1 ? "não estava no ponto" : "não estavam no ponto"}</span>}
         />
         {id ? (
           <>
@@ -88,7 +88,7 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
     const total = v.naVolta.filter((x) => !v.ficaram.includes(x) || v.desceram.includes(x)).length;
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
-        <Progresso feitos={v.desceram.length} total={total} texto="deixados em casa" />
+        <Progresso feitos={v.desceram.length} total={total} texto="desceram" />
         {id && (
           <>
             <PassageiroDaVez rotulo="Próxima descida" p={achar(id)} posicao={`${v.desceram.length + 1}º de ${total}`} />

@@ -132,11 +132,16 @@ describe("Situação da van para o passageiro", () => {
 });
 
 describe("Histórico do passageiro", () => {
-  it("marks faltas as Faltou and the other trip days as Embarcou", () => {
+  it("marks faltas as Não vou and the other trip days as Embarcou", () => {
     const h = historicoDoPassageiro({ id: "p-juliana", plano: "mensal" }, centro, "2026-11-13", { embarques: [], faltas: [{ passageiroId: "p-juliana", data: "2026-11-05" }] }, undefined);
-    expect(h.find((i) => i.data === "2026-11-05")?.embarcou).toBe(false);
+    expect(h.find((i) => i.data === "2026-11-05")).toEqual({ data: "2026-11-05", embarcou: false, motivo: "nao-vou" });
     expect(h.find((i) => i.data === "2026-11-06")?.embarcou).toBe(true);
     expect(h.some((i) => i.data === "2026-11-08")).toBe(false);
+  });
+  it("today's 'Não estava no ponto' shows as Não estava no ponto", () => {
+    const hoje = naoEstava(iniciarViagem(centro, ["p-juliana"], "2026-11-13"), "p-juliana");
+    const h = historicoDoPassageiro({ id: "p-juliana", plano: "mensal" }, centro, "2026-11-13", { embarques: [], faltas: [] }, hoje);
+    expect(h[0]).toEqual({ data: "2026-11-13", embarcou: false, motivo: "nao-estava" });
   });
 });
 

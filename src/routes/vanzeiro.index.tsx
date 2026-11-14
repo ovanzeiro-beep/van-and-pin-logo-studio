@@ -65,7 +65,7 @@ function InicioVanzeiro() {
           label="Viagem de hoje"
           value={destino ? nomeDestino(destino) : "Sem viagem hoje"}
           detail={textoDaVan(perfil)}
-          aside={<StatusBadge status="pendente">Às {saida}</StatusBadge>}
+          aside={<StatusBadge status="info">Às {saida}</StatusBadge>}
         >
           <div className="flex items-center gap-3 rounded-2xl bg-surface px-3.5 py-1.5 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -117,9 +117,9 @@ function InicioVanzeiro() {
             <div className="h-full rounded-full bg-success" style={{ width: `${pct}%` }} />
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            <StatusBadge status="pago">{confirmados} confirmados</StatusBadge>
+            <StatusBadge status="pago">{confirmados} {confirmados === 1 ? "confirmado" : "confirmados"}</StatusBadge>
             <StatusBadge status="pendente">{semResposta} sem resposta</StatusBadge>
-            <StatusBadge status="deve">{naoVao} não vão</StatusBadge>
+            <StatusBadge status="deve">{naoVao} {naoVao === 1 ? "não vai" : "não vão"}</StatusBadge>
           </div>
         </InfoCard>
         )}
@@ -129,9 +129,8 @@ function InicioVanzeiro() {
             compacto
             icon={Wallet}
             tone="warning"
-            label="Valores a receber"
+            label="A receber"
             value={formatarReais(financeiro.aReceber)}
-            detail="Total a receber"
           >
             <div className="grid grid-cols-3 gap-2 text-center">
               <Resumo valor={financeiro.pagos} rotulo="Pagos" className="bg-success-soft text-success" />

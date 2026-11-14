@@ -34,7 +34,7 @@ export const Route = createFileRoute("/passageiro/")({
   component: InicioPassageiro,
 });
 
-const etapas = ["Saiu da garagem", "A caminho", "No seu ponto"];
+const etapas = ["Saiu da garagem", "A caminho", "Na van"];
 
 function InicioPassageiro() {
   const { eu, destino, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
@@ -86,7 +86,7 @@ function InicioPassageiro() {
                 ? rotuloDoDia(proximaDistante)
                 : "Nenhuma viagem marcada"
           }
-          aside={<BadgeResposta resposta={prox?.resposta} />}
+          aside={<BadgeResposta resposta={prox?.resposta} aberta={prox?.aberta ?? false} />}
         >
           {prox && <Prazo v={prox} />}
           {prox?.aberta && (
@@ -147,7 +147,7 @@ function InicioPassageiro() {
           compacto
           icon={Wallet}
           tone={devido > 0 ? "warning" : "success"}
-          label="Valor em aberto"
+          label="Em aberto"
           value={formatarReais(devido)}
           detail={
             aberta
@@ -178,10 +178,10 @@ function AvisoConferencia({ onConfirmar }: { onConfirmar: () => void }) {
   );
 }
 
-function BadgeResposta({ resposta }: { resposta: RespostaViagem | undefined }) {
+function BadgeResposta({ resposta, aberta }: { resposta: RespostaViagem | undefined; aberta: boolean }) {
   if (resposta === "vai") return <StatusBadge status="pago">Vou</StatusBadge>;
   if (resposta === "nao-vai") return <StatusBadge status="deve">Não vou</StatusBadge>;
-  return <StatusBadge status="pendente">Confirmar</StatusBadge>;
+  return <StatusBadge status="pendente">{aberta ? "Confirmar" : "Sem resposta"}</StatusBadge>;
 }
 
 /** The deadline, always in sight: open, closed with an answer, or closed without one. */

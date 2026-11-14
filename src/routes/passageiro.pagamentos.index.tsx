@@ -42,7 +42,7 @@ function MeusPagamentos() {
       <PassageiroHeader compacto titulo="Pagamentos" subtitulo="Suas cobranças da van." />
       <div className="relative z-10 -mt-4 shrink-0 px-5">
         <section className="rounded-3xl bg-card px-4 py-3 shadow-card">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Você deve</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Em aberto</p>
           <p className={cn("font-display text-3xl font-bold leading-tight", devido > 0 ? "text-foreground" : "text-success")}>
             {formatarReais(devido)}
           </p>

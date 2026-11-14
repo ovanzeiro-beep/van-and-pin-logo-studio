@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, XCircle } from "lucide-react";
+import { ArrowLeft, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, XCircle } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
           onClick={outro ? undefined : sair}
           className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground"
         >
-          <LogOut className="h-4 w-4" /> {outro ? "Voltar ao perfil" : "Sair"}
+          {outro ? <ArrowLeft className="h-4 w-4" /> : <LogOut className="h-4 w-4" />} {outro ? "Voltar ao perfil" : "Sair"}
         </Link>
       </div>
     </div>

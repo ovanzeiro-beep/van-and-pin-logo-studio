@@ -68,7 +68,7 @@ function MinhasViagens() {
               historico.map((h) => (
                 <div key={`${h.destino.id}_${h.data}`} className="flex items-center justify-between gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">
                   <div><p className="font-semibold text-foreground">{rotuloDoDia(h.data)}</p><p className="text-xs text-muted-foreground">{nomeDestino(h.destino)}</p></div>
-                  {h.embarcou ? <StatusBadge status="pago">Embarcou</StatusBadge> : <StatusBadge status="deve">Faltou</StatusBadge>}
+                  {h.embarcou ? <StatusBadge status="pago">Embarcou</StatusBadge> : <StatusBadge status="deve">{h.motivo === "nao-vou" ? "Não vou" : "Não estava no ponto"}</StatusBadge>}
                 </div>
               ))
             )}
@@ -95,7 +95,7 @@ function ProximaViagem({ v, saida, passageiroId }: { v: MinhaProximaViagem; said
         ) : v.resposta === "nao-vai" ? (
           <StatusBadge status="deve">Não vou</StatusBadge>
         ) : (
-          <StatusBadge status="pendente">Confirmar</StatusBadge>
+          <StatusBadge status="pendente">{v.aberta ? "Confirmar" : "Sem resposta"}</StatusBadge>
         )}
       </div>
       <p

@@ -162,7 +162,7 @@ function PagamentosDoPassageiro({ passageiroId, plano }: { passageiroId: string;
           deve === 0 ? "bg-success-soft" : temDevendo ? "bg-destructive-soft" : "bg-warning-soft",
         )}
       >
-        <p className="text-sm font-semibold text-foreground">Deve no total</p>
+        <p className="text-sm font-semibold text-foreground">Em aberto</p>
         <p
           className={cn(
             "font-display text-xl font-bold",

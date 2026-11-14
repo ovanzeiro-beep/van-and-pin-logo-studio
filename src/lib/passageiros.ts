@@ -9,7 +9,7 @@ import { formatarReais } from "@/lib/dinheiro";
 import { caminhoCompleto } from "@/lib/destinos";
 
 export const PLANOS: { id: PlanoPagamento; rotulo: string; texto: string; rotuloValor: string }[] = [
-  { id: "viagem", rotulo: "Por viagem", texto: "Ida + volta: 1 cobrança, mesmo noutro dia.", rotuloValor: "Valor por viagem" },
+  { id: "viagem", rotulo: "Por viagem", texto: "Ida e volta contam como 1 cobrança, mesmo em dias diferentes.", rotuloValor: "Valor por viagem" },
   { id: "diario", rotulo: "Diário", texto: "1 cobrança por dia que embarcou.", rotuloValor: "Valor por dia" },
   { id: "quinzenal", rotulo: "Quinzenal", texto: "A cada 15 dias", rotuloValor: "Valor da quinzena" },
   { id: "mensal", rotulo: "Mensal", texto: "Uma vez por mês", rotuloValor: "Valor do mês" },

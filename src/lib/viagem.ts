@@ -243,11 +243,13 @@ export function proximasDatas(d: Destino, hoje: string, dias = 7) {
   return datas;
 }
 
-export type ItemHistorico = { data: string; embarcou: boolean };
+/** Why the person did not travel: answered "Não vou", or was not at the stop on today's trip. */
+export type ItemHistorico = { data: string; embarcou: boolean; motivo?: "nao-vou" | "nao-estava" };
 
 /**
  * Past trips of a passenger (last `dias` days, plus today once the trip has their result):
- * a falta is "Faltou"; Por viagem/Diário only went on days they boarded; mensal/quinzenal went otherwise.
+ * a falta (answered "Não vou") is "Não vou"; today's "Não estava no ponto" stays as it is;
+ * Por viagem/Diário only went on days they boarded; mensal/quinzenal went otherwise.
  */
 export function historicoDoPassageiro(
   p: Pick<Passageiro, "id" | "plano">,
@@ -260,7 +262,7 @@ export function historicoDoPassageiro(
   const itens: ItemHistorico[] = [];
   if (viagemDeHoje) {
     if (viagemDeHoje.embarcaram.includes(p.id)) itens.push({ data: hoje, embarcou: true });
-    else if (viagemDeHoje.naoEstavam.includes(p.id)) itens.push({ data: hoje, embarcou: false });
+    else if (viagemDeHoje.naoEstavam.includes(p.id)) itens.push({ data: hoje, embarcou: false, motivo: "nao-estava" });
   }
   const porDia = p.plano === "viagem" || p.plano === "diario";
   for (let i = 1; i <= dias; i++) {
@@ -268,7 +270,7 @@ export function historicoDoPassageiro(
     if (!aconteceEm({ ...d, ativo: true }, data)) continue;
     const faltou = h.faltas.some((f) => f.passageiroId === p.id && f.data === data);
     const foi = h.embarques.some((e) => e.passageiroId === p.id && e.data === data);
-    if (faltou) itens.push({ data, embarcou: false });
+    if (faltou) itens.push({ data, embarcou: false, motivo: "nao-vou" });
     else if (!porDia || foi) itens.push({ data, embarcou: true });
   }
   return itens;
