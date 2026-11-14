@@ -245,3 +245,11 @@ describe("Viagem em destaque no Início do passageiro", () => {
     expect(viagemEmDestaque([perdida])?.id).toBe("06:00");
   });
 });
+
+describe("Viagem com volta em outro dia", () => {
+  it("o Início mostra a viagem em andamento mesmo fora do dia dela", async () => {
+    const { viagemDoInicio } = await import("@/lib/viagem");
+    const excursao = destinosExemplo.find((d) => d.id === "excursao-beto-carrero")!; // 28/11
+    expect(viagemDoInicio(destinosExemplo, { [excursao.id]: { fase: "chegada" } }, "2026-11-29").destino?.id).toBe(excursao.id);
+  });
+});

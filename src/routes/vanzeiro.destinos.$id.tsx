@@ -8,7 +8,7 @@ import { ExcluirDestino } from "@/components/app/ExcluirDestino";
 import { PausarDestino } from "@/components/app/PausarDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
-import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece } from "@/lib/destinos";
+import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece, textoDaVolta } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id")({
@@ -55,7 +55,7 @@ function DetalheDestino() {
             <Linha icon={d.tipo === "fixa" ? Repeat : CalendarDays} rotulo="Tipo" valor={TIPO_ROTULO[d.tipo]} />
             <Linha icon={CalendarDays} rotulo={d.tipo === "fixa" ? "Dias" : "Data"} valor={quandoAcontece(d)} />
             <Linha icon={Clock} rotulo="Saída da ida" valor={d.saida} />
-            <Linha icon={Clock} rotulo="Volta" valor={d.volta ?? "Sem volta"} />
+            <Linha icon={Clock} rotulo="Volta" valor={textoDaVolta(d)} />
             <Linha icon={AlarmClock} rotulo="Confirmar até" valor={PRAZO_TEXTO[d.prazo]} />
           </dl>
         </section>

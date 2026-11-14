@@ -1,6 +1,7 @@
 import { CircleCheck, Coffee, Flag, Home, Play, Smartphone, UserCheck, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Passageiro } from "@/data/exemplo";
+import type { Destino, Passageiro } from "@/data/exemplo";
+import { dataDaVolta, textoDaVolta } from "@/lib/destinos";
 import { cn } from "@/lib/utils";
 import {
   aBordo,
@@ -33,7 +34,7 @@ function BotaoParada() {
 }
 
 /** Body of the Viagem tab while a trip is in progress, one screen per moment of the trip. */
-export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros: Passageiro[] }) {
+export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; passageiros: Passageiro[]; destino?: Destino | undefined }) {
   const achar = (id: string | undefined) => passageiros.find((p) => p.id === id);
 
   if (v.fase === "busca") {
@@ -204,6 +205,9 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
           <ResumoDaViagem v={v} passageiros={passageiros} completo={false} />
         </div>
         <div className="shrink-0 px-5 pb-3 pt-1">
+          {v.temVolta && destino && dataDaVolta(destino, v.data) !== v.data && (
+            <p className="mb-1.5 text-center text-sm font-semibold text-muted-foreground">Volta: {textoDaVolta(destino)}</p>
+          )}
           {v.temVolta ? (
             <Button variant="cta" size="xl" className={botaoGrande} onClick={() => atualizarViagem(iniciarVolta)}>
               <Play className="h-5 w-5" /> Iniciar volta

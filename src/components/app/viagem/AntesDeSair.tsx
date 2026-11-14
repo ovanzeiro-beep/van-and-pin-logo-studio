@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { Destino, Passageiro } from "@/data/exemplo";
-import { nomeDestino } from "@/lib/destinos";
+import { nomeDestino, textoDaVolta } from "@/lib/destinos";
 import { LinhaPassageiro, Secao } from "./partes";
 
 /** Before leaving: the trip of the day, who goes in pickup order, who didn't answer and who doesn't go. */
@@ -49,7 +49,7 @@ export function AntesDeSair({
           icon={RouteIcon}
           label="Viagem de hoje"
           value={nomeDestino(destino)}
-          detail={`Saída ${destino.saida} · ${destino.volta ? `volta ${destino.volta}` : "sem volta"}`}
+          detail={`Saída ${destino.saida} · ${destino.volta ? `volta ${textoDaVolta(destino)}` : "sem volta"}`}
           aside={<StatusBadge status="pago">{vao.length} {vao.length === 1 ? "vai" : "vão"}</StatusBadge>}
         />
       </div>

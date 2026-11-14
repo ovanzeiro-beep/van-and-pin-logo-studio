@@ -3,7 +3,7 @@ import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { ArrowLeft, History } from "lucide-react";
 import { formatarData } from "@/lib/destinos";
-import { nomeDestino } from "@/lib/destinos";
+import { nomeDestino, textoDaVolta } from "@/lib/destinos";
 import { useViagensEncerradasComDetalhes } from "@/lib/viagens-encerradas-store";
 
 export const Route = createFileRoute("/vanzeiro/historico")({
@@ -56,7 +56,7 @@ function PaginaHistorico() {
                     <p className="mt-1 font-display text-lg font-bold text-foreground">{v.destino ? nomeDestino(v.destino) : "Destino removido"}</p>
                     {v.destino && (
                       <p className="text-sm text-muted-foreground">
-                        Saída {v.destino.saida} · {v.temVolta ? `Volta ${v.destino.volta}` : "Sem volta"}
+                        Saída {v.destino.saida} · {v.temVolta ? `Volta ${textoDaVolta(v.destino)}` : "Sem volta"}
                       </p>
                     )}
                   </div>

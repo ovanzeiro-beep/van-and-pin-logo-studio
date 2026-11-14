@@ -4,7 +4,7 @@ import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { formatarReais } from "@/lib/dinheiro";
-import { formatarData, nomeDestino } from "@/lib/destinos";
+import { formatarData, nomeDestino, textoDaVolta } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { presencaDaViagem } from "@/lib/passageiros";
 import { usePassageiros } from "@/lib/passageiros-store";
@@ -74,7 +74,7 @@ function InicioVanzeiro() {
             <span className="font-bold text-foreground">{saida}</span>
             <span className="mx-1 h-4 w-px bg-border" />
             <span className="text-muted-foreground">Volta</span>
-            <span className="font-bold text-foreground">{destino?.volta ?? "Sem volta"}</span>
+            <span className="font-bold text-foreground">{destino ? textoDaVolta(destino) : "Sem volta"}</span>
           </div>
         </InfoCard>
         ) : feitas.length > 0 ? (

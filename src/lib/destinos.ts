@@ -117,12 +117,15 @@ export type Rascunho = {
   saida: string;
   temVolta: boolean | null;
   volta: string;
+  /** Viagem avulsa: the return is on another day (with its date). */
+  voltaOutroDia: boolean;
+  dataVolta: string;
   paradas: string[];
   prazo: PrazoConfirmacao;
 };
 
 export function rascunhoVazio(): Rascunho {
-  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", paradas: [], prazo: "1h" };
+  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", voltaOutroDia: false, dataVolta: "", paradas: [], prazo: "1h" };
 }
 
 export function rascunhoDeDestino(d: Destino): Rascunho {
@@ -135,6 +138,8 @@ export function rascunhoDeDestino(d: Destino): Rascunho {
     saida: d.saida,
     temVolta: d.volta !== null,
     volta: d.volta ?? "",
+    voltaOutroDia: d.voltaData !== null,
+    dataVolta: d.voltaData ?? "",
     paradas: d.paradas,
     prazo: d.prazo,
   };
@@ -145,7 +150,8 @@ export function passoCompleto(passo: number, r: Rascunho) {
   if (passo === 1) return r.origem.trim() !== "" && r.destino.trim() !== "" && r.tipo !== null;
   if (passo === 2) {
     const quando = r.tipo === "fixa" ? r.dias.length > 0 : r.data !== "";
-    return quando && r.saida !== "" && r.temVolta !== null && (!r.temVolta || r.volta !== "");
+    const voltaOutroDiaOk = !(r.tipo === "avulsa" && r.temVolta && r.voltaOutroDia) || (r.dataVolta !== "" && r.dataVolta > r.data);
+    return quando && r.saida !== "" && r.temVolta !== null && (!r.temVolta || r.volta !== "") && voltaOutroDiaOk;
   }
   return true;
 }
@@ -162,6 +168,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
     data: tipo === "avulsa" ? r.data : null,
     saida: r.saida,
     volta: r.temVolta ? r.volta : null,
+    voltaData: tipo === "avulsa" && r.temVolta && r.voltaOutroDia ? r.dataVolta : null,
     paradas: r.paradas.map((p) => p.trim()).filter(Boolean),
     convite: anterior?.convite ?? gerarConvite(),
     prazo: r.prazo,
@@ -178,3 +185,28 @@ export function gerarConvite() {
 export function mensagemConvite(d: Pick<Destino, "origem" | "destino" | "convite">) {
   return `Oi! Para entrar na minha van (${nomeDestino(d)}), abra o app O Vanzeiro e use o código ${d.convite}.`;
 }
+
+// ---------- the return (volta) ----------
+
+/** Rota fixa: a return earlier than the departure (e.g. leaves 22:00, returns 06:00) is on the next day. */
+export function voltaNoDiaSeguinte(d: Pick<Destino, "tipo" | "saida" | "volta">) {
+  return d.tipo === "fixa" && d.volta !== null && d.volta < d.saida;
+}
+
+/** Day of the return for the trip that leaves on `dataIda` (null when there is no volta). */
+export function dataDaVolta(d: Pick<Destino, "tipo" | "saida" | "volta" | "voltaData">, dataIda: string) {
+  if (d.volta === null) return null;
+  if (d.tipo === "avulsa" && d.voltaData) return d.voltaData;
+  return voltaNoDiaSeguinte(d) ? somarDiasIso(dataIda, 1) : dataIda;
+}
+
+/** "19:00", "29/11, 19:00" (avulsa returning another day), "06:00 do dia seguinte" or "Sem volta". */
+export function textoDaVolta(d: Pick<Destino, "tipo" | "saida" | "volta" | "voltaData">) {
+  if (d.volta === null) return "Sem volta";
+  if (d.tipo === "avulsa" && d.voltaData) {
+    const [, m = "", dia = ""] = d.voltaData.split("-");
+    return `${dia}/${m}, ${d.volta}`;
+  }
+  return voltaNoDiaSeguinte(d) ? `${d.volta} do dia seguinte` : d.volta;
+}
+

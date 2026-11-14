@@ -46,6 +46,8 @@ export type Destino = {
   saida: string;
   /** Horário da volta, ou null quando não tem volta. */
   volta: string | null;
+  /** Viagem avulsa: data da volta quando ela é em outro dia (null = no mesmo dia). */
+  voltaData: string | null;
   /** Cidades ou paradas no caminho, em ordem (sem a origem e o destino). */
   paradas: string[];
   /** Código curto que o vanzeiro envia para quem quer entrar (ex.: VAN-4821). */
@@ -66,6 +68,7 @@ export const destinosExemplo: Destino[] = [
     data: null,
     saida: "06:00",
     volta: "18:30",
+    voltaData: null,
     paradas: ["Santo Antônio da Platina"],
     convite: "VAN-4821",
     prazo: "1h",
@@ -81,6 +84,7 @@ export const destinosExemplo: Destino[] = [
     data: null,
     saida: "06:40",
     volta: "17:50",
+    voltaData: null,
     paradas: ["Jacarezinho"],
     convite: "VAN-3175",
     prazo: "1h",
@@ -96,6 +100,7 @@ export const destinosExemplo: Destino[] = [
     data: "2026-11-28",
     saida: "04:30",
     volta: "19:00",
+    voltaData: null,
     paradas: ["Curitiba", "Joinville"],
     convite: "VAN-9064",
     prazo: "noite-anterior",

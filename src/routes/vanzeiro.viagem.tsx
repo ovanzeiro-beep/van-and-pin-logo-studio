@@ -56,7 +56,7 @@ function AbaViagem() {
       <div className="flex min-h-0 flex-1 flex-col">
         <VanzeiroHeader compacto titulo={TITULO[andamento.fase]} subtitulo={destino ? nomeDestino(destino) : textoDeHoje} />
         <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col">
-          <ViagemEmCurso v={andamento} passageiros={passageiros} />
+          <ViagemEmCurso v={andamento} passageiros={passageiros} destino={destino} />
         </div>
       </div>
     );

@@ -31,6 +31,8 @@ import {
   quandoAcontece,
   rascunhoDeDestino,
   rascunhoVazio,
+  textoDaVolta,
+  voltaNoDiaSeguinte,
   type Rascunho,
 } from "@/lib/destinos";
 import { salvarDestino } from "@/lib/destinos-store";
@@ -198,14 +200,27 @@ function Passo2({ r, mudar }: PassoProps) {
           </div>
         </div>
       ) : (
-        <CampoComIcone
-          id="data"
-          label="Qual a data?"
-          icon={CalendarDays}
-          type="date"
-          value={r.data}
-          onChange={(e) => mudar({ data: e.target.value })}
-        />
+        <div className={cn("grid gap-3", r.temVolta && r.voltaOutroDia && "grid-cols-2")}>
+          <CampoComIcone
+            id="data"
+            label={r.temVolta && r.voltaOutroDia ? "Data da ida" : "Qual a data?"}
+            icon={CalendarDays}
+            type="date"
+            value={r.data}
+            onChange={(e) => mudar({ data: e.target.value })}
+          />
+          {r.temVolta && r.voltaOutroDia && (
+            <CampoComIcone
+              id="data-volta"
+              label="Data da volta"
+              icon={CalendarDays}
+              type="date"
+              min={r.data || undefined}
+              value={r.dataVolta}
+              onChange={(e) => mudar({ dataVolta: e.target.value })}
+            />
+          )}
+        </div>
       )}
       <div>
         <Rotulo>Tem volta?</Rotulo>
@@ -230,6 +245,29 @@ function Passo2({ r, mudar }: PassoProps) {
           </Button>
         </div>
       </div>
+      {r.tipo === "avulsa" && r.temVolta && (
+        <div>
+          <Rotulo>A volta é</Rotulo>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant={!r.voltaOutroDia ? "default" : "outline"}
+              aria-pressed={!r.voltaOutroDia}
+              onClick={() => mudar({ voltaOutroDia: false })}
+            >
+              No mesmo dia
+            </Button>
+            <Button
+              type="button"
+              variant={r.voltaOutroDia ? "default" : "outline"}
+              aria-pressed={r.voltaOutroDia}
+              onClick={() => mudar({ voltaOutroDia: true })}
+            >
+              Em outro dia
+            </Button>
+          </div>
+        </div>
+      )}
       {/* Side by side when there is a volta, so the step still fits without scrolling. */}
       <div className={cn("grid gap-3", r.temVolta && "grid-cols-2")}>
         <CampoComIcone
@@ -251,6 +289,9 @@ function Passo2({ r, mudar }: PassoProps) {
           />
         )}
       </div>
+      {r.temVolta && voltaNoDiaSeguinte({ tipo: r.tipo ?? "fixa", saida: r.saida, volta: r.volta || null }) && (
+        <p className="-mt-1 text-sm font-semibold text-muted-foreground">A volta é no dia seguinte.</p>
+      )}
       <div>
         <Rotulo>Confirmar até</Rotulo>
         <div className="grid grid-cols-4 gap-1.5" role="group" aria-label="Confirmar até">
@@ -386,7 +427,7 @@ function Resumo({ r }: { r: Rascunho }) {
       <dl className="grid grid-cols-3 gap-2 text-center">
         <ItemResumo rotulo={d.tipo === "fixa" ? "Dias" : "Data"} valor={quandoAcontece(d)} />
         <ItemResumo rotulo="Ida" valor={d.saida} />
-        <ItemResumo rotulo="Volta" valor={d.volta ?? "Sem volta"} />
+        <ItemResumo rotulo="Volta" valor={textoDaVolta(d)} />
       </dl>
       <p className="rounded-2xl bg-surface px-3 py-2 text-sm text-foreground">
         <span className="text-muted-foreground">Confirmar até: </span>

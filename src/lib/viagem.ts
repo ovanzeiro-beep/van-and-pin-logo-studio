@@ -29,11 +29,11 @@ export function viagemDeHoje<T extends Destino>(destinos: T[], escolhida: string
   return lista.find((d) => d.id === escolhida) ?? lista[0];
 }
 
-/** Início: the trip in progress, else the next of today not done yet (earliest departure), and the ones already done. */
+/** Início: the trip in progress (even one whose return is on another day), else the next of today not done yet, and the ones done. */
 export function viagemDoInicio<T extends Destino>(destinos: T[], viagens: Record<string, Pick<ViagemDoDia, "fase">>, hoje: string) {
   const lista = viagensDoDia(destinos, hoje);
   const feitas = lista.filter((d) => viagens[d.id]?.fase === "encerrada");
-  const emCurso = lista.find((d) => viagens[d.id] && viagens[d.id]?.fase !== "encerrada");
+  const emCurso = destinos.find((d) => viagens[d.id] && viagens[d.id]?.fase !== "encerrada");
   return { destino: emCurso ?? lista.find((d) => !viagens[d.id]), feitas };
 }
 
