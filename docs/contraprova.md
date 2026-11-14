@@ -10,7 +10,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
 | B — Fluxos que faltam | **Feita em 14/11/2026** — todos os 9 itens completos |
 | C — Preparar o código para o banco (sem colocar o banco) | **Feita em 14/11/2026**, itens 1 a 6. Item 7 pendente por decisão do dono do projeto |
-| D — Acabamento visual | Em andamento (14/11/2026) |
+| D — Acabamento visual | **Feita em 14/11/2026** |
 
 ---
 
@@ -476,11 +476,11 @@ Mapa: cada regra da seção 6 e o teste que confere.
 - [x] Nada de banco de dados.
 
 ## Etapa D — Acabamento visual
-**Situação:** em andamento, desde 14/11/2026, na branch `etapa-d-acabamento`.
-- [ ] Espaços vazios das telas da viagem.
-- [ ] Nenhum Início rola.
-- [ ] Todos os textos em português simples.
-- [ ] Mesmas palavras e cores em todo o app.
+**Situação:** feita em 14/11/2026, na branch `etapa-d-acabamento`, com merge na `main`.
+- [x] Espaços vazios das telas da viagem.
+- [x] Nenhum Início rola (no iPhone SE o do vanzeiro rola 41px, aceito pela regra; antes eram 77px).
+- [x] Textos em português simples (os 11 da Etapa A).
+- [x] Mesmas palavras e cores em todo o app.
 
 ### Análise (14/11/2026)
 - Rolagem medida em 390 × 844, 360 × 740 e 375 × 667: o Início do vanzeiro rola 26px no Android comum (360 × 740) e 77px no iPhone SE (aceito). O Início do passageiro não rola.
@@ -495,23 +495,44 @@ Mapa: cada regra da seção 6 e o teste que confere.
 
 ### Plano, item por item
 Textos e palavras (seções 2.x da Etapa A):
-- [ ] D1. "1 não vão" → "1 não vai" (e "2 não vão").
-- [ ] D2. Busca: "1 faltou" / "2 faltou" → "1 não estava no ponto" / "2 não estavam no ponto"; resumo: "Ninguém faltou." → "Todos estavam no ponto."
-- [ ] D3. Histórico do passageiro: "Não vou" para quem avisou e "Não estava no ponto" para quem não estava (no lugar de "Faltou").
-- [ ] D4. Selo "Confirmar" depois do prazo → "Sem resposta".
-- [ ] D5. "Valor em aberto" / "Você deve" / "Deve no total" → "Em aberto".
-- [ ] D6. Início do vanzeiro: "Valores a receber" e "Total a receber" repetidos → um nome só.
-- [ ] D7. Resumo da viagem: "Ficaram (desceram de propósito)" → "Ficaram"; "Levados para casa" / "deixados em casa" → "Desceram" / "desceram".
-- [ ] D8. Barra "Situação da van" do passageiro: "No seu ponto" → "Na van".
-- [ ] D9. Plano Por viagem: "mesmo noutro dia" → "Ida e volta contam como 1 cobrança, mesmo em dias diferentes."
-- [ ] D10. "Voltar ao perfil" com seta, no lugar do ícone de sair.
+- [x] D1. "1 não vão" → "1 não vai" (e "2 não vão").
+- [x] D2. Busca: "1 faltou" / "2 faltou" → "1 não estava no ponto" / "2 não estavam no ponto"; resumo: "Ninguém faltou." → "Todos estavam no ponto."
+- [x] D3. Histórico do passageiro: "Não vou" para quem avisou e "Não estava no ponto" para quem não estava (no lugar de "Faltou").
+- [x] D4. Selo "Confirmar" depois do prazo → "Sem resposta".
+- [x] D5. "Valor em aberto" / "Você deve" / "Deve no total" → "Em aberto".
+- [x] D6. Início do vanzeiro: "Valores a receber" e "Total a receber" repetidos → um nome só.
+- [x] D7. Resumo da viagem: "Ficaram (desceram de propósito)" → "Ficaram"; "Levados para casa" / "deixados em casa" → "Desceram" / "desceram".
+- [x] D8. Barra "Situação da van" do passageiro: "No seu ponto" → "Na van".
+- [x] D9. Plano Por viagem: "mesmo noutro dia" → "Ida e volta contam como 1 cobrança, mesmo em dias diferentes."
+- [x] D10. "Voltar ao perfil" com seta, no lugar do ícone de sair.
 Cores:
-- [ ] D11. Horário da viagem no Início do vanzeiro sem âmbar.
+- [x] D11. Horário da viagem no Início do vanzeiro sem âmbar.
 Telas:
-- [ ] D12. Início do vanzeiro sem rolar em 360 × 740.
-- [ ] D13. Telas da viagem sem espaço vazio sobrando (Parada, Buscando, Conferência), botões embaixo.
-- [ ] D14. "Excluir minha conta" com viagem em andamento mostra "Termine a viagem antes".
+- [x] D12. Início do vanzeiro sem rolar em 360 × 740.
+- [x] D13. Telas da viagem sem espaço vazio sobrando (Parada, Buscando, Conferência), botões embaixo.
+- [x] D14. "Excluir minha conta" com viagem em andamento mostra "Termine a viagem antes".
 Conferência ao final: testes, tipos, build; telas abertas nos 3 tamanhos; texto das telas comparado com a `main` (só as mudanças acima podem aparecer).
+
+### Como ficou (14/11/2026)
+- D6: o card do Início do vanzeiro virou "A receber" (nome da seção 6), sem a linha repetida. Junto, o plural "1 confirmado".
+- D3: a regra fica em `src/lib/viagem.ts`: falta registrada no histórico = "Não vou"; "Não estava no ponto" vem da viagem de hoje. Teste novo em `viagem.test.ts`.
+- D11: o horário usa o selo azul (cor principal), não o âmbar.
+- D12: menos espaço no fim da tela (12px → 4px) e entre os cards (10px → 8px). Início do vanzeiro: não rola em 390 × 844 e 360 × 740; 41px no iPhone SE. Conta nova: não rola nos 3 tamanhos.
+- D13: Buscando e "Levando de volta" com os botões juntos embaixo; "Todos buscados" e "Parada" do tamanho do conteúdo, "Retomar viagem" embaixo. Conferência já era assim. No Android estreito, o contador "1 não estava no ponto" passa inteiro para a linha de baixo, em vez de quebrar no meio.
+- D14: regra `contaComViagemEmAndamento` em `src/lib/exclusoes.ts`, usada pela tela e pela exclusão. Teste novo em `sessao.test.ts` (conferido quebrando a regra de propósito). No app: com a viagem em andamento, o aviso aparece e o botão fica desligado.
+
+### Conferência final da Etapa D (14/11/2026)
+- [x] Testes (144) passando. Conferência de tipos: 0 erros. Build passando.
+- [x] 15 telas principais sem erro. Viagem inteira percorrida no navegador (busca, parada, conferência, chegada, volta, desceu) em 390 × 844 e 360 × 740, sem erro.
+- [x] Rolagem medida nos 3 tamanhos: nenhuma tela passou a rolar.
+- [x] Texto de 13 telas comparado com a `main`: só aparecem as mudanças D1 a D11.
+- [x] Não pode quebrar: logo, ícones, cards, barra de navegação e regras iguais. Mudou só o que está na lista acima.
+- [x] Nada de banco de dados.
+
+Pendências que continuam (decisão do dono do projeto em 14/11/2026: ficam para depois):
+- [ ] Sininho da conta nova de vanzeiro mostra um aviso de exemplo do Carlos.
+- [ ] Notificações: data "2026-11-13" e aviso de exemplo da Juliana "vence hoje" (vence 20/11).
+- [ ] "Criar conta" rola a tela inteira (como na Etapa A); Entrar e "Como você vai usar o app?" rolam no iPhone SE. Fora do que a Etapa D pediu.
 
 ---
 

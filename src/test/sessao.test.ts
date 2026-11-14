@@ -44,3 +44,18 @@ describe("Quem usa o app e o papel, num lugar só", () => {
     expect(obterDestinos().every((d) => d.vanzeiroId !== idDoVanzeiro())).toBe(true);
   });
 });
+
+describe("Excluir minha conta com viagem em andamento", () => {
+  it("avisa e não exclui nada enquanto a viagem de um destino da conta está em andamento", async () => {
+    const { comecarViagem } = await import("@/lib/viagem-store");
+    const { contaComViagemEmAndamento } = await import("@/lib/exclusoes");
+    const destino = { ...destinosExemplo[1]!, id: "meu-destino", vanzeiroId: idDoVanzeiro(), convite: "VAN-2222" };
+    salvarDestino(destino);
+    expect(contaComViagemEmAndamento("vanzeiro")).toBe(false);
+    comecarViagem(destino, []);
+    expect(contaComViagemEmAndamento("vanzeiro")).toBe(true);
+    const antes = obterDestinos().length;
+    expect(excluirMinhaConta("vanzeiro")).toBe(false);
+    expect(obterDestinos().length).toBe(antes);
+  });
+});

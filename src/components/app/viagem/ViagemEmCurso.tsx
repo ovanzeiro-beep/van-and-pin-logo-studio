@@ -45,12 +45,21 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
           feitos={v.embarcaram.length}
           total={v.ordem.length}
           texto="embarcados"
-          extra={v.naoEstavam.length > 0 && <span className="text-sm font-bold text-destructive">{v.naoEstavam.length} {v.naoEstavam.length === 1 ? "não estava no ponto" : "não estavam no ponto"}</span>}
+          extra={v.naoEstavam.length > 0 && <span className="whitespace-nowrap text-sm font-bold text-destructive">{v.naoEstavam.length} {v.naoEstavam.length === 1 ? "não estava no ponto" : "não estavam no ponto"}</span>}
         />
         {id ? (
-          <>
-            <PassageiroDaVez rotulo="Próximo passageiro" p={achar(id)} posicao={`${feitos + 1}º de ${v.ordem.length}`} />
-            <div className="grid gap-2">
+          <PassageiroDaVez rotulo="Próximo passageiro" p={achar(id)} posicao={`${feitos + 1}º de ${v.ordem.length}`} />
+        ) : (
+          <section className="flex flex-col items-center rounded-3xl bg-card p-5 text-center shadow-card">
+            <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-success-soft text-success">
+              <CircleCheck className="h-7 w-7" />
+            </div>
+            <p className="mt-3 font-display text-xl font-bold leading-tight text-foreground">Todos buscados — seguir para o destino</p>
+          </section>
+        )}
+        <div className="mt-auto grid gap-2">
+          {id ? (
+            <>
               <Button variant="success" size="xl" className={botaoGrande} onClick={() => marcarEmbarcou(id)}>
                 <UserCheck className="h-6 w-6" /> Embarcou
               </Button>
@@ -61,22 +70,12 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
               >
                 <UserX className="h-6 w-6" /> Não estava no ponto
               </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <section className="flex flex-1 flex-col items-center justify-center rounded-3xl bg-card p-5 text-center shadow-card">
-              <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-success-soft text-success">
-                <CircleCheck className="h-7 w-7" />
-              </div>
-              <p className="mt-3 font-display text-xl font-bold leading-tight text-foreground">Todos buscados — seguir para o destino</p>
-            </section>
+            </>
+          ) : (
             <Button variant="cta" size="xl" className={botaoGrande} onClick={() => atualizarViagem(chegarAoDestino)}>
               <Flag className="h-5 w-5" /> Cheguei ao destino
             </Button>
-          </>
-        )}
-        <div className="mt-auto">
+          )}
           <BotaoParada />
         </div>
       </div>
@@ -89,15 +88,13 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
         <Progresso feitos={v.desceram.length} total={total} texto="desceram" />
-        {id && (
-          <>
-            <PassageiroDaVez rotulo="Próxima descida" p={achar(id)} posicao={`${v.desceram.length + 1}º de ${total}`} />
+        {id && <PassageiroDaVez rotulo="Próxima descida" p={achar(id)} posicao={`${v.desceram.length + 1}º de ${total}`} />}
+        <div className="mt-auto grid gap-2">
+          {id && (
             <Button variant="success" size="xl" className={botaoGrande} onClick={() => atualizarViagem((x) => desceu(x, id))}>
               <Home className="h-6 w-6" /> Desceu
             </Button>
-          </>
-        )}
-        <div className="mt-auto">
+          )}
           <BotaoParada />
         </div>
       </div>
@@ -107,7 +104,7 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
   if (v.fase === "parada") {
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
-        <section className="flex flex-1 flex-col items-center justify-center rounded-3xl bg-card p-6 text-center shadow-card">
+        <section className="flex flex-col items-center rounded-3xl bg-card p-6 text-center shadow-card">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-warning-soft text-warning">
             <Coffee className="h-8 w-8" />
           </div>
@@ -116,7 +113,7 @@ export function ViagemEmCurso({ v, passageiros }: { v: ViagemDoDia; passageiros:
             {aBordo(v).length > 0 ? "Antes de seguir, você confere quem está na van." : "Toque abaixo quando for seguir."}
           </p>
         </section>
-        <Button variant="cta" size="xl" className={botaoGrande} onClick={() => atualizarViagem(retomarViagem)}>
+        <Button variant="cta" size="xl" className={cn(botaoGrande, "mt-auto")} onClick={() => atualizarViagem(retomarViagem)}>
           <Play className="h-5 w-5" /> Retomar viagem
         </Button>
       </div>

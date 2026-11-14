@@ -56,7 +56,7 @@ function InicioVanzeiro() {
   return (
     <>
       <VanzeiroHeader compacto titulo="Início" subtitulo="Veja como está o seu dia." />
-      <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-3">
+      <div className="relative z-10 -mt-4 space-y-2 px-5 pb-1">
         <Link to="/vanzeiro/viagem" className="block rounded-3xl transition-transform active:scale-[0.98]">
         {destino ? (
         <InfoCard

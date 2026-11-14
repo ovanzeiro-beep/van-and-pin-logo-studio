@@ -39,14 +39,16 @@ export function sairDoDestino(passageiroId: string, hoje = dataDeHoje()) {
 /** Delete the account entirely: the vanzeiro deletes all their destinos; the passenger leaves all
  * their destinos. Returns false (and changes nothing) while one of those trips is in progress. */
 export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = dataDeHoje()) {
-  if (papel === "vanzeiro") {
-    const meus = obterDestinos().filter((d) => d.vanzeiroId === idDoVanzeiro());
-    if (meus.some((d) => viagemEmAndamentoNoDestino(d.id))) return false;
-    meus.forEach((d) => excluirDestino(d.id, hoje));
-  } else {
-    const minhas = obterMinhasMatriculas();
-    if (minhas.some((p) => viagemEmAndamentoNoDestino(p.destinoId))) return false;
-    minhas.forEach((p) => sairDoDestino(p.id, hoje));
-  }
+  if (contaComViagemEmAndamento(papel)) return false;
+  if (papel === "vanzeiro") meusDestinos().forEach((d) => excluirDestino(d.id, hoje));
+  else obterMinhasMatriculas().forEach((p) => sairDoDestino(p.id, hoje));
   return true;
 }
+
+/** Whether one of the trips of this account (its destinos, or the destinos the passenger is in) is in progress. */
+export function contaComViagemEmAndamento(papel: "vanzeiro" | "passageiro") {
+  const destinoIds = papel === "vanzeiro" ? meusDestinos().map((d) => d.id) : obterMinhasMatriculas().map((p) => p.destinoId);
+  return destinoIds.some(viagemEmAndamentoNoDestino);
+}
+
+const meusDestinos = () => obterDestinos().filter((d) => d.vanzeiroId === idDoVanzeiro());

@@ -43,8 +43,8 @@ export function Progresso({ feitos, total, texto, extra }: { feitos: number; tot
   const pct = total > 0 ? Math.round((feitos / total) * 100) : 100;
   return (
     <section className="rounded-3xl bg-card px-4 py-2.5 shadow-card">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="font-display text-lg font-bold text-foreground">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+        <p className="whitespace-nowrap font-display text-lg font-bold text-foreground">
           {feitos} de {total} <span className="text-base font-semibold text-muted-foreground">{texto}</span>
         </p>
         {extra}
