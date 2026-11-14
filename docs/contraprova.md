@@ -9,7 +9,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | --- | --- |
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
 | B — Fluxos que faltam | **Feita em 14/11/2026** — todos os 9 itens completos |
-| C — Preparar o código para o banco (sem colocar o banco) | A fazer |
+| C — Preparar o código para o banco (sem colocar o banco) | **Feita em 14/11/2026**, itens 1 a 6. Item 7 pendente por decisão do dono do projeto |
 | D — Acabamento visual | A fazer |
 
 ---
@@ -311,7 +311,7 @@ Problemas novos encontrados nesta análise (para corrigir nos itens certos, não
 - Os Termos de Uso falam de localização da van (GPS) e de apagar a conta, que ainda não existem. (Decisão 15.)
 
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
-**Situação:** em andamento. Refatoração de arquitetura, começando do Item 1.
+**Situação:** feita em 14/11/2026 (itens 1 a 6). O item 7 ficou para depois, por decisão do dono do projeto. Merge na `main` em 14/11/2026.
 
 ### Item 1 — Toda tela lê/grava dados só por funções (feito em 14/11/2026)
 - [x] Análise: 42 rotas já usam stores; nenhuma rota importa dados de exemplo **exceto** `passageiro.viagens.tsx` que importava `embarquesExemplo, faltasExemplo`.
@@ -462,8 +462,18 @@ Mapa: cada regra da seção 6 e o teste que confere.
 | Todo dado leva o vanzeiro dono (Etapa C) | `dono.test.ts` |
 | Data e hora de um lugar só (Etapa C) | `agora.test.ts` |
 
-### Próximo item
-- [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
+### Item 7 — pendente
+- [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê. **Fica para depois**: o dono do projeto pediu para não mexer com banco agora (14/11/2026). É só um documento; fazer quando ele pedir.
+
+### Conferência final da Etapa C (14/11/2026, antes do merge)
+- [x] `main` sem novidades desde o início da etapa (nada do Lovable para juntar).
+- [x] Testes (142) passando. Conferência de tipos: 0 erros. Build passando.
+- [x] 15 telas principais dos dois painéis abertas no navegador (390 × 844), sem erro.
+- [x] Texto de 13 telas comparado com a `main`: igual, só com o número 1 no sininho da passageira (correção do item 4).
+- [x] Caminhos de entrada conferidos no navegador: Entrar → Sou vanzeiro; Perfil → Trocar para passageiro; Criar conta → Sou vanzeiro (painel vazio); Criar conta → Sou passageiro → código → Pedir para entrar → Sair; Excluir minha conta (passageiro); Perfil → Sair. Sem erro.
+- [x] Novo destino criado pelo formulário, com código novo.
+- [x] Não pode quebrar: logo, cores, ícones, cards, barra de navegação, textos e regras não mudaram (o texto das telas é o mesmo da `main`). Mudança visível: a saudação fica sempre "Bom dia" (hora fixa 05:10 dos exemplos) e o sininho da passageira mostra 1.
+- [x] Nada de banco de dados.
 
 ## Etapa D — Acabamento visual
 **Situação:** a fazer.
