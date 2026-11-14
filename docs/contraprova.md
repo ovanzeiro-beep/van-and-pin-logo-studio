@@ -322,8 +322,17 @@ Problemas novos encontrados nesta análise (para corrigir nos itens certos, não
 
 O que mudou: função nova `historicoDoPassageiroComDados()` em `viagem.ts`; rota `passageiro.viagens.tsx` refatorada.
 
+### Item 2 — Data e hora de uma única função (feito em 14/11/2026)
+- [x] Criar `src/lib/agora.ts` com funções: `agora()`, `hoje()`, `agora_hora()`.
+- [x] Função `agora()` é a única fonte de verdade para data e hora.
+- [x] Hoje: retorna constantes de exemplo; depois: pode retornar do servidor sem mudar rotas.
+- [x] Atualizar `src/lib/minha-viagem.ts`: usar `agora()` em vez de imports diretos.
+- [x] `AGORA` em minha-viagem.ts agora chama `agora()` dinamicamente.
+- [x] Testes (120 passando) e build OK.
+
+O que mudou: arquivo novo `agora.ts`, atualizado `minha-viagem.ts`.
+
 ### Próximos itens
-- [ ] 2. Data e hora atuais de uma única função (DATA_DE_HOJE e HORA_DE_AGORA já existem).
 - [ ] 3. Todo dado (destino, passageiro, cobrança, viagem, pedido, aviso) leva vanzeiroId.
 - [ ] 4. Usuário logado e papel (vanzeiro ou passageiro) num lugar só.
 - [ ] 5. Códigos de convite que não se repetem.
