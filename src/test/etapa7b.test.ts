@@ -8,7 +8,7 @@ import { comecarViagem, marcarNaoEstava } from "@/lib/viagem-store";
 import { obterCobrancas, garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { salvarPassageiro } from "@/lib/passageiros-store";
 
-const p: Passageiro = { id: "regra", destinoId: "centro-unisul", nome: "Teste", telefone: "48999999999", cidade: "Centro", endereco: "Ponto", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: true, valorFalta: 15 };
+const p: Passageiro = { id: "regra", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Teste", telefone: "48999999999", cidade: "Centro", endereco: "Ponto", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: true, valorFalta: 15 };
 
 describe("Etapa 7B", () => {
   it("only an on-time negative answer discounts mensal and quinzenal", () => {

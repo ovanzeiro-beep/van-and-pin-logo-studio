@@ -140,11 +140,12 @@ export function passoPassageiroCompleto(passo: number, r: RascunhoPassageiro, po
   return true;
 }
 
-export function passageiroDeRascunho(r: RascunhoPassageiro, destinoId: string, anterior?: Passageiro): Passageiro {
+export function passageiroDeRascunho(r: RascunhoPassageiro, destino: Pick<Destino, "id" | "vanzeiroId">, anterior?: Passageiro): Passageiro {
   const plano = r.plano ?? "mensal";
   return {
     id: anterior?.id ?? `passageiro-${Date.now()}`,
-    destinoId,
+    vanzeiroId: destino.vanzeiroId,
+    destinoId: destino.id,
     pessoaId: anterior?.pessoaId ?? anterior?.id ?? r.pessoaId,
     nome: r.nome.trim(),
     telefone: somenteDigitos(r.telefone),

@@ -1,6 +1,7 @@
 // Dados de exemplo da etapa visual. Substituir por dados reais nas próximas etapas.
 
 export const vanzeiroExemplo = {
+  id: "vanzeiro-carlos",
   nome: "Carlos",
   nomeCompleto: "Carlos Pereira",
   telefone: "43999551234",

@@ -405,6 +405,13 @@ Achado na conferência de tipos (que o build não faz):
 - Os testes continuam usando a data fixa dos exemplos (é de propósito: teste precisa de data fixa).
 - O relógio do celular continua sendo usado só para criar identificadores únicos (não mostra hora).
 
+### Item 3 completado (14/11/2026)
+- [x] O vanzeiro de exemplo ganhou o identificador nos dados de exemplo; a função `idDoVanzeiro()` (em `vanzeiro-store.ts`) diz quem é o vanzeiro que usa o app (sem banco, só existe um). O texto "vanzeiro-carlos" não fica mais escrito solto nas regras.
+- [x] Destino novo recebe o identificador do vanzeiro que usa o app; editar um destino não troca o dono.
+- [x] Passageiro novo, pedido para entrar, cobrança e viagem recebem o identificador do vanzeiro **do destino**.
+- [x] Teste novo `src/test/dono.test.ts` (5 testes). Testes (143) passando. Conferência de tipos: só sobram os 2 erros antigos do sininho do passageiro e os do item 6.
+- [x] No app: criado o destino "Ourinhos → Assis" pelo formulário; aparece na lista e abre com código novo (VAN-7160). 15 telas sem erro; texto de 13 telas idêntico ao da `main`.
+
 - [ ] (continuação) Sininho do passageiro procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
 
 ### Próximo item

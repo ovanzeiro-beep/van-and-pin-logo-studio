@@ -3,6 +3,7 @@ import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada
 import { atualizarMeusDados, identidadePassageiro, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
+import { idDoVanzeiro } from "@/lib/vanzeiro-store";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
 let passageiros = passageirosExemplo;
@@ -65,7 +66,7 @@ export function usePedido(id: string | undefined) {
 /** Number shown on the bell: join requests + unread notifications for the vanzeiro. */
 export function useAvisosVanzeiro() {
   const pedidosCount = usePedidos().length;
-  const avisosNaoLidos = useAvisosNaoLidos("vanzeiro-carlos");
+  const avisosNaoLidos = useAvisosNaoLidos(idDoVanzeiro());
   return pedidosCount + avisosNaoLidos.length;
 }
 

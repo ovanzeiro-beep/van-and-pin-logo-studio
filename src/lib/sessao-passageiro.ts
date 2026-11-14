@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { passageiroExemplo, passageirosExemplo, type Passageiro } from "@/data/exemplo";
+import { obterDestinos } from "@/lib/destinos-store";
 import { adicionarPedido, obterPassageiros, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos, useSaidas } from "@/lib/passageiros-store";
 
 import { matriculasDaPessoa, identidadePassageiro, somenteDigitos, type MeusDados } from "@/lib/passageiros";
@@ -38,8 +39,10 @@ export function criarContaNova(nome: string) {
 
 export function pedirParaEntrar(destinoId: string, nome: string, telefone: string) {
   if (sessao.passageiroId && obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
+  const destino = obterDestinos().find((d) => d.id === destinoId);
+  if (!destino) return;
   const eu = obterMinhasMatriculas()[0];
-  const pedidoId = adicionarPedido({ destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
+  const pedidoId = adicionarPedido({ vanzeiroId: destino.vanzeiroId, destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
   mudar({ ...sessao, nome: nome.trim(), telefone, pedidoId });
 }
 

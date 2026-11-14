@@ -73,7 +73,7 @@ describe("Passos de adicionar passageiro", () => {
       plano: "viagem" as const,
       valor: "45",
     };
-    salvarPassageiro(passageiroDeRascunho(r, pedido.destinoId), pedido.id);
+    salvarPassageiro(passageiroDeRascunho(r, { id: pedido.destinoId, vanzeiroId: pedido.vanzeiroId }), pedido.id);
     expect(contarPassageiros(obterPassageiros(), pedido.destinoId)).toBe(antes + 1);
     expect(obterPedidos().some((p) => p.id === pedido.id)).toBe(false);
   });
@@ -107,7 +107,7 @@ describe("Descontar faltas no cadastro", () => {
     expect(passoPassageiroCompleto(3, { ...r, descontaFaltas: true, valorFalta: "15" }, pontos)).toBe(true);
   });
   it("is never saved for por viagem or diário", () => {
-    const p = passageiroDeRascunho({ ...r, plano: "diario", descontaFaltas: true, valorFalta: "15" }, "d");
+    const p = passageiroDeRascunho({ ...r, plano: "diario", descontaFaltas: true, valorFalta: "15" }, { id: "d", vanzeiroId: "vanzeiro-carlos" });
     expect(p.descontaFaltas).toBe(false);
     expect(p.valorFalta).toBeNull();
   });

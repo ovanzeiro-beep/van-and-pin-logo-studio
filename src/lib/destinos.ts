@@ -1,5 +1,6 @@
 import type { DiaSemana, Destino, PrazoConfirmacao, TipoDestino } from "@/data/exemplo";
 import { gerarConviteUnico } from "@/lib/convite";
+import { idDoVanzeiro } from "@/lib/vanzeiro-store";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "seg", curto: "Seg" },
@@ -153,6 +154,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
   const tipo = r.tipo ?? "fixa";
   return {
     id: anterior?.id ?? `destino-${Date.now()}`,
+    vanzeiroId: anterior?.vanzeiroId ?? idDoVanzeiro(),
     origem: r.origem.trim(),
     destino: r.destino.trim(),
     tipo,

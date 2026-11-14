@@ -16,6 +16,7 @@ import { cancelarCobranca, marcarComoPago, obterCobrancas } from "@/lib/cobranca
 
 const base: Passageiro = {
   id: "p-x",
+  vanzeiroId: "vanzeiro-carlos",
   destinoId: "d",
   nome: "Teste Silva",
   telefone: "43999990000",
@@ -83,6 +84,7 @@ describe("Desconto de faltas", () => {
 function cobranca(parcial: Partial<Cobranca>): Cobranca {
   return {
     id: "c",
+    vanzeiroId: "vanzeiro-carlos",
     passageiroId: "p-x",
     destinoId: "d",
     nome: "Teste",

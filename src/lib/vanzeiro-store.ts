@@ -37,6 +37,9 @@ export function perfilNovo(nome: string) {
   salvarPerfilVanzeiro({ nome: nome.trim(), telefone: "", pix: "", van: { modelo: "", placa: "" } });
 }
 
+/** Who owns what this vanzeiro creates. Without a database there is only one vanzeiro. */
+export const idDoVanzeiro = () => vanzeiroExemplo.id;
+
 /** First name for the header greeting. */
 export const primeiroNome = (p: PerfilVanzeiro) => p.nome.trim().split(" ")[0] || "Vanzeiro";
 

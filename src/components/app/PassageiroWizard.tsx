@@ -61,7 +61,7 @@ export function PassageiroWizard({
   const sair = () => (inicial ? irParaPassageiro(inicial.id) : irParaDestino());
 
   const salvar = () => {
-    const p = passageiroDeRascunho(r, destino.id, inicial);
+    const p = passageiroDeRascunho(r, destino, inicial);
     salvarPassageiro(p, pedido?.id);
     if (inicial) irParaPassageiro(p.id);
     else irParaDestino();
@@ -284,7 +284,7 @@ function Passo3({ r, mudar }: PassoProps) {
 }
 
 function Resumo({ r, destino }: { r: RascunhoPassageiro; destino: Destino }) {
-  const p = passageiroDeRascunho(r, destino.id);
+  const p = passageiroDeRascunho(r, destino);
   return (
     <>
       <div>
