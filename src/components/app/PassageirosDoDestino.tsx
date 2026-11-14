@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, ChevronRight, Copy, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users, X } from "lucide-react";
+import { Check, ChevronRight, Copy, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RecusarPedido } from "@/components/app/RecusarPedido";
 import type { Destino, PedidoEntrada } from "@/data/exemplo";
 import { mensagemConvite } from "@/lib/destinos";
 import { descricaoPlano, formatarTelefone } from "@/lib/passageiros";
-import { recusarPedido, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
+import { usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 
 function TituloSecao({ icon: Icon, children }: { icon: typeof Users; children: string }) {
   return (
@@ -75,9 +76,7 @@ export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; dest
             <Check className="!h-5 !w-5" /> Aceitar
           </Link>
         </Button>
-        <Button size="lg" variant="outline" onClick={() => recusarPedido(p.id)}>
-          <X className="!h-5 !w-5" /> Recusar
-        </Button>
+        <RecusarPedido pedido={p} />
       </div>
     </li>
   );

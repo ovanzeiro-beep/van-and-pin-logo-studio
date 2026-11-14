@@ -179,6 +179,13 @@ Pendências do item 1:
 - Tela não rola
 - [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.
 
+**Plano do item 9 (início em 14/11/2026):**
+- Revisar todas as ações irreversíveis (excluir destino, sair do destino, excluir conta, recusar pedido, marcar como pago, cancelar cobrança)
+- Garantir que cada ação tem confirmação clara (AlertDialog ou toast)
+- Mensagens devem explicar o que acontece e que não dá para desfazer
+- Testar que as mensagens aparecem corretamente
+- Verificar ações com erro (ex: tentar excluir durante viagem)
+
 ### Item 2 — Primeiro uso do passageiro (feito em 13/11/2026)
 O que já existia: conta nova de passageiro sem van abre direto a tela "Entrar na van", com o campo do código (feito antes desta etapa).
 - [x] Na tela do código (passageiro sem van), um quadro curto "Onde consigo o código?" explicando que o código vem do vanzeiro, pelo WhatsApp.
