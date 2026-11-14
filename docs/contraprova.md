@@ -311,14 +311,14 @@ Problemas novos encontrados nesta análise (para corrigir nos itens certos, não
 - Os Termos de Uso falam de localização da van (GPS) e de apagar a conta, que ainda não existem. (Decisão 15.)
 
 ## Etapa C — Preparar o código para o banco (sem colocar o banco)
-**Situação:** a fazer.
+**Situação:** a fazer. Escopo grande — análise de arquitetura necessária.
 - [ ] 1. Toda tela lê e grava dados só por funções em `src/lib/`.
-- [ ] 2. Data e hora atuais de uma única função.
-- [ ] 3. Todo dado leva o identificador do vanzeiro dono.
-- [ ] 4. Usuário logado e papel num lugar só.
+- [ ] 2. Data e hora atuais de uma única função (DATA_DE_HOJE e HORA_DE_AGORA já existem).
+- [ ] 3. Todo dado (destino, passageiro, cobrança, viagem, pedido, aviso) leva vanzeiroId.
+- [ ] 4. Usuário logado e papel (vanzeiro ou passageiro) num lugar só.
 - [ ] 5. Códigos de convite que não se repetem.
 - [ ] 6. Testes para todas as regras da seção 6.
-- [ ] 7. `docs/banco-de-dados.md` com os dados e quem vê o quê (só o documento).
+- [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
 
 ## Etapa D — Acabamento visual
 **Situação:** a fazer.
