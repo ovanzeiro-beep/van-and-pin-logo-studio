@@ -17,45 +17,47 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 
 ## Não pode quebrar (conferir a cada etapa)
 
+Conferido de novo em 14/11/2026, no fim das pendências finais: telas e textos comparados com a versão anterior, regras com testes (ver o mapa regra → teste da Etapa C), nenhum ícone de ônibus no app, carteira nos dois painéis, Início sem rolar no celular comum, testes e build passando, sem banco de dados.
+
 Visual (seção 4)
-- [ ] Cor principal azul-marinho; amarelo-âmbar só em botões principais e avisos; fundo branco e cinza bem claro.
-- [ ] Cores de situação: verde = pago / embarcou / na van; vermelho = devendo / faltando / não estava no ponto; âmbar = pendente / sem resposta.
-- [ ] Logo: van de lado com pino de localização. Ícone de van (nunca ônibus) em todo o app.
-- [ ] O mesmo ícone de carteira para dinheiro nos dois painéis.
-- [ ] Cards arredondados, sombra suave, ícone à esquerda, informação principal grande.
-- [ ] Cabeçalho azul com saudação e sininho.
-- [ ] Barra de navegação de baixo igual à aprovada (vanzeiro: Início, Destinos, Viagem, Financeiro, Perfil; passageiro: Início, Viagens, Pagamentos, Perfil).
+- [x] Cor principal azul-marinho; amarelo-âmbar só em botões principais e avisos; fundo branco e cinza bem claro.
+- [x] Cores de situação: verde = pago / embarcou / na van; vermelho = devendo / faltando / não estava no ponto; âmbar = pendente / sem resposta.
+- [x] Logo: van de lado com pino de localização. Ícone de van (nunca ônibus) em todo o app.
+- [x] O mesmo ícone de carteira para dinheiro nos dois painéis.
+- [x] Cards arredondados, sombra suave, ícone à esquerda, informação principal grande.
+- [x] Cabeçalho azul com saudação e sininho.
+- [x] Barra de navegação de baixo igual à aprovada (vanzeiro: Início, Destinos, Viagem, Financeiro, Perfil; passageiro: Início, Viagens, Pagamentos, Perfil).
 
 Palavras (seção 5)
-- [ ] Vou / Não vou · Sem resposta · Pendente · Devendo · Pago · Embarcou / Não estava no ponto · Está na van / Ficou aqui — sempre com o mesmo sentido.
+- [x] Vou / Não vou · Sem resposta · Pendente · Devendo · Pago · Embarcou / Não estava no ponto · Está na van / Ficou aqui — sempre com o mesmo sentido.
 
 Telas (seção 2)
-- [ ] O Início dos dois painéis não rola num celular comum.
-- [ ] Telas de lista rolam só na lista, com cabeçalho e barra parados.
-- [ ] Formulários longos em passos ("Passo 1 de 3").
+- [x] O Início dos dois painéis não rola num celular comum.
+- [x] Telas de lista rolam só na lista, com cabeçalho e barra parados.
+- [x] Formulários longos em passos ("Passo 1 de 3").
 
 Regras (seção 6)
-- [ ] Cadastro com e-mail e senha (com confirmar senha) ou Google, os dois exigindo o aceite dos Termos e da Política.
-- [ ] Escolha "Sou vanzeiro" / "Sou passageiro", com troca no Perfil.
-- [ ] Destino: rota fixa (dias da semana) ou viagem avulsa (uma data); ida, volta opcional, paradas em ordem; código de convite; "Confirmar até" (padrão 1 hora antes).
-- [ ] Passageiro entra pelo código e o vanzeiro aceita ou recusa; o vanzeiro também cadastra direto.
-- [ ] Uma pessoa pode estar em mais de um destino, com plano e valor próprios em cada um.
-- [ ] Passageiro responde Vou / Não vou até o prazo e pode mudar até lá.
-- [ ] Quem não confirmar até o prazo não entra na busca.
-- [ ] Busca na ordem das paradas, com Embarcou / Não estava no ponto.
-- [ ] Em toda parada a viagem só segue com todos conferidos; "Estou na van" pelo celular do passageiro; "Ficou aqui" só do vanzeiro.
-- [ ] Volta na ordem inversa da ida, com "Desceu".
-- [ ] Planos: Por viagem (ida e volta contam como uma), Diário, Quinzenal, Mensal.
-- [ ] Cobrança nunca é editada: só "marcada como paga" (Dinheiro ou Pix) ou "cancelada" com motivo.
-- [ ] O total que alguém deve é a soma das cobranças não pagas.
-- [ ] Desconto de faltas só em Mensal e Quinzenal, só para quem avisou "Não vou" no prazo.
-- [ ] "A receber" inclui atrasados de meses anteriores.
-- [ ] O passageiro nunca marca como pago; só avisa pelo WhatsApp.
-- [ ] Sem banco de dados: só dados de exemplo.
+- [x] Cadastro com e-mail e senha (com confirmar senha) ou Google, os dois exigindo o aceite dos Termos e da Política.
+- [x] Escolha "Sou vanzeiro" / "Sou passageiro", com troca no Perfil.
+- [x] Destino: rota fixa (dias da semana) ou viagem avulsa (uma data); ida, volta opcional, paradas em ordem; código de convite; "Confirmar até" (padrão 1 hora antes).
+- [x] Passageiro entra pelo código e o vanzeiro aceita ou recusa; o vanzeiro também cadastra direto.
+- [x] Uma pessoa pode estar em mais de um destino, com plano e valor próprios em cada um.
+- [x] Passageiro responde Vou / Não vou até o prazo e pode mudar até lá.
+- [x] Quem não confirmar até o prazo não entra na busca.
+- [x] Busca na ordem das paradas, com Embarcou / Não estava no ponto.
+- [x] Em toda parada a viagem só segue com todos conferidos; "Estou na van" pelo celular do passageiro; "Ficou aqui" só do vanzeiro.
+- [x] Volta na ordem inversa da ida, com "Desceu".
+- [x] Planos: Por viagem (ida e volta contam como uma), Diário, Quinzenal, Mensal.
+- [x] Cobrança nunca é editada: só "marcada como paga" (Dinheiro ou Pix) ou "cancelada" com motivo.
+- [x] O total que alguém deve é a soma das cobranças não pagas.
+- [x] Desconto de faltas só em Mensal e Quinzenal, só para quem avisou "Não vou" no prazo.
+- [x] "A receber" inclui atrasados de meses anteriores.
+- [x] O passageiro nunca marca como pago; só avisa pelo WhatsApp.
+- [x] Sem banco de dados: só dados de exemplo.
 
 Conferência técnica
-- [ ] Testes automáticos passando.
-- [ ] Build passando.
+- [x] Testes automáticos passando.
+- [x] Build passando.
 
 ---
 
@@ -161,7 +163,7 @@ Pendências do item 1:
 - [x] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo) (feito em 14/11/2026).
 - [x] 8. Histórico de viagens do vanzeiro, com resumo de cada uma (feito em 14/11/2026).
 - [x] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer (feito em 14/11/2026).
-- [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
+- [x] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo). — feito em 14/11/2026 (Item 7); o sininho do passageiro foi corrigido no item 4 da Etapa C e o do vanzeiro na pendência P3
 
 **Plano do item 7 (início em 14/11/2026):**
 - Criar dados de exemplo: tabela `Aviso` com tipo (pedido_novo, resposta, cobranca_vencida, prazo_chegando, van_saiu, cobranca_vencendo), para_quem (id do vanzeiro ou passageiro), sobre_quem (passageiro para avisos de resposta), destino, texto, data, lido (boolean).
@@ -171,7 +173,7 @@ Pendências do item 1:
 - Regras de negócio: avisos são criados automaticamente (não é escopo do item 7 ainda; dados de exemplo)
 - Testes para avisos (criar, marcar como lido, contar não lidos)
 - Telas não rolam
-- [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
+- [x] 8. Histórico de viagens do vanzeiro, com resumo de cada uma. — feito em 14/11/2026 (Item 8); o caminho até a tela veio na pendência P4
 
 **Plano do item 8 (início em 14/11/2026):**
 - Rota `/vanzeiro/historico`: lista as viagens feitas (com status "Feita"), com data, destino, horário de saída/volta, resumo (embarcaram, não estavam, etc.)
@@ -179,7 +181,7 @@ Pendências do item 1:
 - Componente para mostrar a lista de viagens ou tela vazia "Você não fez viagens ainda"
 - Testes para histórico de viagens
 - Tela não rola
-- [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.
+- [x] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer. — feito em 14/11/2026 (Item 9)
 
 **Plano do item 9 (início em 14/11/2026):**
 - Revisar todas as ações irreversíveis (excluir destino, sair do destino, excluir conta, recusar pedido, marcar como pago, cancelar cobrança)
@@ -378,10 +380,10 @@ Erros encontrados e já corrigidos:
 - [x] Todas as telas davam um erro escondido ao serem montadas, por causa dos avisos do sininho e do histórico (Etapa B, itens 7 e 8). Corrigido. As 15 telas principais dos dois painéis abrem sem erro.
 
 Itens marcados como feitos que **não estão completos** (voltam para "a fazer"):
-- [ ] Item 1: 15 telas ainda pegam coisas direto de `exemplo.ts` (a data de hoje e o formato de dinheiro). Só uma tela foi corrigida.
-- [ ] Item 2: a função única da data existe, mas só 1 arquivo usa; 19 arquivos ainda pegam a data direto.
-- [ ] Item 4: o arquivo novo do usuário logado não é usado por nenhuma tela. O login continua espalhado como antes, e agora há uma cópia a mais. Precisa ser refeito.
-- [ ] Item 6: os testes novos conferem mais os dados de exemplo do que as regras. Faltam testes de regras: mudar a resposta até o prazo, volta na ordem inversa, "Ficou aqui" só do vanzeiro, viagem só segue com todos conferidos.
+- [x] Item 1: 15 telas ainda pegam coisas direto de `exemplo.ts` (a data de hoje e o formato de dinheiro). Só uma tela foi corrigida. — refeito (ver "Item 1 refeito")
+- [x] Item 2: a função única da data existe, mas só 1 arquivo usa; 19 arquivos ainda pegam a data direto. — refeito (ver "Item 2 refeito")
+- [x] Item 4: o arquivo novo do usuário logado não é usado por nenhuma tela. O login continua espalhado como antes, e agora há uma cópia a mais. Precisa ser refeito. — refeito (ver "Item 4 refeito")
+- [x] Item 6: os testes novos conferem mais os dados de exemplo do que as regras. Faltam testes de regras: mudar a resposta até o prazo, volta na ordem inversa, "Ficou aqui" só do vanzeiro, viagem só segue com todos conferidos. — refeito (ver "Item 6 refeito")
 - Itens 3 e 5: conferidos, estão certos. **Correção:** o item 3 também está incompleto (ver abaixo).
 
 ### Item 1 refeito (14/11/2026)
@@ -392,8 +394,8 @@ Itens marcados como feitos que **não estão completos** (voltam para "a fazer")
 - [x] 15 telas abertas no navegador sem erro; o texto de 13 telas comparado com o da `main`: **idêntico**.
 
 Achado na conferência de tipos (que o build não faz):
-- [ ] Item 3: quando o app **cria** um destino, um passageiro ou um pedido novo, o identificador do vanzeiro fica vazio. Só os dados de exemplo têm o identificador. Precisa ser corrigido.
-- [ ] Etapa B, item 7 (já estava assim na `main`): o sininho do passageiro procura os avisos por um campo que não existe. (continua abaixo)
+- [x] Item 3: quando o app **cria** um destino, um passageiro ou um pedido novo, o identificador do vanzeiro fica vazio. Só os dados de exemplo têm o identificador. Precisa ser corrigido. — completado (ver "Item 3 completado")
+- [x] Etapa B, item 7 (já estava assim na `main`): o sininho do passageiro procura os avisos por um campo que não existe. (continua abaixo) — corrigido no "Item 4 refeito"
 
 ### Item 2 refeito (14/11/2026)
 - [x] Só `src/lib/agora.ts` lê a data e a hora (`dataDeHoje()`, `horaDeAgora()`, `agora()`).
@@ -430,9 +432,9 @@ Erros corrigidos junto (mesma causa: o app não sabia quem estava usando):
 - [x] **Sininho do passageiro**: procurava os avisos por um campo vazio e a Juliana nunca via os avisos dela. Agora o sininho mostra 1 e a tela Notificações mostra "Cobrança vencendo".
 
 Pendências para o dono do projeto (não mexi):
-- [ ] Sugestão: em "Excluir minha conta" com viagem em andamento, mostrar o aviso "Termine a viagem antes", igual ao "Excluir destino". Hoje o botão simplesmente não faz nada.
-- [ ] Conta nova de vanzeiro abre o painel vazio, mas o sininho mostra 1 (um aviso de exemplo do Carlos). Já era assim na `main`.
-- [ ] Tela Notificações: a data aparece como "2026-11-13" e o aviso de exemplo da Juliana diz "vence hoje", mas a mensalidade dela vence em 20/11. procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
+- [x] Sugestão: em "Excluir minha conta" com viagem em andamento, mostrar o aviso "Termine a viagem antes", igual ao "Excluir destino". Hoje o botão simplesmente não faz nada. — feito na Etapa D (D14)
+- [x] Conta nova de vanzeiro abre o painel vazio, mas o sininho mostra 1 (um aviso de exemplo do Carlos). Já era assim na `main`. — feito nas pendências (P1)
+- [x] Tela Notificações: a data aparece como "2026-11-13" e o aviso de exemplo da Juliana diz "vence hoje", mas a mensalidade dela vence em 20/11. procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele. — feito nas pendências (P2)
 
 ### Item 6 refeito (14/11/2026)
 - [x] `src/test/regras-negocio.test.ts` reescrito: saíram os testes que só olhavam os dados de exemplo (e os repetidos); entraram testes das regras que não tinham teste.
@@ -531,9 +533,9 @@ Conferência ao final: testes, tipos, build; telas abertas nos 3 tamanhos; texto
 - [x] Nada de banco de dados.
 
 Pendências que continuam (decisão do dono do projeto em 14/11/2026: ficam para depois):
-- [ ] Sininho da conta nova de vanzeiro mostra um aviso de exemplo do Carlos.
-- [ ] Notificações: data "2026-11-13" e aviso de exemplo da Juliana "vence hoje" (vence 20/11).
-- [ ] "Criar conta" rola a tela inteira (como na Etapa A); Entrar e "Como você vai usar o app?" rolam no iPhone SE. Fora do que a Etapa D pediu.
+- [x] Sininho da conta nova de vanzeiro mostra um aviso de exemplo do Carlos. — feito (P1)
+- [x] Notificações: data "2026-11-13" e aviso de exemplo da Juliana "vence hoje" (vence 20/11). — feito (P2)
+- [x] "Criar conta" rola a tela inteira (como na Etapa A); Entrar e "Como você vai usar o app?" rolam no iPhone SE. Fora do que a Etapa D pediu. — "Criar conta" em 2 passos (P5); o que sobra no iPhone SE está mais abaixo
 
 ---
 
@@ -541,7 +543,7 @@ Pendências que continuam (decisão do dono do projeto em 14/11/2026: ficam para
 - [ ] Contato do responsável para a Política de Privacidade (nome, e-mail, telefone). Hoje está "(a definir)".
 - [ ] Dados reais do vanzeiro do piloto (rotas, horários, van, Pix).
 - [ ] Revisão dos Termos e da Política por um advogado antes de lançar ao público.
-- [ ] Respostas às 15 decisões pendentes da seção 7 de `docs/fonte-da-verdade.md` (inclui as dúvidas da Etapa A).
+- [x] Respostas às 15 decisões pendentes da seção 7 de `docs/fonte-da-verdade.md` (inclui as dúvidas da Etapa A). — respondidas em 14/11/2026; viraram a Etapa E
 
 ---
 
@@ -581,8 +583,8 @@ Conferência (14/11/2026):
 
 Ainda pendente:
 - [ ] iPhone SE: o passo 1 do "Criar conta" rola 70px (antes a tela toda rolava 270px), "Entrar" rola 39px e "Como você vai usar o app?" rola 69px. Para zerar, só diminuindo o cabeçalho azul dessas telas (decisão do dono).
-- [ ] Os avisos nunca ficam "lidos": o número do sininho não diminui depois de ver a tela de Notificações (já era assim na Etapa B).
-- [ ] A tela antiga "Pedidos para entrar" ficou sem caminho: apagar ou deixar?
+- [x] Os avisos nunca ficam "lidos": o número do sininho não diminui depois de ver a tela de Notificações (já era assim na Etapa B). — feito em "Avisos lidos"
+- [x] A tela antiga "Pedidos para entrar" ficou sem caminho: apagar ou deixar? — apagada em 14/11/2026 (decisão B)
 
 ---
 
@@ -769,13 +771,28 @@ Como ficou (14/11/2026):
 ---
 
 ## Pendências finais (iniciado em 14/11/2026)
-**Situação:** em andamento, na branch `pendencias-finais`. Pedido do dono: ver o que falta e fazer o que não depende de decisão dele.
+**Situação:** feita em 14/11/2026, na branch `pendencias-finais`, com merge na `main`. Conferência: testes (182), tipos, build; 14 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; cadastro de destino; Início sem rolar. Pedido do dono: ver o que falta e fazer o que não depende de decisão dele.
 Levantamento no app (14/11/2026):
 - "Viagem encerrada" não rola mais (resolvido pelas etapas anteriores).
 - Confirmado: passageiro de conta nova (entrou por pedido aceito) que pede um 2º destino perde o painel: some a barra de baixo, volta "Entrar na van" e "Início" não sai dali. Causa: o pedido novo apaga o pedido aceito, que era o que dizia que a pessoa já é passageira.
 - Formulários que ainda rolam: "Novo destino" Resumo (360 × 740: 53px; iPhone SE: 84px), passo 3 com 3 paradas (iPhone SE: 29px), "Editar" do Perfil do vanzeiro (360 × 740: 8px; iPhone SE: 59px).
 
 Plano:
-- [ ] F1. Pedir um 2º destino não faz o passageiro perder o painel (guardar quem a pessoa é antes de trocar o pedido). Com teste e conferido no app.
-- [ ] F2. Formulários sem rolar: Resumo e passo 3 do "Novo destino" e "Editar" do Perfil do vanzeiro, sem mudar o visual aprovado (só espaços).
-- [ ] F3. Contraprova: marcar as caixinhas antigas que já foram resolvidas depois, dizendo onde.
+- [x] F1. Pedir um 2º destino não faz o passageiro perder o painel (guardar quem a pessoa é antes de trocar o pedido). Com teste e conferido no app.
+- [x] F2. Formulários sem rolar: Resumo e passo 3 do "Novo destino" e "Editar" do Perfil do vanzeiro, sem mudar o visual aprovado (só espaços).
+- [x] F3. Contraprova: marcar as caixinhas antigas que já foram resolvidas depois, dizendo onde.
+
+Como ficou (14/11/2026):
+- F1: `pedirParaEntrar` guarda quem a pessoa é antes de trocar o pedido. Teste em `segundo-destino.test.ts` (conferido quebrando a regra). No app: o Rui (conta nova, aceito em Cambará) pede Londrina e continua com a barra de baixo; "Início" funciona.
+- F2: lista do caminho em versão compacta (mesmo desenho, menos espaço) só no cadastro do destino (passo 3 e Resumo); no "Editar" do Perfil, "Modelo da van" e "Placa" lado a lado. Nada rola no celular comum nem no Android comum. Sobra só o Resumo com 3 ou mais paradas no iPhone SE (22px): quanto mais paradas, mais comprido; fica anotado.
+- F3: caixinhas antigas marcadas, cada uma dizendo onde foi resolvida. Continuam abertas só as que dependem do dono do projeto.
+
+### O que falta (14/11/2026) — tudo depende do dono do projeto
+- [ ] Contato do responsável para a Política de Privacidade (nome, e-mail, telefone).
+- [ ] Dados reais do vanzeiro do piloto (rotas, horários, van, Pix), para trocar pelos exemplos.
+- [ ] Revisão dos Termos e da Política por um advogado antes de lançar ao público.
+- [ ] Testar no celular: o app instalado em tela cheia (Android e iPhone).
+- [ ] Decidir: quem sai do último destino deixa de ver os Pagamentos (se ainda deve algo, só o vanzeiro vê). Pendência desde o item 5 da Etapa B.
+- [ ] Decidir (decisão C): diminuir o cabeçalho azul de Entrar, Criar conta e "Como você vai usar o app?" para não rolar no iPhone SE.
+- [ ] Para depois, só quando o dono mandar: documento do banco (Etapa C, item 7), banco e login real, mapa e GPS, app na Play Store.
+
