@@ -545,7 +545,7 @@ Pendências que continuam (decisão do dono do projeto em 14/11/2026: ficam para
 ---
 
 ## Pendências depois da Etapa D (iniciado em 14/11/2026)
-**Situação:** em andamento, na branch `pendencias`. Pedido do dono do projeto: resolver as pendências anotadas. Sem banco de dados.
+**Situação:** feita em 14/11/2026, na branch `pendencias`, com merge na `main`. Pedido do dono do projeto: resolver as pendências anotadas. Sem banco de dados.
 
 Achados ao conferir no app antes de começar:
 - O sininho do vanzeiro mostra um número (pedidos + avisos), mas abre só "Pedidos para entrar": os avisos do vanzeiro nunca aparecem.
@@ -557,8 +557,28 @@ Decisões do dono do projeto (14/11/2026):
 - O caminho para o Histórico de viagens fica **na aba Viagem** ("Viagens feitas").
 
 Plano, item por item:
-- [ ] P1. Conta nova de vanzeiro não herda os avisos nem as viagens feitas do Carlos (exemplo).
-- [ ] P2. Notificações (os dois painéis): data como "13/11"; aviso de exemplo da Juliana com o texto certo (a mensalidade dela vence em 20/11); aviso de exemplo do Gabriel com a data de hoje (estava 14/11, que é amanhã nos exemplos).
-- [ ] P3. Sininho do vanzeiro abre Notificações: pedidos no topo, avisos só do vanzeiro embaixo.
-- [ ] P4. Aba Viagem com o caminho "Viagens feitas" para o Histórico.
-- [ ] P5. "Criar conta" rolando a tela inteira: analisar e propor ao dono do projeto antes de mexer.
+- [x] P1. Conta nova de vanzeiro não herda os avisos nem as viagens feitas do Carlos (exemplo).
+- [x] P2. Notificações (os dois painéis): data como "13/11"; aviso de exemplo da Juliana com o texto certo (a mensalidade dela vence em 20/11); aviso de exemplo do Gabriel com a data de hoje (estava 14/11, que é amanhã nos exemplos).
+- [x] P3. Sininho do vanzeiro abre Notificações: pedidos no topo, avisos só do vanzeiro embaixo.
+- [x] P4. Aba Viagem com o caminho "Viagens feitas" para o Histórico.
+- [x] P5. "Criar conta" rolando a tela inteira: analisar e propor ao dono do projeto antes de mexer. Decisão do dono (14/11/2026): **dividir em 2 passos**.
+
+Como ficou:
+- P1: conta nova de vanzeiro abre sem avisos e sem viagens feitas de exemplo (sininho sem número). Teste em `acesso.test.ts` (conferido quebrando a regra).
+- P2: data dos avisos como "13/11" (função `diaMes` que já existia). Avisos de exemplo: Juliana "Sua mensalidade vence em 20/11"; Gabriel com data 13/11.
+- P3: o sininho do vanzeiro abre Notificações: "Pedidos para entrar" no topo (mesmo card de antes, com Aceitar / Recusar) e "Avisos" do vanzeiro embaixo (só os dele, não lidos), com "Voltar". Só a lista rola. A tela antiga "Pedidos para entrar" continua existindo, mas nenhum botão leva mais a ela.
+- P4: botão "Viagens feitas" no cabeçalho da aba Viagem, quando não há viagem em andamento (some durante a viagem). Histórico com "Voltar" e só a lista rolando.
+  - Corrigido junto: a viagem terminada hoje nunca entrava no Histórico (a função que a guardaria não era chamada). Agora o Histórico lê as viagens terminadas hoje direto da viagem. Teste em `sessao.test.ts`. Conferido no app: depois de terminar a viagem, o Histórico passa de 2 para 3 viagens.
+  - Corrigido junto: as viagens feitas de exemplo tinham dados que não batiam (Jacarezinho → Londrina numa quarta-feira; 7 embarcados num destino de 6, com gente de outro destino). Agora seguem os outros exemplos: 12/11 Cambará → UENP com os 6; 08/11 (domingo) Jacarezinho → Londrina com os 5 que embarcaram.
+- P5: Passo 1 de 2 "Criar sua conta" (nome, e-mail, aceite dos Termos e da Política, Continuar; Google e "Já tem conta?" embaixo). Passo 2 de 2 "Crie uma senha" (senha, confirmar, Criar conta, Voltar). Regra `validarPasso` em `src/lib/cadastro.ts`, com teste. "Voltar" guarda o que foi digitado. Espaço do fim das telas de entrada um pouco menor (32px → 24px).
+
+Conferência (14/11/2026):
+- [x] Testes (147) passando. Conferência de tipos: 0 erros. Build passando.
+- [x] 15 telas principais sem erro. Caminhos de entrada (com o "Criar conta" em 2 passos) sem erro.
+- [x] Rolagem: "Criar conta" não rola em 390 × 844 nem em 360 × 740 (antes rolava 93px e 197px). Início dos dois painéis sem rolar.
+- [x] Texto das telas comparado com a `main`: só "Viagens feitas", "Voltar" no Histórico e as viagens de exemplo corrigidas.
+
+Ainda pendente:
+- [ ] iPhone SE: o passo 1 do "Criar conta" rola 70px (antes a tela toda rolava 270px), "Entrar" rola 39px e "Como você vai usar o app?" rola 69px. Para zerar, só diminuindo o cabeçalho azul dessas telas (decisão do dono).
+- [ ] Os avisos nunca ficam "lidos": o número do sininho não diminui depois de ver a tela de Notificações (já era assim na Etapa B).
+- [ ] A tela antiga "Pedidos para entrar" ficou sem caminho: apagar ou deixar?

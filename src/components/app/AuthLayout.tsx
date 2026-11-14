@@ -20,9 +20,9 @@ export function AuthLayout({
         <h1 className="mt-10 text-3xl font-bold text-header-foreground">{titulo}</h1>
         <p className="mt-2 text-sm text-header-muted">{subtitulo}</p>
       </div>
-      <div className="flex flex-1 flex-col px-6 pb-8 pt-8">
+      <div className="flex flex-1 flex-col px-6 pb-6 pt-8">
         {children}
-        <div className="mt-auto pt-8 text-center text-sm text-muted-foreground">{rodape}</div>
+        <div className="mt-auto pt-6 text-center text-sm text-muted-foreground">{rodape}</div>
       </div>
     </MobileScreen>
   );

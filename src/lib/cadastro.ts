@@ -39,6 +39,12 @@ export function validarCadastro(d: DadosCadastro): ErrosCadastro {
 
 export const cadastroOk = (erros: ErrosCadastro) => Object.keys(erros).length === 0;
 
+/** "Criar conta" has 2 steps: 1) nome, e-mail and the Termos; 2) senha. Only the problems of that step. */
+export function validarPasso(passo: 1 | 2, d: DadosCadastro): ErrosCadastro {
+  const campos = passo === 1 ? ["nome", "email", "termos"] : ["senha", "confirmar"];
+  return Object.fromEntries(Object.entries(validarCadastro(d)).filter(([campo]) => campos.includes(campo)));
+}
+
 // What was typed in "Criar conta", kept while the person reads the Termos or the Política.
 const vazio: DadosCadastro = { nome: "", email: "", senha: "", confirmar: "", aceitouTermos: false };
 let rascunho: DadosCadastro = vazio;
