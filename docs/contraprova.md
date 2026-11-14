@@ -360,8 +360,16 @@ O que mudou: arquivo novo `sessao-usuario.ts`. Código existente (sessao-passage
 
 O que mudou: funções em `convite.ts`, inicialização em `destinos-store.ts`, delegação em `destinos.ts`.
 
-### Próximos itens
-- [ ] 6. Testes para todas as regras da seção 6.
+### Item 6 — Testes para todas as regras da seção 6 (feito em 14/11/2026)
+- [x] Novo arquivo `src/test/regras-negocio.test.ts` com 15 testes.
+- [x] Cobertura de regras: destinos (volta, paradas), passageiros (múltiplos destinos), códigos únicos, prazos, vanzeiroId.
+- [x] Testes pragmáticos: focam em regras testáveis automaticamente.
+- [x] Testes aumentam de 120 para 135 (+ 15 testes).
+- [x] Todos os testes passando e build OK.
+
+O que mudou: novo arquivo `regras-negocio.test.ts`. Análise: ~18 regras já testadas, +15 novas testadas, ~2 regras são de UI (não testáveis como regras de lógica).
+
+### Próximo item
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
 
 ## Etapa D — Acabamento visual
