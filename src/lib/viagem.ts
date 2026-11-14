@@ -63,6 +63,7 @@ export type FaseViagem = "busca" | "parada" | "conferencia" | "chegada" | "confe
 export type Conferido = "na-van" | "ficou";
 
 export type ViagemDoDia = {
+  vanzeiroId: string;
   destinoId: string;
   data: string;
   temVolta: boolean;
@@ -84,8 +85,9 @@ export type ViagemDoDia = {
   desceram: string[];
 };
 
-export function iniciarViagem(destino: Pick<Destino, "id" | "volta">, ordem: string[], data: string): ViagemDoDia {
+export function iniciarViagem(destino: Pick<Destino, "id" | "volta" | "vanzeiroId">, ordem: string[], data: string): ViagemDoDia {
   return {
+    vanzeiroId: destino.vanzeiroId,
     destinoId: destino.id,
     data,
     temVolta: destino.volta !== null,

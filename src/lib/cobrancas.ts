@@ -3,6 +3,7 @@ import { formatarReais, type FormaPagamento, type Passageiro, type PlanoPagament
 /** A charge. Its values never change after creation: it can only be paid or cancelled. */
 export type Cobranca = {
   id: string;
+  vanzeiroId: string;
   viagemId?: string | undefined;
   passageiroId: string;
   destinoId: string;
@@ -190,6 +191,7 @@ function referencia(tipo: PlanoPagamento, vencimento: string) {
 function nova(p: Passageiro, vencimento: string, faltas = 0, periodo: Cobranca["periodoFaltas"] = null): Cobranca {
   return {
     id: `${p.id}_${vencimento}`,
+    vanzeiroId: p.vanzeiroId,
     passageiroId: p.id,
     destinoId: p.destinoId,
     nome: p.nome,
