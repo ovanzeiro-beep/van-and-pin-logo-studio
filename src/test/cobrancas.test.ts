@@ -37,9 +37,10 @@ describe("Cobranças criadas pelo plano", () => {
     expect(cs.map((c) => c.vencimento)).toEqual(["2026-10-10", "2026-11-10"]);
     expect(cs[1]?.referencia).toBe("Mensalidade de novembro");
   });
-  it("quinzenal: one charge every 15 days from the due day", () => {
+  it("quinzenal: two fixed days a month, the due day and 15 days away (decisão 10)", () => {
     const cs = gerarCobrancas({ ...base, plano: "quinzenal", vencimento: 5 }, "2026-10-01", "2026-11-30", hoje, vazio);
-    expect(cs.map((c) => c.vencimento)).toEqual(["2026-10-05", "2026-10-20", "2026-11-04", "2026-11-19"]);
+    expect(cs.map((c) => c.vencimento)).toEqual(["2026-10-05", "2026-10-20", "2026-11-05", "2026-11-20"]);
+    expect(cs.map((c) => c.referencia)).toEqual(["Quinzena de 21/09 a 05/10", "Quinzena de 06/10 a 20/10", "Quinzena de 21/10 a 05/11", "Quinzena de 06/11 a 20/11"]);
   });
   it("por viagem: one charge per trip boarded", () => {
     const embarques = [
@@ -212,5 +213,26 @@ describe("Por viagem e Diário vencem 7 dias depois do embarque (decisão 8)", (
     expect([c?.id, c?.referencia, c?.vencimento]).toEqual(["p-x_2026-11-08", "Diária de 08/11", "2026-11-15"]);
     expect(situacao(c!, "2026-11-15")).toBe("pendente");
     expect(situacao(c!, "2026-11-16")).toBe("devendo");
+  });
+});
+
+describe("Quinzenal com duas datas fixas (decisão 10)", () => {
+  it("dia 20 vence 5 e 20; dia 15 vence 15 e 30, e em fevereiro no último dia", async () => {
+    const { vencimentosQuinzenais } = await import("@/lib/cobrancas");
+    expect(vencimentosQuinzenais(20, "2026-11-01", "2026-12-31")).toEqual(["2026-11-05", "2026-11-20", "2026-12-05", "2026-12-20"]);
+    expect(vencimentosQuinzenais(15, "2027-01-01", "2027-03-31")).toEqual(["2027-01-15", "2027-01-30", "2027-02-15", "2027-02-28", "2027-03-15", "2027-03-30"]);
+  });
+  it("as faltas descontadas são da quinzena: do dia seguinte ao vencimento anterior até o vencimento", () => {
+    const cs = gerarCobrancas({ ...base, plano: "quinzenal", vencimento: 5, descontaFaltas: true, valorFalta: 10 }, "2026-11-01", "2026-11-30", "2026-11-25", {
+      embarques: [],
+      faltas: [
+        { passageiroId: "p-x", data: "2026-10-21", avisouNoPrazo: true },
+        { passageiroId: "p-x", data: "2026-11-06", avisouNoPrazo: true },
+      ],
+    });
+    expect(cs.map((c) => [c.vencimento, c.faltas, c.periodoFaltas])).toEqual([
+      ["2026-11-05", 1, { de: "2026-10-21", ate: "2026-11-05" }],
+      ["2026-11-20", 1, { de: "2026-11-06", ate: "2026-11-20" }],
+    ]);
   });
 });

@@ -211,7 +211,7 @@ export const pagamentosExemplo: Record<string, { data: string; forma: FormaPagam
   "p-lucas_2026-11-01": { data: "2026-11-01", forma: "dinheiro" },
   "p-lucas_2026-11-06": { data: "2026-11-06", forma: "pix" },
   "p-gabriel_2026-11-10": { data: "2026-11-10", forma: "pix" },
-  "p-fernanda_2026-11-04": { data: "2026-11-04", forma: "dinheiro" },
+  "p-fernanda_2026-11-05": { data: "2026-11-04", forma: "dinheiro" },
   "p-rafael_2026-11-09": { data: "2026-11-09", forma: "pix" },
   "p-rafael_2026-11-10": { data: "2026-11-10", forma: "pix" },
   "p-camila_2026-11-09": { data: "2026-11-09", forma: "pix" },

@@ -175,16 +175,30 @@ export function vencimentosMensais(dia: number, desde: string, ate: string) {
   return datas;
 }
 
-/** Due dates of a quinzenal plan: the due day, then every 15 days. */
+/** The two fixed days of a quinzenal plan: the due day and the one 15 days away (5 → 5 e 20; 20 → 5 e 20; 15 → 15 e 30). */
+export function diasDaQuinzena(dia: number): [number, number] {
+  return dia <= 15 ? [dia, dia + 15] : [dia - 15, dia];
+}
+
+/** Due dates of a quinzenal plan: the two fixed days of every month (clamped to the last day of the month). */
 export function vencimentosQuinzenais(dia: number, desde: string, ate: string) {
+  const [d1, d2] = diasDaQuinzena(dia);
   const datas: string[] = [];
-  for (let v = somarMeses(desde, 0, dia); v <= ate; v = somarDias(v, 15)) if (v >= desde) datas.push(v);
+  for (let i = 0; somarMeses(desde, i, d1) <= ate; i++) {
+    for (const v of [somarMeses(desde, i, d1), somarMeses(desde, i, d2)]) if (v >= desde && v <= ate) datas.push(v);
+  }
   return datas;
 }
 
-function referencia(tipo: PlanoPagamento, vencimento: string) {
+/** The quinzenal due date right before `vencimento`. */
+export function quinzenaAnterior(dia: number, vencimento: string) {
+  const antes = vencimentosQuinzenais(dia, somarDias(vencimento, -40), somarDias(vencimento, -1));
+  return antes[antes.length - 1] ?? somarDias(vencimento, -15);
+}
+
+function referencia(tipo: PlanoPagamento, vencimento: string, dia = partes(vencimento).d) {
   if (tipo === "mensal") return `Mensalidade de ${MESES[partes(vencimento).m - 1] ?? ""}`;
-  if (tipo === "quinzenal") return `Quinzena de ${diaMes(somarDias(vencimento, -14))} a ${diaMes(vencimento)}`;
+  if (tipo === "quinzenal") return `Quinzena de ${diaMes(somarDias(quinzenaAnterior(dia, vencimento), 1))} a ${diaMes(vencimento)}`;
   if (tipo === "diario") return `Diária de ${diaMes(vencimento)}`;
   return `Viagem de ${diaMes(vencimento)}`;
 }
@@ -204,7 +218,7 @@ function nova(p: Passageiro, vencimento: string, faltas = 0, periodo: Cobranca["
     nome: p.nome,
     telefone: p.telefone,
     tipo: p.plano,
-    referencia: referencia(p.plano, vencimento),
+    referencia: referencia(p.plano, vencimento, p.vencimento ?? undefined),
     vencimento,
     valorBase: p.valor,
     faltas,
@@ -235,7 +249,7 @@ export function gerarCobrancas(p: Passageiro, desde: string, ate: string, hoje: 
   const datas = p.plano === "mensal" ? vencimentosMensais(dia, desde, ate) : vencimentosQuinzenais(dia, desde, ate);
   return datas.map((v) => {
     if (!p.descontaFaltas) return nova(p, v);
-    const de = p.plano === "mensal" ? somarDias(somarMeses(v, -1, dia), 1) : somarDias(v, -14);
+    const de = p.plano === "mensal" ? somarDias(somarMeses(v, -1, dia), 1) : somarDias(quinzenaAnterior(dia, v), 1);
     const fim = v < hoje ? v : hoje;
     const faltas = new Set(
       h.faltas.filter((f) => f.passageiroId === p.id && f.avisouNoPrazo === true && f.data >= de && f.data <= fim).map((f) => f.data),
