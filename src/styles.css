@@ -180,6 +180,20 @@
   padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
 }
 
+/* Top padding plus the phone's clock/camera area when the app is installed full screen (0 elsewhere). */
+@utility pt-safe-3 {
+  padding-top: calc(env(safe-area-inset-top) + 0.75rem);
+}
+@utility pt-safe-5 {
+  padding-top: calc(env(safe-area-inset-top) + 1.25rem);
+}
+@utility pt-safe-6 {
+  padding-top: calc(env(safe-area-inset-top) + 1.5rem);
+}
+@utility pt-safe-10 {
+  padding-top: calc(env(safe-area-inset-top) + 2.5rem);
+}
+
 @keyframes splash-rise {
   from {
     opacity: 0;

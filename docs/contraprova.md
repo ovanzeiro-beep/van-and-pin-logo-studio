@@ -705,7 +705,7 @@ Números dos exemplos (13/11), conferidos no app:
 ---
 
 ## App instalável em tela cheia (iniciado em 14/11/2026)
-**Situação:** em andamento, na branch `app-instalavel`. Pedido do dono do projeto: quem abre pelo link pode instalar ("baixar") o app, que abre em tela cheia usando a tela toda. Sem banco de dados. Não é o "App Android" da Play Store (lista "Depois").
+**Situação:** feita em 14/11/2026, na branch `app-instalavel`, com merge na `main`. Pedido do dono do projeto: quem abre pelo link pode instalar ("baixar") o app, que abre em tela cheia usando a tela toda. Sem banco de dados. Não é o "App Android" da Play Store (lista "Depois").
 Decisões do dono (14/11/2026): o convite para instalar fica na tela de abertura; fazer agora, antes do E14.
 Achado: a tela de abertura passa sozinha para "Entrar" em 2,6 segundos; por isso o botão "Instalar o app" fica no cabeçalho azul da primeira tela com botões (Entrar e Criar conta), sem ocupar espaço.
 
@@ -715,8 +715,17 @@ Limites que não dependem do app:
 - Antes de instalar, no navegador, nenhum site fica 100% em tela cheia sozinho.
 
 Plano:
-- [ ] I1. Arquivo de instalação `public/manifest.webmanifest` (nome, ícones, tela cheia, retrato, cores do app) e as marcações no `__root.tsx`.
-- [ ] I2. Ícones PNG (192, 512, 512 com margem para Android, 180 para iPhone) feitos a partir do logo (van com pino).
-- [ ] I3. Área de cima segura: cabeçalhos azuis e "Como você vai usar o app?" com espaço para a hora e a câmera, só nos aparelhos que têm (no computador nada muda).
-- [ ] I4. Botão "Instalar o app" no cabeçalho de Entrar e Criar conta (Android: abre a instalação; iPhone: mostra como adicionar). Some quando o app já está instalado. Regra em `src/lib/instalar.ts`, com teste.
-- [ ] I5. Conferir: o Chrome reconhece o app como instalável (sem erros); telas iguais no computador; Entrar e Criar conta sem passar a rolar.
+- [x] I1. Arquivo de instalação `public/manifest.webmanifest` (nome, ícones, tela cheia, retrato, cores do app) e as marcações no `__root.tsx`.
+- [x] I2. Ícones PNG (192, 512, 512 com margem para Android, 180 para iPhone) feitos a partir do logo (van com pino).
+- [x] I3. Área de cima segura: cabeçalhos azuis e "Como você vai usar o app?" com espaço para a hora e a câmera, só nos aparelhos que têm (no computador nada muda).
+- [x] I4. Botão "Instalar o app" no cabeçalho de Entrar e Criar conta (Android: abre a instalação; iPhone: mostra como adicionar). Some quando o app já está instalado. Regra em `src/lib/instalar.ts`, com teste.
+- [x] I5. Conferir: o Chrome reconhece o app como instalável (sem erros); telas iguais no computador; Entrar e Criar conta sem passar a rolar.
+
+Como ficou (14/11/2026):
+- I1: `public/manifest.webmanifest` (nome "O Vanzeiro", "Vanzeiro" no ícone, abre em tela cheia, retrato, azul-marinho). No `__root.tsx`: arquivo de instalação, ícone do iPhone e marcações para abrir em tela cheia no Android e no iPhone; a tela usa até a área da câmera (`viewport-fit=cover`).
+- I2: `public/icones/`: 192 e 512 (logo), 512 com fundo inteiro (Android recorta em círculo/gota) e 180 para o iPhone.
+- I3: utilitários `pt-safe-3/5/6/10` em `styles.css` (espaço da hora/câmera + o espaço de antes). Usados nos cabeçalhos azuis (painéis, Entrar/Criar conta/Esqueci, Termos/Política) e em "Como você vai usar o app?". A barra de baixo já tinha (`pb-safe`).
+- I4: regra `comoInstalar` em `src/lib/instalar.ts` (teste em `instalar.test.ts`); botão `InstalarApp` no canto do cabeçalho de Entrar, Criar conta e Esqueci minha senha.
+- I5 conferido: o Chrome lê o arquivo de instalação sem erros e não aponta nenhum erro para instalar; os arquivos chegam no build. Android (simulado): botão aparece, abre a instalação e some. iPhone (simulado): botão mostra os 3 passos. Sem oferta (computador): botão não aparece. Testes (172), tipos, build; 15 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; nenhuma tela passou a rolar.
+- Falta conferir num celular de verdade (não dá para simular aqui): instalar pelo Chrome no Android e abrir em tela cheia; adicionar à tela de início no iPhone.
+

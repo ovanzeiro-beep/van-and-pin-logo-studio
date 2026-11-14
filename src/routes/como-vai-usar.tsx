@@ -22,7 +22,7 @@ export const Route = createFileRoute("/como-vai-usar")({
 function ComoVaiUsar() {
   return (
     <MobileScreen>
-      <div className="px-6 pt-10">
+      <div className="px-6 pt-safe-10">
         <Logo size="sm" />
         <h1 className="mt-10 text-[1.9rem] font-bold leading-tight text-foreground">
           Como você vai usar o app?

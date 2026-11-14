@@ -12,7 +12,7 @@ export function LeituraLayout({ titulo, resumo, children }: { titulo: string; re
 
   return (
     <MobileScreen className="bg-background">
-      <header className="relative overflow-hidden rounded-b-[2rem] bg-header px-5 pb-7 pt-5 text-header-foreground">
+      <header className="relative overflow-hidden rounded-b-[2rem] bg-header px-5 pb-7 pt-safe-5 text-header-foreground">
         <button
           type="button"
           onClick={voltar}

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
+import { InstalarApp } from "./InstalarApp";
 import { MobileScreen } from "./MobileScreen";
 
 export function AuthLayout({
@@ -15,8 +16,11 @@ export function AuthLayout({
 }) {
   return (
     <MobileScreen className="bg-background">
-      <div className="relative overflow-hidden rounded-b-[2.5rem] bg-header px-6 pb-10 pt-10">
-        <Logo variant="light" size="sm" />
+      <div className="relative overflow-hidden rounded-b-[2.5rem] bg-header px-6 pb-10 pt-safe-10">
+        <div className="flex items-center justify-between gap-3">
+          <Logo variant="light" size="sm" />
+          <InstalarApp />
+        </div>
         <h1 className="mt-10 text-3xl font-bold text-header-foreground">{titulo}</h1>
         <p className="mt-2 text-sm text-header-muted">{subtitulo}</p>
       </div>

@@ -39,7 +39,7 @@ export function ScreenHeader({
     <header
       className={cn(
         "relative shrink-0 overflow-hidden rounded-b-[2rem] bg-header px-5 text-header-foreground",
-        compacto ? "pb-6 pt-3" : "pb-8 pt-6",
+        compacto ? "pb-6 pt-safe-3" : "pb-8 pt-safe-6",
       )}
     >
       <LogoMark
