@@ -229,7 +229,8 @@ export type TipoAviso =
   | "cobranca_vencida"
   | "prazo_chegando"
   | "van_saiu"
-  | "cobranca_vencendo";
+  | "cobranca_vencendo"
+  | "pedido_recusado";
 
 export type Aviso = {
   id: string;

@@ -33,7 +33,11 @@ export function marcarTodosComoLido(paraId: string) {
 
 /** Every notice of this person, newest first. */
 export function avisosDaPessoa(lista: Aviso[], paraId: string) {
-  return lista.filter((a) => a.paraVanzeiroOuPassageiroId === paraId).sort((a, b) => b.dataCriacao.localeCompare(a.dataCriacao));
+  // Same day: the one created last comes first.
+  return [...lista]
+    .reverse()
+    .filter((a) => a.paraVanzeiroOuPassageiroId === paraId)
+    .sort((a, b) => b.dataCriacao.localeCompare(a.dataCriacao));
 }
 
 export function criarAviso(aviso: Omit<Aviso, "id">) {

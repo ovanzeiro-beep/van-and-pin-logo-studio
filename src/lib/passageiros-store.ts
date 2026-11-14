@@ -2,7 +2,10 @@ import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { atualizarMeusDados, identidadePassageiro, moverNaCidade, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
-import { useAvisosNaoLidos } from "@/lib/avisos-store";
+import { criarAviso, useAvisosNaoLidos } from "@/lib/avisos-store";
+import { dataDeHoje } from "@/lib/agora";
+import { nomeDestino } from "@/lib/destinos";
+import { obterDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
@@ -120,8 +123,22 @@ export function sairDaMatricula(id: string) {
 }
 
 export function recusarPedido(id: string) {
+  const pedido = pedidos.find((p) => p.id === id);
   pedidos = pedidos.filter((p) => p.id !== id);
   avisar();
+  // Someone already in the van (asking for another destino) hears about it on the bell.
+  if (pedido?.pessoaId) {
+    const destino = obterDestinos().find((d) => d.id === pedido.destinoId);
+    criarAviso({
+      vanzeiroId: pedido.vanzeiroId,
+      tipo: "pedido_recusado",
+      paraVanzeiroOuPassageiroId: pedido.pessoaId,
+      destinoId: pedido.destinoId,
+      dataCriacao: dataDeHoje(),
+      lido: false,
+      textoResumido: `O vanzeiro não aceitou seu pedido para ${destino ? nomeDestino(destino) : "o destino"}`,
+    });
+  }
 }
 
 /** New vanzeiro account: no passengers, no pedidos. */

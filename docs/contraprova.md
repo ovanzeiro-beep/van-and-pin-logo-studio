@@ -11,6 +11,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | B — Fluxos que faltam | **Feita em 14/11/2026** — todos os 9 itens completos |
 | C — Preparar o código para o banco (sem colocar o banco) | **Feita em 14/11/2026**, itens 1 a 6. Item 7 pendente por decisão do dono do projeto |
 | D — Acabamento visual | **Feita em 14/11/2026** |
+| E — Decisões do dono do projeto | **Feita em 14/11/2026** (16 itens) |
 
 ---
 
@@ -616,7 +617,7 @@ Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas se
 ---
 
 ## Etapa E — Decisões do dono do projeto (planejada em 14/11/2026)
-**Situação:** em andamento (blocos Telas, Viagem e Dinheiro feitos em 14/11/2026; falta o E14). As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
+**Situação:** feita em 14/11/2026 (blocos Telas, Viagem, Dinheiro e E14), com merge na `main`. As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
 Nada muda (confirmado pelo dono): decisão 3 (nome e período da mensalidade) e decisão 11 (código vale para sempre).
 
 Viagem:
@@ -635,7 +636,7 @@ Telas e textos:
 - [x] E11. "Pausar" destino pede confirmação (decisão 14).
 - [x] E12. Telas de detalhe e os dois Perfis rolam só o conteúdo (decisão 4).
 - [x] E13. Termos e Política sem o trecho do GPS (decisão 15).
-- [ ] E14. Pedido recusado: aviso no sininho da pessoa + mensagem "O vanzeiro não aceitou" (Etapa A 1.5).
+- [x] E14. Pedido recusado: aviso no sininho da pessoa + mensagem "O vanzeiro não aceitou" (Etapa A 1.5).
 Da revisão da Etapa A que só segue o que já existe no app (sem decisão nova):
 - [x] E15. Início do passageiro destaca a viagem que ainda dá para confirmar, não a que já perdeu o prazo (Etapa A 1.4; mesma ideia do E2).
 - [x] E16. "Sair" da tela "Entrar na van" pergunta "Quer mesmo sair?", igual ao Perfil (Etapa A 3.3).
@@ -728,4 +729,12 @@ Como ficou (14/11/2026):
 - I4: regra `comoInstalar` em `src/lib/instalar.ts` (teste em `instalar.test.ts`); botão `InstalarApp` no canto do cabeçalho de Entrar, Criar conta e Esqueci minha senha.
 - I5 conferido: o Chrome lê o arquivo de instalação sem erros e não aponta nenhum erro para instalar; os arquivos chegam no build. Android (simulado): botão aparece, abre a instalação e some. iPhone (simulado): botão mostra os 3 passos. Sem oferta (computador): botão não aparece. Testes (172), tipos, build; 15 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; nenhuma tela passou a rolar.
 - Falta conferir num celular de verdade (não dá para simular aqui): instalar pelo Chrome no Android e abrir em tela cheia; adicionar à tela de início no iPhone.
+
+### E14 feito e Etapa E fechada (14/11/2026)
+- Novo tipo de aviso "pedido_recusado" ("Pedido não aceito", em vermelho, nas Notificações do passageiro).
+- `recusarPedido`: quando quem pediu já é passageiro (pediu outro destino), cria o aviso "O vanzeiro não aceitou seu pedido para [destino]". Quem ainda não tem van não ganha aviso: a própria tela mostra "O vanzeiro não aceitou o pedido".
+- "Entrar em outro destino": com o pedido recusado, mostra "O vanzeiro não aceitou o pedido" e "Tentar outro código" (antes voltava direto para o campo do código, sem avisar).
+- Ordem dos avisos: no mesmo dia, o criado por último aparece primeiro.
+- Testes em `pedido-recusado.test.ts`. Conferido no app: Juliana pede Beto Carrero → Carlos recusa → sininho da Juliana vai de 1 para 2 → "Pedido não aceito" no topo das Notificações → a tela mostra que não foi aceito → "Tentar outro código" volta ao campo.
+- Conferência final da Etapa E: testes (175), tipos (0 erros), build; 14 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; percurso da viagem completo; Início sem rolar no celular comum.
 

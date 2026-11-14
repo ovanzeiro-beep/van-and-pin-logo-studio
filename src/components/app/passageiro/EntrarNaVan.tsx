@@ -23,11 +23,13 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
   const destinos = useDestinos();
   const aceitos = useAceitos();
   const destinoPedido = !aceitos[sessao.pedidoId ?? ""] && destinos.find((d) => d.id === sPedido(sessao.pedidoId));
+  // "Entrar em outro destino": the pedido is gone and was not accepted, so the vanzeiro declined it.
+  const recusadoOutro = outro && !!sessao.pedidoId && !aceitos[sessao.pedidoId] && !sPedido(sessao.pedidoId);
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo="Use o código que o vanzeiro te enviou." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
-        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
+        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : recusadoOutro ? <Recusado /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
         {outro ? (
           <Link to="/passageiro/perfil" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground">
             <ArrowLeft className="h-4 w-4" /> Voltar ao perfil
