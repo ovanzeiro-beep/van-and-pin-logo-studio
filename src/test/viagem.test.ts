@@ -202,3 +202,46 @@ describe("Viagem de hoje (Início e aba Viagem)", () => {
     expect(viagemDeHoje(soExcursao, "", "2026-11-28")?.id).toBe("excursao-beto-carrero");
   });
 });
+
+describe("Iniciar viagem antes do prazo", () => {
+  const cambara = destinosExemplo.find((d) => d.id === "centro-unisul")!; // saída 06:40, prazo 05:40
+  it("antes do prazo, avisa quantos ainda faltam responder", async () => {
+    const { faltamResponderAoIniciar } = await import("@/lib/viagem");
+    expect(faltamResponderAoIniciar(cambara, "2026-11-13", { data: "2026-11-13", hora: "05:10" }, 2)).toBe(2);
+    expect(faltamResponderAoIniciar(cambara, "2026-11-13", { data: "2026-11-13", hora: "05:10" }, 0)).toBe(0);
+  });
+  it("depois do prazo, inicia sem perguntar", async () => {
+    const { faltamResponderAoIniciar } = await import("@/lib/viagem");
+    expect(faltamResponderAoIniciar(cambara, "2026-11-13", { data: "2026-11-13", hora: "05:40" }, 2)).toBe(0);
+  });
+});
+
+describe("Viagem do Início do vanzeiro", () => {
+  it("mostra a próxima a sair que ainda não foi feita; com todas feitas, nenhuma e a lista das feitas", async () => {
+    const { viagemDoInicio } = await import("@/lib/viagem");
+    const hoje = "2026-11-13"; // 06:00 Jacarezinho → Londrina e 06:40 Cambará → UENP
+    expect(viagemDoInicio(destinosExemplo, {}, hoje).destino?.id).toBe("jacarezinho-londrina");
+    expect(viagemDoInicio(destinosExemplo, { "jacarezinho-londrina": { fase: "busca" } }, hoje).destino?.id).toBe("jacarezinho-londrina");
+    expect(viagemDoInicio(destinosExemplo, { "jacarezinho-londrina": { fase: "encerrada" } }, hoje).destino?.id).toBe("centro-unisul");
+    const tudo = viagemDoInicio(destinosExemplo, { "jacarezinho-londrina": { fase: "encerrada" }, "centro-unisul": { fase: "encerrada" } }, hoje);
+    expect(tudo.destino).toBeUndefined();
+    expect(tudo.feitas.map((d) => d.id)).toEqual(["jacarezinho-londrina", "centro-unisul"]);
+  });
+  it("em dia sem viagem, nenhuma e nenhuma feita", async () => {
+    const { viagemDoInicio } = await import("@/lib/viagem");
+    const soLondrina = destinosExemplo.filter((d) => d.id === "jacarezinho-londrina"); // sex, sáb e dom
+    expect(viagemDoInicio(soLondrina, {}, "2026-11-17")).toEqual({ destino: undefined, feitas: [] });
+  });
+});
+
+describe("Viagem em destaque no Início do passageiro", () => {
+  it("pula a viagem que perdeu o prazo sem resposta e destaca a que ainda dá para confirmar", async () => {
+    const { viagemEmDestaque } = await import("@/lib/minha-viagem");
+    const perdida = { id: "06:00", aberta: false, emAndamento: false, resposta: undefined };
+    const aberta = { id: "06:40", aberta: true, emAndamento: false, resposta: undefined };
+    expect(viagemEmDestaque([perdida, aberta])?.id).toBe("06:40");
+    expect(viagemEmDestaque([{ ...perdida, resposta: "vai" as const }, aberta])?.id).toBe("06:00");
+    expect(viagemEmDestaque([{ ...perdida, emAndamento: true }, aberta])?.id).toBe("06:00");
+    expect(viagemEmDestaque([perdida])?.id).toBe("06:00");
+  });
+});

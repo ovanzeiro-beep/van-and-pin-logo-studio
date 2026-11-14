@@ -11,8 +11,8 @@ import { usePassageiros } from "@/lib/passageiros-store";
 import { dataDeHoje } from "@/lib/agora";
 import { resumoDoMes } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
-import { useViagensDoDia } from "@/lib/viagem-store";
-import { proximaViagem, viagemDeHoje } from "@/lib/viagem";
+import { escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
+import { proximaViagem, viagemDoInicio } from "@/lib/viagem";
 import { useRespostasDoDia } from "@/lib/respostas-store";
 import { textoDaVan, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -31,10 +31,11 @@ export const Route = createFileRoute("/vanzeiro/")({
 });
 
 function InicioVanzeiro() {
-  // Same trip the Viagem tab has chosen, so both screens always talk about the same one.
-  const { escolhida } = useViagensDoDia();
+  // The trip in progress or the next one of today not done yet; tapping it opens that same trip in the Viagem tab.
+  const { viagens } = useViagensDoDia();
   const destinos = useDestinos();
-  const destino = viagemDeHoje(destinos, escolhida, dataDeHoje());
+  const { destino, feitas } = viagemDoInicio(destinos, viagens, dataDeHoje());
+  const embarcaramHoje = feitas.reduce((n, d) => n + (viagens[d.id]?.embarcaram.length ?? 0), 0);
   const passageiros = usePassageiros();
   const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, destino?.id ?? "", useRespostasDoDia(dataDeHoje()));
   const perfil = usePerfilVanzeiro();
@@ -42,7 +43,7 @@ function InicioVanzeiro() {
   const saida = destino?.saida ?? "--:--";
   const financeiro = resumoDoMes(useCobrancas(), dataDeHoje());
   const semDestinos = destinos.length === 0;
-  const proxima = destino ? null : proximaViagem(destinos, dataDeHoje());
+  const proxima = destino || feitas.length > 0 ? null : proximaViagem(destinos, dataDeHoje());
 
   if (semDestinos) {
     return (
@@ -57,7 +58,7 @@ function InicioVanzeiro() {
     <>
       <VanzeiroHeader compacto titulo="Início" subtitulo="Veja como está o seu dia." />
       <div className="relative z-10 -mt-4 space-y-2 px-5 pb-1">
-        <Link to="/vanzeiro/viagem" className="block rounded-3xl transition-transform active:scale-[0.98]">
+        <Link to="/vanzeiro/viagem" onClick={() => destino && escolherViagem(destino.id)} className="block rounded-3xl transition-transform active:scale-[0.98]">
         {destino ? (
         <InfoCard
           compacto
@@ -76,6 +77,15 @@ function InicioVanzeiro() {
             <span className="font-bold text-foreground">{destino?.volta ?? "Sem volta"}</span>
           </div>
         </InfoCard>
+        ) : feitas.length > 0 ? (
+          <InfoCard
+            compacto
+            icon={RouteIcon}
+            tone="success"
+            label="Viagem de hoje"
+            value="Viagens de hoje feitas"
+            detail={`${feitas.length} ${feitas.length === 1 ? "viagem" : "viagens"} · ${embarcaramHoje} ${embarcaramHoje === 1 ? "embarcou" : "embarcaram"}`}
+          />
         ) : (
           <InfoCard
             compacto

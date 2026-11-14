@@ -29,6 +29,14 @@ export function viagemDeHoje<T extends Destino>(destinos: T[], escolhida: string
   return lista.find((d) => d.id === escolhida) ?? lista[0];
 }
 
+/** Início: the trip in progress, else the next of today not done yet (earliest departure), and the ones already done. */
+export function viagemDoInicio<T extends Destino>(destinos: T[], viagens: Record<string, Pick<ViagemDoDia, "fase">>, hoje: string) {
+  const lista = viagensDoDia(destinos, hoje);
+  const feitas = lista.filter((d) => viagens[d.id]?.fase === "encerrada");
+  const emCurso = lista.find((d) => viagens[d.id] && viagens[d.id]?.fase !== "encerrada");
+  return { destino: emCurso ?? lista.find((d) => !viagens[d.id]), feitas };
+}
+
 /** First trip after today (looks up to 90 days ahead). */
 export function proximaViagem<T extends Destino>(destinos: T[], hoje: string): { data: string; destino: T } | null {
   for (let i = 1; i <= 90; i++) {
@@ -222,6 +230,11 @@ export function linkDoMapa(p: Pick<Passageiro, "endereco" | "cidade">) {
 // ---------- the passenger's side ----------
 
 export type Agora = { data: string; hora: string };
+
+/** Starting before the deadline closes the answers: how many would be left out (0 = no need to ask). */
+export function faltamResponderAoIniciar(d: Pick<Destino, "saida" | "prazo">, data: string, agora: Agora, semResposta: number) {
+  return prazoPassou(d, data, agora) ? 0 : semResposta;
+}
 
 /** "Vou" / "Não vou" can change until the deadline, and never after the van has left. */
 export function confirmacaoAberta(

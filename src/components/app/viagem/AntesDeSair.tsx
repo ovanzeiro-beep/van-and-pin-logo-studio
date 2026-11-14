@@ -1,6 +1,17 @@
 import { Play, Route as RouteIcon } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
-import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { nomeDestino } from "@/lib/destinos";
 import { LinhaPassageiro, Secao } from "./partes";
@@ -11,14 +22,25 @@ export function AntesDeSair({
   vao,
   semResposta,
   naoVao,
+  faltamResponder,
+  prazo,
   aoIniciar,
 }: {
   destino: Destino;
   vao: Passageiro[];
   semResposta: Passageiro[];
   naoVao: Passageiro[];
+  /** Answers still missing when starting before the deadline (0 = start right away). */
+  faltamResponder: number;
+  prazo: string;
   aoIniciar: () => void;
 }) {
+  const propsDoBotao = { variant: "cta" as const, size: "xl" as const, className: "w-full rounded-2xl font-display font-bold", disabled: vao.length === 0 };
+  const botao = (
+    <Button {...propsDoBotao}>
+      <Play className="h-5 w-5" /> Iniciar viagem
+    </Button>
+  );
   return (
     <>
       <div className="shrink-0 px-5 pt-3">
@@ -67,9 +89,30 @@ export function AntesDeSair({
       </div>
 
       <div className="shrink-0 px-5 pb-3 pt-1">
-        <Button variant="cta" size="xl" className="w-full rounded-2xl font-display font-bold" disabled={vao.length === 0} onClick={aoIniciar}>
-          <Play className="h-5 w-5" /> Iniciar viagem
-        </Button>
+        {faltamResponder > 0 && vao.length > 0 ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>{botao}</AlertDialogTrigger>
+            <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Iniciar mesmo assim?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {faltamResponder === 1 ? "Ainda falta 1 responder" : `Ainda faltam ${faltamResponder} responder`}. O prazo é até {prazo}; se iniciar agora,
+                  quem não respondeu fica fora da busca.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="gap-2">
+                <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Esperar</AlertDialogCancel>
+                <AlertDialogAction className={buttonVariants({ variant: "cta", size: "lg" })} onClick={aoIniciar}>
+                  Iniciar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <Button {...propsDoBotao} onClick={aoIniciar}>
+            <Play className="h-5 w-5" /> Iniciar viagem
+          </Button>
+        )}
       </div>
     </>
   );

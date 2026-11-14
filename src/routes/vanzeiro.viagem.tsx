@@ -8,13 +8,13 @@ import { ResumoDaViagem } from "@/components/app/viagem/ResumoDaViagem";
 import { ViagemEmCurso } from "@/components/app/viagem/ViagemEmCurso";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { dataDeHoje } from "@/lib/agora";
+import { agora, dataDeHoje } from "@/lib/agora";
 import { useRespostasDoDia } from "@/lib/respostas-store";
-import { formatarData, nomeDestino } from "@/lib/destinos";
+import { formatarData, nomeDestino, textoDoPrazo } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
-import { listaDaViagem, proximaViagem, viagemDeHoje, viagensDoDia, type FaseViagem } from "@/lib/viagem";
+import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDeHoje, viagensDoDia, type FaseViagem } from "@/lib/viagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
@@ -144,6 +144,8 @@ function AbaViagem() {
           <AntesDeSair
             destino={destino}
             {...lista}
+            faltamResponder={faltamResponderAoIniciar(destino, dataDeHoje(), agora(), lista.semResposta.length)}
+            prazo={textoDoPrazo(destino, dataDeHoje())}
             aoIniciar={() => comecarViagem(destino, lista.vao.map((p) => p.id))}
           />
         )}

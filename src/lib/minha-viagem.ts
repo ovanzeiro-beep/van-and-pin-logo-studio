@@ -15,6 +15,11 @@ export function rotuloDoDia(data: string, hoje = dataDeHoje()) {
   const texto = formatarData(data);
   return data === hoje ? `Hoje, ${texto.split(", ")[1] ?? texto}` : texto;
 }
+/** Início: the next trip the person can still answer, is in progress or said "Vou" to; else the first one. */
+export function viagemEmDestaque<T extends Pick<MinhaProximaViagem, "aberta" | "emAndamento" | "resposta">>(proximas: T[]): T | undefined {
+  return proximas.find((v) => v.aberta || v.emAndamento || v.resposta === "vai") ?? proximas[0];
+}
+
 export function viagensDasMatriculas(matriculas: Passageiro[], destinos: Destino[], hoje: string) {
   return matriculas.flatMap((eu) => {
     const destino = destinos.find((d) => d.id === eu.destinoId);
@@ -38,7 +43,8 @@ export function useMinhasViagens() {
   const distante = proximas.length === 0 ? proximaViagem(meusDestinos, agora_val.data) : null;
   // An active conference takes priority so it remains available even with several memberships.
   const ativa = matriculas.find((p) => viagens[p.destinoId] && viagens[p.destinoId]?.fase !== "encerrada");
-  const eu = ativa ?? proximas[0]?.eu ?? ancora;
-  const destino = destinos.find((d) => d.id === (ativa?.destinoId ?? proximas[0]?.destino.id ?? distante?.destino.id ?? eu.destinoId));
-  return { eu, destino, proximas, matriculas, destinos, viagens, proximaDistante: distante?.data ?? null, viagemDeHoje: viagens[eu.destinoId], respostaDeHoje: respostasDoDia(respostas, agora_val.data)[eu.id] };
+  const destaque = viagemEmDestaque(proximas);
+  const eu = ativa ?? destaque?.eu ?? ancora;
+  const destino = destinos.find((d) => d.id === (ativa?.destinoId ?? destaque?.destino.id ?? distante?.destino.id ?? eu.destinoId));
+  return { eu, destino, destaque, proximas, matriculas, destinos, viagens, proximaDistante: distante?.data ?? null, viagemDeHoje: viagens[eu.destinoId], respostaDeHoje: respostasDoDia(respostas, agora_val.data)[eu.id] };
 }

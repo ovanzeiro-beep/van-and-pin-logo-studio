@@ -37,12 +37,12 @@ export const Route = createFileRoute("/passageiro/")({
 const etapas = ["Saiu da garagem", "A caminho", "Na van"];
 
 function InicioPassageiro() {
-  const { eu, destino, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
+  const { eu, destino, destaque, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
   const vanzeiro = usePerfilVanzeiro();
   const idsDasCobrancas = useIdsDasMinhasCobrancas();
   const cobrancas = useCobrancasDasMatriculas(idsDasCobrancas);
-  const prox = proximas[0];
-  const hojeAberta = proximas.find((v) => v.data === dataDeHoje())?.aberta ?? false;
+  const prox = destaque;
+  const hojeAberta = proximas.find((v) => v.data === dataDeHoje() && v.destino.id === destino?.id)?.aberta ?? false;
   const van = destino
     ? situacaoParaPassageiro({
         passageiroId: eu.id,
