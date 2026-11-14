@@ -13,12 +13,14 @@ export function useSessaoPassageiro() {
 }
 
 export function pedirParaEntrar(destinoId: string, nome: string, telefone: string) {
-  if (obterSessao().passageiro.passageiroId && obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
+  if (obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
   const destino = obterDestinos().find((d) => d.id === destinoId);
   if (!destino) return;
   const eu = obterMinhasMatriculas()[0];
   const pedidoId = adicionarPedido({ vanzeiroId: destino.vanzeiroId, destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
-  mudarSessaoPassageiro({ nome: nome.trim(), telefone, pedidoId });
+  // Someone already in a van keeps being who they are: the new pedido must not replace the accepted one that said so.
+  const passageiroId = obterSessao().passageiro.passageiroId ?? eu?.id ?? null;
+  mudarSessaoPassageiro({ nome: nome.trim(), telefone, pedidoId, passageiroId });
 }
 
 /** "Editar" on the passenger's Perfil: saves on every destino of this person and in this session. */

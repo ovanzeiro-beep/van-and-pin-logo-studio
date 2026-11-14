@@ -765,3 +765,17 @@ Como ficou (14/11/2026):
 - V5 conferido: cadastro de excursão Jacarezinho → Aparecida com volta em 29/11 no navegador (3 tamanhos); rota fixa 22:00 → 06:00; testes (181), tipos, build; 14 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; percurso da viagem completo.
 - Não conferido no app (os exemplos não têm uma excursão de hoje com passageiro): a viagem atravessando de um dia para o outro na tela. Conferido por teste.
 
+
+---
+
+## Pendências finais (iniciado em 14/11/2026)
+**Situação:** em andamento, na branch `pendencias-finais`. Pedido do dono: ver o que falta e fazer o que não depende de decisão dele.
+Levantamento no app (14/11/2026):
+- "Viagem encerrada" não rola mais (resolvido pelas etapas anteriores).
+- Confirmado: passageiro de conta nova (entrou por pedido aceito) que pede um 2º destino perde o painel: some a barra de baixo, volta "Entrar na van" e "Início" não sai dali. Causa: o pedido novo apaga o pedido aceito, que era o que dizia que a pessoa já é passageira.
+- Formulários que ainda rolam: "Novo destino" Resumo (360 × 740: 53px; iPhone SE: 84px), passo 3 com 3 paradas (iPhone SE: 29px), "Editar" do Perfil do vanzeiro (360 × 740: 8px; iPhone SE: 59px).
+
+Plano:
+- [ ] F1. Pedir um 2º destino não faz o passageiro perder o painel (guardar quem a pessoa é antes de trocar o pedido). Com teste e conferido no app.
+- [ ] F2. Formulários sem rolar: Resumo e passo 3 do "Novo destino" e "Editar" do Perfil do vanzeiro, sem mudar o visual aprovado (só espaços).
+- [ ] F3. Contraprova: marcar as caixinhas antigas que já foram resolvidas depois, dizendo onde.
