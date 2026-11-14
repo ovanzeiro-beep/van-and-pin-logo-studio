@@ -10,7 +10,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
 | B — Fluxos que faltam | **Feita em 14/11/2026** — todos os 9 itens completos |
 | C — Preparar o código para o banco (sem colocar o banco) | **Feita em 14/11/2026**, itens 1 a 6. Item 7 pendente por decisão do dono do projeto |
-| D — Acabamento visual | A fazer |
+| D — Acabamento visual | Em andamento (14/11/2026) |
 
 ---
 
@@ -476,11 +476,42 @@ Mapa: cada regra da seção 6 e o teste que confere.
 - [x] Nada de banco de dados.
 
 ## Etapa D — Acabamento visual
-**Situação:** a fazer.
+**Situação:** em andamento, desde 14/11/2026, na branch `etapa-d-acabamento`.
 - [ ] Espaços vazios das telas da viagem.
 - [ ] Nenhum Início rola.
 - [ ] Todos os textos em português simples.
 - [ ] Mesmas palavras e cores em todo o app.
+
+### Análise (14/11/2026)
+- Rolagem medida em 390 × 844, 360 × 740 e 375 × 667: o Início do vanzeiro rola 26px no Android comum (360 × 740) e 77px no iPhone SE (aceito). O Início do passageiro não rola.
+- Telas da viagem: espaço vazio grande na Buscando (entre "Não estava no ponto" e "Fazer parada"), na Parada (quadro branco gigante com só o ícone e duas linhas) e na Conferência.
+- Os 11 textos confusos da Etapa A continuam no app. Cor: o horário do Início do vanzeiro usa âmbar (cor de "pendente"). O resumo da volta usa "Levados para casa" / "deixados em casa", fora da tabela de palavras ("Desceu").
+
+### Decisões do dono do projeto (14/11/2026)
+- O que a pessoa deve: **"Em aberto"** nos três lugares (Início e Pagamentos do passageiro, detalhe do passageiro no vanzeiro).
+- Histórico do passageiro: **separar** "Não vou" (avisou) de "Não estava no ponto".
+- Telas da viagem: **botões principais embaixo** (perto do polegar), cards do tamanho do conteúdo.
+- Pendências da Etapa C: entra só o **aviso "Termine a viagem antes" em "Excluir minha conta"**. Sininho da conta nova e data nas Notificações continuam pendentes.
+
+### Plano, item por item
+Textos e palavras (seções 2.x da Etapa A):
+- [ ] D1. "1 não vão" → "1 não vai" (e "2 não vão").
+- [ ] D2. Busca: "1 faltou" / "2 faltou" → "1 não estava no ponto" / "2 não estavam no ponto"; resumo: "Ninguém faltou." → "Todos estavam no ponto."
+- [ ] D3. Histórico do passageiro: "Não vou" para quem avisou e "Não estava no ponto" para quem não estava (no lugar de "Faltou").
+- [ ] D4. Selo "Confirmar" depois do prazo → "Sem resposta".
+- [ ] D5. "Valor em aberto" / "Você deve" / "Deve no total" → "Em aberto".
+- [ ] D6. Início do vanzeiro: "Valores a receber" e "Total a receber" repetidos → um nome só.
+- [ ] D7. Resumo da viagem: "Ficaram (desceram de propósito)" → "Ficaram"; "Levados para casa" / "deixados em casa" → "Desceram" / "desceram".
+- [ ] D8. Barra "Situação da van" do passageiro: "No seu ponto" → "Na van".
+- [ ] D9. Plano Por viagem: "mesmo noutro dia" → "Ida e volta contam como 1 cobrança, mesmo em dias diferentes."
+- [ ] D10. "Voltar ao perfil" com seta, no lugar do ícone de sair.
+Cores:
+- [ ] D11. Horário da viagem no Início do vanzeiro sem âmbar.
+Telas:
+- [ ] D12. Início do vanzeiro sem rolar em 360 × 740.
+- [ ] D13. Telas da viagem sem espaço vazio sobrando (Parada, Buscando, Conferência), botões embaixo.
+- [ ] D14. "Excluir minha conta" com viagem em andamento mostra "Termine a viagem antes".
+Conferência ao final: testes, tipos, build; telas abertas nos 3 tamanhos; texto das telas comparado com a `main` (só as mudanças acima podem aparecer).
 
 ---
 
