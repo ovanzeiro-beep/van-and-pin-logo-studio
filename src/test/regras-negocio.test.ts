@@ -1,129 +1,95 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
 import { destinosExemplo, passageirosExemplo } from "@/data/exemplo";
-import { gerarConviteUnico, inicializarCodigosUsados, acharPorCodigo } from "@/lib/convite";
+import { gerarConviteUnico } from "@/lib/convite";
+import { destinoDeRascunho, rascunhoVazio } from "@/lib/destinos";
+import { obterPassageiros, obterPedidos, recusarPedido } from "@/lib/passageiros-store";
+import { obterRespostasParaTeste, responder } from "@/lib/respostas-store";
+import { listaDaViagem } from "@/lib/viagem";
+import { comecarViagem, obterViagensDoDia } from "@/lib/viagem-store";
+import { dataDeHoje } from "@/lib/agora";
 
-describe("Regras de Negocio da Secao 6", () => {
-  describe("Destinos - volta e paradas em ordem", () => {
-    it("destino pode ter volta ou nao", () => {
-      const comVolta = destinosExemplo.find((d) => d.volta !== null);
-      expect(comVolta?.volta).toBeDefined();
-      // Tipo permite volta null, mesmo que exemplo nao tenha
-      destinosExemplo.forEach((d) => {
-        expect(d.volta === null || typeof d.volta === "string").toBe(true);
-      });
-    });
+// Rules of section 6 of CLAUDE.md that had no test of their own. The others are in
+// cadastro, acesso, sessao, destinos, passageiros, viagem, cobrancas, etapa7b and dono tests.
 
-    it("paradas estao em ordem e nao incluem origem/destino", () => {
-      const destino = destinosExemplo[0];
-      expect(destino.paradas).toBeDefined();
-      expect(destino.paradas.length).toBeGreaterThanOrEqual(0);
-      expect(destino.paradas).not.toContain(destino.origem);
-      expect(destino.paradas).not.toContain(destino.destino);
-    });
+// Às 05:10 (agora nos exemplos): Cambará → UENP sai 06:40, prazo 05:40 (aberto); Jacarezinho → Londrina sai 06:00, prazo 05:00 (fechado).
+const cambara = destinosExemplo.find((d) => d.id === "centro-unisul")!;
 
-    it("origem e destino sao diferentes", () => {
-      destinosExemplo.forEach((d) => {
-        expect(d.origem).not.toBe(d.destino);
-      });
-    });
+describe("Destinos", () => {
+  it("destino novo começa com 'Confirmar até' 1 hora antes da saída", () => {
+    const d = destinoDeRascunho({ ...rascunhoVazio(), origem: "A", destino: "B", tipo: "fixa", dias: ["seg"], saida: "07:00", temVolta: false });
+    expect(d.prazo).toBe("1h");
   });
 
-  describe("Passageiros - um passageiro em multiplos destinos com plano/valor proprios", () => {
-    it("Juliana esta em pelo menos 2 destinos", () => {
-      const juliana = passageirosExemplo.filter((p) => p.id === "p-juliana" || p.pessoaId === "p-juliana");
-      expect(juliana.length).toBeGreaterThanOrEqual(2);
-    });
-
-    it("multiplos destinos da mesma pessoa tem planos e valores diferentes", () => {
-      const juliana = passageirosExemplo.filter((p) => p.id === "p-juliana" || p.pessoaId === "p-juliana");
-      if (juliana.length >= 2) {
-        const [p1, p2] = juliana;
-        const diferentesOU = p1.plano !== p2.plano || p1.valor !== p2.valor;
-        expect(diferentesOU).toBe(true);
-      }
-    });
-
-    it("passageiro em um destino tem seus dados: nome, telefone, cidade, endereco", () => {
-      const p = passageirosExemplo[0];
-      expect(p.nome).toBeTruthy();
-      expect(p.telefone).toBeTruthy();
-      expect(p.cidade).toBeTruthy();
-      expect(p.endereco).toBeTruthy();
-    });
-  });
-
-  describe("Codigo de convite - garantidamente unico", () => {
-    beforeEach(() => {
-      inicializarCodigosUsados(destinosExemplo);
-    });
-
-    it("gera codigo unico a cada chamada", () => {
-      const codigos = new Set<string>();
-      for (let i = 0; i < 10; i++) {
-        const codigo = gerarConviteUnico();
-        expect(codigos).not.toContain(codigo);
-        codigos.add(codigo);
-      }
-      expect(codigos.size).toBe(10);
-    });
-
-    it("codigo tem formato VAN-NNNN", () => {
+  it("cada destino novo ganha um código de convite que não se repete", () => {
+    const usados = new Set(destinosExemplo.map((d) => d.convite));
+    for (let i = 0; i < 200; i++) {
       const codigo = gerarConviteUnico();
       expect(codigo).toMatch(/^VAN-\d{4}$/);
-    });
-
-    it("achar por codigo encontra o destino correto", () => {
-      const destino = destinosExemplo[0];
-      const encontrado = acharPorCodigo(destinosExemplo, destino.convite);
-      expect(encontrado?.id).toBe(destino.id);
-    });
-
-    it("achar aceita variacoes: VAN 4821, van-4821, 4821", () => {
-      const destino = destinosExemplo[0];
-      const variacoes = [destino.convite, destino.convite.replace("-", " "), destino.convite.replace("VAN-", "")];
-      variacoes.forEach((v) => {
-        const encontrado = acharPorCodigo(destinosExemplo, v);
-        expect(encontrado?.id).toBe(destino.id);
-      });
-    });
-  });
-
-  describe("Prazo Confirmar ate - padrao 1 hora antes", () => {
-    it("cada destino tem um prazo valido", () => {
-      destinosExemplo.forEach((d) => {
-        expect(d.prazo).toBeDefined();
-        expect(["30min", "1h", "2h", "noite-anterior"]).toContain(d.prazo);
-      });
-    });
-
-    it("exemplo tem destinos com prazo padrao 1h", () => {
-      const exemploComPadraoComum = destinosExemplo.filter((d) => d.prazo === "1h");
-      expect(exemploComPadraoComum.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe("Dados do passageiro - ID do vanzeiro", () => {
-    it("cada passageiro tem vanzeiroId", () => {
-      passageirosExemplo.forEach((p) => {
-        expect(p.vanzeiroId).toBeDefined();
-        expect(p.vanzeiroId.length).toBeGreaterThan(0);
-      });
-    });
-
-    it("cada destino tem vanzeiroId", () => {
-      destinosExemplo.forEach((d) => {
-        expect(d.vanzeiroId).toBeDefined();
-        expect(d.vanzeiroId.length).toBeGreaterThan(0);
-      });
-    });
-
-    it("todos os vanzeiroIds de exemplo sao vanzeiro-carlos", () => {
-      destinosExemplo.forEach((d) => {
-        expect(d.vanzeiroId).toBe("vanzeiro-carlos");
-      });
-      passageirosExemplo.forEach((p) => {
-        expect(p.vanzeiroId).toBe("vanzeiro-carlos");
-      });
-    });
+      expect(usados.has(codigo)).toBe(false);
+      usados.add(codigo);
+    }
   });
 });
+
+describe("Passageiros", () => {
+  it("o vanzeiro recusa um pedido: o pedido sai e a pessoa não vira passageiro", () => {
+    const pedido = obterPedidos()[0]!;
+    recusarPedido(pedido.id);
+    expect(obterPedidos().some((p) => p.id === pedido.id)).toBe(false);
+    expect(obterPassageiros().some((p) => p.nome === pedido.nome)).toBe(false);
+  });
+});
+
+describe("Confirmação", () => {
+  it("o passageiro pode mudar 'Vou' / 'Não vou' até o prazo", () => {
+    responder("p-juliana", dataDeHoje(), "vai");
+    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana"]).toBe("vai");
+    responder("p-juliana", dataDeHoje(), "nao-vai");
+    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana"]).toBe("nao-vai");
+  });
+
+  it("depois do prazo a resposta não muda mais", () => {
+    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana-londrina"]).toBeUndefined();
+    responder("p-juliana-londrina", dataDeHoje(), "vai");
+    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana-londrina"]).toBeUndefined();
+  });
+
+  it("quem não confirmou ou disse 'Não vou' não entra na busca", () => {
+    const respostas = obterRespostasParaTeste(dataDeHoje());
+    const lista = listaDaViagem(passageirosExemplo, cambara, respostas);
+    comecarViagem(cambara, lista.vao.map((p) => p.id));
+    const ordem = obterViagensDoDia().viagens[cambara.id]!.ordem;
+    const foraDaBusca = passageirosExemplo.filter((p) => p.destinoId === cambara.id && respostas[p.id] !== "vai").map((p) => p.id);
+    expect(foraDaBusca.length).toBeGreaterThan(0);
+    expect(ordem.length).toBeGreaterThan(0);
+    expect(ordem.some((id) => foraDaBusca.includes(id))).toBe(false);
+  });
+
+  it("com a viagem começada, a resposta não muda mais, mesmo antes do prazo", () => {
+    responder("p-juliana", dataDeHoje(), "vai");
+    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana"]).toBe("nao-vai");
+  });
+});
+
+describe("Viagem", () => {
+  // "Estou na van" pelo celular: viagem.test.ts ("Conferência pelo celular do passageiro").
+  it("'Ficou aqui' é só do vanzeiro: nenhuma tela do passageiro usa a conferência do vanzeiro", () => {
+    expect(arquivosDoPassageiro().filter((f) => /\bconferir\(/.test(readFileSync(f, "utf8")))).toEqual([]);
+  });
+});
+
+describe("Dinheiro", () => {
+  it("nenhuma tela do passageiro marca cobrança como paga ou cancela", () => {
+    expect(arquivosDoPassageiro().filter((f) => /marcarComoPago|cancelarCobranca/.test(readFileSync(f, "utf8")))).toEqual([]);
+  });
+});
+
+function arquivosDoPassageiro() {
+  const src = join(__dirname, "..");
+  const telas = readdirSync(join(src, "routes")).filter((n) => n.startsWith("passageiro")).map((n) => join(src, "routes", n));
+  const pecas = readdirSync(join(src, "components/app/passageiro")).map((n) => join(src, "components/app/passageiro", n));
+  expect(telas.length).toBeGreaterThan(3);
+  return [...telas, ...pecas];
+}

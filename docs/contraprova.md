@@ -433,6 +433,35 @@ Pendências para o dono do projeto (não mexi):
 - [ ] Conta nova de vanzeiro abre o painel vazio, mas o sininho mostra 1 (um aviso de exemplo do Carlos). Já era assim na `main`.
 - [ ] Tela Notificações: a data aparece como "2026-11-13" e o aviso de exemplo da Juliana diz "vence hoje", mas a mensalidade dela vence em 20/11. procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
 
+### Item 6 refeito (14/11/2026)
+- [x] `src/test/regras-negocio.test.ts` reescrito: saíram os testes que só olhavam os dados de exemplo (e os repetidos); entraram testes das regras que não tinham teste.
+- [x] Cada teste novo foi conferido **quebrando a regra de propósito** no código: os 6 falharam como deviam (prazo, viagem começada, recusar pedido, prazo padrão, passageiro marcando pago, quem não confirmou na busca).
+- [x] Testes (142) passando. Conferência de tipos: **0 erros** (a `main` tinha 2). Build passando.
+
+Mapa: cada regra da seção 6 e o teste que confere.
+| Regra | Teste |
+| --- | --- |
+| Cadastro com e-mail e senha (confirmar senha) ou Google, os dois com aceite dos Termos e da Política | `cadastro.test.ts` |
+| "Sou vanzeiro" / "Sou passageiro", com troca no Perfil | `acesso.test.ts`, `sessao.test.ts` |
+| Rota fixa ou viagem avulsa; volta opcional; paradas em ordem | `destinos.test.ts`, `viagem.test.ts` (Viagens do dia) |
+| Código de convite (não se repete) e "Confirmar até" (padrão 1 hora antes) | `regras-negocio.test.ts`, `viagem.test.ts` (Prazo, Código de convite) |
+| Entra pelo código; o vanzeiro aceita ou recusa; o vanzeiro também cadastra direto | `passageiros.test.ts` (aceitar, cadastrar), `regras-negocio.test.ts` (recusar) |
+| Mesma pessoa em mais de um destino, com plano e valor próprios | `etapa7b.test.ts`, `etapa7c.test.ts` |
+| "Vou" / "Não vou" até o prazo, podendo mudar até lá | `regras-negocio.test.ts` |
+| Quem não confirmar até o prazo não entra na busca | `regras-negocio.test.ts`, `viagem.test.ts` (a van não passa) |
+| Busca na ordem das paradas, com "Embarcou" / "Não estava no ponto" | `viagem.test.ts` (Durante a viagem) |
+| Em toda parada só segue com todos conferidos; "Estou na van" pelo celular; o vanzeiro marca na mão | `viagem.test.ts` (Durante a viagem, Conferência pelo celular) |
+| "Ficou aqui" só do vanzeiro | `regras-negocio.test.ts` |
+| Volta na ordem inversa, com "Desceu" | `viagem.test.ts` |
+| Planos Por viagem (ida e volta contam como uma), Diário, Quinzenal, Mensal | `cobrancas.test.ts`, `etapa7b.test.ts` |
+| Cobrança nunca editada: só paga (Dinheiro ou Pix) ou cancelada com motivo | `cobrancas.test.ts` (Pagar e cancelar) |
+| Total que alguém deve = soma das não pagas | `cobrancas.test.ts` |
+| Desconto de faltas só Mensal/Quinzenal, só "Não vou" no prazo | `cobrancas.test.ts`, `etapa7b.test.ts` |
+| "A receber" inclui atrasados de meses anteriores | `cobrancas.test.ts` (resumo do mês conta a cobrança de 20/10) |
+| O passageiro nunca marca como pago | `regras-negocio.test.ts` |
+| Todo dado leva o vanzeiro dono (Etapa C) | `dono.test.ts` |
+| Data e hora de um lugar só (Etapa C) | `agora.test.ts` |
+
 ### Próximo item
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
 
