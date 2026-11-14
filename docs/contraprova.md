@@ -586,13 +586,20 @@ Ainda pendente:
 ---
 
 ## Avisos lidos (iniciado em 14/11/2026)
-**Situação:** em andamento, na branch `avisos-lidos`. Pedido do dono do projeto (decisão A): os avisos contam como lidos ao abrir Notificações. Sem banco de dados.
+**Situação:** feita em 14/11/2026, na branch `avisos-lidos`, com merge na `main`. Pedido do dono do projeto (decisão A): os avisos contam como lidos ao abrir Notificações. Sem banco de dados.
 Decisão do dono (14/11/2026): a tela mostra **todos** os avisos da pessoa, mais novos primeiro; os que ainda não tinham sido vistos aparecem com o selo **"Novo"**; o número do sininho zera ao abrir.
 Não fazer agora (decisão do dono): apagar a tela antiga "Pedidos para entrar" (B) e diminuir o cabeçalho para o iPhone SE (C).
 
 Achado antes de começar: as funções que marcam aviso como lido mudam o aviso sem avisar a tela; mesmo chamadas, a tela não mudaria.
 
 Plano:
-- [ ] L1. Marcar como lido de um jeito que a tela percebe (regras em `src/lib/avisos-store.ts`), com teste.
-- [ ] L2. Notificações do vanzeiro e do passageiro: todos os avisos da pessoa, mais novos primeiro, selo "Novo" nos não vistos; ao abrir, ficam lidos e o sininho zera.
-- [ ] L3. Conferir no app: sininho com número → abrir Notificações → "Novo" aparece → voltar → sininho sem número (ou só com os pedidos, no vanzeiro) → abrir de novo → avisos continuam, sem "Novo".
+- [x] L1. Marcar como lido de um jeito que a tela percebe (regras em `src/lib/avisos-store.ts`), com teste.
+- [x] L2. Notificações do vanzeiro e do passageiro: todos os avisos da pessoa, mais novos primeiro, selo "Novo" nos não vistos; ao abrir, ficam lidos e o sininho zera.
+- [x] L3. Conferir no app: sininho com número → abrir Notificações → "Novo" aparece → voltar → sininho sem número (ou só com os pedidos, no vanzeiro) → abrir de novo → avisos continuam, sem "Novo".
+
+Como ficou:
+- L1: em `src/lib/avisos-store.ts`, marcar como lido e criar aviso fazem uma lista nova (os dados de exemplo não mudam). Regra `avisosDaPessoa` (todos os avisos da pessoa, mais novos primeiro). Testes em `src/test/avisos.test.ts` (conferidos com o jeito antigo: 2 falham).
+- L2: peça única `ListaDeAvisos` e regra `useAvisosAoAbrir`, usadas pelas Notificações dos dois painéis.
+- L3 no app: passageira, sininho 1 → abre (aviso de cobrança com "Novo") → volta: sininho sem número → abre de novo: os 2 avisos, sem "Novo". Vanzeiro: sininho 3 → abre ("Novo" na cobrança da Beatriz) → sininho 2 (os 2 pedidos continuam contando até aceitar ou recusar).
+
+Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas sem erro; texto de 13 telas idêntico à `main`; caminhos de entrada sem erro.

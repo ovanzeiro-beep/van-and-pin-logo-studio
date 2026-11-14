@@ -1,11 +1,11 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
+import { ListaDeAvisos } from "@/components/app/ListaDeAvisos";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { Bell, Compass } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { diaMes } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
-import { useAvisosNaoLidos } from "@/lib/avisos-store";
+import { useAvisosAoAbrir } from "@/lib/avisos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
 import { useMinhaSituacao } from "@/lib/sessao-passageiro";
 
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/passageiro/notificacoes")({
 function PaginaNotificacoes() {
   const s = useMinhaSituacao();
   const meuId = s.tipo === "membro" ? identidadePassageiro(s.passageiro) : "";
-  const avisos = useAvisosNaoLidos(meuId);
+  const { avisos, novos } = useAvisosAoAbrir(meuId);
   const noAvisos = avisos.length === 0;
 
   return (
@@ -51,17 +51,7 @@ function PaginaNotificacoes() {
             }
           />
         ) : (
-          <section className="rounded-3xl bg-card p-4 shadow-card">
-            {avisos.map((aviso) => (
-              <div key={aviso.id} className="border-b border-border px-4 py-3 last:border-b-0">
-                <p className={`text-xs font-semibold uppercase tracking-wider ${tipoAviso[aviso.tipo]?.cor || "text-muted-foreground"}`}>
-                  {tipoAviso[aviso.tipo]?.label || aviso.tipo}
-                </p>
-                <p className="mt-1 font-semibold text-foreground">{aviso.textoResumido}</p>
-                <p className="text-xs text-muted-foreground">{diaMes(aviso.dataCriacao)}</p>
-              </div>
-            ))}
-          </section>
+          <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} />
         )}
       </div>
     </>

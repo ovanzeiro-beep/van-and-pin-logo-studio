@@ -1,12 +1,12 @@
 import { Link, createFileRoute, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
 import { PedidoCard } from "@/components/app/PassageirosDoDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
+import { ListaDeAvisos } from "@/components/app/ListaDeAvisos";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { ArrowLeft, Bell, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { diaMes } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
-import { useAvisosNaoLidos } from "@/lib/avisos-store";
+import { useAvisosAoAbrir } from "@/lib/avisos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/vanzeiro/notificacoes")({
 });
 
 function PaginaNotificacoes() {
-  const avisos = useAvisosNaoLidos(idDoVanzeiro());
+  const { avisos, novos } = useAvisosAoAbrir(idDoVanzeiro());
   const pedidos = usePedidos();
   const destinos = useDestinos();
   const router = useRouter();
@@ -83,16 +83,8 @@ function PaginaNotificacoes() {
           {avisos.length > 0 && (
             <section>
               <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Avisos</h2>
-              <div className="mt-1.5 rounded-3xl bg-card p-4 shadow-card">
-                {avisos.map((aviso) => (
-                  <div key={aviso.id} className="border-b border-border px-4 py-3 last:border-b-0">
-                    <p className={`text-xs font-semibold uppercase tracking-wider ${tipoAviso[aviso.tipo]?.cor || "text-muted-foreground"}`}>
-                      {tipoAviso[aviso.tipo]?.label || aviso.tipo}
-                    </p>
-                    <p className="mt-1 font-semibold text-foreground">{aviso.textoResumido}</p>
-                    <p className="text-xs text-muted-foreground">{diaMes(aviso.dataCriacao)}</p>
-                  </div>
-                ))}
+              <div className="mt-1.5">
+                <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} />
               </div>
             </section>
           )}
