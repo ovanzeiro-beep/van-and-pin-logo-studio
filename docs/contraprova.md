@@ -616,7 +616,7 @@ Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas se
 ---
 
 ## Etapa E — Decisões do dono do projeto (planejada em 14/11/2026)
-**Situação:** em andamento (blocos Telas e Viagem feitos em 14/11/2026). As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
+**Situação:** em andamento (blocos Telas, Viagem e Dinheiro feitos em 14/11/2026; falta o E14). As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
 Nada muda (confirmado pelo dono): decisão 3 (nome e período da mensalidade) e decisão 11 (código vale para sempre).
 
 Viagem:
@@ -625,11 +625,11 @@ Viagem:
 - [x] E3. "Não vou" no prazo conta como falta quando o prazo passa, mesmo sem iniciar a viagem (decisão 7).
 - [x] E4. O vanzeiro arruma na mão a ordem dos passageiros de cada cidade; a busca segue essa ordem (decisão 12).
 Dinheiro:
-- [ ] E5. Remover passageiro cancela as cobranças que ainda não venceram ("Removido do destino"); a confirmação diz o que acontece com as cobranças (decisão 2; Etapa A 3.4).
-- [ ] E6. Por viagem e Diário vencem 7 dias depois do embarque (decisão 8).
-- [ ] E7. Quinzenal com duas datas fixas: o dia e 15 dias depois (decisão 10).
-- [ ] E8. A próxima mensalidade ou quinzena nasce quando a atual vence (decisão 9).
-- [ ] E9. Financeiro mostra o mês, com os atrasados em "Devendo"; números iguais aos do Início (Etapa A 4.1).
+- [x] E5. Remover passageiro cancela as cobranças que ainda não venceram ("Removido do destino"); a confirmação diz o que acontece com as cobranças (decisão 2; Etapa A 3.4).
+- [x] E6. Por viagem e Diário vencem 7 dias depois do embarque (decisão 8).
+- [x] E7. Quinzenal com duas datas fixas: o dia e 15 dias depois (decisão 10).
+- [x] E8. A próxima mensalidade ou quinzena nasce quando a atual vence (decisão 9).
+- [x] E9. Financeiro mostra o mês, com os atrasados em "Devendo"; números iguais aos do Início (Etapa A 4.1).
 Telas e textos:
 - [x] E10. Perfil do vanzeiro: só nome e telefone obrigatórios (decisão 13).
 - [x] E11. "Pausar" destino pede confirmação (decisão 14).
@@ -682,4 +682,22 @@ Ordem: Telas simples (E16, E11, E10, E13, E12) → Viagem (E1, E2, E15, E3, E4) 
 - E4: regras `porCidade` e `moverNaCidade` (`lib/passageiros.ts`), ação `moverPassageiro`. No detalhe do destino, lista por cidade (na ordem das paradas) com ↑ ↓; a aba Viagem segue a nova ordem (conferido no app). Testes em `passageiros.test.ts`.
 - Conferência: testes (160), tipos, build; 15 telas sem erro; 5 caminhos de entrada sem erro; Início dos dois painéis sem rolar no celular comum (no iPhone SE, 8px e 13px, aceito). Diferenças de texto com a `main`: só as esperadas (E2, E4, E15).
 - Para o banco: a ordem da busca hoje é a ordem da lista; no banco vira um campo "ordem".
+
+### Bloco Dinheiro feito (14/11/2026)
+- E5: regra `removerPassageiroDoDestino` (`lib/exclusoes.ts`): pendentes canceladas com "Removido do destino"; devendo continuam; pagas no histórico; a pessoa continua vendo o que deve (como em "Sair deste destino"). Confirmação explica as cobranças e não deixa remover com a viagem do destino em andamento. A função antiga `removerPassageiro` (sem cuidar das cobranças) foi apagada. Teste em `remover-passageiro.test.ts`.
+- E6: Por viagem e Diário vencem 7 dias depois do embarque (`DIAS_PARA_PAGAR_EMBARQUE`); nome e chave pelo dia do embarque. Teste em `cobrancas.test.ts`.
+- E7: Quinzenal com dois dias fixos (`diasDaQuinzena`): 5 → 5 e 20; 20 → 5 e 20; 15 → 15 e 30 (fevereiro: último dia). Nome "Quinzena de … a …" e período das faltas pela quinzena de verdade. Exemplo: pagamento da Fernanda passou da chave 04/11 para 05/11. Testes em `cobrancas.test.ts`.
+- E8: só uma mensalidade/quinzena à frente; o relógio do app (`passarDoTempo`, ao abrir e de minuto em minuto) cria a próxima no dia em que a atual vence. Testes em `cobrancas.test.ts`.
+- E9: regra única `doMes` para o resumo e os filtros do Financeiro: vence neste mês, ou está devendo de antes. Pagas de meses anteriores saem da lista do Financeiro (continuam no detalhe do passageiro). Teste: cada filtro bate com o Início (conferido quebrando a regra).
+
+Números dos exemplos (13/11), conferidos no app:
+| | Antes | Agora | Por quê |
+| --- | --- | --- | --- |
+| A receber | R$ 1.811,00 | R$ 1.661,00 | E8: a quinzena de 30/11 do Pedro (R$ 150) só nasce em 15/11 |
+| Recebido | R$ 663,00 | R$ 663,00 | — |
+| Devendo | R$ 631,00 (6) | R$ 530,00 (2) | E6: Ana 08/11 (R$ 45), Rafael 11 e 12/11 (R$ 44), Camila 12/11 (R$ 12) passam a pendente |
+| Pendentes | 6 | 9 | E6 (+4) e E8 (−1) |
+| Início "Pagos" × Financeiro "Pagas" | 9 × 19 | 9 × 9 | E9 |
+- O teste que congela os números (`etapa7c.test.ts`) foi atualizado com os valores novos e o motivo de cada mudança.
+- Conferência: testes (168), tipos, build; 15 telas sem erro; 5 caminhos de entrada sem erro; Início sem rolar no celular comum.
 

@@ -102,9 +102,16 @@ export function contaDoDesconto(c: Pick<Cobranca, "tipo" | "valorBase" | "faltas
   return `${ROTULO_BASE[c.tipo]} ${formatarReais(c.valorBase)} − ${faltas} × ${formatarReais(c.valorFalta)} = ${formatarReais(valorFinal(c))}`;
 }
 
+/** The month of Financeiro and Início: charges due this month, plus older ones still unpaid ("A receber" includes them). */
+export function doMes(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string) {
+  return mesmoMes(c.vencimento, hoje) || situacao(c, hoje) === "devendo";
+}
+
+/** Financeiro filters, over the same month as the summary, so the numbers always match the Início. */
 export function filtrarCobrancas(lista: Cobranca[], filtro: Filtro, hoje: string) {
   const alvo: Record<Exclude<Filtro, "todas">, Situacao> = { pendentes: "pendente", devendo: "devendo", pagas: "pago" };
-  const filtradas = filtro === "todas" ? lista : lista.filter((c) => situacao(c, hoje) === alvo[filtro]);
+  const doMesmoMes = lista.filter((c) => doMes(c, hoje));
+  const filtradas = filtro === "todas" ? doMesmoMes : doMesmoMes.filter((c) => situacao(c, hoje) === alvo[filtro]);
   return ordenarRecentes(filtradas);
 }
 
@@ -122,8 +129,7 @@ export function resumoDoMes(lista: Cobranca[], hoje: string) {
   for (const c of lista) {
     const s = situacao(c, hoje);
     if (s === "cancelada") continue;
-    const doMes = mesmoMes(c.vencimento, hoje) || (s === "devendo" && c.vencimento < hoje);
-    if (!doMes) continue;
+    if (!doMes(c, hoje)) continue;
     const v = valorFinal(c);
     if (s === "pago") {
       r.recebido += v;

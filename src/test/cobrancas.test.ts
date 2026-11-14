@@ -254,3 +254,21 @@ describe("A próxima cobrança nasce quando a atual vence (decisão 9)", () => {
     expect(doPedro()).toEqual(["2026-11-15", "2026-11-30"]);
   });
 });
+
+describe("Financeiro mostra o mês, igual ao Início (Etapa A 4.1)", () => {
+  it("cada filtro tem a mesma quantidade que o resumo do Início", async () => {
+    const { obterCobrancas: todas } = await import("@/lib/cobrancas-store");
+    const lista = todas();
+    const r = resumoDoMes(lista, hoje);
+    expect(filtrarCobrancas(lista, "pagas", hoje).length).toBe(r.pagos);
+    expect(filtrarCobrancas(lista, "pendentes", hoje).length).toBe(r.pendentes);
+    expect(filtrarCobrancas(lista, "devendo", hoje).length).toBe(r.devendoQtd);
+  });
+  it("paga de outro mês sai do Financeiro; devendo de outro mês continua", () => {
+    const lista = [
+      cobranca({ id: "paga-outubro", vencimento: "2026-10-10", pagamento: { data: "2026-10-10", forma: "pix" } }),
+      cobranca({ id: "devendo-outubro", vencimento: "2026-10-20" }),
+    ];
+    expect(filtrarCobrancas(lista, "todas", hoje).map((c) => c.id)).toEqual(["devendo-outubro"]);
+  });
+});
