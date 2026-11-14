@@ -59,3 +59,16 @@ describe("Excluir minha conta com viagem em andamento", () => {
     expect(obterDestinos().length).toBe(antes);
   });
 });
+
+describe("Histórico de viagens do vanzeiro", () => {
+  it("mostra as viagens passadas e as que terminaram hoje, e não as que estão em andamento", async () => {
+    const { viagensFeitas } = await import("@/lib/viagens-encerradas-store");
+    const { iniciarViagem } = await import("@/lib/viagem");
+    const passada = { vanzeiroId: "v", destinoId: "a", data: "2026-11-12", temVolta: false, embarcaram: ["x"], naoEstavam: [], ficaram: [] };
+    const andando = iniciarViagem({ id: "b", volta: null, vanzeiroId: "v" }, ["y"], "2026-11-13");
+    const terminada = { ...iniciarViagem({ id: "c", volta: null, vanzeiroId: "v" }, ["z"], "2026-11-13"), fase: "encerrada" as const, embarcaram: ["z"] };
+    const lista = viagensFeitas([passada], { b: andando, c: terminada });
+    expect(lista.map((v) => v.destinoId)).toEqual(["a", "c"]);
+    expect(lista[1]).toEqual({ vanzeiroId: "v", destinoId: "c", data: "2026-11-13", temVolta: false, embarcaram: ["z"], naoEstavam: [], ficaram: [] });
+  });
+});

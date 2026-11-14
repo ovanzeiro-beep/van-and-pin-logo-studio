@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { TelaVazia } from "@/components/app/TelaVazia";
-import { History } from "lucide-react";
+import { ArrowLeft, History } from "lucide-react";
 import { formatarData } from "@/lib/destinos";
 import { nomeDestino } from "@/lib/destinos";
 import { useViagensEncerradasComDetalhes } from "@/lib/viagens-encerradas-store";
@@ -23,11 +23,23 @@ export const Route = createFileRoute("/vanzeiro/historico")({
 function PaginaHistorico() {
   const viagens = useViagensEncerradasComDetalhes();
   const noViagens = viagens.length === 0;
+  const router = useRouter();
+  const podeVoltar = useCanGoBack();
+  const navigate = useNavigate();
+  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/vanzeiro/viagem" }));
 
   return (
-    <>
-      <VanzeiroHeader compacto titulo="Histórico" subtitulo="Suas viagens feitas." />
-      <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <VanzeiroHeader compacto titulo="Histórico" subtitulo="Suas viagens feitas.">
+        <button
+          type="button"
+          onClick={voltar}
+          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
+        >
+          <ArrowLeft className="h-4 w-4" /> Voltar
+        </button>
+      </VanzeiroHeader>
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4 pt-4">
         {noViagens ? (
           <TelaVazia
             icon={History}
@@ -72,6 +84,6 @@ function PaginaHistorico() {
           </section>
         )}
       </div>
-    </>
+    </div>
   );
 }

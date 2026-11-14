@@ -306,22 +306,24 @@ export type ViagemEncerrada = {
 };
 
 export const viagensEncerradasExemplo: ViagemEncerrada[] = [
+  // Same days as embarquesExemplo: on 12/11 everyone of Cambará → UENP went (Rafael and Camila boarded);
+  // on Sunday 08/11 Ana boarded in Londrina and Lucas (diário) did not go.
   {
     vanzeiroId: "vanzeiro-carlos",
     destinoId: "centro-unisul",
     data: "2026-11-12",
     temVolta: true,
-    embarcaram: ["p-gabriel", "p-fernanda", "p-thiago", "p-mariana", "p-pedro", "p-ana", "p-lucas"],
-    naoEstavam: ["p-camila"],
+    embarcaram: ["p-gabriel", "p-fernanda", "p-thiago", "p-juliana", "p-rafael", "p-camila"],
+    naoEstavam: [],
     ficaram: [],
   },
   {
     vanzeiroId: "vanzeiro-carlos",
     destinoId: "jacarezinho-londrina",
-    data: "2026-11-11",
+    data: "2026-11-08",
     temVolta: true,
-    embarcaram: ["p-pedro", "p-beatriz", "p-mariana"],
-    naoEstavam: ["p-juliana"],
+    embarcaram: ["p-mariana", "p-pedro", "p-ana", "p-beatriz", "p-juliana-londrina"],
+    naoEstavam: [],
     ficaram: [],
   },
 ];

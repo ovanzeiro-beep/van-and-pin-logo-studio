@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarClock, Home, MapPin, UserPlus } from "lucide-react";
+import { CalendarClock, History, Home, MapPin, UserPlus } from "lucide-react";
 import { AntesDeSair } from "@/components/app/viagem/AntesDeSair";
 import { EscolhaDaViagem } from "@/components/app/viagem/partes";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
@@ -75,7 +75,9 @@ function AbaViagem() {
     const proxima = proximaViagem(destinos, dataDeHoje());
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <VanzeiroHeader compacto titulo="Viagem" subtitulo={textoDeHoje} />
+        <VanzeiroHeader compacto titulo="Viagem" subtitulo={textoDeHoje}>
+          <LinkViagensFeitas />
+        </VanzeiroHeader>
         <div className="flex flex-1 flex-col items-center justify-center px-8 py-10 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary-soft text-primary">
             <CalendarClock className="h-8 w-8" />
@@ -106,7 +108,9 @@ function AbaViagem() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <VanzeiroHeader compacto titulo={feita ? "Viagem encerrada" : "Viagem"} subtitulo={textoDeHoje} />
+      <VanzeiroHeader compacto titulo={feita ? "Viagem encerrada" : "Viagem"} subtitulo={textoDeHoje}>
+        <LinkViagensFeitas />
+      </VanzeiroHeader>
       {hoje.length > 1 && (
         <div className="relative z-10 -mt-4 shrink-0 px-5">
           <EscolhaDaViagem viagens={hoje} escolhida={destino.id} feitas={feitas} aoEscolher={escolherViagem} />
@@ -145,5 +149,17 @@ function AbaViagem() {
         )}
       </div>
     </div>
+  );
+}
+
+/** Discreet way to the history of finished trips, in the header, when no trip is in progress. */
+function LinkViagensFeitas() {
+  return (
+    <Link
+      to="/vanzeiro/historico"
+      className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
+    >
+      <History className="h-4 w-4" /> Viagens feitas
+    </Link>
   );
 }
