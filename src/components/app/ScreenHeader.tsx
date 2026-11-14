@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Bell } from "lucide-react";
 import { LogoMark } from "@/components/brand/Logo";
+import { horaDeAgora } from "@/lib/agora";
 import { cn } from "@/lib/utils";
 
 function saudacaoPorHorario(hora: number) {
@@ -32,7 +33,7 @@ export function ScreenHeader({
   children?: ReactNode;
 }) {
   const [saudacao, setSaudacao] = useState("Olá");
-  useEffect(() => setSaudacao(saudacaoPorHorario(new Date().getHours())), []);
+  useEffect(() => setSaudacao(saudacaoPorHorario(Number(horaDeAgora().slice(0, 2)))), []);
 
   return (
     <header

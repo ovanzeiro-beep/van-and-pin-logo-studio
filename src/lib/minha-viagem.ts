@@ -7,7 +7,6 @@ import { confirmacaoAberta, proximasDatas, proximaViagem } from "@/lib/viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
 import { agora, dataDeHoje } from "@/lib/agora";
 
-export const AGORA = agora();
 export type MinhaProximaViagem = {
   data: string; resposta: RespostaViagem | undefined; aberta: boolean; prazo: string; emAndamento: boolean;
   eu: Passageiro; destino: Destino;
@@ -28,7 +27,7 @@ export function useMinhasViagens() {
   const destinos = useDestinos();
   const respostas = useRespostas();
   const { viagens } = useViagensDoDia();
-  const agora_val = AGORA;
+  const agora_val = agora();
   const proximas: MinhaProximaViagem[] = viagensDasMatriculas(matriculas, destinos, agora_val.data)
     .filter((v) => !(v.data === agora_val.data && viagens[v.destino.id]?.fase === "encerrada"))
     .map((v) => {

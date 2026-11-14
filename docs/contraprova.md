@@ -392,7 +392,20 @@ Itens marcados como feitos que **não estão completos** (voltam para "a fazer")
 
 Achado na conferência de tipos (que o build não faz):
 - [ ] Item 3: quando o app **cria** um destino, um passageiro ou um pedido novo, o identificador do vanzeiro fica vazio. Só os dados de exemplo têm o identificador. Precisa ser corrigido.
-- [ ] Etapa B, item 7 (já estava assim na `main`): o sininho do passageiro procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
+- [ ] Etapa B, item 7 (já estava assim na `main`): o sininho do passageiro procura os avisos por um campo que não existe. (continua abaixo)
+
+### Item 2 refeito (14/11/2026)
+- [x] Só `src/lib/agora.ts` lê a data e a hora (`dataDeHoje()`, `horaDeAgora()`, `agora()`).
+- [x] Trocados os arquivos de regras que ainda liam direto: cobranças, respostas, viagem, exclusões, minhas viagens.
+- [x] "Minhas viagens" pegava a hora uma vez só, ao abrir o app; agora pergunta a hora a cada uso (com o relógio de verdade, não fica parada).
+- [x] A saudação do cabeçalho lia o relógio do celular; agora usa `horaDeAgora()`. Com a hora fixa dos exemplos (05:10), aparece sempre "Bom dia" (corrige o item 4.2 da Etapa A). Quando o relógio de verdade entrar, volta a seguir a hora real.
+- [x] Teste novo `src/test/agora.test.ts`: falha se algum arquivo do app voltar a ler a data, a hora ou o relógio do celular direto (conferido: falha no código antigo).
+- [x] Testes (138) passando. Conferência de tipos sem erro novo.
+- [x] 15 telas abertas sem erro; texto de 13 telas idêntico ao da `main`; iniciar a viagem e marcar "Embarcou" funcionam igual.
+- Os testes continuam usando a data fixa dos exemplos (é de propósito: teste precisa de data fixa).
+- O relógio do celular continua sendo usado só para criar identificadores únicos (não mostra hora).
+
+- [ ] (continuação) Sininho do passageiro procura os avisos por um campo que não existe. A conferir se o passageiro vê os avisos dele.
 
 ### Próximo item
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.

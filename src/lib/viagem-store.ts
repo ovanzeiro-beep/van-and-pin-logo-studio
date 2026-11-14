@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { DATA_DE_HOJE, vanzeiroExemplo, type Destino } from "@/data/exemplo";
+import { vanzeiroExemplo, type Destino } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import { registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
 import { obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
@@ -45,12 +46,12 @@ export function escolherViagem(destinoId: string) {
 
 export function comecarViagem(destino: Destino, ordem: string[]) {
   if (emAndamento(estado) || estado.viagens[destino.id]) return;
-  fecharRespostas(destino.id, DATA_DE_HOJE);
-  const respostas = obterRespostasParaTeste(DATA_DE_HOJE);
+  fecharRespostas(destino.id, dataDeHoje());
+  const respostas = obterRespostasParaTeste(dataDeHoje());
   for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
-    if (respostas[p.id] === "nao-vai") registrarFalta(p, DATA_DE_HOJE, true);
+    if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true);
   }
-  mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: iniciarViagem(destino, ordem, DATA_DE_HOJE) } });
+  mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: iniciarViagem(destino, ordem, dataDeHoje()) } });
 }
 
 /** Applies one step of the trip in progress. */

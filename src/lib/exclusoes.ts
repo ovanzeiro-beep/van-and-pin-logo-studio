@@ -1,4 +1,4 @@
-import { DATA_DE_HOJE } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import { cancelarPendentesDe } from "@/lib/cobrancas-store";
 import { obterDestinos, removerDestino } from "@/lib/destinos-store";
 import { obterPassageiros, removerDoDestino, sairDaMatricula } from "@/lib/passageiros-store";
@@ -16,7 +16,7 @@ export function viagemEmAndamentoNoDestino(destinoId: string) {
 }
 
 /** Returns false (and changes nothing) while the destino's trip is in progress. */
-export function excluirDestino(destinoId: string, hoje = DATA_DE_HOJE) {
+export function excluirDestino(destinoId: string, hoje = dataDeHoje()) {
   if (viagemEmAndamentoNoDestino(destinoId)) return false;
   const ids = obterPassageiros().filter((p) => p.destinoId === destinoId).map((p) => p.id);
   cancelarPendentesDe(ids, MOTIVO_DESTINO_EXCLUIDO, hoje);
@@ -26,7 +26,7 @@ export function excluirDestino(destinoId: string, hoje = DATA_DE_HOJE) {
 }
 
 /** The passenger leaves one destino. Returns false while that destino's trip is in progress. */
-export function sairDoDestino(passageiroId: string, hoje = DATA_DE_HOJE) {
+export function sairDoDestino(passageiroId: string, hoje = dataDeHoje()) {
   const p = obterPassageiros().find((x) => x.id === passageiroId);
   if (!p || viagemEmAndamentoNoDestino(p.destinoId)) return false;
   cancelarPendentesDe([p.id], MOTIVO_SAIU_DO_DESTINO, hoje);
@@ -36,7 +36,7 @@ export function sairDoDestino(passageiroId: string, hoje = DATA_DE_HOJE) {
 
 /** Delete the account entirely: vanzeiro deletes all destinos; passenger leaves all destinos.
  * Returns false if any trip is in progress. */
-export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = DATA_DE_HOJE) {
+export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = dataDeHoje()) {
   if (papel === "vanzeiro") {
     const destinos = obterDestinos();
     for (const d of destinos) {
