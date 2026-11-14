@@ -12,7 +12,7 @@ const doPassageiro = (id: string) => obterCobrancas().filter((c) => c.passageiro
 describe("Decisão 6: cobranças de quem sai de um destino", () => {
   it("counts what gets cancelled and what keeps being collected", () => {
     const ids = obterPassageiros().filter((p) => p.destinoId === "jacarezinho-londrina").map((p) => p.id);
-    expect(resumoDaSaida(obterCobrancas(), ids, hoje)).toEqual({ pendentes: 3, devendo: 3 });
+    expect(resumoDaSaida(obterCobrancas(), ids, hoje)).toEqual({ pendentes: 4, devendo: 2 });
   });
 
   it("cancels only pendentes, with the reason; devendo, paid and cancelled stay as they are", () => {
@@ -57,7 +57,7 @@ describe("Excluir destino (vanzeiro)", () => {
     expect(pedro.every((c) => c.cancelamento?.motivo === MOTIVO_DESTINO_EXCLUIDO)).toBe(true);
     expect(situacao(doPassageiro("p-beatriz").find((c) => c.vencimento === "2026-11-05")!, hoje)).toBe("devendo");
     expect(situacao(doPassageiro("p-mariana").find((c) => c.vencimento === "2026-11-10")!, hoje)).toBe("devendo");
-    expect(doPassageiro("p-lucas").find((c) => c.vencimento === "2026-11-07")?.cancelamento?.motivo).toBe("Dia de cortesia");
+    expect(doPassageiro("p-lucas").find((c) => c.id === "p-lucas_2026-11-07")?.cancelamento?.motivo).toBe("Dia de cortesia");
   });
 });
 

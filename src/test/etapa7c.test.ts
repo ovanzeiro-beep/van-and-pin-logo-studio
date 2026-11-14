@@ -51,7 +51,8 @@ describe("Exemplos regionais da Etapa 7C", () => {
 
   it("preserves financial totals from before the location-only update", () => {
     expect(resumoDoMes(obterCobrancas(), "2026-11-13")).toEqual({
-      aReceber: 1811, recebido: 663, devendo: 631, pagos: 9, pendentes: 6, devendoQtd: 6,
+      // E6 (14/11/2026): Por viagem e Diário vencem 7 dias depois; 4 cobranças (R$ 101) passam de devendo a pendente.
+      aReceber: 1811, recebido: 663, devendo: 530, pagos: 9, pendentes: 10, devendoQtd: 2,
     });
   });
 });

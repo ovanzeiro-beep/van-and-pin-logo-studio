@@ -189,6 +189,12 @@ function referencia(tipo: PlanoPagamento, vencimento: string) {
   return `Viagem de ${diaMes(vencimento)}`;
 }
 
+/** Por viagem and Diário are named and identified by the boarding day, and fall due some days later. */
+export const DIAS_PARA_PAGAR_EMBARQUE = 7;
+function porEmbarque(p: Passageiro, data: string): Cobranca {
+  return { ...nova(p, somarDias(data, DIAS_PARA_PAGAR_EMBARQUE)), id: `${p.id}_${data}`, referencia: referencia(p.plano, data) };
+}
+
 function nova(p: Passageiro, vencimento: string, faltas = 0, periodo: Cobranca["periodoFaltas"] = null): Cobranca {
   return {
     id: `${p.id}_${vencimento}`,
@@ -223,7 +229,7 @@ export function gerarCobrancas(p: Passageiro, desde: string, ate: string, hoje: 
       const chave = p.plano === "viagem" ? (e.viagemId ?? e.data) : e.data;
       if (!unicos.has(chave)) unicos.set(chave, e);
     }
-    return [...unicos.entries()].filter(([, e]) => e.data >= desde && e.data <= ate).map(([chave, e]) => ({ ...nova(p, e.data), ...(p.plano === "viagem" && e.viagemId ? { id: `${p.id}_${chave}`, viagemId: chave } : {}) }));
+    return [...unicos.entries()].filter(([, e]) => e.data >= desde && e.data <= ate).map(([chave, e]) => ({ ...porEmbarque(p, e.data), ...(p.plano === "viagem" && e.viagemId ? { id: `${p.id}_${chave}`, viagemId: chave } : {}) }));
   }
   const dia = p.vencimento ?? 1;
   const datas = p.plano === "mensal" ? vencimentosMensais(dia, desde, ate) : vencimentosQuinzenais(dia, desde, ate);

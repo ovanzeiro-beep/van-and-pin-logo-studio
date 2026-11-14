@@ -174,7 +174,7 @@ describe("Viagem → Financeiro", () => {
   it("'Embarcou' creates that day's charge for Por viagem and Diário, only once", () => {
     const porViagem = p({ plano: "viagem", valor: 45, vencimento: null, descontaFaltas: false, valorFalta: null });
     const lista = aplicarEmbarque([], porViagem, "2026-11-13", "2026-11-13");
-    expect(lista.map((c) => [c.vencimento, c.valorBase, c.referencia])).toEqual([["2026-11-13", 45, "Viagem de 13/11"]]);
+    expect(lista.map((c) => [c.vencimento, c.valorBase, c.referencia])).toEqual([["2026-11-20", 45, "Viagem de 13/11"]]);
     expect(aplicarEmbarque(lista, porViagem, "2026-11-13", "2026-11-13")).toHaveLength(1);
     const diario = p({ plano: "diario", valor: 80, vencimento: null, descontaFaltas: false, valorFalta: null });
     expect(aplicarEmbarque([], diario, "2026-11-13", "2026-11-13")[0]?.referencia).toBe("Diária de 13/11");
@@ -203,5 +203,14 @@ describe("Viagem → Financeiro", () => {
 
   it("no discount, no change", () => {
     expect(aplicarFalta([], p({ plano: "mensal", descontaFaltas: false }), "2026-11-13", "2026-11-13")).toEqual([]);
+  });
+});
+
+describe("Por viagem e Diário vencem 7 dias depois do embarque (decisão 8)", () => {
+  it("o nome e a chave seguem o dia do embarque; o vencimento é 7 dias depois", () => {
+    const [c] = gerarCobrancas({ ...base, plano: "diario", vencimento: null, valor: 22 }, "2026-11-01", "2026-11-30", hoje, { embarques: [{ passageiroId: "p-x", data: "2026-11-08" }], faltas: [] });
+    expect([c?.id, c?.referencia, c?.vencimento]).toEqual(["p-x_2026-11-08", "Diária de 08/11", "2026-11-15"]);
+    expect(situacao(c!, "2026-11-15")).toBe("pendente");
+    expect(situacao(c!, "2026-11-16")).toBe("devendo");
   });
 });
