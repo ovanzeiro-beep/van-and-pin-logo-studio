@@ -351,8 +351,16 @@ O que mudou: tipos em exemplo.ts, cobrancas.ts, viagem.ts; dados de exemplo (50+
 
 O que mudou: arquivo novo `sessao-usuario.ts`. Código existente (sessao-passageiro.ts, vanzeiro-store.ts) não quebrado.
 
+### Item 5 — Códigos de convite que não se repetem (feito em 14/11/2026)
+- [x] Nova função `gerarConviteUnico()` em `convite.ts` com registro de códigos usados.
+- [x] Garantia: cada código é único, tenta 100 vezes antes de falhar.
+- [x] Inicialização: `destinos-store.ts` registra códigos de exemplo ao carregar.
+- [x] Função `gerarConvite()` em `destinos.ts` agora chama `gerarConviteUnico()`.
+- [x] Testes (120 passando) e build OK.
+
+O que mudou: funções em `convite.ts`, inicialização em `destinos-store.ts`, delegação em `destinos.ts`.
+
 ### Próximos itens
-- [ ] 5. Códigos de convite que não se repetem.
 - [ ] 6. Testes para todas as regras da seção 6.
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
 
