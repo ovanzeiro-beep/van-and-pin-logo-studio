@@ -639,3 +639,29 @@ Telas e textos:
 Da revisão da Etapa A que só segue o que já existe no app (sem decisão nova):
 - [ ] E15. Início do passageiro destaca a viagem que ainda dá para confirmar, não a que já perdeu o prazo (Etapa A 1.4; mesma ideia do E2).
 - [ ] E16. "Sair" da tela "Entrar na van" pergunta "Quer mesmo sair?", igual ao Perfil (Etapa A 3.3).
+
+### Mapa da Etapa E (análise ponta a ponta, 14/11/2026, antes de começar)
+Branch: `etapa-e`. Regras novas sempre em `src/lib/`, com teste; telas só mostram.
+
+| Item | Onde mexe | Cuidados |
+| --- | --- | --- |
+| E1 Iniciar antes do prazo | `viagem/AntesDeSair.tsx` (botão e confirmação); regra "faltam N responder antes do prazo" em `lib/viagem.ts` | Depois do prazo, nada muda (sem pergunta). |
+| E2 Início do vanzeiro | regra nova em `lib/viagem.ts` (próxima ainda não feita / todas feitas); `routes/vanzeiro.index.tsx` | A aba Viagem continua com a escolha dela (`viagemDeHoje`); só o Início muda. Início não pode passar a rolar. |
+| E3 Falta no prazo | `lib/viagem-store.ts` + `lib/respostas-store.ts`: ao passar o prazo, registra a falta de quem disse "Não vou" | `registrarFalta` já não conta duas vezes. Precisa de algo que "olhe o relógio" (hoje a hora é fixa 05:10; com relógio real, de minuto em minuto). |
+| E4 Ordem na mão | ordem dos passageiros guardada por destino em `lib/passageiros-store.ts`; `listaDaViagem` já mantém a ordem dentro da cidade | **Onde fica o "subir/descer" na tela: pergunta ao dono.** Para o banco, a ordem vira um campo. |
+| E5 Remover passageiro | `routes/vanzeiro.destinos.$id_.passageiros.$pid.tsx` (confirmação com contas, como "Sair deste destino"); `cancelarPendentesDe` com motivo "Removido do destino" | Igual à decisão 6. |
+| E6 Por viagem e Diário +7 dias | `lib/cobrancas.ts` (`gerarCobrancas`, `nova`) | O nome da cobrança ("Viagem de 08/11") e a chave continuam pelo dia do embarque; só o vencimento muda. |
+| E7 Quinzenal 2 datas fixas | `lib/cobrancas.ts` (`vencimentosQuinzenais`, nome "Quinzena de … a …", período das faltas) | Dados de exemplo: a Fernanda (dia 5) passa a vencer 5 e 20; o pagamento de exemplo de 04/11 muda para 05/11. |
+| E8 Próxima nasce ao vencer | `lib/cobrancas-store.ts` (exemplos: só até a próxima depois de hoje); `garantirProximaCobranca` | Com relógio real, rodar a cada dia. |
+| E9 Financeiro do mês | `filtrarCobrancas` em `lib/cobrancas.ts` usa a mesma regra do resumo do mês | Pagas de meses anteriores saem da lista do Financeiro (continuam no detalhe do passageiro e nos Pagamentos do passageiro). |
+| E10 Perfil do vanzeiro | regra de "pode salvar" sai da tela `vanzeiro.perfil.tsx` para `lib/` | "Não informado" já existe. |
+| E11 Pausar | `routes/vanzeiro.destinos.$id.tsx` (confirmação; "Ativar" não pergunta) | |
+| E12 Detalhes rolam só o conteúdo | 6 telas: detalhe do destino, do passageiro, da cobrança (vanzeiro e passageiro), os 2 Perfis | Mesmo jeito das telas de lista. |
+| E13 Termos sem GPS | `routes/termos.tsx` (1 linha), `routes/privacidade.tsx` (2 linhas) | |
+| E14 Pedido recusado | `recusarPedido` cria aviso novo "pedido_recusado"; `EntrarNaVan.tsx` mostra "O vanzeiro não aceitou" também em "Entrar em outro destino" | Quem ainda não tem van não vê o painel: para essa pessoa a própria tela é o aviso; o aviso no sininho é para quem já é passageiro. |
+| E15 Início do passageiro | regra em `lib/minha-viagem.ts`: destaca a próxima que ainda dá para confirmar, em andamento ou com "Vou" | |
+| E16 Sair na tela "Entrar na van" | confirmação "Quer mesmo sair?" reaproveitada do Perfil (`OpcoesDaConta.tsx`) | |
+
+Números que vão mudar de propósito (E6 a E9): "A receber", "Recebido", "Devendo" e as contagens do Início e do Financeiro. O teste que congela esses números (`etapa7c.test.ts`) será atualizado com os valores novos, conferidos à mão.
+
+Ordem: Telas simples (E16, E11, E10, E13, E12) → Viagem (E1, E2, E15, E3, E4) → Dinheiro (E5, E6, E7, E8, E9) → E14. Conferência no app a cada bloco; merge na `main` ao fim de cada bloco.
