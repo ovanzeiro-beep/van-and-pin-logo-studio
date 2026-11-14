@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
-| B — Fluxos que faltam | Em andamento (itens 1 a 5 feitos em 13/11/2026; aguardando aprovação para o item 6) |
+| B — Fluxos que faltam | Em andamento (itens 1 a 6 feitos em 14/11/2026; faltam itens 7, 8, 9) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -156,15 +156,7 @@ Pendências do item 1:
 - [x] 3. Telas vazias com mensagem e botão útil (destino sem passageiros, dia sem viagem, sem cobranças, sem pedidos, histórico vazio).
 - [x] 4. Editar perfil (vanzeiro e passageiro): nome, telefone, chave Pix, van, endereço de embarque.
 - [x] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
-- [ ] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara.
-
-**Plano do item 6 (início em 14/11/2026):**
-- Vanzeiro: botão "Excluir minha conta" no Perfil (vermelho discreto, ao lado de Editar), com confirmação que diz quantos destinos e que a exclusão é como excluir todos eles: cobranças pendentes canceladas, devendo ficam, dados apagados, volta para Entrar. Não dá para desfazer.
-- Passageiro: botão "Excluir minha conta" no Perfil (vermelho discreto), com confirmação similar: sai de todos os destinos, cobranças pendentes canceladas, devendo continuam a receber, dados apagados, volta para Entrar. Não dá para desfazer.
-- Função `excluirMinhaConta(sessao)` em `src/lib/exclusoes.ts` que chama `excluirDestino` para cada destino (vanzeiro) ou `sairDoDestino` para cada (passageiro).
-- Teste em `src/test/exclusoes.test.ts` para verificar que as cobranças são tratadas como esperado em cada perfil.
-- Nenhuma tela nova rola.
-- Merge e aprovação.
+- [x] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara (feito em 14/11/2026).
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 - [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
 - [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.
@@ -209,6 +201,18 @@ O que já existia: o Perfil do vanzeiro tem "Editar" com nome, telefone, chave P
 O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras novas `meusDadosValidos` e `atualizarMeusDados` em `src/lib/passageiros.ts`; gravação em `passageiros-store.ts` e `sessao-passageiro.ts`.
 
 Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
+
+### Item 6 — Excluir minha conta (feito em 14/11/2026)
+Decisão 6 confirmada: mesmas cobranças de quando se exclui/sai de destinos.
+- [x] Vanzeiro: botão "Excluir minha conta" no Perfil (vermelho discreto, ao lado de "Editar"), com confirmação que diz quantos destinos são excluídos, cobranças pendentes canceladas, devendo continuam a receber, dados pessoais apagados, volta para Entrar.
+- [x] Passageiro: botão "Excluir minha conta" no Perfil (vermelho discreto), com confirmação similar.
+- [x] Botões só aparecem no Perfil, fora do formulário de edição. Não rolam.
+- [x] Componente `ExcluirMinhaConta.tsx` (similar a `ExcluirDestino.tsx`, com AlertDialog).
+- [x] Função `excluirMinhaConta(papel, hoje?)` em `src/lib/exclusoes.ts` que chama `excluirDestino` para cada (vanzeiro) ou `sairDoDestino` para cada (passageiro).
+- [x] Testes automáticos em `src/test/exclusoes.test.ts` (com `beforeEach` para limpar viagens).
+- [x] Testes (120) e build passando. Perfils do vanzeiro e passageiro iguais a antes, com novo botão.
+
+O que mudou: Perfil do vanzeiro e do passageiro (novo botão "Excluir minha conta"), componente novo `ExcluirMinhaConta.tsx`, função nova `excluirMinhaConta()` em `exclusoes.ts`.
 
 ### Item 5 — Excluir destino e sair de um destino (feito em 13/11/2026)
 Decisão 6 da fonte da verdade (aprovada em 13/11/2026): pagas e canceladas ficam no histórico; devendo continuam a receber; pendentes são canceladas sozinhas, com o motivo registrado.
