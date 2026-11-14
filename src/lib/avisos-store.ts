@@ -56,6 +56,7 @@ export function useAvisos() {
       return () => listeners.delete(listener);
     },
     () => avisos,
+    () => avisos,
   );
 }
 

@@ -31,6 +31,7 @@ export function useViagensEncerradas() {
       return () => listeners.delete(listener);
     },
     () => viagensEncerradas,
+    () => viagensEncerradas,
   );
 }
 

@@ -1,4 +1,4 @@
-import type { Destino, DiaSemana, Passageiro, RespostaViagem } from "@/data/exemplo";
+import { embarquesExemplo, faltasExemplo, type Destino, type DiaSemana, type Passageiro, type RespostaViagem } from "@/data/exemplo";
 import { somarDias } from "@/lib/cobrancas";
 import { pontosDeEmbarque } from "@/lib/passageiros";
 import { formatarData, prazoPassou } from "@/lib/destinos";
@@ -282,7 +282,6 @@ export function historicoDoPassageiroComDados(
   viagemDeHoje: ViagemDoDia | undefined,
   dias = 14,
 ): ItemHistorico[] {
-  const { embarquesExemplo, faltasExemplo } = require("@/data/exemplo");
   return historicoDoPassageiro(p, d, hoje, { embarques: embarquesExemplo, faltas: faltasExemplo }, viagemDeHoje, dias);
 }
 
