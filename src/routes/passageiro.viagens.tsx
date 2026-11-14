@@ -5,12 +5,12 @@ import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { Button } from "@/components/ui/button";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
-import { DATA_DE_HOJE, embarquesExemplo, faltasExemplo } from "@/data/exemplo";
+import { DATA_DE_HOJE } from "@/data/exemplo";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { responder } from "@/lib/respostas-store";
 import { cn } from "@/lib/utils";
-import { historicoDoPassageiro } from "@/lib/viagem";
+import { historicoDoPassageiroComDados } from "@/lib/viagem";
 
 export const Route = createFileRoute("/passageiro/viagens")({
   head: () => ({
@@ -31,7 +31,7 @@ function MinhasViagens() {
   const vanzeiro = usePerfilVanzeiro();
   const historico = matriculas.flatMap((eu) => {
     const destino = destinos.find((d) => d.id === eu.destinoId);
-    return destino ? historicoDoPassageiro(eu, destino, DATA_DE_HOJE, { embarques: embarquesExemplo, faltas: faltasExemplo }, viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
+    return destino ? historicoDoPassageiroComDados(eu, destino, DATA_DE_HOJE, viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
   }).sort((a, b) => b.data.localeCompare(a.data));
 
   return (
