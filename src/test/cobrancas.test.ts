@@ -236,3 +236,21 @@ describe("Quinzenal com duas datas fixas (decisão 10)", () => {
     ]);
   });
 });
+
+describe("A próxima cobrança nasce quando a atual vence (decisão 9)", () => {
+  it("só existe uma cobrança à frente de hoje", () => {
+    const cs = gerarCobrancas({ ...base, plano: "quinzenal", vencimento: 15 }, "2026-11-01", "2026-12-31", "2026-11-13", vazio);
+    expect(cs.map((c) => c.vencimento)).toEqual(["2026-11-15"]);
+  });
+
+  it("no dia em que a atual vence, o relógio do app cria a próxima, e só uma vez", async () => {
+    const { criarProximasCobrancas, obterCobrancas: todas } = await import("@/lib/cobrancas-store");
+    const pedro = passageirosExemplo.find((p) => p.id === "p-pedro")!;
+    const doPedro = () => todas().filter((c) => c.passageiroId === "p-pedro" && c.vencimento > "2026-11-13").map((c) => c.vencimento);
+    criarProximasCobrancas([pedro], "2026-11-13");
+    expect(doPedro()).toEqual(["2026-11-15"]);
+    criarProximasCobrancas([pedro], "2026-11-15");
+    criarProximasCobrancas([pedro], "2026-11-15");
+    expect(doPedro()).toEqual(["2026-11-15", "2026-11-30"]);
+  });
+});

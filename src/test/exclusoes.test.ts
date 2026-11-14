@@ -12,7 +12,7 @@ const doPassageiro = (id: string) => obterCobrancas().filter((c) => c.passageiro
 describe("Decisão 6: cobranças de quem sai de um destino", () => {
   it("counts what gets cancelled and what keeps being collected", () => {
     const ids = obterPassageiros().filter((p) => p.destinoId === "jacarezinho-londrina").map((p) => p.id);
-    expect(resumoDaSaida(obterCobrancas(), ids, hoje)).toEqual({ pendentes: 4, devendo: 2 });
+    expect(resumoDaSaida(obterCobrancas(), ids, hoje)).toEqual({ pendentes: 3, devendo: 2 });
   });
 
   it("cancels only pendentes, with the reason; devendo, paid and cancelled stay as they are", () => {

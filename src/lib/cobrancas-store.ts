@@ -94,6 +94,20 @@ export function garantirProximaCobranca(p: Passageiro, hoje = dataDeHoje()) {
   avisar();
 }
 
+/** Decision 9: when a mensal/quinzenal charge falls due, the next one is created (one ahead of today, never two). */
+export function criarProximasCobrancas(passageiros: Passageiro[], hoje = dataDeHoje()) {
+  let mudou = false;
+  for (const p of passageiros) {
+    if (p.plano !== "mensal" && p.plano !== "quinzenal") continue;
+    if (cobrancas.some((c) => c.passageiroId === p.id && !c.cancelamento && c.tipo === p.plano && c.vencimento > hoje)) continue;
+    const [proxima] = gerarCobrancas(p, somarDias(hoje, 1), somarDias(hoje, 45), hoje, { embarques: [], faltas: [] });
+    if (!proxima || cobrancas.some((c) => c.id === proxima.id)) continue;
+    cobrancas = [...cobrancas, proxima];
+    mudou = true;
+  }
+  if (mudou) avisar();
+}
+
 // Trip results already sent to the money, so a day is never counted twice.
 const registrados = new Set<string>();
 

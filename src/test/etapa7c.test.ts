@@ -52,7 +52,8 @@ describe("Exemplos regionais da Etapa 7C", () => {
   it("preserves financial totals from before the location-only update", () => {
     expect(resumoDoMes(obterCobrancas(), "2026-11-13")).toEqual({
       // E6 (14/11/2026): Por viagem e Diário vencem 7 dias depois; 4 cobranças (R$ 101) passam de devendo a pendente.
-      aReceber: 1811, recebido: 663, devendo: 530, pagos: 9, pendentes: 10, devendoQtd: 2,
+      // E8 (14/11/2026): só uma cobrança à frente; a quinzena de 30/11 do Pedro (R$ 150) só nasce em 15/11.
+      aReceber: 1661, recebido: 663, devendo: 530, pagos: 9, pendentes: 9, devendoQtd: 2,
     });
   });
 });

@@ -3,7 +3,7 @@ import { vanzeiroExemplo, type Destino } from "@/data/exemplo";
 import { agora, dataDeHoje } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
-import { registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
+import { criarProximasCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
 import { obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, viagensDoDia, type Agora, type ViagemDoDia } from "@/lib/viagem";
@@ -95,11 +95,17 @@ export function registrarFaltasDoPrazo(momento: Agora = agora()) {
   }
 }
 
+/** What depends on the clock: faltas when a deadline passes, and the next charge when one falls due. */
+export function passarDoTempo() {
+  registrarFaltasDoPrazo();
+  criarProximasCobrancas(obterPassageiros());
+}
+
 /** Watches the clock while the app is open: on opening and then every minute. */
-export function useFaltasNoPrazo() {
+export function useRelogioDoApp() {
   useEffect(() => {
-    registrarFaltasDoPrazo();
-    const t = setInterval(() => registrarFaltasDoPrazo(), 60_000);
+    passarDoTempo();
+    const t = setInterval(passarDoTempo, 60_000);
     return () => clearInterval(t);
   }, []);
 }

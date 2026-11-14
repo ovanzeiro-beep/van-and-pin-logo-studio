@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { useFaltasNoPrazo } from "../lib/viagem-store";
+import { useRelogioDoApp } from "../lib/viagem-store";
 
 function NotFoundComponent() {
   return (
@@ -128,7 +128,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  useFaltasNoPrazo();
+  useRelogioDoApp();
 
   return (
     <QueryClientProvider client={queryClient}>

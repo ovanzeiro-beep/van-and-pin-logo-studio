@@ -246,7 +246,10 @@ export function gerarCobrancas(p: Passageiro, desde: string, ate: string, hoje: 
     return [...unicos.entries()].filter(([, e]) => e.data >= desde && e.data <= ate).map(([chave, e]) => ({ ...porEmbarque(p, e.data), ...(p.plano === "viagem" && e.viagemId ? { id: `${p.id}_${chave}`, viagemId: chave } : {}) }));
   }
   const dia = p.vencimento ?? 1;
-  const datas = p.plano === "mensal" ? vencimentosMensais(dia, desde, ate) : vencimentosQuinzenais(dia, desde, ate);
+  const todas = p.plano === "mensal" ? vencimentosMensais(dia, desde, ate) : vencimentosQuinzenais(dia, desde, ate);
+  // Decision 9: only one charge ahead of today; the next is created on the day this one falls due.
+  const proxima = todas.find((v) => v > hoje);
+  const datas = todas.filter((v) => proxima === undefined || v <= proxima);
   return datas.map((v) => {
     if (!p.descontaFaltas) return nova(p, v);
     const de = p.plano === "mensal" ? somarDias(somarMeses(v, -1, dia), 1) : somarDias(quinzenaAnterior(dia, v), 1);
