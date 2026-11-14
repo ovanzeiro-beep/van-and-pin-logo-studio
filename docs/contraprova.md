@@ -157,6 +157,14 @@ Pendências do item 1:
 - [x] 4. Editar perfil (vanzeiro e passageiro): nome, telefone, chave Pix, van, endereço de embarque.
 - [x] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
 - [ ] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara.
+
+**Plano do item 6 (início em 14/11/2026):**
+- Vanzeiro: botão "Excluir minha conta" no Perfil (vermelho discreto, ao lado de Editar), com confirmação que diz quantos destinos e que a exclusão é como excluir todos eles: cobranças pendentes canceladas, devendo ficam, dados apagados, volta para Entrar. Não dá para desfazer.
+- Passageiro: botão "Excluir minha conta" no Perfil (vermelho discreto), com confirmação similar: sai de todos os destinos, cobranças pendentes canceladas, devendo continuam a receber, dados apagados, volta para Entrar. Não dá para desfazer.
+- Função `excluirMinhaConta(sessao)` em `src/lib/exclusoes.ts` que chama `excluirDestino` para cada destino (vanzeiro) ou `sairDoDestino` para cada (passageiro).
+- Teste em `src/test/exclusoes.test.ts` para verificar que as cobranças são tratadas como esperado em cada perfil.
+- Nenhuma tela nova rola.
+- Merge e aprovação.
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 - [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
 - [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.

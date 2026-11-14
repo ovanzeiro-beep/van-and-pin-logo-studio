@@ -2,12 +2,14 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Car, Check, Pencil, Phone, QrCode, RectangleHorizontal, User, X } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
+import { ExcluirMinhaConta } from "@/components/app/ExcluirMinhaConta";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
 import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
+import { useDestinos } from "@/lib/destinos-store";
 import { salvarPerfilVanzeiro, usePerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/vanzeiro/perfil")({
@@ -29,6 +31,7 @@ const ou = (valor: string) => valor.trim() || "Não informado";
 
 function AbaPerfil() {
   const perfil = usePerfilVanzeiro();
+  const destinos = useDestinos();
   const [editando, setEditando] = useState(false);
 
   return (
@@ -62,6 +65,7 @@ function AbaPerfil() {
             <Button size="lg" variant="outline" className="w-full" onClick={() => setEditando(true)}>
               <Pencil className="!h-5 !w-5" /> Editar
             </Button>
+            <ExcluirMinhaConta papel="vanzeiro" numDestinos={destinos.length} />
             <OpcoesDaConta trocarPara="passageiro" varianteSair="ghost" />
           </>
         )}

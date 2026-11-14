@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, MapPin, MessageCircle, Pencil, Phone, Route as RouteIcon, User, X } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
+import { ExcluirMinhaConta } from "@/components/app/ExcluirMinhaConta";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
 import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
@@ -82,6 +83,7 @@ function PerfilPassageiro() {
           <Pencil className="!h-5 !w-5" /> Editar
         </Button>
         <Button asChild variant="outline" size="lg" className="w-full"><Link to="/passageiro/entrar-destino">Entrar em outro destino</Link></Button>
+        <ExcluirMinhaConta papel="passageiro" numDestinos={matriculas.length} />
         <OpcoesDaConta trocarPara="vanzeiro" />
         </>
         )}

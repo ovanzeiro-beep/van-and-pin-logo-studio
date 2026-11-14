@@ -1,6 +1,6 @@
 import { DATA_DE_HOJE } from "@/data/exemplo";
 import { cancelarPendentesDe } from "@/lib/cobrancas-store";
-import { removerDestino } from "@/lib/destinos-store";
+import { obterDestinos, removerDestino } from "@/lib/destinos-store";
 import { obterPassageiros, removerDoDestino, sairDaMatricula } from "@/lib/passageiros-store";
 import { emAndamento, obterViagensDoDia } from "@/lib/viagem-store";
 
@@ -31,5 +31,25 @@ export function sairDoDestino(passageiroId: string, hoje = DATA_DE_HOJE) {
   if (!p || viagemEmAndamentoNoDestino(p.destinoId)) return false;
   cancelarPendentesDe([p.id], MOTIVO_SAIU_DO_DESTINO, hoje);
   sairDaMatricula(p.id);
+  return true;
+}
+
+/** Delete the account entirely: vanzeiro deletes all destinos; passenger leaves all destinos.
+ * Returns false if any trip is in progress. */
+export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = DATA_DE_HOJE) {
+  if (papel === "vanzeiro") {
+    const destinos = obterDestinos();
+    for (const d of destinos) {
+      if (!excluirDestino(d.id, hoje)) return false;
+    }
+  } else {
+    const passageiros = obterPassageiros();
+    const eu = passageiros[0]; // All my memberships have same identity, pick first
+    if (!eu) return true; // No memberships, nothing to delete
+    const minhas = passageiros.filter((p) => p.pessoaId === eu.pessoaId);
+    for (const p of minhas) {
+      if (!sairDoDestino(p.id, hoje)) return false;
+    }
+  }
   return true;
 }

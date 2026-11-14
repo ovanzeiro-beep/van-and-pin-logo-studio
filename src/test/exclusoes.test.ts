@@ -3,7 +3,7 @@ import { DATA_DE_HOJE } from "@/data/exemplo";
 import { cancelarPendentes, mensagemCobranca, resumoDaSaida, situacao } from "@/lib/cobrancas";
 import { obterCobrancas } from "@/lib/cobrancas-store";
 import { obterDestinos } from "@/lib/destinos-store";
-import { excluirDestino, MOTIVO_DESTINO_EXCLUIDO, MOTIVO_SAIU_DO_DESTINO, sairDoDestino } from "@/lib/exclusoes";
+import { excluirDestino, excluirMinhaConta, MOTIVO_DESTINO_EXCLUIDO, MOTIVO_SAIU_DO_DESTINO, sairDoDestino } from "@/lib/exclusoes";
 import { obterPassageiros, obterPedidos, obterSaidas } from "@/lib/passageiros-store";
 
 const hoje = DATA_DE_HOJE;
@@ -61,7 +61,7 @@ describe("Excluir destino (vanzeiro)", () => {
   });
 });
 
-import { comecarViagem } from "@/lib/viagem-store";
+import { comecarViagem, limparViagens } from "@/lib/viagem-store";
 
 describe("Com a viagem de hoje em andamento", () => {
   it("neither excluir destino nor sair deste destino works", () => {
@@ -71,5 +71,34 @@ describe("Com a viagem de hoje em andamento", () => {
     expect(sairDoDestino("p-gabriel")).toBe(false);
     expect(obterDestinos().some((d) => d.id === "centro-unisul")).toBe(true);
     expect(obterPassageiros().some((p) => p.id === "p-gabriel")).toBe(true);
+  });
+});
+
+describe("Excluir minha conta", () => {
+  // Clean up any active trip before testing account deletion
+  beforeEach(() => {
+    limparViagens();
+  });
+
+  it("vanzeiro: deletes all destinos, passengers and their pendentes", () => {
+    const numDestinos = obterDestinos().length;
+    expect(numDestinos).toBeGreaterThan(0);
+    expect(excluirMinhaConta("vanzeiro")).toBe(true);
+    expect(obterDestinos().length).toBe(0);
+    expect(obterPassageiros().length).toBe(0);
+  });
+
+  it("passageiro: leaves all destinos; their pendentes are cancelled, devendo stay", () => {
+    const antes = obterPassageiros();
+    const eu = antes.find((p) => p.pessoaId === "pessoa-juliana");
+    if (!eu) return; // Juliana has only one membership, so she'll be gone after the first one
+    const numAntigos = antes.filter((p) => p.pessoaId === "pessoa-juliana").length;
+    expect(numAntigos).toBeGreaterThan(0);
+
+    excluirMinhaConta("passageiro");
+
+    const depois = obterPassageiros();
+    expect(depois.filter((p) => p.pessoaId === "pessoa-juliana").length).toBe(0);
+    expect(obterSaidas().filter((p) => p.pessoaId === "pessoa-juliana").length).toBeGreaterThan(0);
   });
 });
