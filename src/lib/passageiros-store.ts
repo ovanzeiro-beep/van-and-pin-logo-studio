@@ -2,6 +2,7 @@ import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { atualizarMeusDados, identidadePassageiro, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
+import { useAvisosNaoLidos } from "@/lib/avisos-store";
 
 // In-memory lists for the visual stage: changes last until the page is reloaded.
 let passageiros = passageirosExemplo;
@@ -61,9 +62,11 @@ export function usePedido(id: string | undefined) {
   return usePedidos().find((p) => p.id === id);
 }
 
-/** Number shown on the bell: join requests waiting for an answer. */
+/** Number shown on the bell: join requests + unread notifications for the vanzeiro. */
 export function useAvisosVanzeiro() {
-  return usePedidos().length;
+  const pedidosCount = usePedidos().length;
+  const avisosNaoLidos = useAvisosNaoLidos("vanzeiro-carlos");
+  return pedidosCount + avisosNaoLidos.length;
 }
 
 /** Adds or replaces a passenger. When it came from a pedido, the pedido leaves the waiting list. */

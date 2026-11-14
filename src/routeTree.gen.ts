@@ -20,12 +20,14 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VanzeiroRouteImport } from './routes/vanzeiro'
 import { Route as PassageiroIndexRouteImport } from './routes/passageiro.index'
 import { Route as PassageiroEntrarDestinoRouteImport } from './routes/passageiro.entrar-destino'
+import { Route as PassageiroNotificacoesRouteImport } from './routes/passageiro.notificacoes'
 import { Route as PassageiroPagamentosRouteImport } from './routes/passageiro.pagamentos'
 import { Route as PassageiroPerfilRouteImport } from './routes/passageiro.perfil'
 import { Route as PassageiroViagensRouteImport } from './routes/passageiro.viagens'
 import { Route as VanzeiroIndexRouteImport } from './routes/vanzeiro.index'
 import { Route as VanzeiroDestinosRouteImport } from './routes/vanzeiro.destinos'
 import { Route as VanzeiroFinanceiroRouteImport } from './routes/vanzeiro.financeiro'
+import { Route as VanzeiroNotificacoesRouteImport } from './routes/vanzeiro.notificacoes'
 import { Route as VanzeiroPedidosRouteImport } from './routes/vanzeiro.pedidos'
 import { Route as VanzeiroPerfilRouteImport } from './routes/vanzeiro.perfil'
 import { Route as VanzeiroViagemRouteImport } from './routes/vanzeiro.viagem'
@@ -96,6 +98,11 @@ const PassageiroEntrarDestinoRoute = PassageiroEntrarDestinoRouteImport.update({
   path: '/entrar-destino',
   getParentRoute: () => PassageiroRoute,
 } as any)
+const PassageiroNotificacoesRoute = PassageiroNotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
+  getParentRoute: () => PassageiroRoute,
+} as any)
 const PassageiroPagamentosRoute = PassageiroPagamentosRouteImport.update({
   id: '/pagamentos',
   path: '/pagamentos',
@@ -124,6 +131,11 @@ const VanzeiroDestinosRoute = VanzeiroDestinosRouteImport.update({
 const VanzeiroFinanceiroRoute = VanzeiroFinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
+  getParentRoute: () => VanzeiroRoute,
+} as any)
+const VanzeiroNotificacoesRoute = VanzeiroNotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
   getParentRoute: () => VanzeiroRoute,
 } as any)
 const VanzeiroPedidosRoute = VanzeiroPedidosRouteImport.update({
@@ -213,11 +225,13 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/vanzeiro': typeof VanzeiroRouteWithChildren
   '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
+  '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRouteWithChildren
+  '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
@@ -244,8 +258,10 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
+  '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
+  '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
@@ -275,11 +291,13 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/vanzeiro': typeof VanzeiroRouteWithChildren
   '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
+  '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRouteWithChildren
+  '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
@@ -310,11 +328,13 @@ export interface FileRouteTypes {
     | '/termos'
     | '/vanzeiro'
     | '/passageiro/entrar-destino'
+    | '/passageiro/notificacoes'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/notificacoes'
     | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
     | '/vanzeiro/viagem'
@@ -341,8 +361,10 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/passageiro/entrar-destino'
+    | '/passageiro/notificacoes'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
+    | '/vanzeiro/notificacoes'
     | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
     | '/vanzeiro/viagem'
@@ -371,11 +393,13 @@ export interface FileRouteTypes {
     | '/termos'
     | '/vanzeiro'
     | '/passageiro/entrar-destino'
+    | '/passageiro/notificacoes'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/notificacoes'
     | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
     | '/vanzeiro/viagem'
@@ -485,6 +509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassageiroEntrarDestinoRouteImport
       parentRoute: typeof PassageiroRoute
     }
+    '/passageiro/notificacoes': {
+      id: '/passageiro/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/passageiro/notificacoes'
+      preLoaderRoute: typeof PassageiroNotificacoesRouteImport
+      parentRoute: typeof PassageiroRoute
+    }
     '/passageiro/pagamentos': {
       id: '/passageiro/pagamentos'
       path: '/pagamentos'
@@ -525,6 +556,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/vanzeiro/financeiro'
       preLoaderRoute: typeof VanzeiroFinanceiroRouteImport
+      parentRoute: typeof VanzeiroRoute
+    }
+    '/vanzeiro/notificacoes': {
+      id: '/vanzeiro/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/vanzeiro/notificacoes'
+      preLoaderRoute: typeof VanzeiroNotificacoesRouteImport
       parentRoute: typeof VanzeiroRoute
     }
     '/vanzeiro/pedidos': {
@@ -643,6 +681,7 @@ const PassageiroPagamentosRouteWithChildren =
 
 interface PassageiroRouteChildren {
   PassageiroEntrarDestinoRoute: typeof PassageiroEntrarDestinoRoute
+  PassageiroNotificacoesRoute: typeof PassageiroNotificacoesRoute
   PassageiroPagamentosRoute: typeof PassageiroPagamentosRouteWithChildren
   PassageiroPerfilRoute: typeof PassageiroPerfilRoute
   PassageiroViagensRoute: typeof PassageiroViagensRoute
@@ -651,6 +690,7 @@ interface PassageiroRouteChildren {
 
 const PassageiroRouteChildren: PassageiroRouteChildren = {
   PassageiroEntrarDestinoRoute: PassageiroEntrarDestinoRoute,
+  PassageiroNotificacoesRoute: PassageiroNotificacoesRoute,
   PassageiroPagamentosRoute: PassageiroPagamentosRouteWithChildren,
   PassageiroPerfilRoute: PassageiroPerfilRoute,
   PassageiroViagensRoute: PassageiroViagensRoute,
@@ -702,6 +742,7 @@ const VanzeiroFinanceiroRouteWithChildren =
 interface VanzeiroRouteChildren {
   VanzeiroDestinosRoute: typeof VanzeiroDestinosRouteWithChildren
   VanzeiroFinanceiroRoute: typeof VanzeiroFinanceiroRouteWithChildren
+  VanzeiroNotificacoesRoute: typeof VanzeiroNotificacoesRoute
   VanzeiroPedidosRoute: typeof VanzeiroPedidosRoute
   VanzeiroPerfilRoute: typeof VanzeiroPerfilRoute
   VanzeiroViagemRoute: typeof VanzeiroViagemRoute
@@ -711,6 +752,7 @@ interface VanzeiroRouteChildren {
 const VanzeiroRouteChildren: VanzeiroRouteChildren = {
   VanzeiroDestinosRoute: VanzeiroDestinosRouteWithChildren,
   VanzeiroFinanceiroRoute: VanzeiroFinanceiroRouteWithChildren,
+  VanzeiroNotificacoesRoute: VanzeiroNotificacoesRoute,
   VanzeiroPedidosRoute: VanzeiroPedidosRoute,
   VanzeiroPerfilRoute: VanzeiroPerfilRoute,
   VanzeiroViagemRoute: VanzeiroViagemRoute,

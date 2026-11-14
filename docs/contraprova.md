@@ -158,6 +158,15 @@ Pendências do item 1:
 - [x] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
 - [x] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara (feito em 14/11/2026).
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
+
+**Plano do item 7 (início em 14/11/2026):**
+- Criar dados de exemplo: tabela `Aviso` com tipo (pedido_novo, resposta, cobranca_vencida, prazo_chegando, van_saiu, cobranca_vencendo), para_quem (id do vanzeiro ou passageiro), sobre_quem (passageiro para avisos de resposta), destino, texto, data, lido (boolean).
+- Criar store `avisos-store.ts` com funções para obter, marcar como lido, criar avisos. Usar `useSyncExternalStore`.
+- Expandir a tela de Pedidos para mostrar também avisos (ou criar tela unificada de "Notificações"), com dois abas: "Pedidos" e "Avisos", ou lista única de "Notificações".
+- Fazer o sininho mostrar o número de notificações não lidas (pedidos + avisos não lidos).
+- Regras de negócio: avisos são criados automaticamente (não é escopo do item 7 ainda; dados de exemplo)
+- Testes para avisos (criar, marcar como lido, contar não lidos)
+- Telas não rolam
 - [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
 - [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.
 

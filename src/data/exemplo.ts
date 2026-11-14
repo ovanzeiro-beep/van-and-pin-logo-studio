@@ -218,3 +218,70 @@ export const pagamentosExemplo: Record<string, { data: string; forma: FormaPagam
 export const cancelamentosExemplo: Record<string, { data: string; motivo: string }> = {
   "p-lucas_2026-11-07": { data: "2026-11-08", motivo: "Dia de cortesia" },
 };
+
+/** Notification types for both vanzeiro and passageiro. */
+export type TipoAviso =
+  | "pedido_novo"
+  | "resposta_passageiro"
+  | "cobranca_vencida"
+  | "prazo_chegando"
+  | "van_saiu"
+  | "cobranca_vencendo";
+
+export type Aviso = {
+  id: string;
+  tipo: TipoAviso;
+  paraVanzeiroOuPassageiroId: string;
+  dataCriacao: string;
+  lido: boolean;
+  /** destinoId for vanzeiro/passageiro context. */
+  destinoId?: string;
+  /** passageiroId when the notification is about a specific passenger. */
+  passageiroId?: string;
+  /** Cobranca ID when notification is about a charge. */
+  cobrancaId?: string;
+  textoResumido: string;
+};
+
+/** Example notifications. Some are marked as read. */
+export const avisosExemplo: Aviso[] = [
+  {
+    id: "av-1",
+    tipo: "resposta_passageiro",
+    paraVanzeiroOuPassageiroId: "vanzeiro-carlos",
+    passageiroId: "p-gabriel",
+    destinoId: "centro-unisul",
+    dataCriacao: "2026-11-14",
+    lido: true,
+    textoResumido: "Gabriel respondeu à viagem de hoje",
+  },
+  {
+    id: "av-2",
+    tipo: "cobranca_vencida",
+    paraVanzeiroOuPassageiroId: "vanzeiro-carlos",
+    passageiroId: "p-beatriz",
+    cobrancaId: "p-beatriz_2026-11-05",
+    destinoId: "jacarezinho-londrina",
+    dataCriacao: "2026-11-06",
+    lido: false,
+    textoResumido: "Beatriz tem cobrança vencida",
+  },
+  {
+    id: "av-3",
+    tipo: "cobranca_vencendo",
+    paraVanzeiroOuPassageiroId: "p-juliana",
+    destinoId: "cambara-uenp",
+    dataCriacao: "2026-11-13",
+    lido: false,
+    textoResumido: "Sua cobrança vence hoje",
+  },
+  {
+    id: "av-4",
+    tipo: "prazo_chegando",
+    paraVanzeiroOuPassageiroId: "p-juliana",
+    destinoId: "centro-unisul",
+    dataCriacao: "2026-11-13",
+    lido: true,
+    textoResumido: "Prazo para confirmar: 30 minutos",
+  },
+];
