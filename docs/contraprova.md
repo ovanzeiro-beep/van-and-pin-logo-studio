@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
-| B — Fluxos que faltam | Em andamento (itens 1 a 7 feitos em 14/11/2026; faltam itens 8, 9) |
+| B — Fluxos que faltam | Em andamento (itens 1 a 8 feitos em 14/11/2026; falta item 9) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -158,6 +158,7 @@ Pendências do item 1:
 - [x] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
 - [x] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara (feito em 14/11/2026).
 - [x] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo) (feito em 14/11/2026).
+- [x] 8. Histórico de viagens do vanzeiro, com resumo de cada uma (feito em 14/11/2026).
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 
 **Plano do item 7 (início em 14/11/2026):**
@@ -218,6 +219,17 @@ O que já existia: o Perfil do vanzeiro tem "Editar" com nome, telefone, chave P
 O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras novas `meusDadosValidos` e `atualizarMeusDados` em `src/lib/passageiros.ts`; gravação em `passageiros-store.ts` e `sessao-passageiro.ts`.
 
 Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
+
+### Item 8 — Histórico de viagens do vanzeiro (feito em 14/11/2026)
+- [x] Dados de exemplo: tipo `ViagemEncerrada` com destino, data, embarcaram (ids), não estavam (ids), ficaram (ids).
+- [x] Store `viagens-encerradas-store.ts`: `useViagensEncerradas()`, `useViagensEncerradasComDetalhes()` (com detalhes do destino), `adicionarViagemEncerrada()`, `limparViagensEncerradas()`.
+- [x] Rota `/vanzeiro/historico`: lista viagens encerradas por data (mais recentes primeiro), com resumo de cada uma: data, destino, horário (saída · volta), cards com contagem (Embarcaram verde, Não estavam vermelho, Ficaram amarelo).
+- [x] Dados de exemplo com 2 viagens encerradas (Cambará → UENP em 12/11, Jacarezinho → Londrina em 11/11).
+- [x] Tela vazia: "Nenhuma viagem feita — Quando você fizer viagens, o histórico aparecerá aqui."
+- [x] Tela não rola.
+- [x] Testes (120) e build passando.
+
+O que mudou: Store novo `viagens-encerradas-store.ts`, rota nova `/vanzeiro/historico`, `exemplo.ts` com tipo e dados de ViagemEncerrada.
 
 ### Item 7 — Avisos no sininho (feito em 14/11/2026)
 - [x] Dados de exemplo: tipo `Aviso` com tipos (pedido_novo, resposta_passageiro, cobranca_vencida, prazo_chegando, van_saiu, cobranca_vencendo), para_quem (id do vanzeiro ou passageiro), data, lido (boolean).
