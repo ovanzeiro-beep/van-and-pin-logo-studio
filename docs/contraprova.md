@@ -582,3 +582,17 @@ Ainda pendente:
 - [ ] iPhone SE: o passo 1 do "Criar conta" rola 70px (antes a tela toda rolava 270px), "Entrar" rola 39px e "Como você vai usar o app?" rola 69px. Para zerar, só diminuindo o cabeçalho azul dessas telas (decisão do dono).
 - [ ] Os avisos nunca ficam "lidos": o número do sininho não diminui depois de ver a tela de Notificações (já era assim na Etapa B).
 - [ ] A tela antiga "Pedidos para entrar" ficou sem caminho: apagar ou deixar?
+
+---
+
+## Avisos lidos (iniciado em 14/11/2026)
+**Situação:** em andamento, na branch `avisos-lidos`. Pedido do dono do projeto (decisão A): os avisos contam como lidos ao abrir Notificações. Sem banco de dados.
+Decisão do dono (14/11/2026): a tela mostra **todos** os avisos da pessoa, mais novos primeiro; os que ainda não tinham sido vistos aparecem com o selo **"Novo"**; o número do sininho zera ao abrir.
+Não fazer agora (decisão do dono): apagar a tela antiga "Pedidos para entrar" (B) e diminuir o cabeçalho para o iPhone SE (C).
+
+Achado antes de começar: as funções que marcam aviso como lido mudam o aviso sem avisar a tela; mesmo chamadas, a tela não mudaria.
+
+Plano:
+- [ ] L1. Marcar como lido de um jeito que a tela percebe (regras em `src/lib/avisos-store.ts`), com teste.
+- [ ] L2. Notificações do vanzeiro e do passageiro: todos os avisos da pessoa, mais novos primeiro, selo "Novo" nos não vistos; ao abrir, ficam lidos e o sininho zera.
+- [ ] L3. Conferir no app: sininho com número → abrir Notificações → "Novo" aparece → voltar → sininho sem número (ou só com os pedidos, no vanzeiro) → abrir de novo → avisos continuam, sem "Novo".
