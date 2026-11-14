@@ -341,8 +341,17 @@ O que mudou: arquivo novo `agora.ts`, atualizado `minha-viagem.ts`.
 
 O que mudou: tipos em exemplo.ts, cobrancas.ts, viagem.ts; dados de exemplo (50+ linhas); funções iniciarViagem() e nova().
 
+### Item 4 — Usuário logado e papel num lugar só (feito em 14/11/2026)
+- [x] Novo arquivo `src/lib/sessao-usuario.ts` consolidando ambos os papéis.
+- [x] Tipo `Usuario`: id, papel, nome, telefone + dados específicos (pix/van ou passageiroId/pedidoId).
+- [x] Hooks: `useUsuarioAtual()`, `useIdDoUsuario()`, `usePapelAtual()`.
+- [x] Funções: `logarComoVanzeiro()`, `logarComoPassageiro()`, `trocarPapel()`, `sair()`.
+- [x] Estado inicial: Juliana como passageira (compatível com anterior).
+- [x] Testes (120 passando) e build OK.
+
+O que mudou: arquivo novo `sessao-usuario.ts`. Código existente (sessao-passageiro.ts, vanzeiro-store.ts) não quebrado.
+
 ### Próximos itens
-- [ ] 4. Usuário logado e papel (vanzeiro ou passageiro) num lugar só.
 - [ ] 5. Códigos de convite que não se repetem.
 - [ ] 6. Testes para todas as regras da seção 6.
 - [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê.
