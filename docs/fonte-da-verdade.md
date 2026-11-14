@@ -361,3 +361,22 @@ Quando o dono do projeto mandar colocar o banco, é isto que ele precisa guardar
 - **Item 9:** Confirmação em toda ação que não desfaz (Recusar pedido, Pausar, Sair da tela do código, Voltar no passo 1).
 - **Etapa C:** relógio único, dados com o dono, usuário logado num lugar só, código único, testes das regras, `docs/banco-de-dados.md`.
 - **Etapa D:** acabamento visual, rolagens, plurais e palavras (seção 6 acima).
+
+### Respostas do dono do projeto (14/11/2026)
+- 1. Iniciar viagem antes do prazo: **pode, com aviso** "Ainda faltam N responder. Iniciar mesmo assim?".
+- 2. Cobranças de quem foi removido: **as que ainda não venceram são canceladas** ("Removido do destino"); devendo continuam a receber; pagas ficam no histórico (igual à decisão 6).
+- 3. Nome e período da mensalidade: **está certo assim** (nada muda).
+- 4. Telas de detalhe e Perfis: **rolar só o conteúdo**, com cabeçalho e barra parados.
+- 5. Duas viagens no mesmo dia: o Início mostra **a próxima que ainda não foi feita**; quando todas acabam, "Viagens de hoje feitas" com o resumo.
+- 7. Falta: o "Não vou" no prazo **conta como falta quando o prazo passa**, mesmo sem a viagem ser iniciada no app.
+- 8. Por viagem e Diário: **vencem 7 dias depois do embarque** (até lá, "Pendente").
+- 9. Próxima cobrança: **nasce quando a atual vence**.
+- 10. Quinzenal: **duas datas fixas por mês, o dia cadastrado e 15 dias depois** (dia 5 → 5 e 20; dia 20 → 20 e 5 do mês seguinte; dia 15 → 15 e 30, em fevereiro o último dia).
+- 11. Código de convite: **um por destino, vale para sempre** (nada muda).
+- 12. Ordem da busca: **o vanzeiro arruma na mão** a ordem dos passageiros de cada cidade, até o GPS chegar.
+- 13. Perfil do vanzeiro: **só nome e telefone obrigatórios**; Pix e van podem ficar em branco ("Não informado").
+- 14. Pausar destino: **pede confirmação**.
+- 15. Termos e Política: **tirar o trecho do GPS** até ele existir (o advogado revisa antes de lançar).
+Da revisão da Etapa A:
+- Pedido recusado: a pessoa recebe **aviso no sininho** e vê a mensagem "O vanzeiro não aceitou".
+- "9 Pagos" × 19 no Financeiro: **o Financeiro mostra o mês**; "Devendo" inclui os atrasados de meses anteriores.

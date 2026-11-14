@@ -612,3 +612,30 @@ Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas se
 - [x] Apagar `src/routes/vanzeiro.pedidos.tsx` e deixar o build gerar a lista de rotas de novo.
 - [x] Conferir: o endereço antigo não abre mais a tela; sininho, Notificações, Aceitar e Recusar continuam funcionando; testes, tipos e build passando.
 - Conferido: o endereço antigo mostra "Página não encontrada"; da lista de rotas saíram só as 21 linhas da tela apagada; sininho abre Notificações; Recusar pede confirmação; Aceitar abre o cadastro preenchido; 14 telas principais sem erro; testes (150), tipos e build passando.
+
+---
+
+## Etapa E — Decisões do dono do projeto (planejada em 14/11/2026)
+**Situação:** a fazer. As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
+Nada muda (confirmado pelo dono): decisão 3 (nome e período da mensalidade) e decisão 11 (código vale para sempre).
+
+Viagem:
+- [ ] E1. "Iniciar viagem" antes do prazo pergunta "Ainda faltam N responder. Iniciar mesmo assim?" (decisão 1).
+- [ ] E2. Início do vanzeiro mostra a próxima viagem que ainda não foi feita; com todas feitas, "Viagens de hoje feitas" com o resumo (decisão 5; Etapa A 1.1 e 1.2).
+- [ ] E3. "Não vou" no prazo conta como falta quando o prazo passa, mesmo sem iniciar a viagem (decisão 7).
+- [ ] E4. O vanzeiro arruma na mão a ordem dos passageiros de cada cidade; a busca segue essa ordem (decisão 12).
+Dinheiro:
+- [ ] E5. Remover passageiro cancela as cobranças que ainda não venceram ("Removido do destino"); a confirmação diz o que acontece com as cobranças (decisão 2; Etapa A 3.4).
+- [ ] E6. Por viagem e Diário vencem 7 dias depois do embarque (decisão 8).
+- [ ] E7. Quinzenal com duas datas fixas: o dia e 15 dias depois (decisão 10).
+- [ ] E8. A próxima mensalidade ou quinzena nasce quando a atual vence (decisão 9).
+- [ ] E9. Financeiro mostra o mês, com os atrasados em "Devendo"; números iguais aos do Início (Etapa A 4.1).
+Telas e textos:
+- [ ] E10. Perfil do vanzeiro: só nome e telefone obrigatórios (decisão 13).
+- [ ] E11. "Pausar" destino pede confirmação (decisão 14).
+- [ ] E12. Telas de detalhe e os dois Perfis rolam só o conteúdo (decisão 4).
+- [ ] E13. Termos e Política sem o trecho do GPS (decisão 15).
+- [ ] E14. Pedido recusado: aviso no sininho da pessoa + mensagem "O vanzeiro não aceitou" (Etapa A 1.5).
+Da revisão da Etapa A que só segue o que já existe no app (sem decisão nova):
+- [ ] E15. Início do passageiro destaca a viagem que ainda dá para confirmar, não a que já perdeu o prazo (Etapa A 1.4; mesma ideia do E2).
+- [ ] E16. "Sair" da tela "Entrar na van" pergunta "Quer mesmo sair?", igual ao Perfil (Etapa A 3.3).
