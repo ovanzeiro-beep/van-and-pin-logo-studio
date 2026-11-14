@@ -1,6 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
-import { atualizarMeusDados, identidadePassageiro, type MeusDados } from "@/lib/passageiros";
+import { atualizarMeusDados, identidadePassageiro, moverNaCidade, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
@@ -72,6 +72,14 @@ export function useAvisosVanzeiro() {
 }
 
 /** Adds or replaces a passenger. When it came from a pedido, the pedido leaves the waiting list. */
+/** "↑ / ↓" in the destino: changes the pickup order inside the passenger's city. */
+export function moverPassageiro(id: string, direcao: -1 | 1) {
+  const nova = moverNaCidade(passageiros, id, direcao);
+  if (nova === passageiros) return;
+  passageiros = nova;
+  avisar();
+}
+
 export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
   const existente = passageiros.find((x) => x.destinoId === p.destinoId && identidadePassageiro(x) === identidadePassageiro(p));
   if (existente && existente.id !== p.id) return;

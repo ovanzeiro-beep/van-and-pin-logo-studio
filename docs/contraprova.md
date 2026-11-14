@@ -616,14 +616,14 @@ Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas se
 ---
 
 ## Etapa E — Decisões do dono do projeto (planejada em 14/11/2026)
-**Situação:** em andamento (bloco Telas feito em 14/11/2026). As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
+**Situação:** em andamento (blocos Telas e Viagem feitos em 14/11/2026). As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
 Nada muda (confirmado pelo dono): decisão 3 (nome e período da mensalidade) e decisão 11 (código vale para sempre).
 
 Viagem:
-- [ ] E1. "Iniciar viagem" antes do prazo pergunta "Ainda faltam N responder. Iniciar mesmo assim?" (decisão 1).
-- [ ] E2. Início do vanzeiro mostra a próxima viagem que ainda não foi feita; com todas feitas, "Viagens de hoje feitas" com o resumo (decisão 5; Etapa A 1.1 e 1.2).
-- [ ] E3. "Não vou" no prazo conta como falta quando o prazo passa, mesmo sem iniciar a viagem (decisão 7).
-- [ ] E4. O vanzeiro arruma na mão a ordem dos passageiros de cada cidade; a busca segue essa ordem (decisão 12).
+- [x] E1. "Iniciar viagem" antes do prazo pergunta "Ainda faltam N responder. Iniciar mesmo assim?" (decisão 1).
+- [x] E2. Início do vanzeiro mostra a próxima viagem que ainda não foi feita; com todas feitas, "Viagens de hoje feitas" com o resumo (decisão 5; Etapa A 1.1 e 1.2).
+- [x] E3. "Não vou" no prazo conta como falta quando o prazo passa, mesmo sem iniciar a viagem (decisão 7).
+- [x] E4. O vanzeiro arruma na mão a ordem dos passageiros de cada cidade; a busca segue essa ordem (decisão 12).
 Dinheiro:
 - [ ] E5. Remover passageiro cancela as cobranças que ainda não venceram ("Removido do destino"); a confirmação diz o que acontece com as cobranças (decisão 2; Etapa A 3.4).
 - [ ] E6. Por viagem e Diário vencem 7 dias depois do embarque (decisão 8).
@@ -637,7 +637,7 @@ Telas e textos:
 - [x] E13. Termos e Política sem o trecho do GPS (decisão 15).
 - [ ] E14. Pedido recusado: aviso no sininho da pessoa + mensagem "O vanzeiro não aceitou" (Etapa A 1.5).
 Da revisão da Etapa A que só segue o que já existe no app (sem decisão nova):
-- [ ] E15. Início do passageiro destaca a viagem que ainda dá para confirmar, não a que já perdeu o prazo (Etapa A 1.4; mesma ideia do E2).
+- [x] E15. Início do passageiro destaca a viagem que ainda dá para confirmar, não a que já perdeu o prazo (Etapa A 1.4; mesma ideia do E2).
 - [x] E16. "Sair" da tela "Entrar na van" pergunta "Quer mesmo sair?", igual ao Perfil (Etapa A 3.3).
 
 ### Mapa da Etapa E (análise ponta a ponta, 14/11/2026, antes de começar)
@@ -673,4 +673,13 @@ Ordem: Telas simples (E16, E11, E10, E13, E12) → Viagem (E1, E2, E15, E3, E4) 
 - E13: saíram 1 linha dos Termos e 2 da Política (localização da van).
 - E12: detalhe do destino, do passageiro, da cobrança (vanzeiro e passageiro) e os 2 Perfis: só o conteúdo rola; conferido em 360 × 740 que o cabeçalho não mexe e a página não rola.
 - Conferência: testes (151), tipos, build; 15 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada sem erro; Início dos dois painéis sem rolar.
+
+### Bloco Viagem feito (14/11/2026)
+- E1: regra `faltamResponderAoIniciar` (`lib/viagem.ts`). Antes do prazo: "Iniciar mesmo assim? Ainda faltam N responder. O prazo é até HH:MM; se iniciar agora, quem não respondeu fica fora da busca." (Esperar / Iniciar). Depois do prazo, inicia direto. Testes em `viagem.test.ts`.
+- E2: regra `viagemDoInicio`: a viagem em andamento, senão a próxima de hoje ainda não feita (pela saída). Com os exemplos, o Início passa a mostrar a das 06:00 (Jacarezinho → Londrina). Todas feitas: "Viagens de hoje feitas · N viagens · X embarcaram". Tocar no card abre a mesma viagem na aba Viagem.
+- E15: regra `viagemEmDestaque` (`lib/minha-viagem.ts`): a primeira que ainda dá para confirmar, está em andamento ou tem "Vou". A Juliana passa a ver a das 06:40 com "Confirme até 05:40".
+- E3: regra `registrarFaltasDoPrazo` (`lib/viagem-store.ts`), chamada ao abrir o app e de minuto em minuto (uma linha no `__root.tsx`). Com a hora fixa dos exemplos nada muda na tela. Teste em `faltas-prazo.test.ts` (conferido quebrando a regra).
+- E4: regras `porCidade` e `moverNaCidade` (`lib/passageiros.ts`), ação `moverPassageiro`. No detalhe do destino, lista por cidade (na ordem das paradas) com ↑ ↓; a aba Viagem segue a nova ordem (conferido no app). Testes em `passageiros.test.ts`.
+- Conferência: testes (160), tipos, build; 15 telas sem erro; 5 caminhos de entrada sem erro; Início dos dois painéis sem rolar no celular comum (no iPhone SE, 8px e 13px, aceito). Diferenças de texto com a `main`: só as esperadas (E2, E4, E15).
+- Para o banco: a ordem da busca hoje é a ordem da lista; no banco vira um campo "ordem".
 

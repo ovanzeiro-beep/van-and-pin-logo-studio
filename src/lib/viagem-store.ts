@@ -1,10 +1,12 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { vanzeiroExemplo, type Destino } from "@/data/exemplo";
-import { dataDeHoje } from "@/lib/agora";
+import { agora, dataDeHoje } from "@/lib/agora";
+import { prazoPassou } from "@/lib/destinos";
+import { obterDestinos } from "@/lib/destinos-store";
 import { registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
 import { obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
-import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, type ViagemDoDia } from "@/lib/viagem";
+import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, viagensDoDia, type Agora, type ViagemDoDia } from "@/lib/viagem";
 
 // In-memory trips of the day for the visual stage: they last until the page is reloaded,
 // and survive switching tabs in the middle of a trip.
@@ -80,4 +82,24 @@ export function marcarNaoEstava(id: string) {
 /** "Estou na van" tapped on the passenger's phone during a check. */
 export function confirmarNaVan(id: string) {
   atualizarViagem((v) => confirmarPeloCelular(v, id));
+}
+
+/** When a trip's deadline passes, an on-time "Não vou" counts as a falta, even if the trip is never started in the app. */
+export function registrarFaltasDoPrazo(momento: Agora = agora()) {
+  const respostas = obterRespostasParaTeste(momento.data);
+  for (const d of viagensDoDia(obterDestinos(), momento.data)) {
+    if (!prazoPassou(d, momento.data, momento)) continue;
+    for (const p of obterPassageiros().filter((x) => x.destinoId === d.id)) {
+      if (respostas[p.id] === "nao-vai") registrarFalta(p, momento.data, true);
+    }
+  }
+}
+
+/** Watches the clock while the app is open: on opening and then every minute. */
+export function useFaltasNoPrazo() {
+  useEffect(() => {
+    registrarFaltasDoPrazo();
+    const t = setInterval(() => registrarFaltasDoPrazo(), 60_000);
+    return () => clearInterval(t);
+  }, []);
 }

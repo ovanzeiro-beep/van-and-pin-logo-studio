@@ -122,3 +122,27 @@ describe("Resposta do passageiro chega ao vanzeiro", () => {
     expect(r).toEqual({ total: 6, vao: 4, semResposta: 1, naoVao: 1 });
   });
 });
+
+describe("Ordem da busca na mão", () => {
+  it("separa os passageiros do destino por cidade, na ordem das paradas", async () => {
+    const { porCidade } = await import("@/lib/passageiros");
+    const londrina = destinosExemplo.find((d) => d.id === "jacarezinho-londrina")!;
+    const grupos = porCidade(passageirosExemplo.filter((p) => p.destinoId === londrina.id), londrina);
+    expect(grupos.map((g) => g.cidade)).toEqual(["Jacarezinho", "Santo Antônio da Platina"]);
+  });
+
+  it("sobe e desce só dentro da mesma cidade e do mesmo destino, e a busca segue a ordem nova", async () => {
+    const { moverNaCidade } = await import("@/lib/passageiros");
+    const { listaDaViagem } = await import("@/lib/viagem");
+    const londrina = destinosExemplo.find((d) => d.id === "jacarezinho-londrina")!;
+    const todosVao = Object.fromEntries(passageirosExemplo.map((p) => [p.id, "vai" as const]));
+    const ordem = (lista: typeof passageirosExemplo) => listaDaViagem(lista, londrina, todosVao).vao.map((p) => p.id);
+    const antes = ordem(passageirosExemplo);
+    expect(antes.slice(0, 2)).toEqual(["p-mariana", "p-pedro"]);
+    const depois = moverNaCidade(passageirosExemplo, "p-pedro", -1);
+    expect(ordem(depois).slice(0, 2)).toEqual(["p-pedro", "p-mariana"]);
+    expect(ordem(depois).slice(-2)).toEqual(antes.slice(-2));
+    expect(moverNaCidade(passageirosExemplo, "p-ana", -1)).toBe(passageirosExemplo);
+    expect(moverNaCidade(passageirosExemplo, "p-mariana", -1)).toBe(passageirosExemplo);
+  });
+});

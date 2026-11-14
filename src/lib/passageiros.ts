@@ -78,6 +78,29 @@ export function pontosDeEmbarque(d: Pick<Destino, "origem" | "destino" | "parada
   return [...new Set(caminhoCompleto(d))];
 }
 
+/** Passengers of a destino by boarding city, in stop order; inside a city, the pickup order. */
+export function porCidade<T extends Pick<Passageiro, "cidade">>(passageiros: T[], destino: Pick<Destino, "origem" | "destino" | "paradas">) {
+  const pontos = pontosDeEmbarque(destino);
+  const outras = [...new Set(passageiros.map((p) => p.cidade).filter((c) => !pontos.includes(c)))];
+  return [...pontos, ...outras]
+    .map((cidade) => ({ cidade, passageiros: passageiros.filter((p) => p.cidade === cidade) }))
+    .filter((g) => g.passageiros.length > 0);
+}
+
+/** Moves a passenger one place up (-1) or down (1) in the pickup order of their city, in the same destino. */
+export function moverNaCidade<T extends Pick<Passageiro, "id" | "destinoId" | "cidade">>(lista: T[], id: string, direcao: -1 | 1): T[] {
+  const p = lista.find((x) => x.id === id);
+  if (!p) return lista;
+  const mesmos = lista.flatMap((x, i) => (x.destinoId === p.destinoId && x.cidade === p.cidade ? [i] : []));
+  const k = mesmos.findIndex((i) => lista[i]?.id === id);
+  const de = mesmos[k];
+  const para = mesmos[k + direcao];
+  if (de === undefined || para === undefined) return lista;
+  const nova = [...lista];
+  [nova[de], nova[para]] = [lista[para]!, lista[de]!];
+  return nova;
+}
+
 export function contarPassageiros(lista: Pick<Passageiro, "destinoId">[], destinoId: string) {
   return lista.filter((p) => p.destinoId === destinoId).length;
 }
