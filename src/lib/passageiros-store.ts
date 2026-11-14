@@ -102,11 +102,6 @@ export function salvarDadosDoPassageiro(euId: string, dados: MeusDados) {
   avisar();
 }
 
-export function removerPassageiro(id: string) {
-  passageiros = passageiros.filter((p) => p.id !== id);
-  avisar();
-}
-
 /** A destino was deleted: its passengers and pedidos leave with it. */
 export function removerDoDestino(destinoId: string) {
   saidas = [...saidas, ...passageiros.filter((p) => p.destinoId === destinoId)];

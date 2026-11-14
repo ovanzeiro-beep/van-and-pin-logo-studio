@@ -19,13 +19,15 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { type PlanoPagamento } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
-import { ordenarRecentes, situacao, totalDevido } from "@/lib/cobrancas";
-import { useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
+import { ordenarRecentes, resumoDaSaida, situacao, totalDevido } from "@/lib/cobrancas";
+import { useCobrancas, useCobrancasDoPassageiro } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestino, useDestinos } from "@/lib/destinos-store";
 import { matriculasDaPessoa, PLANO_ROTULO, formatarTelefone, linkWhatsApp, planoTemVencimento } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
-import { removerPassageiro, usePassageiro, usePassageiros } from "@/lib/passageiros-store";
+import { removerPassageiroDoDestino } from "@/lib/exclusoes";
+import { usePassageiro, usePassageiros } from "@/lib/passageiros-store";
+import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")({
   head: () => ({
@@ -41,6 +43,8 @@ export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")
   component: DetalhePassageiro,
 });
 
+const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
+
 function DetalhePassageiro() {
   const { id, pid } = Route.useParams();
   const navigate = useNavigate();
@@ -48,12 +52,15 @@ function DetalhePassageiro() {
   const p = usePassageiro(pid);
   const passageiros = usePassageiros();
   const destinos = useDestinos();
+  const { pendentes, devendo } = resumoDaSaida(useCobrancas(), [pid], dataDeHoje());
+  const emViagem = emAndamento(useViagensDoDia())?.destinoId === id;
   if (!d) return <DestinoNaoEncontrado />;
   if (!p || p.destinoId !== d.id) return <PassageiroNaoEncontrado destinoId={d.id} />;
 
   const remover = async () => {
+    if (emViagem) return;
     await navigate({ to: "/vanzeiro/destinos/$id", params: { id: d.id } });
-    removerPassageiro(p.id);
+    removerPassageiroDoDestino(p.id);
   };
 
   return (
@@ -128,13 +135,23 @@ function DetalhePassageiro() {
               <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Remover {p.nome}?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    A pessoa sai da lista de passageiros de {nomeDestino(d)}.
+                  <AlertDialogDescription asChild>
+                    {emViagem ? (
+                      <p>A viagem de hoje deste destino está em andamento. Termine a viagem antes de remover.</p>
+                    ) : (
+                      <ul className="space-y-1 text-left">
+                        <li>A pessoa sai da lista de passageiros de {nomeDestino(d)}.</li>
+                        {pendentes > 0 && <li>{plural(pendentes, "cobrança pendente é cancelada", "cobranças pendentes são canceladas")}.</li>}
+                        {devendo > 0 && <li>{plural(devendo, "cobrança que está devendo continua", "cobranças que estão devendo continuam")} a receber.</li>}
+                        <li>As cobranças pagas ficam no histórico.</li>
+                        <li className="font-bold text-foreground">Não dá para desfazer.</li>
+                      </ul>
+                    )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-2">
                   <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} onClick={remover}>
+                  <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} disabled={emViagem} onClick={remover}>
                     Remover
                   </AlertDialogAction>
                 </AlertDialogFooter>

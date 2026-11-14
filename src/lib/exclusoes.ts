@@ -11,6 +11,7 @@ import { emAndamento, obterViagensDoDia } from "@/lib/viagem-store";
 // pendentes are cancelled with the reason.
 export const MOTIVO_DESTINO_EXCLUIDO = "Destino excluído";
 export const MOTIVO_SAIU_DO_DESTINO = "Saiu do destino";
+export const MOTIVO_REMOVIDO_DO_DESTINO = "Removido do destino";
 
 /** Neither works while that destino's trip of today is in progress. */
 export function viagemEmAndamentoNoDestino(destinoId: string) {
@@ -32,6 +33,15 @@ export function sairDoDestino(passageiroId: string, hoje = dataDeHoje()) {
   const p = obterPassageiros().find((x) => x.id === passageiroId);
   if (!p || viagemEmAndamentoNoDestino(p.destinoId)) return false;
   cancelarPendentesDe([p.id], MOTIVO_SAIU_DO_DESTINO, hoje);
+  sairDaMatricula(p.id);
+  return true;
+}
+
+/** The vanzeiro removes a passenger from a destino (decision 2, same as decision 6). Returns false while that trip is in progress. */
+export function removerPassageiroDoDestino(passageiroId: string, hoje = dataDeHoje()) {
+  const p = obterPassageiros().find((x) => x.id === passageiroId);
+  if (!p || viagemEmAndamentoNoDestino(p.destinoId)) return false;
+  cancelarPendentesDe([p.id], MOTIVO_REMOVIDO_DO_DESTINO, hoje);
   sairDaMatricula(p.id);
   return true;
 }
