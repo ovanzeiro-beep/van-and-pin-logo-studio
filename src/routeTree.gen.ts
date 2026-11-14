@@ -27,6 +27,7 @@ import { Route as PassageiroViagensRouteImport } from './routes/passageiro.viage
 import { Route as VanzeiroIndexRouteImport } from './routes/vanzeiro.index'
 import { Route as VanzeiroDestinosRouteImport } from './routes/vanzeiro.destinos'
 import { Route as VanzeiroFinanceiroRouteImport } from './routes/vanzeiro.financeiro'
+import { Route as VanzeiroHistoricoRouteImport } from './routes/vanzeiro.historico'
 import { Route as VanzeiroNotificacoesRouteImport } from './routes/vanzeiro.notificacoes'
 import { Route as VanzeiroPedidosRouteImport } from './routes/vanzeiro.pedidos'
 import { Route as VanzeiroPerfilRouteImport } from './routes/vanzeiro.perfil'
@@ -133,6 +134,11 @@ const VanzeiroFinanceiroRoute = VanzeiroFinanceiroRouteImport.update({
   path: '/financeiro',
   getParentRoute: () => VanzeiroRoute,
 } as any)
+const VanzeiroHistoricoRoute = VanzeiroHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => VanzeiroRoute,
+} as any)
 const VanzeiroNotificacoesRoute = VanzeiroNotificacoesRouteImport.update({
   id: '/notificacoes',
   path: '/notificacoes',
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRouteWithChildren
+  '/vanzeiro/historico': typeof VanzeiroHistoricoRoute
   '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByTo {
   '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/perfil': typeof PassageiroPerfilRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
+  '/vanzeiro/historico': typeof VanzeiroHistoricoRoute
   '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
@@ -297,6 +305,7 @@ export interface FileRoutesById {
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRouteWithChildren
+  '/vanzeiro/historico': typeof VanzeiroHistoricoRoute
   '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
   '/vanzeiro/pedidos': typeof VanzeiroPedidosRoute
   '/vanzeiro/perfil': typeof VanzeiroPerfilRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/historico'
     | '/vanzeiro/notificacoes'
     | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/passageiro/notificacoes'
     | '/passageiro/perfil'
     | '/passageiro/viagens'
+    | '/vanzeiro/historico'
     | '/vanzeiro/notificacoes'
     | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
+    | '/vanzeiro/historico'
     | '/vanzeiro/notificacoes'
     | '/vanzeiro/pedidos'
     | '/vanzeiro/perfil'
@@ -556,6 +568,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/vanzeiro/financeiro'
       preLoaderRoute: typeof VanzeiroFinanceiroRouteImport
+      parentRoute: typeof VanzeiroRoute
+    }
+    '/vanzeiro/historico': {
+      id: '/vanzeiro/historico'
+      path: '/historico'
+      fullPath: '/vanzeiro/historico'
+      preLoaderRoute: typeof VanzeiroHistoricoRouteImport
       parentRoute: typeof VanzeiroRoute
     }
     '/vanzeiro/notificacoes': {
@@ -742,6 +761,7 @@ const VanzeiroFinanceiroRouteWithChildren =
 interface VanzeiroRouteChildren {
   VanzeiroDestinosRoute: typeof VanzeiroDestinosRouteWithChildren
   VanzeiroFinanceiroRoute: typeof VanzeiroFinanceiroRouteWithChildren
+  VanzeiroHistoricoRoute: typeof VanzeiroHistoricoRoute
   VanzeiroNotificacoesRoute: typeof VanzeiroNotificacoesRoute
   VanzeiroPedidosRoute: typeof VanzeiroPedidosRoute
   VanzeiroPerfilRoute: typeof VanzeiroPerfilRoute
@@ -752,6 +772,7 @@ interface VanzeiroRouteChildren {
 const VanzeiroRouteChildren: VanzeiroRouteChildren = {
   VanzeiroDestinosRoute: VanzeiroDestinosRouteWithChildren,
   VanzeiroFinanceiroRoute: VanzeiroFinanceiroRouteWithChildren,
+  VanzeiroHistoricoRoute: VanzeiroHistoricoRoute,
   VanzeiroNotificacoesRoute: VanzeiroNotificacoesRoute,
   VanzeiroPedidosRoute: VanzeiroPedidosRoute,
   VanzeiroPerfilRoute: VanzeiroPerfilRoute,

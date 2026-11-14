@@ -285,3 +285,32 @@ export const avisosExemplo: Aviso[] = [
     textoResumido: "Prazo para confirmar: 30 minutos",
   },
 ];
+
+/** Example of a completed trip (from a past day). */
+export type ViagemEncerrada = {
+  destinoId: string;
+  data: string;
+  temVolta: boolean;
+  embarcaram: string[];
+  naoEstavam: string[];
+  ficaram: string[];
+};
+
+export const viagensEncerradasExemplo: ViagemEncerrada[] = [
+  {
+    destinoId: "centro-unisul",
+    data: "2026-11-12",
+    temVolta: true,
+    embarcaram: ["p-gabriel", "p-fernanda", "p-thiago", "p-mariana", "p-pedro", "p-ana", "p-lucas"],
+    naoEstavam: ["p-camila"],
+    ficaram: [],
+  },
+  {
+    destinoId: "jacarezinho-londrina",
+    data: "2026-11-11",
+    temVolta: true,
+    embarcaram: ["p-pedro", "p-beatriz", "p-mariana"],
+    naoEstavam: ["p-juliana"],
+    ficaram: [],
+  },
+];

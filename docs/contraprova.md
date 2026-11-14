@@ -169,6 +169,13 @@ Pendências do item 1:
 - Testes para avisos (criar, marcar como lido, contar não lidos)
 - Telas não rolam
 - [ ] 8. Histórico de viagens do vanzeiro, com resumo de cada uma.
+
+**Plano do item 8 (início em 14/11/2026):**
+- Rota `/vanzeiro/historico`: lista as viagens feitas (com status "Feita"), com data, destino, horário de saída/volta, resumo (embarcaram, não estavam, etc.)
+- Dados de exemplo: viagens já encerradas (Cambará → UENP com status "Feita")
+- Componente para mostrar a lista de viagens ou tela vazia "Você não fez viagens ainda"
+- Testes para histórico de viagens
+- Tela não rola
 - [ ] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer.
 
 ### Item 2 — Primeiro uso do passageiro (feito em 13/11/2026)
