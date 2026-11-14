@@ -256,7 +256,7 @@ export const avisosExemplo: Aviso[] = [
     paraVanzeiroOuPassageiroId: "vanzeiro-carlos",
     passageiroId: "p-gabriel",
     destinoId: "centro-unisul",
-    dataCriacao: "2026-11-14",
+    dataCriacao: "2026-11-13",
     lido: true,
     textoResumido: "Gabriel respondeu à viagem de hoje",
   },
@@ -280,7 +280,7 @@ export const avisosExemplo: Aviso[] = [
     destinoId: "centro-unisul",
     dataCriacao: "2026-11-13",
     lido: false,
-    textoResumido: "Sua cobrança vence hoje",
+    textoResumido: "Sua mensalidade vence em 20/11",
   },
   {
     id: "av-4",

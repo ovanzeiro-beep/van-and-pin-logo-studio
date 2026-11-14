@@ -3,6 +3,7 @@ import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { Bell, Compass } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { diaMes } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
@@ -57,7 +58,7 @@ function PaginaNotificacoes() {
                   {tipoAviso[aviso.tipo]?.label || aviso.tipo}
                 </p>
                 <p className="mt-1 font-semibold text-foreground">{aviso.textoResumido}</p>
-                <p className="text-xs text-muted-foreground">{aviso.dataCriacao}</p>
+                <p className="text-xs text-muted-foreground">{diaMes(aviso.dataCriacao)}</p>
               </div>
             ))}
           </section>

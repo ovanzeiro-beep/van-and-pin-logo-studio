@@ -3,6 +3,7 @@ import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { Bell, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { diaMes } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
 import { useAvisos } from "@/lib/avisos-store";
 import { usePedidos } from "@/lib/passageiros-store";
@@ -55,7 +56,7 @@ function PaginaNotificacoes() {
                   {tipoAviso[aviso.tipo]?.label || aviso.tipo}
                 </p>
                 <p className="mt-1 font-semibold text-foreground">{aviso.textoResumido}</p>
-                <p className="text-xs text-muted-foreground">{aviso.dataCriacao}</p>
+                <p className="text-xs text-muted-foreground">{diaMes(aviso.dataCriacao)}</p>
               </div>
             ))}
           </section>
