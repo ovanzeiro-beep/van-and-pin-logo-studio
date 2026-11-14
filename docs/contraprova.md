@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
-| B — Fluxos que faltam | Em andamento (itens 1 a 8 feitos em 14/11/2026; falta item 9) |
+| B — Fluxos que faltam | **Feita em 14/11/2026** — todos os 9 itens completos |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -159,6 +159,7 @@ Pendências do item 1:
 - [x] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara (feito em 14/11/2026).
 - [x] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo) (feito em 14/11/2026).
 - [x] 8. Histórico de viagens do vanzeiro, com resumo de cada uma (feito em 14/11/2026).
+- [x] 9. Mensagens de erro e confirmação em toda ação que não dá para desfazer (feito em 14/11/2026).
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 
 **Plano do item 7 (início em 14/11/2026):**
@@ -226,6 +227,18 @@ O que já existia: o Perfil do vanzeiro tem "Editar" com nome, telefone, chave P
 O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras novas `meusDadosValidos` e `atualizarMeusDados` em `src/lib/passageiros.ts`; gravação em `passageiros-store.ts` e `sessao-passageiro.ts`.
 
 Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
+
+### Item 9 — Mensagens de confirmação em ações irreversíveis (feito em 14/11/2026)
+- [x] Confirmação (AlertDialog) antes de **Recusar pedido**: mostra o nome da pessoa, aviso "Não dá para desfazer", dois botões (Cancelar e Recusar vermelho).
+- [x] Revisão de outras ações irreversíveis já com confirmação:
+  - Excluir destino ✓ (com aviso de impacto em passageiros e cobranças)
+  - Sair deste destino (passageiro) ✓ (com aviso de cobranças)
+  - Excluir minha conta (vanzeiro e passageiro) ✓ (com aviso de dados apagados)
+  - Sair da sessão ✓ (com aviso "Quer mesmo sair?")
+- [x] Novo componente `RecusarPedido.tsx` com AlertDialog.
+- [x] Testes (120) e build passando.
+
+O que mudou: Componente novo `RecusarPedido.tsx`, atualizado `PassageirosDoDestino.tsx` para usar o novo componente.
 
 ### Item 8 — Histórico de viagens do vanzeiro (feito em 14/11/2026)
 - [x] Dados de exemplo: tipo `ViagemEncerrada` com destino, data, embarcaram (ids), não estavam (ids), ficaram (ids).
