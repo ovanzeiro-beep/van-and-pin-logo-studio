@@ -738,3 +738,20 @@ Como ficou (14/11/2026):
 - Testes em `pedido-recusado.test.ts`. Conferido no app: Juliana pede Beto Carrero → Carlos recusa → sininho da Juliana vai de 1 para 2 → "Pedido não aceito" no topo das Notificações → a tela mostra que não foi aceito → "Tentar outro código" volta ao campo.
 - Conferência final da Etapa E: testes (175), tipos (0 erros), build; 14 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada; percurso da viagem completo; Início sem rolar no celular comum.
 
+
+---
+
+## Volta em outro dia (iniciado em 14/11/2026)
+**Situação:** em andamento, na branch `volta-outro-dia`. Decisão do dono (14/11/2026, sugestão 1): na viagem avulsa, "A volta é: No mesmo dia / Em outro dia" (com a data); na rota fixa, se a volta for mais cedo que a saída (ex.: sai 22:00, volta 06:00), ela é no dia seguinte, sem pergunta nova. Sem banco de dados.
+
+Mapa (antes de começar):
+- A cobrança já está certa: é criada no embarque da ida, com a identidade daquela viagem; a volta em outro dia não cria outra (Por viagem: ida e volta = 1 cobrança). Diário: conta o dia da ida.
+- A confirmação ("Vou") e o prazo são da ida e valem para a volta.
+- A aba Viagem já continua a viagem em andamento em qualquer dia; o Início só olhava as viagens de hoje.
+
+Plano:
+- [ ] V1. Regra: data da volta da viagem avulsa (\`voltaData\`, vazia = mesmo dia); volta no dia seguinte na rota fixa quando a volta é mais cedo que a saída; texto da volta ("19:00", "29/11, 19:00", "06:00 do dia seguinte"). Em \`src/lib/destinos.ts\`, com testes.
+- [ ] V2. Cadastro, passo 2: na viagem avulsa com volta, "A volta é: No mesmo dia / Em outro dia" + "Data da volta" (depois da data da ida); na rota fixa, aviso "A volta é no dia seguinte" quando for o caso. Resumo mostra a volta certa. O passo não pode passar a rolar.
+- [ ] V3. Onde a volta aparece (Início, detalhe do destino, antes de sair, histórico) usa o texto da volta.
+- [ ] V4. Viagem: o Início mostra a viagem em andamento mesmo fora do dia dela; "Chegou ao destino" diz quando é a volta.
+- [ ] V5. Conferência no app (cadastro de excursão com volta em outro dia; viagem até a volta), testes, tipos, build.
