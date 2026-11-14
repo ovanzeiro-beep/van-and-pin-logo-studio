@@ -1,4 +1,10 @@
-import { type Destino, type Passageiro, type PedidoEntrada, type PlanoPagamento, type RespostaViagem } from "@/data/exemplo";
+import {
+  type Destino,
+  type Passageiro,
+  type PedidoEntrada,
+  type PlanoPagamento,
+  type RespostaViagem,
+} from "@/data/exemplo";
 import { formatarReais } from "@/lib/dinheiro";
 import { caminhoCompleto } from "@/lib/destinos";
 
