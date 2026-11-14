@@ -8,7 +8,7 @@ Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e ano
 | Etapa | Situação |
 | --- | --- |
 | A — Revisão do que existe | Feita e aprovada em 13/11/2026 |
-| B — Fluxos que faltam | Em andamento (itens 1 a 6 feitos em 14/11/2026; faltam itens 7, 8, 9) |
+| B — Fluxos que faltam | Em andamento (itens 1 a 7 feitos em 14/11/2026; faltam itens 8, 9) |
 | C — Preparar o código para o banco (sem colocar o banco) | A fazer |
 | D — Acabamento visual | A fazer |
 
@@ -157,6 +157,7 @@ Pendências do item 1:
 - [x] 4. Editar perfil (vanzeiro e passageiro): nome, telefone, chave Pix, van, endereço de embarque.
 - [x] 5. Excluir destino (com confirmação e aviso) e sair de um destino (passageiro).
 - [x] 6. Excluir minha conta nos dois perfis (LGPD), com confirmação clara (feito em 14/11/2026).
+- [x] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo) (feito em 14/11/2026).
 - [ ] 7. Avisos no sininho (vanzeiro: pedido novo, resposta de passageiro, cobrança vencida; passageiro: prazo chegando, van saiu, cobrança vencendo).
 
 **Plano do item 7 (início em 14/11/2026):**
@@ -210,6 +211,18 @@ O que já existia: o Perfil do vanzeiro tem "Editar" com nome, telefone, chave P
 O que mudou: Perfil do passageiro (botão "Editar" e o formulário). Regras novas `meusDadosValidos` e `atualizarMeusDados` em `src/lib/passageiros.ts`; gravação em `passageiros-store.ts` e `sessao-passageiro.ts`.
 
 Pendência do item 4: o "Editar" do vanzeiro, que já existia e não mudou, rola um pouco no Android 360 × 740 (8px) e no iPhone SE (59px). Fica para a Etapa D.
+
+### Item 7 — Avisos no sininho (feito em 14/11/2026)
+- [x] Dados de exemplo: tipo `Aviso` com tipos (pedido_novo, resposta_passageiro, cobranca_vencida, prazo_chegando, van_saiu, cobranca_vencendo), para_quem (id do vanzeiro ou passageiro), data, lido (boolean).
+- [x] Store `avisos-store.ts`: `useAvisos()`, `useAvisosNaoLidos(paraId)`, `marcarComoLido()`, `criarAviso()`, `limparAvisos()`.
+- [x] Vanzeiro: sininho mostra pedidos + avisos não lidos. Tela `/vanzeiro/notificacoes` lista todos os avisos com tipo, texto e data.
+- [x] Passageiro: sininho mostra avisos não lidos. Tela `/passageiro/notificacoes` lista avisos do passageiro.
+- [x] `PassageiroHeader` atualizado para contar avisos não lidos e abrir `/passageiro/notificacoes` ao tocar no sininho.
+- [x] Dados de exemplo com 4 avisos (1 lido, 3 não lidos).
+- [x] Telas não rolam.
+- [x] Testes (120) e build passando.
+
+O que mudou: Store novo `avisos-store.ts`, rotas novas `/vanzeiro/notificacoes` e `/passageiro/notificacoes`, `PassageiroHeader` atualizado, `passageiros-store.ts` atualizado (useAvisosVanzeiro), `exemplo.ts` com tipos e dados de Aviso.
 
 ### Item 6 — Excluir minha conta (feito em 14/11/2026)
 Decisão 6 confirmada: mesmas cobranças de quando se exclui/sai de destinos.
