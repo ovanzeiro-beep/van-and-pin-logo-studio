@@ -1,4 +1,5 @@
 import type { DiaSemana, Destino, PrazoConfirmacao, TipoDestino } from "@/data/exemplo";
+import { gerarConviteUnico } from "@/lib/convite";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "seg", curto: "Seg" },
@@ -167,8 +168,9 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
 }
 
 /** Short invite code, e.g. "VAN-4821". */
+/** Gera um convite único (usar gerarConviteUnico de convite.ts para novos destinos). */
 export function gerarConvite() {
-  return `VAN-${1000 + Math.floor(Math.random() * 9000)}`;
+  return gerarConviteUnico();
 }
 
 export function mensagemConvite(d: Pick<Destino, "origem" | "destino" | "convite">) {

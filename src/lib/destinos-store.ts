@@ -1,5 +1,9 @@
 import { useSyncExternalStore } from "react";
 import { destinosExemplo, type Destino } from "@/data/exemplo";
+import { inicializarCodigosUsados } from "@/lib/convite";
+
+// Registrar códigos de exemplo como já usados
+inicializarCodigosUsados(destinosExemplo);
 
 // In-memory list for the visual stage: changes last until the page is reloaded.
 let destinos: Destino[] = destinosExemplo;
