@@ -57,7 +57,7 @@ function DetalhePassageiro() {
   };
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo={p.nome}>
         <Link
           to="/vanzeiro/destinos/$id"
@@ -69,7 +69,7 @@ function DetalhePassageiro() {
         </Link>
       </VanzeiroHeader>
 
-      <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
+      <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         <section className="rounded-3xl bg-card p-4 shadow-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contato e embarque</p>
           <dl className="mt-3 space-y-2.5">
@@ -143,7 +143,7 @@ function DetalhePassageiro() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

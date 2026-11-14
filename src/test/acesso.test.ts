@@ -44,3 +44,12 @@ describe("Primeiro uso do vanzeiro", () => {
     expect(textoDaVan({ ...novo, van: { modelo: "Sprinter", placa: "ABC-1D23" } })).toBe("Sprinter · ABC-1D23");
   });
 });
+
+describe("Editar o Perfil do vanzeiro", () => {
+  it("só nome e telefone são obrigatórios; Pix e van podem ficar em branco", async () => {
+    const { perfilPodeSalvar } = await import("@/lib/vanzeiro-store");
+    expect(perfilPodeSalvar({ nome: "Bruna Lima", telefone: "(43) 99999-1234" })).toBe(true);
+    expect(perfilPodeSalvar({ nome: " ", telefone: "(43) 99999-1234" })).toBe(false);
+    expect(perfilPodeSalvar({ nome: "Bruna Lima", telefone: "9999" })).toBe(false);
+  });
+});

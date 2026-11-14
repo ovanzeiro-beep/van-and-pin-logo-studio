@@ -616,7 +616,7 @@ Conferência: testes (150) passando; tipos sem erro; build passando; 15 telas se
 ---
 
 ## Etapa E — Decisões do dono do projeto (planejada em 14/11/2026)
-**Situação:** a fazer. As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
+**Situação:** em andamento (bloco Telas feito em 14/11/2026). As 14 decisões em aberto e os 2 pontos da Etapa A foram respondidos em 14/11/2026 (ver `docs/fonte-da-verdade.md`, "Respostas do dono do projeto"). Sem banco de dados. Uma coisa por vez, com conferência no app.
 Nada muda (confirmado pelo dono): decisão 3 (nome e período da mensalidade) e decisão 11 (código vale para sempre).
 
 Viagem:
@@ -631,14 +631,14 @@ Dinheiro:
 - [ ] E8. A próxima mensalidade ou quinzena nasce quando a atual vence (decisão 9).
 - [ ] E9. Financeiro mostra o mês, com os atrasados em "Devendo"; números iguais aos do Início (Etapa A 4.1).
 Telas e textos:
-- [ ] E10. Perfil do vanzeiro: só nome e telefone obrigatórios (decisão 13).
-- [ ] E11. "Pausar" destino pede confirmação (decisão 14).
-- [ ] E12. Telas de detalhe e os dois Perfis rolam só o conteúdo (decisão 4).
-- [ ] E13. Termos e Política sem o trecho do GPS (decisão 15).
+- [x] E10. Perfil do vanzeiro: só nome e telefone obrigatórios (decisão 13).
+- [x] E11. "Pausar" destino pede confirmação (decisão 14).
+- [x] E12. Telas de detalhe e os dois Perfis rolam só o conteúdo (decisão 4).
+- [x] E13. Termos e Política sem o trecho do GPS (decisão 15).
 - [ ] E14. Pedido recusado: aviso no sininho da pessoa + mensagem "O vanzeiro não aceitou" (Etapa A 1.5).
 Da revisão da Etapa A que só segue o que já existe no app (sem decisão nova):
 - [ ] E15. Início do passageiro destaca a viagem que ainda dá para confirmar, não a que já perdeu o prazo (Etapa A 1.4; mesma ideia do E2).
-- [ ] E16. "Sair" da tela "Entrar na van" pergunta "Quer mesmo sair?", igual ao Perfil (Etapa A 3.3).
+- [x] E16. "Sair" da tela "Entrar na van" pergunta "Quer mesmo sair?", igual ao Perfil (Etapa A 3.3).
 
 ### Mapa da Etapa E (análise ponta a ponta, 14/11/2026, antes de começar)
 Branch: `etapa-e`. Regras novas sempre em `src/lib/`, com teste; telas só mostram.
@@ -648,7 +648,7 @@ Branch: `etapa-e`. Regras novas sempre em `src/lib/`, com teste; telas só mostr
 | E1 Iniciar antes do prazo | `viagem/AntesDeSair.tsx` (botão e confirmação); regra "faltam N responder antes do prazo" em `lib/viagem.ts` | Depois do prazo, nada muda (sem pergunta). |
 | E2 Início do vanzeiro | regra nova em `lib/viagem.ts` (próxima ainda não feita / todas feitas); `routes/vanzeiro.index.tsx` | A aba Viagem continua com a escolha dela (`viagemDeHoje`); só o Início muda. Início não pode passar a rolar. |
 | E3 Falta no prazo | `lib/viagem-store.ts` + `lib/respostas-store.ts`: ao passar o prazo, registra a falta de quem disse "Não vou" | `registrarFalta` já não conta duas vezes. Precisa de algo que "olhe o relógio" (hoje a hora é fixa 05:10; com relógio real, de minuto em minuto). |
-| E4 Ordem na mão | ordem dos passageiros guardada por destino em `lib/passageiros-store.ts`; `listaDaViagem` já mantém a ordem dentro da cidade | **Onde fica o "subir/descer" na tela: pergunta ao dono.** Para o banco, a ordem vira um campo. |
+| E4 Ordem na mão | ordem dos passageiros guardada por destino em `lib/passageiros-store.ts`; `listaDaViagem` já mantém a ordem dentro da cidade; tela: `PassageirosDoDestino.tsx` | **Decisão do dono (14/11/2026): no detalhe do destino, lista separada por cidade, com setas ↑ ↓.** Para o banco, a ordem vira um campo. |
 | E5 Remover passageiro | `routes/vanzeiro.destinos.$id_.passageiros.$pid.tsx` (confirmação com contas, como "Sair deste destino"); `cancelarPendentesDe` com motivo "Removido do destino" | Igual à decisão 6. |
 | E6 Por viagem e Diário +7 dias | `lib/cobrancas.ts` (`gerarCobrancas`, `nova`) | O nome da cobrança ("Viagem de 08/11") e a chave continuam pelo dia do embarque; só o vencimento muda. |
 | E7 Quinzenal 2 datas fixas | `lib/cobrancas.ts` (`vencimentosQuinzenais`, nome "Quinzena de … a …", período das faltas) | Dados de exemplo: a Fernanda (dia 5) passa a vencer 5 e 20; o pagamento de exemplo de 04/11 muda para 05/11. |
@@ -665,3 +665,12 @@ Branch: `etapa-e`. Regras novas sempre em `src/lib/`, com teste; telas só mostr
 Números que vão mudar de propósito (E6 a E9): "A receber", "Recebido", "Devendo" e as contagens do Início e do Financeiro. O teste que congela esses números (`etapa7c.test.ts`) será atualizado com os valores novos, conferidos à mão.
 
 Ordem: Telas simples (E16, E11, E10, E13, E12) → Viagem (E1, E2, E15, E3, E4) → Dinheiro (E5, E6, E7, E8, E9) → E14. Conferência no app a cada bloco; merge na `main` ao fim de cada bloco.
+
+### Bloco Telas feito (14/11/2026)
+- E16: peça única `ConfirmarSair` ("Quer mesmo sair?"), usada no Perfil e na tela "Entrar na van".
+- E11: peça `PausarDestino`: "Pausar este destino? Ele sai das viagens até você ativar de novo."; "Ativar" sem pergunta.
+- E10: regra `perfilPodeSalvar` em `lib/vanzeiro-store.ts` (só nome e telefone), com teste. Junto: sem Pix, o passageiro não vê o botão "Pagar com Pix" (seria uma chave vazia); continua "Já paguei — avisar o vanzeiro".
+- E13: saíram 1 linha dos Termos e 2 da Política (localização da van).
+- E12: detalhe do destino, do passageiro, da cobrança (vanzeiro e passageiro) e os 2 Perfis: só o conteúdo rola; conferido em 360 × 740 que o cabeçalho não mexe e a página não rola.
+- Conferência: testes (151), tipos, build; 15 telas sem erro; texto de 13 telas idêntico à `main`; 5 caminhos de entrada sem erro; Início dos dois painéis sem rolar.
+

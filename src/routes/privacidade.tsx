@@ -24,7 +24,6 @@ function Privacidade() {
           <li>E-mail</li>
           <li>Telefone</li>
           <li>Endereço de embarque</li>
-          <li>A localização da van durante a viagem</li>
         </ul>
         <p>
           Para o app funcionar, também ficam guardadas as respostas "Vou" e "Não vou", os embarques e faltas, as
@@ -37,7 +36,6 @@ function Privacidade() {
           <li>Nome e e-mail: criar e acessar sua conta.</li>
           <li>Telefone: o vanzeiro e o passageiro conversarem pelo WhatsApp.</li>
           <li>Endereço de embarque: montar a ordem da busca.</li>
-          <li>Localização da van: o passageiro saber onde a van está. Ela só é usada durante a viagem.</li>
           <li>Respostas, embarques e cobranças: organizar as viagens e os pagamentos.</li>
         </ul>
         <p>Não vendemos seus dados.</p>

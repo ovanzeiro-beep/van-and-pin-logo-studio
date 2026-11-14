@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { vanzeiroExemplo } from "@/data/exemplo";
+import { telefoneValido } from "@/lib/passageiros";
 
 export type PerfilVanzeiro = {
   nome: string;
@@ -36,6 +37,9 @@ export function salvarPerfilVanzeiro(novo: PerfilVanzeiro) {
 export function perfilNovo(nome: string) {
   salvarPerfilVanzeiro({ nome: nome.trim(), telefone: "", pix: "", van: { modelo: "", placa: "" } });
 }
+
+/** Editar do Perfil: only name and phone are required; Pix and van may stay blank ("Não informado"). */
+export const perfilPodeSalvar = (p: { nome: string; telefone: string }) => p.nome.trim() !== "" && telefoneValido(p.telefone);
 
 /** First name for the header greeting. */
 export const primeiroNome = (p: PerfilVanzeiro) => p.nome.trim().split(" ")[0] || "Vanzeiro";

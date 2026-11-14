@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlarmClock, ArrowLeft, CalendarDays, Clock, Pause, Pencil, Play, Repeat, Route as RouteIcon, type LucideIcon } from "lucide-react";
+import { AlarmClock, ArrowLeft, CalendarDays, Clock, Pencil, Repeat, Route as RouteIcon, type LucideIcon } from "lucide-react";
 import { CodigoConvite, PassageirosDoDestino, PedidosParaEntrar } from "@/components/app/PassageirosDoDestino";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { CaminhoParadas } from "@/components/app/CaminhoParadas";
 import { DestinoNaoEncontrado } from "@/components/app/DestinoNaoEncontrado";
 import { ExcluirDestino } from "@/components/app/ExcluirDestino";
+import { PausarDestino } from "@/components/app/PausarDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
 import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece } from "@/lib/destinos";
-import { alternarAtivo, useDestino } from "@/lib/destinos-store";
+import { useDestino } from "@/lib/destinos-store";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id")({
   head: () => ({
@@ -30,7 +31,7 @@ function DetalheDestino() {
   if (!d) return <DestinoNaoEncontrado />;
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo={nomeDestino(d)}>
         <Link
           to="/vanzeiro/destinos"
@@ -40,7 +41,7 @@ function DetalheDestino() {
         </Link>
       </VanzeiroHeader>
 
-      <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
+      <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         <section className="rounded-3xl bg-card p-4 shadow-card">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Como funciona</p>
@@ -77,14 +78,11 @@ function DetalheDestino() {
               <Pencil className="!h-5 !w-5" /> Editar
             </Link>
           </Button>
-          <Button size="lg" variant={d.ativo ? "outline" : "success"} onClick={() => alternarAtivo(d.id)}>
-            {d.ativo ? <Pause className="!h-5 !w-5" /> : <Play className="!h-5 !w-5" />}
-            {d.ativo ? "Pausar" : "Ativar"}
-          </Button>
+          <PausarDestino d={d} />
         </div>
         <ExcluirDestino d={d} />
       </div>
-    </>
+    </div>
   );
 }
 

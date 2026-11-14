@@ -32,7 +32,6 @@ function Termos() {
           <li>Cadastra os passageiros e aceita ou recusa quem pede para entrar com o código de convite.</li>
           <li>O app cria as cobranças sozinho, pelo plano de cada passageiro.</li>
           <li>Só o vanzeiro marca uma cobrança como paga ou cancela uma cobrança.</li>
-          <li>Durante a viagem, a localização da van é mostrada aos passageiros.</li>
           <li>O vanzeiro é o responsável pelo transporte, pela van e por manter os dados certos.</li>
         </ul>
       </Secao>

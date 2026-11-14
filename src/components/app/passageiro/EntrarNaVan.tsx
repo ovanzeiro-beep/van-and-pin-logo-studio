@@ -9,7 +9,7 @@ import type { Destino } from "@/data/exemplo";
 import { nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { useDestino, useDestinos } from "@/lib/destinos-store";
 import { matriculasDaPessoa, formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
-import { sair } from "@/lib/acesso";
+import { ConfirmarSair } from "@/components/app/ConfirmarSair";
 import { pedirParaEntrar, tentarOutroCodigo, useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
@@ -28,13 +28,17 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
       <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo="Use o código que o vanzeiro te enviou." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
-        <Link
-          to={outro ? "/passageiro/perfil" : "/entrar"}
-          onClick={outro ? undefined : sair}
-          className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground"
-        >
-          {outro ? <ArrowLeft className="h-4 w-4" /> : <LogOut className="h-4 w-4" />} {outro ? "Voltar ao perfil" : "Sair"}
-        </Link>
+        {outro ? (
+          <Link to="/passageiro/perfil" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground">
+            <ArrowLeft className="h-4 w-4" /> Voltar ao perfil
+          </Link>
+        ) : (
+          <ConfirmarSair>
+            <button type="button" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground">
+              <LogOut className="h-4 w-4" /> Sair
+            </button>
+          </ConfirmarSair>
+        )}
       </div>
     </div>
   );

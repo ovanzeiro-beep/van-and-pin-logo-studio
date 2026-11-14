@@ -8,9 +8,9 @@ import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
-import { formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
+import { formatarTelefone, somenteDigitos } from "@/lib/passageiros";
 import { useDestinos } from "@/lib/destinos-store";
-import { salvarPerfilVanzeiro, usePerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { perfilPodeSalvar, salvarPerfilVanzeiro, usePerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/vanzeiro/perfil")({
   head: () => ({
@@ -35,9 +35,9 @@ function AbaPerfil() {
   const [editando, setEditando] = useState(false);
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo="Perfil" subtitulo="Seus dados e a sua van." />
-      <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
+      <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         {editando ? (
           <Editar perfil={perfil} fechar={() => setEditando(false)} />
         ) : (
@@ -70,7 +70,7 @@ function AbaPerfil() {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -80,7 +80,7 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
   const [pix, setPix] = useState(perfil.pix);
   const [modelo, setModelo] = useState(perfil.van.modelo);
   const [placa, setPlaca] = useState(perfil.van.placa);
-  const pode = nome.trim() && telefoneValido(telefone) && pix.trim() && modelo.trim() && placa.trim();
+  const pode = perfilPodeSalvar({ nome, telefone });
 
   const salvar = () => {
     salvarPerfilVanzeiro({

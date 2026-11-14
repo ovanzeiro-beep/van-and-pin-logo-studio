@@ -87,9 +87,9 @@ function MinhaCobranca() {
   const aberta = s === "pendente" || s === "devendo";
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <PassageiroHeader compacto titulo={c.referencia}>{botaoVoltar}</PassageiroHeader>
-      <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
+      <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         <section className={cn("rounded-3xl bg-card p-4 shadow-card", s === "cancelada" && "opacity-70")}>
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -129,7 +129,7 @@ function MinhaCobranca() {
 
         {aberta && (
           <div className="space-y-3 pt-1">
-            <PagarComPix chave={vanzeiro.pix} nome={vanzeiro.nome} valor={valorFinal(c)} />
+            {vanzeiro.pix && <PagarComPix chave={vanzeiro.pix} nome={vanzeiro.nome} valor={valorFinal(c)} />}
             <Button asChild size="lg" variant="outline" className="w-full">
               <a href={linkWhatsApp(vanzeiro.telefone, mensagemJaPaguei(c, vanzeiro.nome))} target="_blank" rel="noreferrer">
                 <MessageCircle className="!h-5 !w-5 text-success" /> Já paguei — avisar o vanzeiro
@@ -142,7 +142,7 @@ function MinhaCobranca() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
