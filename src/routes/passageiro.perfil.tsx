@@ -1,3 +1,4 @@
+import { NotificacoesNoCelular } from "@/components/app/NotificacoesNoCelular";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, MapPin, MessageCircle, Pencil, Phone, Route as RouteIcon, User, X } from "lucide-react";
@@ -79,6 +80,7 @@ function PerfilPassageiro() {
           </Button>
         </section>
 
+        <NotificacoesNoCelular />
         <Button size="lg" variant="outline" className="w-full" onClick={() => setEditando(true)}>
           <Pencil className="!h-5 !w-5" /> Editar
         </Button>

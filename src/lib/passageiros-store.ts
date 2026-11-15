@@ -53,6 +53,14 @@ function avisar() {
 }
 
 export const obterMatriculas = () => matriculas;
+
+/** Calls `o` after every change in passengers and pedidos (for the phone notifications). */
+export function ouvirPassageiros(o: () => void) {
+  ouvintes.add(o);
+  return () => {
+    ouvintes.delete(o);
+  };
+}
 export const obterTodosOsPedidos = () => todosPedidos;
 
 function inscrever(o: () => void) {

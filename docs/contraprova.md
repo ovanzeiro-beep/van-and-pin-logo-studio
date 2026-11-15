@@ -891,3 +891,15 @@ Conferência (15/11/2026):
 - Observação: abrir sem sinal o endereço de uma tela nunca visitada mostra um aviso técnico só para quem programa; a tela abre certa.
 - Fica para o dia do banco: fila do que foi feito sem sinal, mandada quando o sinal voltar (`docs/banco-de-dados.md`, seção 6).
 - Próximas: A2 (notificação no celular) e A3 (pagamentos de quem saiu), só com a coordenada do dono.
+
+---
+
+## A2 — Notificação no celular (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Decisão do dono: sim, os avisos aparecem como notificação no celular. Sem banco de dados.
+- [x] A2.1 Perfil (vanzeiro e passageiro): cartão "Notificações no celular" com Ativar / Ativadas / Bloqueadas; some onde o celular não permite.
+- [x] A2.2 Com o app minimizado: aviso novo do sininho (e pedido novo, para o vanzeiro) vira notificação, só para quem usa o celular, com as mesmas palavras do sininho. Com o app na tela, não notifica.
+- [x] A2.3 Tocar na notificação abre a tela de Notificações do painel certo.
+- [x] A2.4 O celular já está pronto para receber notificação mandada pelo servidor (para o dia do banco).
+- [x] A2.5 Conferência: 216 testes (novos `src/test/notificacoes.test.ts` e `src/test/notificacoes-app.test.tsx`), tipos, build; na versão de produção, os 3 jeitos do cartão nos dois Perfis e a notificação mostrada pelo app; a A1 (sem sinal) repetida e funcionando; as 28 telas sem erro.
+- Fica para o dia do banco: notificação com o app totalmente fechado (mandada pelo servidor).
+- Próxima: A3 (pagamentos de quem saiu do último destino), só com a coordenada do dono.

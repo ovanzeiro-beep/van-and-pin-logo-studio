@@ -1,3 +1,4 @@
+import { NotificacoesNoCelular } from "@/components/app/NotificacoesNoCelular";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Car, Check, Pencil, Phone, QrCode, RectangleHorizontal, User, X } from "lucide-react";
@@ -62,6 +63,7 @@ function AbaPerfil() {
                 </div>
               </div>
             </section>
+            <NotificacoesNoCelular />
             <Button size="lg" variant="outline" className="w-full" onClick={() => setEditando(true)}>
               <Pencil className="!h-5 !w-5" /> Editar
             </Button>

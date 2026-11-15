@@ -67,6 +67,14 @@ export function limparAvisos() {
   notificar();
 }
 
+/** Calls `o` after every change in the notices (for the phone notifications). */
+export function ouvirAvisos(o: () => void) {
+  listeners.add(o);
+  return () => {
+    listeners.delete(o);
+  };
+}
+
 export function useAvisos() {
   return useSyncExternalStore(
     (listener) => {

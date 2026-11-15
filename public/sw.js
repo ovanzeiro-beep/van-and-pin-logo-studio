@@ -56,6 +56,39 @@ function guardar(request, resposta) {
   return resposta;
 }
 
+// Phone notifications. Now they come from the open app; with the database, the server sends them ("push"),
+// even with the app closed, as { titulo, corpo, url }.
+self.addEventListener("push", (event) => {
+  let dados = {};
+  try {
+    dados = event.data ? event.data.json() : {};
+  } catch (e) {
+    dados = { corpo: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(dados.titulo || "O Vanzeiro", {
+      body: dados.corpo || "",
+      icon: "/icones/icone-192.png",
+      badge: "/icones/icone-192.png",
+      data: { url: dados.url || "/" },
+    }),
+  );
+});
+
+// Tapping a notification opens the app on the Notificações screen (or brings it to the front).
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || "/";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((janelas) => {
+      for (const j of janelas) {
+        if ("focus" in j) return j.navigate(url).then((x) => (x || j).focus()).catch(() => j.focus());
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
