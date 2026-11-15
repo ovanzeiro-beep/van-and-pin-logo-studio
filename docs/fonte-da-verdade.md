@@ -380,3 +380,36 @@ Quando o dono do projeto mandar colocar o banco, é isto que ele precisa guardar
 Da revisão da Etapa A:
 - Pedido recusado: a pessoa recebe **aviso no sininho** e vê a mensagem "O vanzeiro não aceitou".
 - "9 Pagos" × 19 no Financeiro: **o Financeiro mostra o mês**; "Devendo" inclui os atrasados de meses anteriores.
+
+## 9. Análise completa de 15/11/2026 (depois das Etapas A a E)
+
+Pedido do dono do projeto: percorrer tudo de novo, listar os erros que faltam e organizar por etapas. Método: as 40 telas abertas no navegador em tamanho de celular (texto, rolagem e erros escondidos), todos os fluxos de ação refeitos de ponta a ponta, números conferidos entre telas. Nada foi corrigido nesta análise.
+
+### 9.1 O que foi conferido e está certo
+- Nenhuma tela quebra e nenhuma tem erro escondido; endereços inexistentes caem em telas amigáveis.
+- Os números batem: Início = Financeiro (A receber R$ 1.661,00 · Recebido R$ 663,00 · Devendo R$ 530,00 · 9 pagas · 9 pendentes · 2 devendo); Juliana "Em aberto" R$ 460,00 = 280 + 180 nas três telas; Mariana R$ 530,00 = 280 (dez) + 250 (nov com 2 faltas × R$ 15); Fernanda "Quinzena de 21/10 a 05/11" R$ 130,00 (1 falta); Pedro "Quinzena de 31/10 a 15/11"; Por viagem e Diário vencendo 7 dias depois do embarque.
+- Viagem completa certa: "Não estava no ponto" não desconta (Mariana segue R$ 250,00); "Ficou aqui" aparece no resumo ("Ficaram 1 — Lucas"); "Desceram" conta certo; a viagem terminada entra no Histórico na hora; os embarques criam as cobranças do dia na hora (Ana + R$ 45, Lucas + R$ 80).
+- "Estou na van" pelo celular chega ao vanzeiro como "Confirmou pelo celular"; quem não confirmou fica fora da busca, vê "A van não vai passar" e NÃO vê o botão.
+- Pagar (Dinheiro/Pix) e cancelar (com motivo) funcionam e o Início acompanha na hora; cobrança de outra pessoa não abre ("Cobrança não encontrada").
+- Editar destino vale na hora para a passageira (saída nova e prazo novo); excluir destino e remover passageiro são bloqueados com a viagem em andamento.
+- Links certos: "Abrir no mapa" (endereço + cidade no Google Maps), "Cobrar no WhatsApp", "Já paguei", convite por WhatsApp.
+- Código de convite errado avisa; "Esqueci minha senha" confirma o envio; responder depois do prazo continua bloqueado.
+
+### 9.2 Erros e faltas encontrados (numerados)
+1. **Início e aba Viagem abrem em viagens diferentes.** Ao abrir o app, o Início mostra a das 06:00 (próxima a sair), mas a aba Viagem abre na das 06:40, porque a "viagem escolhida" dos exemplos aponta para ela. Só ficam iguais se a pessoa tocar no card do Início. O certo: sem escolha feita pelo vanzeiro, a aba Viagem abre na mesma viagem que o Início.
+2. **Excluir um destino apaga as viagens feitas dele do Histórico.** Tinha 2 viagens; excluí o destino e ficou 1. O texto "Destino removido", que existe no código para esse caso, nunca aparece. O certo: a viagem feita guarda o nome e os horários do dia em que aconteceu.
+3. **O Histórico mostra os horários atuais do destino, não os do dia da viagem.** Se o vanzeiro mudar a saída de 06:40 para 07:10, as viagens antigas passam a mostrar 07:10. Mesmo conserto do erro 2: congelar os dados na viagem encerrada.
+4. **Pausar um destino com a viagem dele em andamento não avisa.** Excluir avisa "Termine a viagem antes"; Pausar pausa direto, com a viagem rolando.
+5. **Viagem avulsa aceita data no passado** (dá para criar uma excursão para 01/01/2026).
+6. **Os avisos do sininho são quase todos de mentira (exemplo).** O app só cria de verdade o aviso de pedido recusado. "Resposta de passageiro", "cobrança vencida" (vanzeiro), "prazo chegando", "van saiu" e "cobrança vencendo" (passageiro) nunca nascem dos acontecimentos — são os dados de exemplo. Isso era a segunda metade do item 7 da Etapa B, que ficou só na vitrine. Junto: os avisos deviam citar o destino ("Prazo para confirmar: 30 minutos" não diz de qual viagem), e o pedido **aceito** também não avisa a pessoa (decidir se deve).
+7. **Cobrança que vence hoje mostra "Vence em 13/11"** em vez de "Vence hoje".
+8. **Perfil do passageiro com subtítulo "Seus dados e a sua van."** — do ponto de vista do passageiro, melhor "Seus dados e o seu vanzeiro".
+9. **Cadastro de passageiro aceita valor R$ 0,00** e aceita cadastrar duas vezes a mesma pessoa (mesmo telefone) no mesmo destino, sem avisar.
+10. **Resumo do "Novo destino" rola 22px no iPhone SE** quando o destino tem 3 ou mais paradas (quanto mais paradas, mais comprido).
+11. **Telas de entrada rolam um pouco só no iPhone SE**: Criar conta passo 1 (70px), Entrar (39px), "Como você vai usar o app?" (69px). Zerar exige diminuir o cabeçalho azul (decisão C, pendente do dono).
+
+### 9.3 Plano por etapas (fazer uma por vez, com conferência e merge)
+- **Etapa G — Viagem e Histórico:** erros 1, 2, 3 e 4.
+- **Etapa H — Avisos de verdade no sininho:** erro 6 (avisos nascem dos acontecimentos, citando o destino; decidir sobre o aviso de pedido aceito).
+- **Etapa I — Cadastros e textos:** erros 5, 7, 8 e 9.
+- **Dependem do dono (não entram nas etapas):** erro 10 (aceitar como está ou mexer no desenho), erro 11 (decisão C), dados reais do piloto, contato da Política de Privacidade, revisão do advogado, pagamentos de quem saiu do último destino, documento do banco (item 7 da Etapa C).

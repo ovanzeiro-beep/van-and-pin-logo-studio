@@ -796,3 +796,9 @@ Como ficou (14/11/2026):
 - [ ] Decidir (decisão C): diminuir o cabeçalho azul de Entrar, Criar conta e "Como você vai usar o app?" para não rolar no iPhone SE.
 - [ ] Para depois, só quando o dono mandar: documento do banco (Etapa C, item 7), banco e login real, mapa e GPS, app na Play Store.
 
+
+---
+
+## Análise completa de 15/11/2026
+**Situação:** feita em 15/11/2026, na branch `analise-completa`, com merge na `main`. Só análise, nada corrigido.
+Resultado na seção 9 de `docs/fonte-da-verdade.md`: 11 erros/faltas numerados e o plano das Etapas G (viagem e histórico), H (avisos de verdade) e I (cadastros e textos). As 40 telas abertas sem erro; números entre telas conferidos e batendo; todos os fluxos de ação refeitos.
