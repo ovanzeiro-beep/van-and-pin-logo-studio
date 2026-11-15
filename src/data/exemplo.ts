@@ -151,6 +151,10 @@ export type PedidoEntrada = {
   destinoId: string;
   nome: string;
   telefone: string;
+  /** Onde a pessoa embarca, preenchido por ela no pedido: cidade do caminho, endereço e ponto no mapa. */
+  cidade?: string | undefined;
+  endereco?: string | undefined;
+  ponto?: { lat: number; lng: number } | undefined;
   /** Aguardando o vanzeiro, aceito ou recusado. O pedido nunca é apagado. */
   situacao?: SituacaoPedido | undefined;
   /** Quando aceito: a matrícula criada a partir dele. */
@@ -182,8 +186,8 @@ export const passageirosExemplo: Passageiro[] = [
 ];
 
 export const pedidosExemplo: PedidoEntrada[] = [
-  { id: "pedido-larissa", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Larissa Moreira", telefone: "43997012345" },
-  { id: "pedido-joao", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "João Vitor Santos", telefone: "43998456721" },
+  { id: "pedido-larissa", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Larissa Moreira", telefone: "43997012345", cidade: "Jacarezinho", endereco: "Rua Paraná, 900", ponto: { lat: -23.1638, lng: -49.9721 } },
+  { id: "pedido-joao", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "João Vitor Santos", telefone: "43998456721", cidade: "Santo Antônio da Platina", endereco: "Rua Rui Barbosa, 120", ponto: { lat: -23.2961, lng: -50.0792 } },
 ];
 
 /** "Hoje" da etapa visual, para os exemplos de cobrança ficarem coerentes (sexta, 13 de nov). */
@@ -243,6 +247,8 @@ export const cancelamentosExemplo: Record<string, { data: string; motivo: string
 
 /** Notification types for both vanzeiro and passageiro. */
 export type TipoAviso =
+  | "endereco_aceito"
+  | "endereco_recusado"
   | "pedido_novo"
   | "resposta_passageiro"
   | "cobranca_vencida"

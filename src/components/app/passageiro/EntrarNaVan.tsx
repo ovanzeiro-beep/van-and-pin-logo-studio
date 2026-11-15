@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { matriculasDaPessoa, formatarTelefone, somenteDigitos, telefoneValido } 
 import { ConfirmarSair } from "@/components/app/ConfirmarSair";
 import { pedirParaEntrar, tentarOutroCodigo, useEmAbertoDeQuemSaiu, useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
 import { InfoCard } from "@/components/app/InfoCard";
+import { OndeEmbarco } from "./OndeEmbarco";
+import { embarqueCompleto, type Embarque } from "@/lib/endereco";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { formatarReais } from "@/lib/dinheiro";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
@@ -162,9 +164,34 @@ function Confirmar({ destino, voltar }: { destino: Destino; voltar: () => void }
   const situacao = useMinhaSituacao();
   const passageiros = usePassageiros();
   const ja = situacao.tipo === "membro" && matriculasDaPessoa(passageiros, situacao.passageiro).some((p) => p.destinoId === destino.id);
+  const [passo, setPasso] = useState(1);
+  const [embarque, setEmbarque] = useState<Embarque>({ cidade: "", endereco: "", ponto: null });
   const pode = !ja && nome.trim() !== "" && telefoneValido(telefone);
+
+  if (passo === 2) {
+    return (
+      <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card [@media(max-height:700px)]:space-y-2.5 [@media(max-height:700px)]:p-3.5">
+        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Passo 2 de 2 · Onde você embarca</p>
+        <OndeEmbarco destino={destino} valor={embarque} mudar={(m) => setEmbarque((e) => ({ ...e, ...m }))} />
+        <Button
+          variant="cta"
+          size="xl"
+          className="w-full"
+          disabled={!pode || !embarqueCompleto(destino, embarque)}
+          onClick={() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque)}
+        >
+          Pedir para entrar
+        </Button>
+        <Button variant="ghost" className="w-full" onClick={() => setPasso(1)}>
+          <ArrowLeft className="!h-4 !w-4" /> Voltar
+        </Button>
+      </section>
+    );
+  }
+
   return (
     <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card">
+      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Passo 1 de 2 · Seus dados</p>
       <CardDaVan destino={destino} />
       {ja && <p className="text-sm font-semibold text-muted-foreground">Você já está neste destino.</p>}
       <CampoComIcone id="meu-nome" label="Seu nome" icon={User} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome" />
@@ -177,8 +204,8 @@ function Confirmar({ destino, voltar }: { destino: Destino; voltar: () => void }
         onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
         placeholder="(00) 00000-0000"
       />
-      <Button variant="cta" size="xl" className="w-full" disabled={!pode} onClick={() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone))}>
-        Pedir para entrar
+      <Button variant="cta" size="xl" className="w-full" disabled={!pode} onClick={() => setPasso(2)}>
+        Continuar <ArrowRight className="!h-5 !w-5" />
       </Button>
       <Button variant="ghost" className="w-full" onClick={voltar}>
         Usar outro código

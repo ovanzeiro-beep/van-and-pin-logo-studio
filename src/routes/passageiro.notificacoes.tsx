@@ -15,6 +15,8 @@ const tipoAviso: Record<string, { label: string; cor: string }> = {
   cobranca_vencendo: { label: "Cobrança vencendo", cor: "text-warning" },
   pedido_recusado: { label: "Pedido não aceito", cor: "text-destructive" },
   pedido_aceito: { label: "Pedido aceito", cor: "text-success" },
+  endereco_aceito: { label: "Endereço aceito", cor: "text-success" },
+  endereco_recusado: { label: "Endereço não aceito", cor: "text-destructive" },
 };
 
 export const Route = createFileRoute("/passageiro/notificacoes")({

@@ -1,5 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
+import { avaliarMudanca, type Embarque } from "@/lib/endereco";
 import { atualizarMeusDados, identidadePassageiro, moverNaCidade, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { criarAviso, useAvisosNaoLidos } from "@/lib/avisos-store";
@@ -13,6 +14,11 @@ import { idDoVanzeiro } from "@/lib/sessao";
 // every pedido stays (with its situation). The lists the screens read are worked out from them.
 let matriculas: Passageiro[] = numerarOrdem(passageirosExemplo);
 let todosPedidos: PedidoEntrada[] = pedidosExemplo.map((p) => ({ ...p, situacao: "aguardando" as const }));
+
+/** Address changes asked by passengers (see mudarMeuEmbarque). */
+let mudancas: MudancaDeEndereco[] = [];
+let mudancasAguardando: MudancaDeEndereco[] = [];
+const SEM_MUDANCAS: MudancaDeEndereco[] = [];
 
 // What the screens read (worked out again after every change).
 let passageiros: Passageiro[] = [];
@@ -43,6 +49,8 @@ function recalcular() {
   saidas = matriculas.filter((p) => !!p.saiuEm);
   if (saidas.length === 0) saidas = SEM_SAIDAS;
   pedidos = todosPedidos.filter((p) => (p.situacao ?? "aguardando") === "aguardando");
+  mudancasAguardando = mudancas.filter((m) => m.situacao === "aguardando");
+  if (mudancasAguardando.length === 0) mudancasAguardando = SEM_MUDANCAS;
   aceitos = Object.fromEntries(todosPedidos.flatMap((p) => (p.situacao === "aceito" && p.matriculaId ? [[p.id, p.matriculaId]] : [])));
 }
 recalcular();
@@ -107,9 +115,9 @@ export function usePedido(id: string | undefined) {
   return usePedidos().find((p) => p.id === id);
 }
 
-/** Number shown on the bell: join requests + unread notifications for the vanzeiro. */
+/** Number shown on the bell: join requests + address changes to approve + unread notifications for the vanzeiro. */
 export function useAvisosVanzeiro() {
-  const pedidosCount = usePedidos().length;
+  const pedidosCount = usePedidos().length + useMudancasAguardando().length;
   const avisosNaoLidos = useAvisosNaoLidos(idDoVanzeiro());
   return pedidosCount + avisosNaoLidos.length;
 }
@@ -159,12 +167,96 @@ export function salvarDadosDoPassageiro(euId: string, dados: MeusDados) {
   avisar();
 }
 
-/** "Marcar meu ponto no mapa": the boarding point of this membership. */
-export function salvarPontoDeEmbarque(id: string, ponto: { lat: number; lng: number }) {
-  if (!matriculas.some((p) => p.id === id)) return;
-  matriculas = matriculas.map((p) => (p.id === id ? { ...p, ponto } : p));
-  avisar();
+// ---------- where the passenger boards: changes and the vanzeiro's approval ----------
+
+export type MudancaDeEndereco = {
+  id: string;
+  vanzeiroId: string;
+  destinoId: string;
+  matriculaId: string;
+  nome: string;
+  de: Embarque;
+  para: Embarque;
+  distanciaKm: number | null;
+  pedidoEm: string;
+  situacao: "aguardando" | "aceita" | "recusada";
+  respondidoEm?: string | undefined;
+};
+
+
+export const obterMudancasDeEndereco = () => mudancas;
+export const obterMudancasAguardando = () => mudancasAguardando;
+
+export function useMudancasAguardando() {
+  return useSyncExternalStore(inscrever, () => mudancasAguardando, () => SEM_MUDANCAS);
 }
+
+const embarqueDe = (p: Passageiro): Embarque => ({ cidade: p.cidade, endereco: p.endereco, ponto: p.ponto ?? null });
+
+function aplicarEmbarque(id: string, e: Embarque) {
+  matriculas = matriculas.map((p) => (p.id === id ? { ...p, cidade: e.cidade, endereco: e.endereco.trim(), ponto: e.ponto ?? undefined } : p));
+}
+
+/**
+ * The passenger changes where they board: up to 1 km from the agreed point it is saved at once ("salvo");
+ * farther, it waits for the vanzeiro ("aguardando") and the old address counts until then.
+ */
+export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): "salvo" | "aguardando" | null {
+  const p = passageiros.find((x) => x.id === matriculaId);
+  if (!p) return null;
+  const { distanciaKm, precisaAprovar } = avaliarMudanca(p, novo);
+  const outras = mudancas.filter((m) => !(m.matriculaId === matriculaId && m.situacao === "aguardando"));
+  if (!precisaAprovar) {
+    mudancas = outras;
+    aplicarEmbarque(matriculaId, novo);
+    avisar();
+    return "salvo";
+  }
+  mudancas = [
+    ...outras,
+    {
+      id: `mudanca-${Date.now()}`,
+      vanzeiroId: p.vanzeiroId,
+      destinoId: p.destinoId,
+      matriculaId,
+      nome: p.nome,
+      de: embarqueDe(p),
+      para: { ...novo, endereco: novo.endereco.trim() },
+      distanciaKm,
+      pedidoEm: dataDeHoje(),
+      situacao: "aguardando",
+    },
+  ];
+  avisar();
+  return "aguardando";
+}
+
+function responderMudanca(id: string, aceitar: boolean) {
+  const m = mudancas.find((x) => x.id === id && x.situacao === "aguardando");
+  if (!m) return;
+  mudancas = mudancas.map((x) => (x.id === id ? { ...x, situacao: aceitar ? "aceita" : "recusada", respondidoEm: dataDeHoje() } : x));
+  if (aceitar) aplicarEmbarque(m.matriculaId, m.para);
+  avisar();
+  const p = matriculas.find((x) => x.id === m.matriculaId);
+  const destino = obterDestinos().find((d) => d.id === m.destinoId);
+  if (p) {
+    criarAviso({
+      vanzeiroId: m.vanzeiroId,
+      tipo: aceitar ? "endereco_aceito" : "endereco_recusado",
+      paraVanzeiroOuPassageiroId: identidadePassageiro(p),
+      passageiroId: p.id,
+      destinoId: m.destinoId,
+      dataCriacao: dataDeHoje(),
+      lido: false,
+      textoResumido: aceitar
+        ? `O vanzeiro aceitou seu novo endereço: ${m.para.endereco}${destino ? `, em ${nomeDestino(destino)}` : ""}`
+        : `O vanzeiro não aceitou o novo endereço. Continua valendo: ${m.de.endereco}`,
+    });
+  }
+}
+
+export const aceitarMudancaDeEndereco = (id: string) => responderMudanca(id, true);
+export const recusarMudancaDeEndereco = (id: string) => responderMudanca(id, false);
 
 /** A destino was deleted: its passengers and pedidos leave with it. */
 export function removerDoDestino(destinoId: string) {
@@ -210,6 +302,7 @@ export function recusarPedido(id: string) {
 export function limparPassageiros() {
   matriculas = [];
   todosPedidos = [];
+  mudancas = [];
   avisar();
 }
 

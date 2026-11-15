@@ -104,7 +104,7 @@ export function PassageiroWizard({
           <Passo1 r={r} mudar={mudar} readonly={modo === "existente"} erroTelefone={telefoneRepetido ? "Já tem um passageiro com este telefone neste destino." : undefined} />
         </>
       )}
-      {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} />}
+      {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} doPassageiro={!!pedido?.endereco} />}
       {passo === 3 && <Passo3 r={r} mudar={mudar} />}
       {passo === 4 && <Resumo r={r} destino={destino} novo={!inicial} />}
     </PassosLayout>
@@ -145,9 +145,14 @@ function Passo1({ r, mudar, readonly, erroTelefone }: PassoProps & { readonly?: 
   );
 }
 
-function Passo2({ r, mudar, pontos }: PassoProps & { pontos: string[] }) {
+function Passo2({ r, mudar, pontos, doPassageiro }: PassoProps & { pontos: string[]; doPassageiro: boolean }) {
   return (
     <>
+      {doPassageiro && (
+        <p className="rounded-2xl bg-primary-soft px-3.5 py-2 text-sm font-semibold text-primary">
+          Preenchido pelo passageiro{r.ponto ? ", com o ponto marcado no mapa" : ""}.
+        </p>
+      )}
       <div>
         <Rotulo>Em qual cidade embarca?</Rotulo>
         <div className="grid grid-cols-2 gap-2">
@@ -158,6 +163,7 @@ function Passo2({ r, mudar, pontos }: PassoProps & { pontos: string[] }) {
                 key={p}
                 type="button"
                 onClick={() => mudar({ cidade: p })}
+                disabled={doPassageiro}
                 aria-pressed={ativo}
                 className={cn(
                   "flex min-h-12 items-center gap-2 rounded-2xl border-2 px-3 py-2 text-left text-sm font-semibold leading-tight transition-colors",
@@ -178,6 +184,7 @@ function Passo2({ r, mudar, pontos }: PassoProps & { pontos: string[] }) {
         placeholder="Ex.: Rua Paraná, 455"
         autoComplete="off"
         value={r.endereco}
+        readOnly={doPassageiro}
         onChange={(e) => mudar({ endereco: e.target.value })}
       />
     </>

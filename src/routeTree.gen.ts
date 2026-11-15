@@ -32,6 +32,7 @@ import { Route as VanzeiroHistoricoRouteImport } from './routes/vanzeiro.histori
 import { Route as VanzeiroNotificacoesRouteImport } from './routes/vanzeiro.notificacoes'
 import { Route as VanzeiroPerfilRouteImport } from './routes/vanzeiro.perfil'
 import { Route as VanzeiroViagemRouteImport } from './routes/vanzeiro.viagem'
+import { Route as PassageiroEmbarquePidRouteImport } from './routes/passageiro.embarque.$pid'
 import { Route as PassageiroPagamentosIndexRouteImport } from './routes/passageiro.pagamentos.index'
 import { Route as PassageiroPagamentosCidRouteImport } from './routes/passageiro.pagamentos.$cid'
 import { Route as VanzeiroDestinosIndexRouteImport } from './routes/vanzeiro.destinos.index'
@@ -159,6 +160,11 @@ const VanzeiroViagemRoute = VanzeiroViagemRouteImport.update({
   path: '/viagem',
   getParentRoute: () => VanzeiroRoute,
 } as any)
+const PassageiroEmbarquePidRoute = PassageiroEmbarquePidRouteImport.update({
+  id: '/embarque/$pid',
+  path: '/embarque/$pid',
+  getParentRoute: () => PassageiroRoute,
+} as any)
 const PassageiroPagamentosIndexRoute =
   PassageiroPagamentosIndexRouteImport.update({
     id: '/',
@@ -244,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro/': typeof PassageiroIndexRoute
   '/vanzeiro/': typeof VanzeiroIndexRoute
+  '/passageiro/embarque/$pid': typeof PassageiroEmbarquePidRoute
   '/passageiro/pagamentos/$cid': typeof PassageiroPagamentosCidRoute
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro': typeof PassageiroIndexRoute
   '/vanzeiro': typeof VanzeiroIndexRoute
+  '/passageiro/embarque/$pid': typeof PassageiroEmbarquePidRoute
   '/passageiro/pagamentos/$cid': typeof PassageiroPagamentosCidRoute
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/vanzeiro/viagem': typeof VanzeiroViagemRoute
   '/passageiro/': typeof PassageiroIndexRoute
   '/vanzeiro/': typeof VanzeiroIndexRoute
+  '/passageiro/embarque/$pid': typeof PassageiroEmbarquePidRoute
   '/passageiro/pagamentos/$cid': typeof PassageiroPagamentosCidRoute
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/vanzeiro/viagem'
     | '/passageiro/'
     | '/vanzeiro/'
+    | '/passageiro/embarque/$pid'
     | '/passageiro/pagamentos/$cid'
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
@@ -381,6 +391,7 @@ export interface FileRouteTypes {
     | '/vanzeiro/viagem'
     | '/passageiro'
     | '/vanzeiro'
+    | '/passageiro/embarque/$pid'
     | '/passageiro/pagamentos/$cid'
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/vanzeiro/viagem'
     | '/passageiro/'
     | '/vanzeiro/'
+    | '/passageiro/embarque/$pid'
     | '/passageiro/pagamentos/$cid'
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
@@ -605,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VanzeiroViagemRouteImport
       parentRoute: typeof VanzeiroRoute
     }
+    '/passageiro/embarque/$pid': {
+      id: '/passageiro/embarque/$pid'
+      path: '/embarque/$pid'
+      fullPath: '/passageiro/embarque/$pid'
+      preLoaderRoute: typeof PassageiroEmbarquePidRouteImport
+      parentRoute: typeof PassageiroRoute
+    }
     '/passageiro/pagamentos/': {
       id: '/passageiro/pagamentos/'
       path: '/'
@@ -706,6 +725,7 @@ interface PassageiroRouteChildren {
   PassageiroVanRoute: typeof PassageiroVanRoute
   PassageiroViagensRoute: typeof PassageiroViagensRoute
   PassageiroIndexRoute: typeof PassageiroIndexRoute
+  PassageiroEmbarquePidRoute: typeof PassageiroEmbarquePidRoute
 }
 
 const PassageiroRouteChildren: PassageiroRouteChildren = {
@@ -716,6 +736,7 @@ const PassageiroRouteChildren: PassageiroRouteChildren = {
   PassageiroVanRoute: PassageiroVanRoute,
   PassageiroViagensRoute: PassageiroViagensRoute,
   PassageiroIndexRoute: PassageiroIndexRoute,
+  PassageiroEmbarquePidRoute: PassageiroEmbarquePidRoute,
 }
 
 const PassageiroRouteWithChildren = PassageiroRoute._addFileChildren(

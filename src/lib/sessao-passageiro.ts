@@ -1,4 +1,5 @@
 import { type Passageiro, type PedidoEntrada } from "@/data/exemplo";
+import type { Embarque } from "@/lib/endereco";
 import { dataDeHoje } from "@/lib/agora";
 import { situacao, valorFinal } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
@@ -15,12 +16,21 @@ export function useSessaoPassageiro() {
   return useSessao().passageiro;
 }
 
-export function pedirParaEntrar(destinoId: string, nome: string, telefone: string) {
+export function pedirParaEntrar(destinoId: string, nome: string, telefone: string, embarque?: Embarque) {
   if (obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
   const destino = obterDestinos().find((d) => d.id === destinoId);
   if (!destino) return;
   const eu = obterMinhasMatriculas()[0];
-  const pedidoId = adicionarPedido({ vanzeiroId: destino.vanzeiroId, destinoId, nome: nome.trim(), telefone, pessoaId: eu ? identidadePassageiro(eu) : undefined });
+  const pedidoId = adicionarPedido({
+    vanzeiroId: destino.vanzeiroId,
+    destinoId,
+    nome: nome.trim(),
+    telefone,
+    pessoaId: eu ? identidadePassageiro(eu) : undefined,
+    cidade: embarque?.cidade,
+    endereco: embarque?.endereco.trim(),
+    ponto: embarque?.ponto ?? undefined,
+  });
   // Someone already in a van keeps being who they are: the new pedido must not replace the accepted one that said so.
   const passageiroId = obterSessao().passageiro.passageiroId ?? eu?.id ?? null;
   mudarSessaoPassageiro({ nome: nome.trim(), telefone, pedidoId, passageiroId });

@@ -56,6 +56,9 @@ function PerfilPassageiro() {
               return <div key={p.id} className="space-y-2">
                 {d && <LinhaPerfil icon={RouteIcon} rotulo="Destino" valor={nomeDestino(d)} />}
                 <LinhaPerfil icon={MapPin} rotulo="Onde embarca" valor={`${p.cidade} · ${p.endereco}`} />
+                <Link to="/passageiro/embarque/$pid" params={{ pid: p.id }} className="flex h-10 items-center gap-1.5 px-1 text-sm font-semibold text-primary">
+                  <MapPin className="h-4 w-4" /> Mudar onde embarco
+                </Link>
                 {d && <SairDoDestino p={p} d={d} />}
               </div>;
             })}
@@ -108,9 +111,8 @@ function Editar({
 }) {
   const [nome, setNome] = useState(eu.nome);
   const [telefone, setTelefone] = useState(formatarTelefone(eu.telefone));
-  const [enderecos, setEnderecos] = useState<Record<string, string>>(() =>
-    Object.fromEntries(matriculas.map((p) => [p.id, p.endereco])),
-  );
+  // Where the person boards changes in "Mudar onde embarco" (with the distance rule), not here.
+  const enderecos = Object.fromEntries(matriculas.map((p) => [p.id, p.endereco]));
   const dados = { nome, telefone, enderecos };
 
   const salvar = () => {
@@ -129,19 +131,6 @@ function Editar({
         value={telefone}
         onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
       />
-      {matriculas.map((p) => {
-        const d = destinos.find((d) => d.id === p.destinoId);
-        return (
-          <CampoComIcone
-            key={p.id}
-            id={`p-endereco-${p.id}`}
-            label={d ? `Onde embarca · ${nomeDestino(d)}` : "Onde embarca"}
-            icon={MapPin}
-            value={enderecos[p.id] ?? ""}
-            onChange={(e) => setEnderecos((atual) => ({ ...atual, [p.id]: e.target.value }))}
-          />
-        );
-      })}
       <div className="grid grid-cols-2 gap-3 pt-1">
         <Button size="lg" variant="outline" onClick={fechar}>
           <X className="!h-5 !w-5" /> Cancelar

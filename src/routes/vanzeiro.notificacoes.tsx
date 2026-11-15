@@ -3,14 +3,16 @@ import { PedidoCard } from "@/components/app/PassageirosDoDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { ListaDeAvisos } from "@/components/app/ListaDeAvisos";
 import { TelaVazia } from "@/components/app/TelaVazia";
-import { ArrowLeft, Bell, MapPin } from "lucide-react";
+import { ArrowLeft, Bell, Check, MapPin, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAvisosAoAbrir } from "@/lib/avisos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
-import { usePedidos } from "@/lib/passageiros-store";
+import { aceitarMudancaDeEndereco, recusarMudancaDeEndereco, useMudancasAguardando, usePedidos, type MudancaDeEndereco } from "@/lib/passageiros-store";
+import { textoDaDistancia } from "@/lib/endereco";
+import { Button } from "@/components/ui/button";
 
 const tipoAviso: Record<string, { label: string; cor: string }> = {
   pedido_novo: { label: "Pedido novo", cor: "text-primary" },
@@ -35,6 +37,7 @@ export const Route = createFileRoute("/vanzeiro/notificacoes")({
 function PaginaNotificacoes() {
   const { avisos, novos } = useAvisosAoAbrir(idDoVanzeiro());
   const pedidos = usePedidos();
+  const mudancas = useMudancasAguardando();
   const destinos = useDestinos();
   const router = useRouter();
   const podeVoltar = useCanGoBack();
@@ -44,7 +47,7 @@ function PaginaNotificacoes() {
     const d = destinos.find((x) => x.id === id);
     return d ? nomeDestino(d) : undefined;
   };
-  const vazio = avisos.length === 0 && pedidos.length === 0;
+  const vazio = avisos.length === 0 && pedidos.length === 0 && mudancas.length === 0;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -80,6 +83,16 @@ function PaginaNotificacoes() {
               </ul>
             </section>
           )}
+          {mudancas.length > 0 && (
+            <section>
+              <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Mudanças de endereço</h2>
+              <ul className="mt-1.5 space-y-3">
+                {mudancas.map((m) => (
+                  <MudancaCard key={m.id} m={m} destino={nomeDoDestino(m.destinoId)} />
+                ))}
+              </ul>
+            </section>
+          )}
           {avisos.length > 0 && (
             <section>
               <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Avisos</h2>
@@ -91,5 +104,40 @@ function PaginaNotificacoes() {
         </div>
       )}
     </div>
+  );
+}
+
+/** A passenger asked to board farther than 1 km from the agreed point: the vanzeiro accepts or declines. */
+function MudancaCard({ m, destino }: { m: MudancaDeEndereco; destino: string | undefined }) {
+  return (
+    <li className="rounded-3xl bg-card p-4 shadow-card">
+      <p className="font-display text-lg font-bold leading-tight text-foreground">{m.nome}</p>
+      <p className="text-sm text-muted-foreground">
+        Quer mudar onde embarca{destino ? ` em ${destino}` : ""}
+        {m.distanciaKm !== null ? ` (${textoDaDistancia(m.distanciaKm)} do ponto combinado)` : ""}.
+      </p>
+      <dl className="mt-2 space-y-1.5 text-sm">
+        <div className="rounded-2xl bg-surface px-3 py-2">
+          <dt className="text-[0.7rem] font-semibold text-muted-foreground">Hoje</dt>
+          <dd className="font-semibold text-foreground">
+            {m.de.cidade} · {m.de.endereco}
+          </dd>
+        </div>
+        <div className="rounded-2xl bg-warning-soft px-3 py-2">
+          <dt className="text-[0.7rem] font-semibold text-warning">Quer mudar para</dt>
+          <dd className="font-semibold text-foreground">
+            {m.para.cidade} · {m.para.endereco}
+          </dd>
+        </div>
+      </dl>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <Button size="lg" variant="outline" onClick={() => recusarMudancaDeEndereco(m.id)}>
+          <X className="!h-5 !w-5" /> Recusar
+        </Button>
+        <Button size="lg" variant="success" onClick={() => aceitarMudancaDeEndereco(m.id)}>
+          <Check className="!h-5 !w-5" /> Aceitar
+        </Button>
+      </div>
+    </li>
   );
 }

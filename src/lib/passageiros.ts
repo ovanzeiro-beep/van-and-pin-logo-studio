@@ -108,6 +108,8 @@ export function contarPassageiros(lista: Pick<Passageiro, "destinoId">[], destin
 /** What the vanzeiro fills in while adding or editing a passenger. */
 export type RascunhoPassageiro = {
   pessoaId?: string | undefined;
+  /** Point on the map chosen by the passenger in the pedido (kept as is). */
+  ponto?: { lat: number; lng: number } | undefined;
   nome: string;
   telefone: string;
   cidade: string;
@@ -121,13 +123,14 @@ export type RascunhoPassageiro = {
 };
 
 /** Empty form, or prefilled with the name and phone of an accepted pedido. */
-export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "telefone" | "pessoaId">): RascunhoPassageiro {
+export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "telefone" | "pessoaId" | "cidade" | "endereco" | "ponto">): RascunhoPassageiro {
   return {
     pessoaId: pedido?.pessoaId,
+    ponto: pedido?.ponto,
     nome: pedido?.nome ?? "",
     telefone: pedido ? formatarTelefone(pedido.telefone) : "",
-    cidade: "",
-    endereco: "",
+    cidade: pedido?.cidade ?? "",
+    endereco: pedido?.endereco ?? "",
     plano: null,
     valor: "",
     vencimento: "",
@@ -138,6 +141,7 @@ export function rascunhoPassageiroVazio(pedido?: Pick<PedidoEntrada, "nome" | "t
 
 export function rascunhoDePassageiro(p: Passageiro): RascunhoPassageiro {
   return {
+    ponto: p.ponto,
     pessoaId: p.pessoaId ?? p.id,
     nome: p.nome,
     telefone: formatarTelefone(p.telefone),
@@ -174,6 +178,7 @@ export function passageiroDeRascunho(r: RascunhoPassageiro, destino: Pick<Destin
     telefone: somenteDigitos(r.telefone),
     cidade: r.cidade,
     endereco: r.endereco.trim(),
+    ...(r.ponto ? { ponto: r.ponto } : {}),
     plano,
     valor: lerValor(r.valor) ?? 0,
     vencimento: planoTemVencimento(plano) ? lerVencimento(r.vencimento) : null,

@@ -34,6 +34,8 @@ export const ROTULO_DO_AVISO: Record<TipoAviso, string> = {
   cobranca_vencendo: "Cobrança vencendo",
   pedido_recusado: "Pedido não aceito",
   pedido_aceito: "Pedido aceito",
+  endereco_aceito: "Endereço aceito",
+  endereco_recusado: "Endereço não aceito",
 };
 
 export type Notificacao = { titulo: string; corpo: string; url: string; tag: string };
