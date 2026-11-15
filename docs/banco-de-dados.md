@@ -72,6 +72,7 @@ Hoje: tipo `Passageiro`. Uma pessoa pode ter várias matrículas, uma por destin
 | pessoa | a conta do passageiro, quando ele tem conta (hoje `pessoaId`) |
 | nome, telefone | telefone **não se repete no mesmo destino** |
 | cidade e endereço de embarque | |
+| ponto de embarque no mapa | latitude e longitude marcadas no mapa (opcional; sem ele, o centro da cidade) |
 | **ordem de busca na cidade** | **campo novo.** Hoje a ordem das setas ↑ ↓ é só a posição na lista |
 | plano | por viagem, diário, quinzenal, mensal |
 | valor | maior que zero |

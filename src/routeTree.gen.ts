@@ -23,6 +23,7 @@ import { Route as PassageiroEntrarDestinoRouteImport } from './routes/passageiro
 import { Route as PassageiroNotificacoesRouteImport } from './routes/passageiro.notificacoes'
 import { Route as PassageiroPagamentosRouteImport } from './routes/passageiro.pagamentos'
 import { Route as PassageiroPerfilRouteImport } from './routes/passageiro.perfil'
+import { Route as PassageiroVanRouteImport } from './routes/passageiro.van'
 import { Route as PassageiroViagensRouteImport } from './routes/passageiro.viagens'
 import { Route as VanzeiroIndexRouteImport } from './routes/vanzeiro.index'
 import { Route as VanzeiroDestinosRouteImport } from './routes/vanzeiro.destinos'
@@ -111,6 +112,11 @@ const PassageiroPagamentosRoute = PassageiroPagamentosRouteImport.update({
 const PassageiroPerfilRoute = PassageiroPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => PassageiroRoute,
+} as any)
+const PassageiroVanRoute = PassageiroVanRouteImport.update({
+  id: '/van',
+  path: '/van',
   getParentRoute: () => PassageiroRoute,
 } as any)
 const PassageiroViagensRoute = PassageiroViagensRouteImport.update({
@@ -228,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
+  '/passageiro/van': typeof PassageiroVanRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRouteWithChildren
@@ -260,6 +267,7 @@ export interface FileRoutesByTo {
   '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
   '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/perfil': typeof PassageiroPerfilRoute
+  '/passageiro/van': typeof PassageiroVanRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/historico': typeof VanzeiroHistoricoRoute
   '/vanzeiro/notificacoes': typeof VanzeiroNotificacoesRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/passageiro/notificacoes': typeof PassageiroNotificacoesRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosRouteWithChildren
   '/passageiro/perfil': typeof PassageiroPerfilRoute
+  '/passageiro/van': typeof PassageiroVanRoute
   '/passageiro/viagens': typeof PassageiroViagensRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosRouteWithChildren
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroRouteWithChildren
@@ -331,6 +340,7 @@ export interface FileRouteTypes {
     | '/passageiro/notificacoes'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
+    | '/passageiro/van'
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
@@ -363,6 +373,7 @@ export interface FileRouteTypes {
     | '/passageiro/entrar-destino'
     | '/passageiro/notificacoes'
     | '/passageiro/perfil'
+    | '/passageiro/van'
     | '/passageiro/viagens'
     | '/vanzeiro/historico'
     | '/vanzeiro/notificacoes'
@@ -396,6 +407,7 @@ export interface FileRouteTypes {
     | '/passageiro/notificacoes'
     | '/passageiro/pagamentos'
     | '/passageiro/perfil'
+    | '/passageiro/van'
     | '/passageiro/viagens'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
@@ -528,6 +540,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/passageiro/perfil'
       preLoaderRoute: typeof PassageiroPerfilRouteImport
+      parentRoute: typeof PassageiroRoute
+    }
+    '/passageiro/van': {
+      id: '/passageiro/van'
+      path: '/van'
+      fullPath: '/passageiro/van'
+      preLoaderRoute: typeof PassageiroVanRouteImport
       parentRoute: typeof PassageiroRoute
     }
     '/passageiro/viagens': {
@@ -684,6 +703,7 @@ interface PassageiroRouteChildren {
   PassageiroNotificacoesRoute: typeof PassageiroNotificacoesRoute
   PassageiroPagamentosRoute: typeof PassageiroPagamentosRouteWithChildren
   PassageiroPerfilRoute: typeof PassageiroPerfilRoute
+  PassageiroVanRoute: typeof PassageiroVanRoute
   PassageiroViagensRoute: typeof PassageiroViagensRoute
   PassageiroIndexRoute: typeof PassageiroIndexRoute
 }
@@ -693,6 +713,7 @@ const PassageiroRouteChildren: PassageiroRouteChildren = {
   PassageiroNotificacoesRoute: PassageiroNotificacoesRoute,
   PassageiroPagamentosRoute: PassageiroPagamentosRouteWithChildren,
   PassageiroPerfilRoute: PassageiroPerfilRoute,
+  PassageiroVanRoute: PassageiroVanRoute,
   PassageiroViagensRoute: PassageiroViagensRoute,
   PassageiroIndexRoute: PassageiroIndexRoute,
 }

@@ -3,7 +3,7 @@ import { formatarData, textoDoPrazo } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { respostasDoDia, useRespostas } from "@/lib/respostas-store";
 import { useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
-import { confirmacaoAberta, proximasDatas, proximaViagem } from "@/lib/viagem";
+import { confirmacaoAberta, proximasDatas, proximaViagem, situacaoParaPassageiro, type SituacaoParaPassageiro } from "@/lib/viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
 import { agora, dataDeHoje } from "@/lib/agora";
 
@@ -47,4 +47,23 @@ export function useMinhasViagens() {
   const eu = ativa ?? destaque?.eu ?? ancora;
   const destino = destinos.find((d) => d.id === (ativa?.destinoId ?? destaque?.destino.id ?? distante?.destino.id ?? eu.destinoId));
   return { eu, destino, destaque, proximas, matriculas, destinos, viagens, proximaDistante: distante?.data ?? null, viagemDeHoje: viagens[eu.destinoId], respostaDeHoje: respostasDoDia(respostas, agora_val.data)[eu.id] };
+}
+
+/** "Situação da van" (Início and "Onde está a van"): the same answer on both screens. */
+export function useSituacaoDaVan() {
+  const m = useMinhasViagens();
+  const { eu, destino, destaque, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = m;
+  const hojeAberta = proximas.find((v) => v.data === dataDeHoje() && v.destino.id === destino?.id)?.aberta ?? false;
+  const van: SituacaoParaPassageiro = destino
+    ? situacaoParaPassageiro({
+        passageiroId: eu.id,
+        destino,
+        hoje: dataDeHoje(),
+        proximaData: destaque?.data ?? proximaDistante,
+        viagem: viagemDeHoje,
+        resposta: respostaDeHoje,
+        aberta: hojeAberta,
+      })
+    : { situacao: "Aguardando o dia da viagem", detalhe: "Nenhuma viagem marcada", etapa: -1, alerta: false };
+  return { ...m, van };
 }

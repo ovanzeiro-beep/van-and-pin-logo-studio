@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
  */
 type LogoVariant = "color" | "light" | "mono";
 
-const VAN_BODY =
+export const VAN_BODY =
   "M10 46C7.2 46 5 43.8 5 41V28C5 24.7 7.7 22 11 22H38.5C40.3 22 42 22.8 43.2 24.1L51.8 33.4L55.4 34.6C57.6 35.3 59 37.3 59 39.6V42C59 44.2 57.2 46 55 46H54A7 7 0 0 0 40 46H25A7 7 0 0 0 11 46Z" +
   "M11 26H20V33H11Q10 33 10 32V27Q10 26 11 26Z" +
   "M23.5 26H34.5V33H23.5Z" +
   "M38 26H40L46.5 33H38Z" +
   "M55.5 37.6H58.2V39.8H55.5Z";
 
-const WHEEL = (cx: number) =>
+export const WHEEL = (cx: number) =>
   `M${cx - 5} 46a5 5 0 1 0 10 0a5 5 0 1 0 -10 0Z M${cx - 1.8} 46a1.8 1.8 0 1 1 3.6 0a1.8 1.8 0 1 1 -3.6 0Z`;
 
 const PIN =

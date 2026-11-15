@@ -159,6 +159,13 @@ export function salvarDadosDoPassageiro(euId: string, dados: MeusDados) {
   avisar();
 }
 
+/** "Marcar meu ponto no mapa": the boarding point of this membership. */
+export function salvarPontoDeEmbarque(id: string, ponto: { lat: number; lng: number }) {
+  if (!matriculas.some((p) => p.id === id)) return;
+  matriculas = matriculas.map((p) => (p.id === id ? { ...p, ponto } : p));
+  avisar();
+}
+
 /** A destino was deleted: its passengers and pedidos leave with it. */
 export function removerDoDestino(destinoId: string) {
   const hoje = dataDeHoje();

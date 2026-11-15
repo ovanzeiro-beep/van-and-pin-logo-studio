@@ -135,6 +135,8 @@ export type Passageiro = {
   valorFalta: number | null;
   /** Ordem de busca dentro da cidade (1, 2, 3…), mudada pelas setas ↑ ↓. */
   ordem?: number | undefined;
+  /** Ponto de embarque marcado no mapa (latitude e longitude). Sem ele, o mapa usa o centro da cidade. */
+  ponto?: { lat: number; lng: number } | undefined;
   /** Dia em que saiu do destino (saiu, foi removido ou o destino foi excluído). Continua guardado para o histórico e as cobranças. */
   saiuEm?: string | undefined;
 };
@@ -308,3 +310,18 @@ export const viagensEncerradasExemplo: ViagemEncerrada[] = [
     ficaram: [],
   },
 ];
+
+/**
+ * Onde fica cada cidade dos exemplos no mapa (aproximado). Enquanto não há banco nem busca de endereço,
+ * o mapa só sabe desenhar as cidades desta lista.
+ */
+export const coordenadasExemplo: Record<string, { lat: number; lng: number }> = {
+  Jacarezinho: { lat: -23.1606, lng: -49.9692 },
+  "Santo Antônio da Platina": { lat: -23.295, lng: -50.077 },
+  Londrina: { lat: -23.3045, lng: -51.1696 },
+  "Cambará": { lat: -23.0461, lng: -50.0739 },
+  "UENP Jacarezinho": { lat: -23.1527, lng: -49.9617 },
+  Curitiba: { lat: -25.4284, lng: -49.2733 },
+  Joinville: { lat: -26.3045, lng: -48.8487 },
+  "Beto Carrero World": { lat: -26.801, lng: -48.6176 },
+};

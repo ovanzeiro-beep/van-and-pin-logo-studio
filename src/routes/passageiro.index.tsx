@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { AlarmClock, CalendarClock, Check, CircleCheck, MessageCircle, UserCheck, Wallet, X } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
@@ -11,13 +11,13 @@ import { formatarReais } from "@/lib/dinheiro";
 import { situacao, textoDoVencimento, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
-import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
+import { rotuloDoDia, useSituacaoDaVan, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { responder } from "@/lib/respostas-store";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { cn } from "@/lib/utils";
-import { conferenciaDoPassageiro, situacaoParaPassageiro } from "@/lib/viagem";
+import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { confirmarNaVan } from "@/lib/viagem-store";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -38,23 +38,11 @@ export const Route = createFileRoute("/passageiro/")({
 const etapas = ["Saiu da garagem", "A caminho", "Na van"];
 
 function InicioPassageiro() {
-  const { eu, destino, destaque, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = useMinhasViagens();
+  const { eu, destino, destaque, proximaDistante, viagemDeHoje, van } = useSituacaoDaVan();
   const vanzeiro = usePerfilVanzeiro();
   const idsDasCobrancas = useIdsDasMinhasCobrancas();
   const cobrancas = useCobrancasDasMatriculas(idsDasCobrancas);
   const prox = destaque;
-  const hojeAberta = proximas.find((v) => v.data === dataDeHoje() && v.destino.id === destino?.id)?.aberta ?? false;
-  const van = destino
-    ? situacaoParaPassageiro({
-        passageiroId: eu.id,
-        destino,
-        hoje: dataDeHoje(),
-        proximaData: prox?.data ?? proximaDistante,
-        viagem: viagemDeHoje,
-        resposta: respostaDeHoje,
-        aberta: hojeAberta,
-      })
-    : { situacao: "Aguardando o dia da viagem", detalhe: "Nenhuma viagem marcada", etapa: -1, alerta: false };
 
   const devido = idsDasCobrancas.reduce((s, id) => s + totalDevido(cobrancas, id), 0);
   const [aberta] = cobrancas
@@ -112,13 +100,18 @@ function InicioPassageiro() {
         </InfoCard>
         )}
 
+        <Link to="/passageiro/van" className="block" aria-label="Situação da van — ver no mapa">
         <InfoCard
           compacto
           icon={VanIcon}
           tone={van.alerta ? "danger" : "success"}
           label="Situação da van"
           value={van.situacao}
-          detail={van.detalhe}
+          detail={
+            <>
+              {van.detalhe} · <span className="font-semibold text-primary">Ver no mapa</span>
+            </>
+          }
           aside={<StatusBadge status="info">{vanzeiro.van.placa}</StatusBadge>}
         >
           <div className="flex items-center gap-2">
@@ -137,6 +130,7 @@ function InicioPassageiro() {
             ))}
           </div>
         </InfoCard>
+        </Link>
 
         <InfoCard
           compacto

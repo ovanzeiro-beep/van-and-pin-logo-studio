@@ -925,3 +925,15 @@ Conferência (15/11/2026):
 - [x] L4. Cadastro de passageiro e aceitar pedido: aviso âmbar quando o destino passa dos lugares (só avisa).
 - [x] L5. Conferência: 224 testes (novo `src/test/lugares.test.ts`), tipos, build; no navegador: lugares 3 → "3 de 3 lugares" em âmbar e "Van lotada" para a Juliana nas duas telas, "Não vou" funcionando; lugares 0 → "Use um número de 1 a 60."; aviso no resumo do cadastro sem rolagem; as 28 telas sem erro; Inícios sem rolar como antes.
 - Próxima: etapa 2 da seção 12 (tela do mapa com van simulada), só com a coordenada do dono.
+
+---
+
+## Mapa da van (simulada) — etapa 2 da seção 12 (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Sem banco de dados; posição da van simulada.
+- [x] M1. Cartão "Situação da van" do Início abre "Onde está a van" ("· Ver no mapa" na linha do detalhe, sem deixar o Início mais alto: iPhone SE continua 8px).
+- [x] M2. Mapa com cidades em ordem, o ponto da própria pessoa e a van; os pontos dos outros passageiros nunca aparecem.
+- [x] M3. "Está passando por …", "Chega no seu ponto em uns N min", situação da van igual ao Início, aviso de posição simulada.
+- [x] M4. Marcar meu ponto no mapa (Salvar só depois de tocar no mapa).
+- [x] M5. Conferência: 230 testes (novo `src/test/mapa.test.ts`), tipos, build; no navegador (edição e produção): antes da viagem, viagem começada ("Faltam 2 pessoas antes de você · Está passando por Cambará · Chega no seu ponto em uns 25 min"), depois do embarque ("Na van"), marcar ponto; a tela não rola em nenhum tamanho; as outras telas sem erro. O fundo do mapa (ruas) não carrega no ambiente de teste (servidor de mapa bloqueado aqui); no celular carrega.
+- Pendência para antes de lançar: escolher o fornecedor do mapa e da busca de endereço.
+- Próxima: etapa 3 da seção 12 (tempo real de verdade), só junto com o banco e quando o dono mandar.
