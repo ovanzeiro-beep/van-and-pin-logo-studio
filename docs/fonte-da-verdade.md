@@ -513,6 +513,31 @@ O dono pediu: o passageiro ver onde a van está, em tempo real, com informação
 **Pedido do dono:** em "Passageiros deste destino", mostrar quem é o 1º, 2º, 3º a ser buscado e trocar as setas ↑ ↓ por arrastar com o dedo (segurar no passageiro e mover para cima ou para baixo).
 
 **Como ficou (feito em 15/11/2026):**
-- O círculo de cada passageiro mostra o **número da busca no destino inteiro** (1, 2, 3…): as cidades seguem a ordem do caminho e, dentro de cada cidade, a ordem escolhida. É o mesmo número da aba Viagem ("Quem vai · na ordem da busca").
+- O círculo de cada passageiro mostra o **número da busca no destino inteiro** (1, 2, 3…): as cidades seguem a ordem do caminho e, dentro de cada cidade, a ordem escolhida. **Correção (análise de 15/11/2026, item 3 da seção 15):** só é o mesmo número da aba Viagem quando todos vão; a aba Viagem numera só quem disse "Vou".
 - **Sem setas.** Dica no alto da lista: "Segure o passageiro e arraste para mudar a ordem da busca." e o ícone de arrastar (⋮⋮) em cada passageiro.
 - **Segurar um instante e arrastar** muda a ordem (só dentro da mesma cidade: as cidades seguem o caminho). Um **toque rápido** continua abrindo o passageiro; **deslizar rápido** continua rolando a tela. No computador, funciona com o mouse.
+
+---
+
+## 15. Análise de lacunas ponta a ponta (15/11/2026, pedida pelo dono)
+
+Cada item foi confirmado rodando o app (não é suposição).
+
+### 15.1 Erros (o app faz algo errado)
+1. **Mudança de endereço "fantasma":** se o passageiro sai do destino, é removido ou o destino é excluído com uma mudança de endereço aguardando, ela continua para o vanzeiro; "Aceitar" muda o endereço de quem já saiu e avisa essa pessoa.
+2. **Vanzeiro troca a cidade, o ponto no mapa fica na cidade antiga:** o mapa, o "chega em uns N min" e a regra de 1 km passam a usar o lugar errado.
+3. **Número da ordem diferente entre telas:** no destino a Fernanda é a 3ª; na Viagem do dia, a 1ª (lá só aparece quem vai). **Decisão do dono:** manter cada tela com o seu sentido e explicar, ou mostrar a ordem fixa nas duas.
+
+### 15.2 Faltas de proteção ou clareza
+4. **Recusar mudança de endereço sem confirmação** (Recusar pedido pergunta antes).
+5. **"Seu ponto" no centro da cidade** para quem foi cadastrado pelo vanzeiro e nunca marcou; e marcar pela primeira vez a mais de 1 km do centro exige aprovação do vanzeiro, à toa.
+6. **"Abrir no mapa" do vanzeiro ignora o ponto marcado** (abre pelo endereço escrito).
+
+### 15.3 Faltas que pesam no piloto real
+7. **O mapa só conhece as 8 cidades dos exemplos:** com outras cidades, o mapa some, o ponto deixa de ser obrigatório e a regra de 1 km quase não funciona. Precisa de busca de cidade/endereço.
+8. **Política de Privacidade desatualizada:** não fala do ponto no mapa (localização), das notificações no celular nem do servidor do mapa (OpenStreetMap recebe o endereço de internet).
+
+### 15.4 Plano
+- **Etapa P1:** itens 1, 2, 4 e 5.
+- **Etapa P2:** item 3 (depois da decisão do dono) e item 6.
+- **Etapa P3 (antes do piloto real):** itens 7 e 8.
