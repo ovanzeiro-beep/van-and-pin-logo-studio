@@ -879,3 +879,15 @@ Conferência (15/11/2026):
 - [x] K5. Conferência: 209 testes (novo `src/test/etapa-k.test.ts`), tipos, build; no navegador: as 28 telas sem erro, sem erro de montagem, dia completo do vanzeiro igual ao de antes, aceitar pedido, criar conta, excluir conta e as setas de ordem funcionando.
 - Não pode quebrar: nada visual mudou.
 - Próximo: decisões do dono (seção 11.4) e o banco, só quando ele mandar.
+
+---
+
+## A1 — App funciona sem sinal (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Decisão do dono: sim, o app deve funcionar sem internet. Sem banco de dados.
+- [x] A1.1 O app guarda uma cópia de si no celular (`public/sw.js`): telas principais, arquivos do app e as letras usadas em português.
+- [x] A1.2 Com internet, sempre usa a versão nova (nunca prende uma versão velha); sem sinal, usa a cópia.
+- [x] A1.3 Não guarda cópia na edição nem na prévia do Lovable (para as mudanças sempre aparecerem lá).
+- [x] A1.4 Conferência na versão de produção, com a internet cortada e a memória do navegador apagada: recarregar o Início, trocar as 4 abas, iniciar viagem e marcar "Embarcou", abrir um destino pelo endereço, abrir o painel do passageiro, abrir pelo ícone: tudo funcionou, sem arquivo faltando. Com internet: as 28 telas sem erro. 211 testes (novo `src/test/sem-sinal.test.ts`), tipos, build.
+- Observação: abrir sem sinal o endereço de uma tela nunca visitada mostra um aviso técnico só para quem programa; a tela abre certa.
+- Fica para o dia do banco: fila do que foi feito sem sinal, mandada quando o sinal voltar (`docs/banco-de-dados.md`, seção 6).
+- Próximas: A2 (notificação no celular) e A3 (pagamentos de quem saiu), só com a coordenada do dono.

@@ -448,6 +448,10 @@ O dono perguntou o que falta arrumar, corrigir e remover para o banco poder entr
 3. Pagamentos de quem saiu do último destino (decisão já pendente).
 4. Contato da Política de Privacidade e revisão do advogado.
 
+### 11.4.1 Respostas do dono (15/11/2026)
+- **A1 (sem sinal na van): sim, o app deve funcionar sem internet.** O dono pediu para fazer por etapas: A1, depois A2 (notificação no celular), depois A3 (pagamentos de quem saiu), cada uma só depois da coordenada dele.
+- **A1 feita em 15/11/2026 (parte sem banco):** o app guarda uma cópia de si no celular (`public/sw.js`, ligado por `src/lib/sem-sinal.ts`). Com internet, sempre usa a versão nova; sem sinal, usa a cópia. Abre pelo ícone, recarrega, troca de aba, faz a viagem e abre o painel do passageiro sem internet. A cópia não é guardada na edição nem na prévia do Lovable. **Fica para o dia do banco:** guardar no celular o que foi feito sem sinal e mandar ao banco quando o sinal voltar (seção 6 de `docs/banco-de-dados.md`).
+
 ### 11.5 Plano por etapas
 - **Etapa J — Documento do banco:** `docs/banco-de-dados.md` com tudo o que o banco guarda, quem vê o quê, o que roda sozinho no servidor e o que muda em cada função. É o item 7 da Etapa C. **Só o documento.** **Feita em 15/11/2026.**
 - **Etapa K — Guardar o que hoje some (sem banco):** itens 1, 2, 3 e 9 da lista 11.2. **Feita em 15/11/2026, sem mudar nada na tela:** embarques e faltas avisadas no prazo viram registros (o histórico do passageiro lê deles, não mais dos exemplos); a viagem ganha número próprio e hora de início e de fim, e todo passo passa por uma função só; as respostas fechadas viram registro; os pedidos nunca somem (ficam "aguardando", "aceito" com a matrícula criada, ou "recusado", com datas); quem sai de um destino continua guardado com o dia da saída; a ordem de busca na cidade virou um número próprio (1, 2, 3…), trocado pelas setas.

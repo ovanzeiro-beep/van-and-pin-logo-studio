@@ -236,7 +236,7 @@ Para o banco entrar mais fácil, a **Etapa K** (seção 11 da fonte da verdade) 
 ---
 
 ## 6. Decisões do dono que mudam este documento
-1. **Sem internet dentro da van:** se o app deve funcionar sem sinal e mandar depois, cada celular guarda uma cópia e o banco precisa resolver o que chegar atrasado.
+1. **Sem internet dentro da van — decidido: SIM (15/11/2026).** Já feito (sem banco): o app abre e funciona sem sinal (cópia do app no celular, `public/sw.js`). **No dia do banco:** cada ação feita sem sinal fica numa fila no celular, na ordem em que aconteceu, e é mandada quando o sinal voltar; a tela mostra que ainda falta mandar. Regras para o que chegar atrasado: os toques da viagem valem pela hora em que foram feitos; uma resposta "Vou / Não vou" feita antes do prazo vale mesmo que chegue depois; uma cobrança nunca é editada (pagamento ou cancelamento repetido não conta duas vezes).
 2. **Notificação no celular com o app fechado:** se sim, os avisos da seção 2.11 também viram notificação.
 3. **Pagamentos de quem saiu do último destino.**
 4. **Contato da Política de Privacidade e revisão do advogado** antes de guardar dados reais.
