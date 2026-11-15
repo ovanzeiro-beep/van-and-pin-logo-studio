@@ -72,6 +72,12 @@ export function diaMes(iso: string) {
   return `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}`;
 }
 
+/** "vence hoje", "vence em 20/11" or "venceu em 05/11" (for a charge not paid nor cancelled). */
+export function textoDoVencimento(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string) {
+  if (situacao(c, hoje) === "devendo") return `venceu em ${diaMes(c.vencimento)}`;
+  return c.vencimento === hoje ? "vence hoje" : `vence em ${diaMes(c.vencimento)}`;
+}
+
 export function mesmoMes(a: string, b: string) {
   return a.slice(0, 7) === b.slice(0, 7);
 }

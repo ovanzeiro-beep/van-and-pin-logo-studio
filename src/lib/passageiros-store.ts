@@ -1,6 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
-import { atualizarMeusDados, identidadePassageiro, moverNaCidade, type MeusDados } from "@/lib/passageiros";
+import { atualizarMeusDados, identidadePassageiro, moverNaCidade, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { criarAviso, useAvisosNaoLidos } from "@/lib/avisos-store";
 import { dataDeHoje } from "@/lib/agora";
@@ -86,6 +86,7 @@ export function moverPassageiro(id: string, direcao: -1 | 1) {
 export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
   const existente = passageiros.find((x) => x.destinoId === p.destinoId && identidadePassageiro(x) === identidadePassageiro(p));
   if (existente && existente.id !== p.id) return;
+  if (telefoneJaNoDestino(passageiros, p.destinoId, p.telefone, p)) return;
   passageiros = passageiros.some((x) => x.id === p.id)
     ? passageiros.map((x) => (x.id === p.id ? p : x))
     : [...passageiros, p];

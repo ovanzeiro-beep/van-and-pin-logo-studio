@@ -39,7 +39,7 @@ function PerfilPassageiro() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PassageiroHeader compacto titulo="Perfil" subtitulo="Seus dados e a sua van." />
+      <PassageiroHeader compacto titulo="Perfil" subtitulo="Seus dados e o seu vanzeiro." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         {editando ? (
           <Editar eu={eu} matriculas={matriculas} destinos={destinos} fechar={() => setEditando(false)} />

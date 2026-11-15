@@ -835,3 +835,15 @@ Conferência (15/11/2026):
 - Não pode quebrar: cores, palavras, cards e barra de navegação sem mudança. Pedido recusado continua avisando a pessoa.
 - Pendências para o dono: (1) pedido **aceito** deve avisar a pessoa? (2) tempos de 30 minutos e 3 dias estão bons?
 - Próxima: Etapa I (cadastros e textos: erros 5, 7, 8 e 9).
+
+---
+
+## Etapa I — Cadastros e textos (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Erros 5, 7, 8 e 9 da seção 10 de `docs/fonte-da-verdade.md`. Sem banco de dados.
+- [x] I1. (erro 5) Viagem avulsa: data que já passou não deixa continuar; o calendário começa em hoje; o título do campo vira "Essa data já passou." (sem linha a mais, para não rolar no iPhone SE).
+- [x] I2. (erro 7) Cobrança que vence hoje: "vence hoje" no Início do passageiro; o texto do vencimento agora fica num lugar só (`textoDoVencimento`, em `src/lib/cobrancas.ts`).
+- [x] I3. (erro 8) Perfil do passageiro: subtítulo "Seus dados e o seu vanzeiro." (o do vanzeiro continua "Seus dados e a sua van.").
+- [x] I4. (erro 9) Cadastro de passageiro: valor zero nunca passa (antes "0,001" passava e virava R$ 0,00); mesmo telefone no mesmo destino avisa "Já tem um passageiro com este telefone neste destino." e não deixa continuar; a regra também vale ao salvar.
+- [x] I5. Conferência: 201 testes (novo `src/test/etapa-i.test.ts`), tipos, build; no navegador em 390×844 e 375×667: mensagens aparecem sem rolagem, editar o Gabriel continua funcionando, sem erro no console.
+- Não pode quebrar: cores, palavras, cards e barra de navegação sem mudança.
+- Pendências para o dono (continuam): pedido aceito avisa a pessoa?; tempos dos avisos (30 min e 3 dias); erro 10; erro 11 (decisão C); dados do piloto; contato da Política de Privacidade; advogado; pagamentos de quem saiu do último destino; documento do banco.

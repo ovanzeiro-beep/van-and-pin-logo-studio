@@ -18,12 +18,14 @@ import { PassosLayout } from "@/components/app/PassosLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Destino } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
 import {
   DIAS_DA_SEMANA,
   PRAZOS,
   PRAZO_TEXTO,
   TIPO_ROTULO,
   caminhoCompleto,
+  dataNoPassado,
   destinoDeRascunho,
   moverItem,
   nomeDestino,
@@ -214,10 +216,13 @@ function Passo2({ r, mudar }: PassoProps) {
         <div className={cn("grid gap-3", r.temVolta && r.voltaOutroDia && "grid-cols-2")}>
           <CampoComIcone
             id="data"
-            label={r.temVolta && r.voltaOutroDia ? "Data da ida" : "Qual a data?"}
+            label={dataNoPassado(r) ? "Essa data já passou." : r.temVolta && r.voltaOutroDia ? "Data da ida" : "Qual a data?"}
             icon={CalendarDays}
             type="date"
+            min={dataDeHoje()}
             value={r.data}
+            aria-invalid={dataNoPassado(r) || undefined}
+            className={cn(dataNoPassado(r) && "border-destructive")}
             onChange={(e) => mudar({ data: e.target.value })}
           />
           {r.temVolta && r.voltaOutroDia && (

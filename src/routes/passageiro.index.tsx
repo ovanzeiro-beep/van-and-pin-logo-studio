@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { type RespostaViagem } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
-import { diaMes, situacao, totalDevido } from "@/lib/cobrancas";
+import { situacao, textoDoVencimento, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
@@ -151,7 +151,7 @@ function InicioPassageiro() {
           value={formatarReais(devido)}
           detail={
             aberta
-              ? `${aberta.referencia} · ${sAberta === "devendo" ? "venceu" : "vence"} em ${diaMes(aberta.vencimento)}`
+              ? `${aberta.referencia} · ${textoDoVencimento(aberta, dataDeHoje())}`
               : "Tudo pago. Obrigado!"
           }
           aside={sAberta ? <BadgeSituacao s={sAberta} /> : <BadgeSituacao s="pago" />}

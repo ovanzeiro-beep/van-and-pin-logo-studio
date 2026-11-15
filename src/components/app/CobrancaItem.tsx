@@ -3,7 +3,7 @@ import { CalendarDays, ChevronRight } from "lucide-react";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
-import { FORMA_ROTULO, SITUACAO_ROTULO, contaDoDesconto, diaMes, situacao, valorFinal, type Cobranca, type Situacao } from "@/lib/cobrancas";
+import { FORMA_ROTULO, SITUACAO_ROTULO, contaDoDesconto, diaMes, situacao, textoDoVencimento, valorFinal, type Cobranca, type Situacao } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
 
 export const BADGE_DA_SITUACAO = {
@@ -23,8 +23,8 @@ export function linhaDaData(c: Cobranca, hoje = dataDeHoje()) {
   if (s === "pago" && c.pagamento)
     return `Vencimento ${diaMes(c.vencimento)} · Pago em ${diaMes(c.pagamento.data)} · ${FORMA_ROTULO[c.pagamento.forma]}`;
   if (s === "cancelada" && c.cancelamento) return `Vencimento ${diaMes(c.vencimento)} · Cancelada em ${diaMes(c.cancelamento.data)}`;
-  if (s === "devendo") return `Venceu em ${diaMes(c.vencimento)}`;
-  return c.vencimento === hoje ? "Vence hoje" : `Vence em ${diaMes(c.vencimento)}`;
+  const texto = textoDoVencimento(c, hoje);
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
 /** One charge in a list. `compacto` is the lighter row used inside a card (passenger detail). */

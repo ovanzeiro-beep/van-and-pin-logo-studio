@@ -1,5 +1,6 @@
 import type { DiaSemana, Destino, PrazoConfirmacao, TipoDestino } from "@/data/exemplo";
 import { gerarConviteUnico } from "@/lib/convite";
+import { dataDeHoje } from "@/lib/agora";
 import { idDoVanzeiro } from "@/lib/sessao";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
@@ -145,11 +146,16 @@ export function rascunhoDeDestino(d: Destino): Rascunho {
   };
 }
 
+/** Viagem avulsa: a date already gone can't be chosen. */
+export function dataNoPassado(r: Pick<Rascunho, "tipo" | "data">, hoje = dataDeHoje()) {
+  return r.tipo === "avulsa" && r.data !== "" && r.data < hoje;
+}
+
 /** Whether the vanzeiro can leave this step (1, 2 or 3). */
-export function passoCompleto(passo: number, r: Rascunho) {
+export function passoCompleto(passo: number, r: Rascunho, hoje = dataDeHoje()) {
   if (passo === 1) return r.origem.trim() !== "" && r.destino.trim() !== "" && r.tipo !== null;
   if (passo === 2) {
-    const quando = r.tipo === "fixa" ? r.dias.length > 0 : r.data !== "";
+    const quando = r.tipo === "fixa" ? r.dias.length > 0 : r.data !== "" && !dataNoPassado(r, hoje);
     const voltaOutroDiaOk = !(r.tipo === "avulsa" && r.temVolta && r.voltaOutroDia) || (r.dataVolta !== "" && r.dataVolta > r.data);
     return quando && r.saida !== "" && r.temVolta !== null && (!r.temVolta || r.volta !== "") && voltaOutroDiaOk;
   }

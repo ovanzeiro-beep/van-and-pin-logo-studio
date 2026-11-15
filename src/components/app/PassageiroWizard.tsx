@@ -20,6 +20,8 @@ import {
   pessoasParaDestino,
   rascunhoDePassageiro,
   rascunhoPassageiroVazio,
+  telefoneJaNoDestino,
+  telefoneValido,
   type RascunhoPassageiro,
 } from "@/lib/passageiros";
 import { salvarPassageiro, usePassageiros } from "@/lib/passageiros-store";
@@ -46,13 +48,16 @@ export function PassageiroWizard({
 }) {
   const navigate = useNavigate();
   const pontos = pontosDeEmbarque(destino);
-  const pessoas = pessoasParaDestino(usePassageiros(), destino.id);
+  const todos = usePassageiros();
+  const pessoas = pessoasParaDestino(todos, destino.id);
   const [modo, setModo] = useState<"novo" | "existente">("novo");
   const [passo, setPasso] = useState(1);
   const [r, setR] = useState<RascunhoPassageiro>(() =>
     inicial ? rascunhoDePassageiro(inicial) : rascunhoPassageiroVazio(pedido),
   );
   const mudar = (parcial: Partial<RascunhoPassageiro>) => setR((atual) => ({ ...atual, ...parcial }));
+  const quem = inicial ?? (r.pessoaId ? { id: r.pessoaId, pessoaId: r.pessoaId } : undefined);
+  const telefoneRepetido = telefoneValido(r.telefone) && telefoneJaNoDestino(todos, destino.id, r.telefone, quem);
 
   const irParaDestino = () => navigate({ to: "/vanzeiro/destinos/$id", params: { id: destino.id } });
   const irParaPassageiro = (pid: string) =>
@@ -72,7 +77,7 @@ export function PassageiroWizard({
       titulo={inicial ? "Editar passageiro" : "Novo passageiro"}
       subtitulo={PERGUNTAS[passo - 1] ?? ""}
       passo={passo}
-      podeContinuar={passoPassageiroCompleto(passo, r, pontos) && (passo !== 1 || modo === "novo" || !!r.pessoaId)}
+      podeContinuar={passoPassageiroCompleto(passo, r, pontos) && (passo !== 1 || ((modo === "novo" || !!r.pessoaId) && !telefoneRepetido))}
       onVoltar={() => (passo === 1 ? sair() : setPasso(passo - 1))}
       onContinuar={() => setPasso(passo + 1)}
       onSalvar={salvar}
@@ -94,7 +99,7 @@ export function PassageiroWizard({
               {pessoas.map((p) => <option key={p.id} value={p.pessoaId ?? p.id}>{p.nome}</option>)}
             </select>
           </div>}
-          <Passo1 r={r} mudar={mudar} readonly={modo === "existente"} />
+          <Passo1 r={r} mudar={mudar} readonly={modo === "existente"} erroTelefone={telefoneRepetido ? "Já tem um passageiro com este telefone neste destino." : undefined} />
         </>
       )}
       {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} />}
@@ -106,7 +111,7 @@ export function PassageiroWizard({
 
 type PassoProps = { r: RascunhoPassageiro; mudar: (p: Partial<RascunhoPassageiro>) => void };
 
-function Passo1({ r, mudar, readonly }: PassoProps & { readonly?: boolean }) {
+function Passo1({ r, mudar, readonly, erroTelefone }: PassoProps & { readonly?: boolean; erroTelefone?: string | undefined }) {
   return (
     <>
       <CampoComIcone
@@ -129,6 +134,7 @@ function Passo1({ r, mudar, readonly }: PassoProps & { readonly?: boolean }) {
           placeholder="(43) 99812-3456"
           value={r.telefone}
           readOnly={readonly}
+          erro={erroTelefone}
           onChange={(e) => mudar({ telefone: formatarTelefone(e.target.value) })}
         />
         <p className="text-xs text-muted-foreground">Com DDD.</p>

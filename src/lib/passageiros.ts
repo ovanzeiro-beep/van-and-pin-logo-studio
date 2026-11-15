@@ -64,8 +64,8 @@ export function lerValor(texto: string): number | null {
   const limpo = texto.trim().replace(/^R\$\s*/, "");
   if (!limpo) return null;
   const normal = limpo.includes(",") ? limpo.replace(/\./g, "").replace(",", ".") : limpo;
-  const n = Number(normal);
-  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
+  const n = Math.round(Number(normal) * 100) / 100;
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 export function lerVencimento(texto: string): number | null {
@@ -198,6 +198,13 @@ export const identidadePassageiro = (p: Passageiro) => p.pessoaId ?? p.id;
 export function matriculasDaPessoa(lista: Passageiro[], p: Passageiro) {
   return lista.filter((x) => identidadePassageiro(x) === identidadePassageiro(p));
 }
+/** Someone else in this destino already has this phone (the person being edited doesn't count). */
+export function telefoneJaNoDestino(lista: Passageiro[], destinoId: string, telefone: string, quem?: Pick<Passageiro, "id" | "pessoaId">) {
+  const tel = somenteDigitos(telefone);
+  const eu = quem ? identidadePassageiro(quem as Passageiro) : undefined;
+  return lista.some((p) => p.destinoId === destinoId && somenteDigitos(p.telefone) === tel && identidadePassageiro(p) !== eu);
+}
+
 export function pessoasParaDestino(lista: Passageiro[], destinoId: string) {
   const ja = new Set(lista.filter((p) => p.destinoId === destinoId).map(identidadePassageiro));
   return lista.filter((p, i) => !ja.has(identidadePassageiro(p)) && lista.findIndex((x) => identidadePassageiro(x) === identidadePassageiro(p)) === i);
