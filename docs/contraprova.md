@@ -847,3 +847,11 @@ Conferência (15/11/2026):
 - [x] I5. Conferência: 201 testes (novo `src/test/etapa-i.test.ts`), tipos, build; no navegador em 390×844 e 375×667: mensagens aparecem sem rolagem, editar o Gabriel continua funcionando, sem erro no console.
 - Não pode quebrar: cores, palavras, cards e barra de navegação sem mudança.
 - Pendências para o dono (continuam): pedido aceito avisa a pessoa?; tempos dos avisos (30 min e 3 dias); erro 10; erro 11 (decisão C); dados do piloto; contato da Política de Privacidade; advogado; pagamentos de quem saiu do último destino; documento do banco.
+
+---
+
+## Decisão do dono — aviso de pedido aceito (feito em 15/11/2026)
+- [x] Quando o vanzeiro aceita um pedido, a pessoa recebe no sininho "Pedido aceito — O vanzeiro aceitou seu pedido para <destino>". Cadastrar direto (sem pedido) não avisa.
+- [x] Tempos dos avisos ficam como estão: "Prazo chegando" 30 minutos antes; "Cobrança vencendo" 3 dias antes.
+- [x] Conferência: 202 testes (novo `src/test/pedido-aceito.test.ts`), tipos, build; no navegador, aceitar a Larissa salva e volta ao destino sem erro.
+- Pendências que continuam: erro 10, erro 11 (decisão C), dados do piloto, contato da Política de Privacidade, advogado, pagamentos de quem saiu do último destino, documento do banco.

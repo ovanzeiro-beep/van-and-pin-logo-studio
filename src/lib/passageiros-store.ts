@@ -90,12 +90,27 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
   passageiros = passageiros.some((x) => x.id === p.id)
     ? passageiros.map((x) => (x.id === p.id ? p : x))
     : [...passageiros, p];
+  const pedido = pedidoId ? pedidos.find((x) => x.id === pedidoId) : undefined;
   if (pedidoId) {
     pedidos = pedidos.filter((x) => x.id !== pedidoId);
     aceitos = { ...aceitos, [pedidoId]: p.id };
   }
   avisar();
   garantirProximaCobranca(p);
+  // The person who asked hears about it on the bell.
+  if (pedido) {
+    const destino = obterDestinos().find((d) => d.id === p.destinoId);
+    criarAviso({
+      vanzeiroId: p.vanzeiroId,
+      tipo: "pedido_aceito",
+      paraVanzeiroOuPassageiroId: identidadePassageiro(p),
+      passageiroId: p.id,
+      destinoId: p.destinoId,
+      dataCriacao: dataDeHoje(),
+      lido: false,
+      textoResumido: `O vanzeiro aceitou seu pedido para ${destino ? nomeDestino(destino) : "o destino"}`,
+    });
+  }
 }
 
 /** The passenger's own "Editar" on their Perfil (all destinos of the same person). */

@@ -235,7 +235,8 @@ export type TipoAviso =
   | "prazo_chegando"
   | "van_saiu"
   | "cobranca_vencendo"
-  | "pedido_recusado";
+  | "pedido_recusado"
+  | "pedido_aceito";
 
 export type Aviso = {
   id: string;
