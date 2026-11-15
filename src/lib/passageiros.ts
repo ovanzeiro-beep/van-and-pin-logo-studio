@@ -202,7 +202,8 @@ export function passageiroDeRascunho(r: RascunhoPassageiro, destino: Pick<Destin
     telefone: somenteDigitos(r.telefone),
     cidade: r.cidade,
     endereco: r.endereco.trim(),
-    ...(r.ponto ? { ponto: r.ponto } : {}),
+    // The point on the map belongs to the city: changing the city drops it (the passenger marks it again).
+    ...(r.ponto && (!anterior || anterior.cidade === r.cidade) ? { ponto: r.ponto } : {}),
     plano,
     valor: lerValor(r.valor) ?? 0,
     vencimento: planoTemVencimento(plano) ? lerVencimento(r.vencimento) : null,

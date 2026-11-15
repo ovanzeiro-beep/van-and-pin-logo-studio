@@ -21,6 +21,8 @@ export function embarqueCompleto(d: Pick<Destino, "origem" | "destino" | "parada
 
 /** How far the new point is from the agreed one (marked point, else the city center), and whether the vanzeiro must approve. */
 export function avaliarMudanca(atual: Pick<Passageiro, "cidade" | "ponto">, novo: Embarque): { distanciaKm: number | null; precisaAprovar: boolean } {
+  // No point agreed yet (registered by the vanzeiro): marking it for the first time in the same city saves at once.
+  if (!atual.ponto && novo.cidade === atual.cidade) return { distanciaKm: null, precisaAprovar: false };
   const combinado = pontoDoPassageiro(atual);
   if (combinado && novo.ponto) {
     const km = distanciaKm(combinado, novo.ponto);

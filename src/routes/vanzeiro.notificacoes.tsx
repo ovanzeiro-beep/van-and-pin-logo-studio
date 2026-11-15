@@ -3,14 +3,15 @@ import { PedidoCard } from "@/components/app/PassageirosDoDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { ListaDeAvisos } from "@/components/app/ListaDeAvisos";
 import { TelaVazia } from "@/components/app/TelaVazia";
-import { ArrowLeft, Bell, Check, MapPin, X } from "lucide-react";
+import { ArrowLeft, Bell, Check, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAvisosAoAbrir } from "@/lib/avisos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
-import { aceitarMudancaDeEndereco, recusarMudancaDeEndereco, useMudancasAguardando, usePedidos, type MudancaDeEndereco } from "@/lib/passageiros-store";
+import { RecusarMudanca } from "@/components/app/RecusarMudanca";
+import { aceitarMudancaDeEndereco, useMudancasAguardando, usePedidos, type MudancaDeEndereco } from "@/lib/passageiros-store";
 import { textoDaDistancia } from "@/lib/endereco";
 import { Button } from "@/components/ui/button";
 
@@ -131,9 +132,7 @@ function MudancaCard({ m, destino }: { m: MudancaDeEndereco; destino: string | u
         </div>
       </dl>
       <div className="mt-3 grid grid-cols-2 gap-3">
-        <Button size="lg" variant="outline" onClick={() => recusarMudancaDeEndereco(m.id)}>
-          <X className="!h-5 !w-5" /> Recusar
-        </Button>
+        <RecusarMudanca m={m} />
         <Button size="lg" variant="success" onClick={() => aceitarMudancaDeEndereco(m.id)}>
           <Check className="!h-5 !w-5" /> Aceitar
         </Button>

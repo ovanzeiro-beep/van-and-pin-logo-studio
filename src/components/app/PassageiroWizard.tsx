@@ -104,7 +104,7 @@ export function PassageiroWizard({
           <Passo1 r={r} mudar={mudar} readonly={modo === "existente"} erroTelefone={telefoneRepetido ? "Já tem um passageiro com este telefone neste destino." : undefined} />
         </>
       )}
-      {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} doPassageiro={!!pedido?.endereco} />}
+      {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} doPassageiro={!!pedido?.endereco} pontoSeraApagado={!!inicial?.ponto && r.cidade !== inicial.cidade} />}
       {passo === 3 && <Passo3 r={r} mudar={mudar} />}
       {passo === 4 && <Resumo r={r} destino={destino} novo={!inicial} />}
     </PassosLayout>
@@ -145,7 +145,7 @@ function Passo1({ r, mudar, readonly, erroTelefone }: PassoProps & { readonly?: 
   );
 }
 
-function Passo2({ r, mudar, pontos, doPassageiro }: PassoProps & { pontos: string[]; doPassageiro: boolean }) {
+function Passo2({ r, mudar, pontos, doPassageiro, pontoSeraApagado }: PassoProps & { pontos: string[]; doPassageiro: boolean; pontoSeraApagado: boolean }) {
   return (
     <>
       {doPassageiro && (
@@ -177,6 +177,11 @@ function Passo2({ r, mudar, pontos, doPassageiro }: PassoProps & { pontos: strin
           })}
         </div>
       </div>
+      {pontoSeraApagado && (
+        <p className="rounded-2xl bg-warning-soft px-3.5 py-2 text-sm font-semibold text-warning" role="status">
+          Mudou a cidade: o ponto que o passageiro marcou no mapa será apagado. Ele marca de novo.
+        </p>
+      )}
       <CampoComIcone
         id="endereco"
         label="Endereço ou ponto de embarque"

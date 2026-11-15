@@ -187,7 +187,8 @@ export type MudancaDeEndereco = {
   para: Embarque;
   distanciaKm: number | null;
   pedidoEm: string;
-  situacao: "aguardando" | "aceita" | "recusada";
+  /** "cancelada": the person left the destino (or was removed, or it was deleted) before the vanzeiro answered. */
+  situacao: "aguardando" | "aceita" | "recusada" | "cancelada";
   respondidoEm?: string | undefined;
 };
 
@@ -241,7 +242,7 @@ export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): "salvo" |
 
 function responderMudanca(id: string, aceitar: boolean) {
   const m = mudancas.find((x) => x.id === id && x.situacao === "aguardando");
-  if (!m) return;
+  if (!m || !passageiros.some((p) => p.id === m.matriculaId)) return;
   mudancas = mudancas.map((x) => (x.id === id ? { ...x, situacao: aceitar ? "aceita" : "recusada", respondidoEm: dataDeHoje() } : x));
   if (aceitar) aplicarEmbarque(m.matriculaId, m.para);
   avisar();
@@ -267,8 +268,15 @@ export const aceitarMudancaDeEndereco = (id: string) => responderMudanca(id, tru
 export const recusarMudancaDeEndereco = (id: string) => responderMudanca(id, false);
 
 /** A destino was deleted: its passengers and pedidos leave with it. */
+/** Whoever leaves takes their waiting address change along: it is cancelled, never applied later. */
+function cancelarMudancasDe(matriculaIds: string[]) {
+  const hoje = dataDeHoje();
+  mudancas = mudancas.map((m) => (m.situacao === "aguardando" && matriculaIds.includes(m.matriculaId) ? { ...m, situacao: "cancelada", respondidoEm: hoje } : m));
+}
+
 export function removerDoDestino(destinoId: string) {
   const hoje = dataDeHoje();
+  cancelarMudancasDe(passageiros.filter((p) => p.destinoId === destinoId).map((p) => p.id));
   matriculas = matriculas.map((p) => (p.destinoId === destinoId && !p.saiuEm ? { ...p, saiuEm: hoje } : p));
   for (const p of pedidos.filter((x) => x.destinoId === destinoId)) mudarPedido(p.id, { situacao: "recusado", respondidoEm: hoje });
   avisar();
@@ -282,6 +290,7 @@ function mudarPedido(id: string, mudanca: Partial<PedidoEntrada>) {
 export function sairDaMatricula(id: string) {
   const p = passageiros.find((x) => x.id === id);
   if (!p) return;
+  cancelarMudancasDe([id]);
   matriculas = matriculas.map((x) => (x.id === id ? { ...x, saiuEm: dataDeHoje() } : x));
   avisar();
 }

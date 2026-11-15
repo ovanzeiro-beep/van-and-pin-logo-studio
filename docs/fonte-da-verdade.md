@@ -538,6 +538,6 @@ Cada item foi confirmado rodando o app (não é suposição).
 8. **Política de Privacidade desatualizada:** não fala do ponto no mapa (localização), das notificações no celular nem do servidor do mapa (OpenStreetMap recebe o endereço de internet).
 
 ### 15.4 Plano
-- **Etapa P1:** itens 1, 2, 4 e 5.
+- **Etapa P1:** itens 1, 2, 4 e 5. **Feita em 15/11/2026:** (1) a mudança de endereço aguardando vira "cancelada" quando a pessoa sai, é removida ou o destino é excluído, some das Notificações do vanzeiro e nunca é aplicada a quem não está mais no destino; (2) quando o vanzeiro muda a cidade de embarque de um passageiro, o ponto no mapa é apagado, com o aviso "Mudou a cidade: o ponto que o passageiro marcou no mapa será apagado. Ele marca de novo." (mudar só o endereço mantém o ponto); (4) "Recusar" mudança de endereço pergunta "Recusar a mudança de <nome>? Continua valendo: <endereço>. Não dá para desfazer."; (5) sem ponto marcado, o mapa da van não mostra pino falso: aparece "Você ainda não marcou o seu ponto no mapa." e o botão "Marcar meu ponto no mapa"; marcar pela primeira vez na mesma cidade salva direto (outra cidade continua indo para o vanzeiro).
 - **Etapa P2:** item 3 (depois da decisão do dono) e item 6.
 - **Etapa P3 (antes do piloto real):** itens 7 e 8.

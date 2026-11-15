@@ -961,9 +961,11 @@ Conferência (15/11/2026):
 ---
 
 ## Etapa P1 — Lacunas 1, 2, 4 e 5 da seção 15 (iniciada em 15/11/2026)
-**Situação:** em andamento, na branch `etapa-p1`. Sem banco de dados.
-- [ ] P1.1 Mudança de endereço aguardando é cancelada quando a pessoa sai, é removida ou o destino é excluído; e nunca é aplicada a quem não está mais no destino.
-- [ ] P1.2 Vanzeiro mudou a cidade do passageiro: o ponto no mapa é apagado (com aviso no cadastro).
-- [ ] P1.3 Recusar mudança de endereço pede confirmação.
-- [ ] P1.4 Sem ponto marcado: o mapa não mostra "Seu ponto" no centro da cidade; marcar pela primeira vez na mesma cidade salva direto.
-- [ ] P1.5 Testes, tipos, build, conferência no navegador, merge.
+**Situação:** feita em 15/11/2026 (merge na `main`). Sem banco de dados.
+- [x] P1.1 Mudança de endereço aguardando é cancelada quando a pessoa sai, é removida ou o destino é excluído; e nunca é aplicada a quem não está mais no destino.
+- [x] P1.2 Vanzeiro mudou a cidade do passageiro: o ponto no mapa é apagado (com aviso no cadastro).
+- [x] P1.3 Recusar mudança de endereço pede confirmação.
+- [x] P1.4 Sem ponto marcado: o mapa não mostra "Seu ponto" no centro da cidade; marcar pela primeira vez na mesma cidade salva direto.
+- [x] P1.5 Testes, tipos, build, conferência no navegador, merge.
+- Conferência: 246 testes (novo `src/test/etapa-p1.test.ts`; regra da primeira marcação atualizada em `src/test/endereco.test.ts`), tipos, build; no navegador: mapa sem ponto mostra o aviso e não mostra pino, primeira marcação salva direto, mudança longe → vanzeiro recusa com confirmação, vanzeiro troca a cidade → aviso do ponto apagado sem rolagem nos 3 tamanhos; 30 telas sem erro.
+- Próxima: Etapa P2 (item 3 precisa da decisão do dono; item 6).

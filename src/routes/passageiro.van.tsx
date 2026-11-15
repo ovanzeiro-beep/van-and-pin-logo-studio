@@ -4,7 +4,7 @@ import { ArrowLeft, Clock, MapPin, Navigation } from "lucide-react";
 import { MapaDaVan } from "@/components/app/MapaDaVan";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { cidadesNoMapa, pontoDoPassageiro, textoDaChegada, vanSimulada } from "@/lib/mapa";
+import { cidadesNoMapa, textoDaChegada, vanSimulada } from "@/lib/mapa";
 import { nomeDestino } from "@/lib/destinos";
 import { useSituacaoDaVan } from "@/lib/minha-viagem";
 import { usePassageiros } from "@/lib/passageiros-store";
@@ -40,7 +40,8 @@ function OndeEstaAVan() {
   const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/passageiro" }));
 
   const cidades = destino ? cidadesNoMapa(destino) : [];
-  const meuPonto = pontoDoPassageiro(eu);
+  // Only a point the person marked: the city center is never shown as "seu ponto".
+  const meuPonto = eu.ponto ?? null;
   const naVan = destino ? vanSimulada({ destino, viagem: viagemDeHoje, passageiros, euId: eu.id, progresso }) : null;
   const chegada = textoDaChegada(naVan?.minutosAteVoce ?? null);
 
@@ -82,10 +83,11 @@ function OndeEstaAVan() {
                   <Clock className="h-4 w-4 shrink-0 text-warning" /> {chegada}
                 </p>
               )}
+              {!eu.ponto && cidades.length > 0 && <p className="mt-2 text-sm font-semibold text-warning">Você ainda não marcou o seu ponto no mapa.</p>}
               <p className="mt-2 text-xs text-muted-foreground">Posição simulada. A posição de verdade, pelo GPS do vanzeiro, entra com o banco de dados.</p>
             </section>
             <Link to="/passageiro/embarque/$pid" params={{ pid: eu.id }} className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full shrink-0")}>
-              <MapPin className="!h-5 !w-5" /> Mudar onde embarco
+              <MapPin className="!h-5 !w-5" /> {eu.ponto ? "Mudar onde embarco" : "Marcar meu ponto no mapa"}
             </Link>
         </>
       </div>

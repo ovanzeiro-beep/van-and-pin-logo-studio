@@ -37,10 +37,13 @@ describe("Endereço preenchido pelo passageiro", () => {
 });
 
 describe("Mudar onde embarca: até 1 km salva; mais longe, o vanzeiro aprova", () => {
-  it("medida a partir do ponto combinado (ou do centro da cidade, sem ponto marcado)", () => {
-    const atual = { cidade: "Jacarezinho", ponto: undefined };
-    expect(avaliarMudanca(atual, { cidade: "Jacarezinho", endereco: "x", ponto: pertinho }).precisaAprovar).toBe(false);
-    const r = avaliarMudanca(atual, { cidade: "Jacarezinho", endereco: "x", ponto: longe });
+  it("medida a partir do ponto combinado; sem ponto ainda, a primeira marcação na mesma cidade salva direto", () => {
+    const semPonto = { cidade: "Jacarezinho", ponto: undefined };
+    expect(avaliarMudanca(semPonto, { cidade: "Jacarezinho", endereco: "x", ponto: longe }).precisaAprovar).toBe(false);
+    expect(avaliarMudanca(semPonto, { cidade: "Santo Antônio da Platina", endereco: "x", ponto: { lat: -23.295, lng: -50.077 } }).precisaAprovar).toBe(true);
+    const comPonto = { cidade: "Jacarezinho", ponto: centroJacarezinho };
+    expect(avaliarMudanca(comPonto, { cidade: "Jacarezinho", endereco: "x", ponto: pertinho }).precisaAprovar).toBe(false);
+    const r = avaliarMudanca(comPonto, { cidade: "Jacarezinho", endereco: "x", ponto: longe });
     expect(r.precisaAprovar).toBe(true);
     expect(textoDaDistancia(r.distanciaKm!)).toBe("3,3 km");
     expect(avaliarMudanca({ cidade: "Jacarezinho", ponto: longe }, { cidade: "Jacarezinho", endereco: "x", ponto: centroJacarezinho }).precisaAprovar).toBe(true);
