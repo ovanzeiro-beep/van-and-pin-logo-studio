@@ -413,3 +413,42 @@ Pedido do dono do projeto: percorrer tudo de novo, listar os erros que faltam e 
 - **Etapa H — Avisos de verdade no sininho:** erro 6 (avisos nascem dos acontecimentos, citando o destino; decidir sobre o aviso de pedido aceito). **Feita em 15/11/2026:** os avisos de exemplo saíram; agora todos nascem do que acontece e citam o destino. Vanzeiro: **Resposta de passageiro** (quando alguém responde ou muda a resposta; a nova troca a antiga, ex.: Juliana respondeu "Vou" para hoje, em Cambará → UENP Jacarezinho) e **Cobrança vencida** (no dia seguinte ao vencimento não pago: "Beatriz está devendo R$ 280,00, em Jacarezinho → Londrina"). Pedido novo continua aparecendo em "Pedidos para entrar", no topo das Notificações, e conta no sininho. Passageiro: **Prazo chegando** (30 minutos antes do prazo, só para quem ainda não respondeu: "Responda até 05:40 se vai hoje, em …"), **Van saiu** (quando o vanzeiro toca "Iniciar viagem", só para quem vai) e **Cobrança vencendo** (3 dias antes do vencimento: "Quinzena de R$ 150,00 vence em 15/11, em …"). Nenhum aviso se repete. **Decidido pelo dono em 15/11/2026:** o pedido **aceito** avisa a pessoa no sininho ("Pedido aceito — O vanzeiro aceitou seu pedido para Cambará → UENP Jacarezinho"); cadastrar direto não avisa. Os tempos (30 minutos e 3 dias) ficam como estão.
 - **Etapa I — Cadastros e textos:** erros 5, 7, 8 e 9. **Feita em 15/11/2026:** viagem avulsa não aceita data que já passou (o calendário começa em hoje e, se a data for digitada, o título do campo vira "Essa data já passou." e o Continuar fica desligado); cobrança que vence hoje diz "vence hoje" no Início do passageiro (e "Vence hoje" nas listas); Perfil do passageiro com o subtítulo "Seus dados e o seu vanzeiro."; cadastro de passageiro não aceita valor zero (nem escrito "0,001") e não aceita o mesmo telefone duas vezes no mesmo destino ("Já tem um passageiro com este telefone neste destino."; editar a própria pessoa continua funcionando).
 - **Dependem do dono (não entram nas etapas):** erro 10 (aceitar como está ou mexer no desenho), erro 11 (decisão C), dados reais do piloto, contato da Política de Privacidade, revisão do advogado, pagamentos de quem saiu do último destino, documento do banco (item 7 da Etapa C).
+
+---
+
+## 11. Preparar para o banco (análise de 15/11/2026, pedida pelo dono)
+
+O dono perguntou o que falta arrumar, corrigir e remover para o banco poder entrar. **O banco não entra agora.** Esta seção é a lista e o plano.
+
+### 11.1 O que já está pronto
+- Nenhuma tela lê os dados de exemplo direto: tudo passa pelas funções de `src/lib/`. Quando o banco entrar, muda só a parte de dentro dessas funções.
+- Cada destino, passageiro, pedido, aviso e viagem guarda o vanzeiro dono.
+- A hora atual vem de um lugar só (`src/lib/agora.ts`); o usuário e o papel também (`src/lib/sessao.ts`).
+- 202 testes automáticos cobrem as regras.
+
+### 11.2 O que precisa arrumar antes do banco (numerado)
+1. **Embarques e faltas não ficam guardados como registro.** Ao marcar "Embarcou", o app já cria ou desconta a cobrança e esquece o resto; o histórico do passageiro dos dias anteriores vem só dos exemplos.
+2. **A viagem em andamento só existe na memória.** Se o app fechar no meio da busca, tudo volta do zero. Cada toque precisa ser um registro.
+3. **Memória escondida:** respostas já fechadas, "embarque já cobrado", pedidos aceitos e quem saiu de um destino ficam em listas internas que somem ao recarregar. Precisam virar dados de verdade.
+4. **Tarefas que só rodam com o app aberto:** criar as próximas cobranças, registrar faltas quando o prazo passa e criar os avisos do relógio. Com o banco, precisam rodar sozinhas no servidor.
+5. **Esperar o banco responder:** hoje tudo é instantâneo. Com o banco, cada ação demora um instante e pode falhar sem sinal: as telas vão precisar de "carregando" e de mensagem de erro.
+6. **Dois celulares ao mesmo tempo:** "Estou na van" e "a van saiu" precisam aparecer na hora no outro celular.
+7. **Números e códigos:** os identificadores são feitos pela hora (`Date.now`) e o código de convite só é conferido dentro do celular. Passam a ser feitos e conferidos pelo banco.
+8. **Relógio real:** hoje fixo em 13/11, 05:10.
+9. **Ordem de busca dentro da cidade:** as setas ↑ ↓ guardam a ordem só pela posição na lista. Precisa de um campo "ordem" próprio.
+
+### 11.3 O que precisa remover (no dia do banco)
+- Os dados de exemplo dentro do app (ficam só para os testes).
+- O login de mentira (Entrar aceita qualquer coisa; Google e "Esqueci a senha" não fazem nada de verdade).
+- As funções de "limpar" que simulam uma conta nova.
+
+### 11.4 Decisões do dono
+1. Sem internet dentro da van: o app deve funcionar sem sinal e mandar tudo quando o sinal voltar?
+2. Avisos com o app fechado: notificação no celular (como o WhatsApp)?
+3. Pagamentos de quem saiu do último destino (decisão já pendente).
+4. Contato da Política de Privacidade e revisão do advogado.
+
+### 11.5 Plano por etapas
+- **Etapa J — Documento do banco:** `docs/banco-de-dados.md` com tudo o que o banco guarda, quem vê o quê, o que roda sozinho no servidor e o que muda em cada função. É o item 7 da Etapa C. **Só o documento.** **Feita em 15/11/2026.**
+- **Etapa K — Guardar o que hoje some (sem banco):** itens 1, 2, 3 e 9 da lista 11.2.
+- **Depois das decisões do dono (11.4) e só quando ele mandar:** banco, login real, tarefas no servidor (item 4), espera e erro de internet (item 5), dois celulares (item 6), números do banco (item 7), relógio real (item 8) e remoção dos exemplos (11.3).

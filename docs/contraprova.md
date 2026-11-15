@@ -855,3 +855,15 @@ Conferência (15/11/2026):
 - [x] Tempos dos avisos ficam como estão: "Prazo chegando" 30 minutos antes; "Cobrança vencendo" 3 dias antes.
 - [x] Conferência: 202 testes (novo `src/test/pedido-aceito.test.ts`), tipos, build; no navegador, aceitar a Larissa salva e volta ao destino sem erro.
 - Pendências que continuam: erro 10, erro 11 (decisão C), dados do piloto, contato da Política de Privacidade, advogado, pagamentos de quem saiu do último destino, documento do banco.
+
+---
+
+## Etapa J — Documento do banco (iniciada em 15/11/2026)
+**Situação:** feita em 15/11/2026 (merge na `main`). Item 7 da Etapa C; seção 11 da fonte da verdade. **Sem banco de dados: só o documento.**
+- [x] J1. `docs/banco-de-dados.md` com cada conjunto de dados, os campos (conferidos com os tipos do código de hoje) e quem pode ver.
+- [x] J2. O que hoje some ao recarregar e passa a ser guardado (embarques, faltas, viagem em andamento, memória escondida).
+- [x] J3. O que roda sozinho no servidor (cobranças, faltas do prazo, avisos do relógio).
+- [x] J4. Quais funções de `src/lib/` mudam por dentro quando o banco entrar.
+- [x] J5. Nenhum código mudou; testes e build continuam passando; merge.
+- Conferência: só documentos mudaram (`docs/banco-de-dados.md`, `docs/fonte-da-verdade.md`, `docs/contraprova.md`); 202 testes e build continuam passando. Achado novo na análise: a ordem de busca na cidade não tem campo próprio (item 9 da seção 11.2, entra na Etapa K).
+- Próxima: Etapa K (guardar o que hoje some), quando o dono mandar.
