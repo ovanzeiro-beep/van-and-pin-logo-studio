@@ -306,6 +306,8 @@ export type ViagemEncerrada = {
   destinoId: string;
   data: string;
   temVolta: boolean;
+  /** The destino as it was on that day. */
+  foto: { nome: string; saida: string; volta: string };
   embarcaram: string[];
   naoEstavam: string[];
   ficaram: string[];
@@ -319,6 +321,7 @@ export const viagensEncerradasExemplo: ViagemEncerrada[] = [
     destinoId: "centro-unisul",
     data: "2026-11-12",
     temVolta: true,
+    foto: { nome: "Cambará → UENP Jacarezinho", saida: "06:40", volta: "17:50" },
     embarcaram: ["p-gabriel", "p-fernanda", "p-thiago", "p-juliana", "p-rafael", "p-camila"],
     naoEstavam: [],
     ficaram: [],
@@ -328,6 +331,7 @@ export const viagensEncerradasExemplo: ViagemEncerrada[] = [
     destinoId: "jacarezinho-londrina",
     data: "2026-11-08",
     temVolta: true,
+    foto: { nome: "Jacarezinho → Londrina", saida: "06:00", volta: "18:30" },
     embarcaram: ["p-mariana", "p-pedro", "p-ana", "p-beatriz", "p-juliana-londrina"],
     naoEstavam: [],
     ficaram: [],

@@ -802,3 +802,20 @@ Como ficou (14/11/2026):
 ## Análise completa de 15/11/2026
 **Situação:** feita em 15/11/2026, na branch `analise-completa`, com merge na `main`. Só análise, nada corrigido.
 Resultado na seção 10 de `docs/fonte-da-verdade.md`: 11 erros/faltas numerados e o plano das Etapas G (viagem e histórico), H (avisos de verdade) e I (cadastros e textos). As 40 telas abertas sem erro; números entre telas conferidos e batendo; todos os fluxos de ação refeitos.
+
+---
+
+## Etapa G — Viagem e Histórico (iniciada em 15/11/2026)
+**Situação:** feita em 15/11/2026 (merge na `main`). Erros 1 a 4 da seção 10 de `docs/fonte-da-verdade.md`. Sem banco de dados.
+Plano:
+- [x] G1. Sem escolha do vanzeiro, a aba Viagem abre na mesma viagem do Início (hoje abre na que os exemplos apontam).
+- [x] G2. A viagem guarda o nome e os horários do destino do dia em que aconteceu ("foto" no início da viagem); o Histórico usa essa foto.
+- [x] G3. Excluir um destino não apaga as viagens feitas dele do Histórico.
+- [x] G4. "Pausar" com a viagem do destino em andamento avisa "Termine a viagem antes" e não pausa (igual a "Excluir").
+- [x] G5. Conferência no app, testes, tipos, build, merge.
+
+Conferência (15/11/2026):
+- 189 testes passando (novo arquivo `src/test/etapa-g.test.ts`), tipos sem erro, build ok.
+- No navegador (390×844): Início e aba Viagem abrem na mesma viagem (Jacarezinho → Londrina, 06:00); com a viagem em andamento, "Pausar" mostra o aviso e o botão fica desligado; viagem terminada e destino excluído: o Histórico continua com as 2 viagens de Londrina, com nome e horários do dia.
+- Não pode quebrar: cores, palavras, cards e barra de navegação sem mudança; a tela do Histórico só trocou de onde lê o nome e os horários.
+- Pendências: nenhuma nova. Próxima: Etapa H (avisos de verdade no sininho).

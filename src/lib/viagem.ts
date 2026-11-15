@@ -1,7 +1,7 @@
 import { embarquesExemplo, faltasExemplo, type Destino, type DiaSemana, type Passageiro, type RespostaViagem } from "@/data/exemplo";
 import { somarDias } from "@/lib/cobrancas";
 import { pontosDeEmbarque } from "@/lib/passageiros";
-import { formatarData, prazoPassou } from "@/lib/destinos";
+import { formatarData, nomeDestino, prazoPassou, textoDaVolta } from "@/lib/destinos";
 
 // ---------- the vanzeiro's trip of the day ----------
 
@@ -37,6 +37,12 @@ export function viagemDoInicio<T extends Destino>(destinos: T[], viagens: Record
   return { destino: emCurso ?? lista.find((d) => !viagens[d.id]), feitas };
 }
 
+/** The trip the Viagem tab opens: the one the vanzeiro chose, else the same one Início shows, else the first of the day. */
+export function viagemDaAba<T extends Destino>(destinos: T[], escolhida: string, viagens: Record<string, Pick<ViagemDoDia, "fase">>, hoje: string): T | undefined {
+  const lista = viagensDoDia(destinos, hoje);
+  return lista.find((d) => d.id === escolhida) ?? viagemDoInicio(destinos, viagens, hoje).destino ?? lista[0];
+}
+
 /** First trip after today (looks up to 90 days ahead). */
 export function proximaViagem<T extends Destino>(destinos: T[], hoje: string): { data: string; destino: T } | null {
   for (let i = 1; i <= 90; i++) {
@@ -70,11 +76,19 @@ export function listaDaViagem<T extends Passageiro>(
 export type FaseViagem = "busca" | "parada" | "conferencia" | "chegada" | "conferencia-volta" | "volta" | "encerrada";
 export type Conferido = "na-van" | "ficou";
 
+/** How the destino was on the day of the trip (name and times), so later edits or a deletion don't change the history. */
+export type FotoDoDestino = { nome: string; saida: string; volta: string };
+
+export function fotoDoDestino(d: Pick<Destino, "origem" | "destino" | "tipo" | "saida" | "volta" | "voltaData">): FotoDoDestino {
+  return { nome: nomeDestino(d), saida: d.saida, volta: textoDaVolta(d) };
+}
+
 export type ViagemDoDia = {
   vanzeiroId: string;
   destinoId: string;
   data: string;
   temVolta: boolean;
+  foto: FotoDoDestino;
   fase: FaseViagem;
   /** Who goes, in pickup order. */
   ordem: string[];
@@ -93,12 +107,13 @@ export type ViagemDoDia = {
   desceram: string[];
 };
 
-export function iniciarViagem(destino: Pick<Destino, "id" | "volta" | "vanzeiroId">, ordem: string[], data: string): ViagemDoDia {
+export function iniciarViagem(destino: Destino, ordem: string[], data: string): ViagemDoDia {
   return {
     vanzeiroId: destino.vanzeiroId,
     destinoId: destino.id,
     data,
     temVolta: destino.volta !== null,
+    foto: fotoDoDestino(destino),
     fase: "busca",
     ordem,
     embarcaram: [],

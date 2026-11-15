@@ -1,6 +1,6 @@
 import { dataDeHoje } from "@/lib/agora";
 import { cancelarPendentesDe } from "@/lib/cobrancas-store";
-import { obterDestinos, removerDestino } from "@/lib/destinos-store";
+import { alternarAtivo, obterDestinos, removerDestino } from "@/lib/destinos-store";
 import { obterPassageiros, removerDoDestino, sairDaMatricula } from "@/lib/passageiros-store";
 import { obterMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { idDoVanzeiro } from "@/lib/sessao";
@@ -16,6 +16,14 @@ export const MOTIVO_REMOVIDO_DO_DESTINO = "Removido do destino";
 /** Neither works while that destino's trip of today is in progress. */
 export function viagemEmAndamentoNoDestino(destinoId: string) {
   return emAndamento(obterViagensDoDia())?.destinoId === destinoId;
+}
+
+/** "Pausar" / "Ativar". Pausing returns false (and changes nothing) while the destino's trip is in progress. */
+export function pausarOuAtivarDestino(destinoId: string) {
+  const d = obterDestinos().find((x) => x.id === destinoId);
+  if (!d || (d.ativo && viagemEmAndamentoNoDestino(destinoId))) return false;
+  alternarAtivo(destinoId);
+  return true;
 }
 
 /** Returns false (and changes nothing) while the destino's trip is in progress. */

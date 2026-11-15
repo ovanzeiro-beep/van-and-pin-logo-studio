@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from "react";
-import { vanzeiroExemplo, type Destino } from "@/data/exemplo";
+import type { Destino } from "@/data/exemplo";
 import { agora, dataDeHoje } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
@@ -11,7 +11,8 @@ import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, viagensDoDia,
 // In-memory trips of the day for the visual stage: they last until the page is reloaded,
 // and survive switching tabs in the middle of a trip.
 type Estado = { escolhida: string; viagens: Record<string, ViagemDoDia> };
-const inicial: Estado = { escolhida: vanzeiroExemplo.viagemHoje.destinoId, viagens: {} };
+/** No choice yet: Início and Viagem both show the next trip of the day. */
+const inicial: Estado = { escolhida: "", viagens: {} };
 let estado = inicial;
 const ouvintes = new Set<() => void>();
 

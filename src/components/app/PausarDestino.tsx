@@ -12,13 +12,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { Destino } from "@/data/exemplo";
-import { alternarAtivo } from "@/lib/destinos-store";
+import { pausarOuAtivarDestino } from "@/lib/exclusoes";
+import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
 
 /** "Pausar" asks first (the destino leaves the trips); "Ativar" works right away. */
 export function PausarDestino({ d }: { d: Pick<Destino, "id" | "ativo"> }) {
+  const emViagem = emAndamento(useViagensDoDia())?.destinoId === d.id;
   if (!d.ativo) {
     return (
-      <Button size="lg" variant="success" onClick={() => alternarAtivo(d.id)}>
+      <Button size="lg" variant="success" onClick={() => pausarOuAtivarDestino(d.id)}>
         <Play className="!h-5 !w-5" /> Ativar
       </Button>
     );
@@ -34,7 +36,9 @@ export function PausarDestino({ d }: { d: Pick<Destino, "id" | "ativo"> }) {
         <AlertDialogHeader>
           <AlertDialogTitle>Pausar este destino?</AlertDialogTitle>
           <AlertDialogDescription>
-            Ele sai das viagens até você ativar de novo.
+            {emViagem
+              ? "A viagem de hoje deste destino está em andamento. Termine a viagem antes de pausar."
+              : "Ele sai das viagens até você ativar de novo."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
@@ -43,7 +47,8 @@ export function PausarDestino({ d }: { d: Pick<Destino, "id" | "ativo"> }) {
           </AlertDialogCancel>
           <AlertDialogAction
             className={buttonVariants({ size: "lg" })}
-            onClick={() => alternarAtivo(d.id)}
+            disabled={emViagem}
+            onClick={() => pausarOuAtivarDestino(d.id)}
           >
             Pausar
           </AlertDialogAction>

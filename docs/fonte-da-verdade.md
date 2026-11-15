@@ -409,7 +409,7 @@ Pedido do dono do projeto: percorrer tudo de novo, listar os erros que faltam e 
 11. **Telas de entrada rolam um pouco só no iPhone SE**: Criar conta passo 1 (70px), Entrar (39px), "Como você vai usar o app?" (69px). Zerar exige diminuir o cabeçalho azul (decisão C, pendente do dono).
 
 ### 10.3 Plano por etapas (fazer uma por vez, com conferência e merge)
-- **Etapa G — Viagem e Histórico:** erros 1, 2, 3 e 4.
+- **Etapa G — Viagem e Histórico:** erros 1, 2, 3 e 4. **Feita em 15/11/2026:** sem escolha do vanzeiro, a aba Viagem abre na mesma viagem do Início; cada viagem guarda o nome e os horários do destino do dia em que começou, e o Histórico mostra esses dados (mudar ou excluir o destino depois não muda nem apaga as viagens feitas); "Pausar" com a viagem do destino em andamento avisa "Termine a viagem antes de pausar." e não pausa.
 - **Etapa H — Avisos de verdade no sininho:** erro 6 (avisos nascem dos acontecimentos, citando o destino; decidir sobre o aviso de pedido aceito).
 - **Etapa I — Cadastros e textos:** erros 5, 7, 8 e 9.
 - **Dependem do dono (não entram nas etapas):** erro 10 (aceitar como está ou mexer no desenho), erro 11 (decisão C), dados reais do piloto, contato da Política de Privacidade, revisão do advogado, pagamentos de quem saiu do último destino, documento do banco (item 7 da Etapa C).

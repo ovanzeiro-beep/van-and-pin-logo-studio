@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from "react";
 import { viagensEncerradasExemplo, type ViagemEncerrada } from "@/data/exemplo";
-import { useDestinos } from "@/lib/destinos-store";
 import type { ViagemDoDia } from "@/lib/viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
 
@@ -36,20 +35,12 @@ export function useViagensEncerradas() {
 export function viagensFeitas(passadas: ViagemEncerrada[], deHoje: Record<string, ViagemDoDia>): ViagemEncerrada[] {
   const hoje = Object.values(deHoje)
     .filter((v) => v.fase === "encerrada")
-    .map(({ vanzeiroId, destinoId, data, temVolta, embarcaram, naoEstavam, ficaram }) => ({ vanzeiroId, destinoId, data, temVolta, embarcaram, naoEstavam, ficaram }));
+    .map(({ vanzeiroId, destinoId, data, temVolta, foto, embarcaram, naoEstavam, ficaram }) => ({ vanzeiroId, destinoId, data, temVolta, foto, embarcaram, naoEstavam, ficaram }));
   return [...passadas, ...hoje];
 }
 
-/** Completed trips with destination details. */
+/** Completed trips, newest first. Each one keeps how its destino was that day, even if it was edited or deleted later. */
 export function useViagensEncerradasComDetalhes() {
-  const destinos = useDestinos();
   const viagens = viagensFeitas(useViagensEncerradas(), useViagensDoDia().viagens);
-
-  return viagens
-    .map((v) => ({
-      ...v,
-      destino: destinos.find((d) => d.id === v.destinoId),
-    }))
-    .filter((v) => v.destino)
-    .sort((a, b) => b.data.localeCompare(a.data));
+  return [...viagens].sort((a, b) => b.data.localeCompare(a.data));
 }

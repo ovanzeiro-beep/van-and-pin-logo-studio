@@ -14,7 +14,7 @@ import { formatarData, nomeDestino, textoDoPrazo } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
-import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDeHoje, viagensDoDia, type FaseViagem } from "@/lib/viagem";
+import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDaAba, viagensDoDia, type FaseViagem } from "@/lib/viagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
@@ -100,7 +100,7 @@ function AbaViagem() {
     );
   }
 
-  const destino = viagemDeHoje(destinos, estado.escolhida, dataDeHoje())!;
+  const destino = viagemDaAba(destinos, estado.escolhida, estado.viagens, dataDeHoje())!;
   const feita = estado.viagens[destino.id];
   const feitas = hoje.filter((d) => estado.viagens[d.id]).map((d) => d.id);
   const lista = listaDaViagem(passageiros, destino, respostas);
