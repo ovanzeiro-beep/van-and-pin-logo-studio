@@ -108,21 +108,33 @@ export function criarProximasCobrancas(passageiros: Passageiro[], hoje = dataDeH
   if (mudou) avisar();
 }
 
-// Trip results already sent to the money, so a day is never counted twice.
-const registrados = new Set<string>();
+// What happened on each trip, kept as records (as the database will keep them): who boarded and who
+// warned "Não vou" in time. The passenger's history reads them, and they keep a day from being counted twice.
+export type Embarque = { passageiroId: string; data: string; viagemId?: string | undefined };
+export type Falta = { passageiroId: string; data: string; avisouNoPrazo: boolean };
+type Registro = { embarques: Embarque[]; faltas: Falta[] };
+const registroInicial: Registro = { embarques: [...embarquesExemplo], faltas: [...faltasExemplo] };
+let registro = registroInicial;
+
+export const obterRegistroDasViagens = () => registro;
+
+export function useRegistroDasViagens() {
+  return useSyncExternalStore(inscrever, obterRegistroDasViagens, () => registroInicial);
+}
 
 /** New vanzeiro account: no charges yet. */
 export function limparCobrancas() {
   cobrancas = [];
-  registrados.clear();
+  registro = { embarques: [], faltas: [] };
   avisar();
 }
 
 /** "Embarcou" on a trip: counts as a trip made (Por viagem and Diário get that day's charge). */
 export function registrarEmbarque(p: Passageiro, data = dataDeHoje(), viagemId?: string) {
-  const chave = `embarque_${p.id}_${p.plano === "viagem" ? (viagemId ?? data) : data}`;
-  if (registrados.has(chave)) return;
-  registrados.add(chave);
+  const mesmo = (e: Embarque) =>
+    e.passageiroId === p.id && (p.plano === "viagem" ? (e.viagemId ?? e.data) === (viagemId ?? data) : e.data === data);
+  if (registro.embarques.some(mesmo)) return;
+  registro = { ...registro, embarques: [...registro.embarques, { passageiroId: p.id, data, viagemId }] };
   cobrancas = aplicarEmbarque(cobrancas, p, data, dataDeHoje(), viagemId);
   avisar();
 }
@@ -130,9 +142,8 @@ export function registrarEmbarque(p: Passageiro, data = dataDeHoje(), viagemId?:
 /** Final on-time "Não vou": discounts only the next open charge when the plan allows it. */
 export function registrarFalta(p: Passageiro, data = dataDeHoje(), avisouNoPrazo = false) {
   if (!avisouNoPrazo) return;
-  const chave = `falta_${p.id}_${data}`;
-  if (registrados.has(chave)) return;
-  registrados.add(chave);
+  if (registro.faltas.some((f) => f.passageiroId === p.id && f.data === data)) return;
+  registro = { ...registro, faltas: [...registro.faltas, { passageiroId: p.id, data, avisouNoPrazo: true }] };
   cobrancas = aplicarFalta(cobrancas, p, data, dataDeHoje(), true);
   avisar();
 }

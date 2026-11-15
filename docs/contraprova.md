@@ -867,3 +867,15 @@ Conferência (15/11/2026):
 - [x] J5. Nenhum código mudou; testes e build continuam passando; merge.
 - Conferência: só documentos mudaram (`docs/banco-de-dados.md`, `docs/fonte-da-verdade.md`, `docs/contraprova.md`); 202 testes e build continuam passando. Achado novo na análise: a ordem de busca na cidade não tem campo próprio (item 9 da seção 11.2, entra na Etapa K).
 - Próxima: Etapa K (guardar o que hoje some), quando o dono mandar.
+
+---
+
+## Etapa K — Guardar o que hoje some (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Itens 1, 2, 3 e 9 da seção 11.2 da fonte da verdade. Sem banco de dados. **Nada muda na tela.**
+- [x] K1. Embarques e faltas avisadas no prazo viram registros (não repetem); o histórico do passageiro lê deles (antes lia dos exemplos); a lista escondida "registrados" saiu.
+- [x] K2. A viagem tem número próprio (destino e dia), hora de início e hora de fim; todo passo passa por uma função só (`atualizarViagem`).
+- [x] K3. Respostas fechadas viram registro; pedidos nunca somem (aguardando / aceito com a matrícula / recusado, com datas); quem sai continua guardado com o dia da saída. As listas que as telas usam são tiradas desses registros, então as telas não mudaram.
+- [x] K4. Ordem de busca na cidade virou número próprio (1, 2, 3…); as setas ↑ ↓ trocam os números.
+- [x] K5. Conferência: 209 testes (novo `src/test/etapa-k.test.ts`), tipos, build; no navegador: as 28 telas sem erro, sem erro de montagem, dia completo do vanzeiro igual ao de antes, aceitar pedido, criar conta, excluir conta e as setas de ordem funcionando.
+- Não pode quebrar: nada visual mudou.
+- Próximo: decisões do dono (seção 11.4) e o banco, só quando ele mandar.

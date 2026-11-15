@@ -225,6 +225,8 @@ Além disso, com o banco:
 
 ## 5. O que precisa ser feito antes (sem banco)
 
+**Feito na Etapa K (15/11/2026).** Hoje o app já guarda, ainda na memória, do jeito que o banco vai guardar: os itens abaixo. Os campos novos estão nos tipos `Passageiro` (`ordem`, `saiuEm`), `PedidoEntrada` (`situacao`, `matriculaId`, `pedidoEm`, `respondidoEm`) e `ViagemDoDia` (`id`, `comecouEm`, `terminouEm`), e os registros em `cobrancas-store.ts` (`Embarque`, `Falta`) e `respostas-store.ts` (`RespostasFechadas`).
+
 Para o banco entrar mais fácil, a **Etapa K** (seção 11 da fonte da verdade) guarda como registro, ainda na memória, o que hoje some:
 1. embarques e faltas (seção 2.8 deste documento);
 2. cada passo da viagem em andamento (seção 2.7);

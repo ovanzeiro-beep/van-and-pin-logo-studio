@@ -15,8 +15,14 @@ const inicial: Respostas = { [dataDeHoje()]: { ...vanzeiroExemplo.respostasHoje 
 let respostas = inicial;
 const VAZIO: Record<string, RespostaViagem> = {};
 const ouvintes = new Set<() => void>();
-const fechadas = new Set<string>();
-export const fecharRespostas = (destinoId: string, data: string) => fechadas.add(`${destinoId}_${data}`);
+/** Trips whose answers were closed early (the vanzeiro started the trip), kept as records. */
+export type RespostasFechadas = { destinoId: string; data: string };
+let fechadas: RespostasFechadas[] = [];
+export const obterRespostasFechadas = () => fechadas;
+const estaFechada = (destinoId: string, data: string) => fechadas.some((f) => f.destinoId === destinoId && f.data === data);
+export function fecharRespostas(destinoId: string, data: string) {
+  if (!estaFechada(destinoId, data)) fechadas = [...fechadas, { destinoId, data }];
+}
 
 function inscrever(o: () => void) {
   ouvintes.add(o);
@@ -37,7 +43,7 @@ export const respostasDoDia = (todas: Respostas, data: string) => todas[data] ??
 export function responder(passageiroId: string, data: string, resposta: RespostaViagem) {
   const p = obterPassageiros().find((p) => p.id === passageiroId);
   const d = obterDestinos().find((d) => d.id === p?.destinoId);
-  if (!p || !d || fechadas.has(`${d.id}_${data}`) || prazoPassou(d, data, agora())) return;
+  if (!p || !d || estaFechada(d.id, data) || prazoPassou(d, data, agora())) return;
   if (respostas[data]?.[passageiroId] === resposta) return;
   respostas = { ...respostas, [data]: { ...(respostas[data] ?? {}), [passageiroId]: resposta } };
   ouvintes.forEach((o) => o());
@@ -49,6 +55,6 @@ export const obterRespostasParaTeste = (data: string) => respostasDoDia(resposta
 /** New vanzeiro account: no answers yet. */
 export function limparRespostas() {
   respostas = {};
-  fechadas.clear();
+  fechadas = [];
   ouvintes.forEach((o) => o());
 }

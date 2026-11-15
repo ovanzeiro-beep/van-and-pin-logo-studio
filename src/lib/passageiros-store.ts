@@ -8,9 +8,15 @@ import { nomeDestino } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
 
-// In-memory lists for the visual stage: changes last until the page is reloaded.
-let passageiros = passageirosExemplo;
-let pedidos = pedidosExemplo;
+// In-memory records for the visual stage: changes last until the page is reloaded.
+// They are kept the way the database will keep them: every membership stays (with the day it ended),
+// every pedido stays (with its situation). The lists the screens read are worked out from them.
+let matriculas: Passageiro[] = numerarOrdem(passageirosExemplo);
+let todosPedidos: PedidoEntrada[] = pedidosExemplo.map((p) => ({ ...p, situacao: "aguardando" as const }));
+
+// What the screens read (worked out again after every change).
+let passageiros: Passageiro[] = [];
+let pedidos: PedidoEntrada[] = [];
 /** Accepted pedido → the passenger created from it, so the person who asked finds their van. */
 let aceitos: Record<string, string> = {};
 const SEM_ACEITOS: Record<string, string> = {};
@@ -19,9 +25,35 @@ let saidas: Passageiro[] = [];
 const SEM_SAIDAS: Passageiro[] = [];
 const ouvintes = new Set<() => void>();
 
+/** Pickup order inside each city of each destino, as its own number (1, 2, 3…), following the list order. */
+function numerarOrdem(lista: Passageiro[]): Passageiro[] {
+  const contagem = new Map<string, number>();
+  return lista.map((p) => {
+    if (p.saiuEm) return p;
+    const chave = `${p.destinoId}|${p.cidade}`;
+    const ordem = (contagem.get(chave) ?? 0) + 1;
+    contagem.set(chave, ordem);
+    return p.ordem === ordem ? p : { ...p, ordem };
+  });
+}
+
+function recalcular() {
+  matriculas = numerarOrdem(matriculas);
+  passageiros = matriculas.filter((p) => !p.saiuEm);
+  saidas = matriculas.filter((p) => !!p.saiuEm);
+  if (saidas.length === 0) saidas = SEM_SAIDAS;
+  pedidos = todosPedidos.filter((p) => (p.situacao ?? "aguardando") === "aguardando");
+  aceitos = Object.fromEntries(todosPedidos.flatMap((p) => (p.situacao === "aceito" && p.matriculaId ? [[p.id, p.matriculaId]] : [])));
+}
+recalcular();
+
 function avisar() {
+  recalcular();
   ouvintes.forEach((o) => o());
 }
+
+export const obterMatriculas = () => matriculas;
+export const obterTodosOsPedidos = () => todosPedidos;
 
 function inscrever(o: () => void) {
   ouvintes.add(o);
@@ -79,7 +111,7 @@ export function useAvisosVanzeiro() {
 export function moverPassageiro(id: string, direcao: -1 | 1) {
   const nova = moverNaCidade(passageiros, id, direcao);
   if (nova === passageiros) return;
-  passageiros = nova;
+  matriculas = [...nova, ...saidas];
   avisar();
 }
 
@@ -87,14 +119,11 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
   const existente = passageiros.find((x) => x.destinoId === p.destinoId && identidadePassageiro(x) === identidadePassageiro(p));
   if (existente && existente.id !== p.id) return;
   if (telefoneJaNoDestino(passageiros, p.destinoId, p.telefone, p)) return;
-  passageiros = passageiros.some((x) => x.id === p.id)
-    ? passageiros.map((x) => (x.id === p.id ? p : x))
-    : [...passageiros, p];
+  matriculas = matriculas.some((x) => x.id === p.id)
+    ? matriculas.map((x) => (x.id === p.id ? p : x))
+    : [...matriculas, p];
   const pedido = pedidoId ? pedidos.find((x) => x.id === pedidoId) : undefined;
-  if (pedidoId) {
-    pedidos = pedidos.filter((x) => x.id !== pedidoId);
-    aceitos = { ...aceitos, [pedidoId]: p.id };
-  }
+  if (pedido) mudarPedido(pedido.id, { situacao: "aceito", matriculaId: p.id, respondidoEm: dataDeHoje() });
   avisar();
   garantirProximaCobranca(p);
   // The person who asked hears about it on the bell.
@@ -117,30 +146,35 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
 export function salvarDadosDoPassageiro(euId: string, dados: MeusDados) {
   const eu = passageiros.find((p) => p.id === euId);
   if (!eu) return;
-  passageiros = atualizarMeusDados(passageiros, eu, dados);
+  const novos = atualizarMeusDados(passageiros, eu, dados);
+  matriculas = matriculas.map((m) => novos.find((n) => n.id === m.id) ?? m);
   avisar();
 }
 
 /** A destino was deleted: its passengers and pedidos leave with it. */
 export function removerDoDestino(destinoId: string) {
-  saidas = [...saidas, ...passageiros.filter((p) => p.destinoId === destinoId)];
-  passageiros = passageiros.filter((p) => p.destinoId !== destinoId);
-  pedidos = pedidos.filter((p) => p.destinoId !== destinoId);
+  const hoje = dataDeHoje();
+  matriculas = matriculas.map((p) => (p.destinoId === destinoId && !p.saiuEm ? { ...p, saiuEm: hoje } : p));
+  for (const p of pedidos.filter((x) => x.destinoId === destinoId)) mudarPedido(p.id, { situacao: "recusado", respondidoEm: hoje });
   avisar();
+}
+
+function mudarPedido(id: string, mudanca: Partial<PedidoEntrada>) {
+  todosPedidos = todosPedidos.map((p) => (p.id === id ? { ...p, ...mudanca } : p));
 }
 
 /** "Sair deste destino": the person leaves only this membership. */
 export function sairDaMatricula(id: string) {
   const p = passageiros.find((x) => x.id === id);
   if (!p) return;
-  saidas = [...saidas, p];
-  passageiros = passageiros.filter((x) => x.id !== id);
+  matriculas = matriculas.map((x) => (x.id === id ? { ...x, saiuEm: dataDeHoje() } : x));
   avisar();
 }
 
 export function recusarPedido(id: string) {
   const pedido = pedidos.find((p) => p.id === id);
-  pedidos = pedidos.filter((p) => p.id !== id);
+  if (!pedido) return;
+  mudarPedido(id, { situacao: "recusado", respondidoEm: dataDeHoje() });
   avisar();
   // Someone already in the van (asking for another destino) hears about it on the bell.
   if (pedido?.pessoaId) {
@@ -159,17 +193,15 @@ export function recusarPedido(id: string) {
 
 /** New vanzeiro account: no passengers, no pedidos. */
 export function limparPassageiros() {
-  passageiros = [];
-  pedidos = [];
-  aceitos = {};
-  saidas = [];
+  matriculas = [];
+  todosPedidos = [];
   avisar();
 }
 
 /** A person used an invite code: the request waits on the vanzeiro's bell. */
 export function adicionarPedido(pedido: Omit<PedidoEntrada, "id">) {
-  const novo = { ...pedido, id: `pedido-${Date.now()}` };
-  pedidos = [...pedidos, novo];
+  const novo: PedidoEntrada = { ...pedido, id: `pedido-${Date.now()}`, situacao: "aguardando", pedidoEm: dataDeHoje() };
+  todosPedidos = [...todosPedidos, novo];
   avisar();
   return novo.id;
 }

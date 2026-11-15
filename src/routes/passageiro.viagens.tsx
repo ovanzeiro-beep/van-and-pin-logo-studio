@@ -10,7 +10,8 @@ import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { responder } from "@/lib/respostas-store";
 import { cn } from "@/lib/utils";
-import { historicoDoPassageiroComDados } from "@/lib/viagem";
+import { historicoDoPassageiro } from "@/lib/viagem";
+import { useRegistroDasViagens } from "@/lib/cobrancas-store";
 
 export const Route = createFileRoute("/passageiro/viagens")({
   head: () => ({
@@ -29,9 +30,10 @@ export const Route = createFileRoute("/passageiro/viagens")({
 function MinhasViagens() {
   const { matriculas, destinos, proximas, proximaDistante, viagens } = useMinhasViagens();
   const vanzeiro = usePerfilVanzeiro();
+  const registro = useRegistroDasViagens();
   const historico = matriculas.flatMap((eu) => {
     const destino = destinos.find((d) => d.id === eu.destinoId);
-    return destino ? historicoDoPassageiroComDados(eu, destino, dataDeHoje(), viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
+    return destino ? historicoDoPassageiro(eu, destino, dataDeHoje(), registro, viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
   }).sort((a, b) => b.data.localeCompare(a.data));
 
   return (

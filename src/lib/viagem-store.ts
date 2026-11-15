@@ -1,6 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import type { Destino } from "@/data/exemplo";
-import { agora, dataDeHoje } from "@/lib/agora";
+import { agora, dataDeHoje, horaDeAgora } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { criarProximasCobrancas, obterCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
@@ -56,7 +56,7 @@ export function comecarViagem(destino: Destino, ordem: string[]) {
   for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
     if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true);
   }
-  mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: iniciarViagem(destino, ordem, dataDeHoje()) } });
+  mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: { ...iniciarViagem(destino, ordem, dataDeHoje()), comecouEm: horaDeAgora() } } });
   for (const id of ordem) {
     const p = passageiro(id);
     if (p) criarAvisoUmaVez(avisoDeVanSaiu(p, destino, dataDeHoje()));
@@ -67,8 +67,10 @@ export function comecarViagem(destino: Destino, ordem: string[]) {
 export function atualizarViagem(passo: (v: ViagemDoDia) => ViagemDoDia) {
   const atual = emAndamento(estado);
   if (!atual) return;
-  const nova = passo(atual);
-  if (nova !== atual) mudar({ ...estado, viagens: { ...estado.viagens, [atual.destinoId]: nova } });
+  let nova = passo(atual);
+  if (nova === atual) return;
+  if (nova.fase === "encerrada") nova = { ...nova, terminouEm: horaDeAgora() };
+  mudar({ ...estado, viagens: { ...estado.viagens, [atual.destinoId]: nova } });
 }
 
 const passageiro = (id: string) => obterPassageiros().find((p) => p.id === id);
@@ -78,7 +80,7 @@ export function marcarEmbarcou(id: string) {
   const antes = emAndamento(estado);
   atualizarViagem((v) => embarcou(v, id));
   const p = passageiro(id);
-  if (p && antes && emAndamento(estado) !== antes) registrarEmbarque(p, antes.data, `${antes.destinoId}_${antes.data}`);
+  if (p && antes && emAndamento(estado) !== antes) registrarEmbarque(p, antes.data, antes.id);
 }
 
 /** "Não estava no ponto": a falta, which the Financeiro counts. */

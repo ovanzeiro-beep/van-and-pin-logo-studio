@@ -133,9 +133,15 @@ export type Passageiro = {
   descontaFaltas: boolean;
   /** Valor descontado por falta, quando desconta faltas. */
   valorFalta: number | null;
+  /** Ordem de busca dentro da cidade (1, 2, 3…), mudada pelas setas ↑ ↓. */
+  ordem?: number | undefined;
+  /** Dia em que saiu do destino (saiu, foi removido ou o destino foi excluído). Continua guardado para o histórico e as cobranças. */
+  saiuEm?: string | undefined;
 };
 
 /** Pessoa que usou o código de convite e espera o vanzeiro aceitar. */
+export type SituacaoPedido = "aguardando" | "aceito" | "recusado";
+
 export type PedidoEntrada = {
   id: string;
   vanzeiroId: string;
@@ -143,6 +149,12 @@ export type PedidoEntrada = {
   destinoId: string;
   nome: string;
   telefone: string;
+  /** Aguardando o vanzeiro, aceito ou recusado. O pedido nunca é apagado. */
+  situacao?: SituacaoPedido | undefined;
+  /** Quando aceito: a matrícula criada a partir dele. */
+  matriculaId?: string | undefined;
+  pedidoEm?: string | undefined;
+  respondidoEm?: string | undefined;
 };
 
 export const passageirosExemplo: Passageiro[] = [

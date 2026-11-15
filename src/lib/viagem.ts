@@ -1,4 +1,4 @@
-import { embarquesExemplo, faltasExemplo, type Destino, type DiaSemana, type Passageiro, type RespostaViagem } from "@/data/exemplo";
+import { type Destino, type DiaSemana, type Passageiro, type RespostaViagem } from "@/data/exemplo";
 import { somarDias } from "@/lib/cobrancas";
 import { pontosDeEmbarque } from "@/lib/passageiros";
 import { formatarData, nomeDestino, prazoPassou, textoDaVolta } from "@/lib/destinos";
@@ -84,6 +84,8 @@ export function fotoDoDestino(d: Pick<Destino, "origem" | "destino" | "tipo" | "
 }
 
 export type ViagemDoDia = {
+  /** The trip's own number (destino and day). */
+  id: string;
   vanzeiroId: string;
   destinoId: string;
   data: string;
@@ -102,6 +104,9 @@ export type ViagemDoDia = {
   peloCelular: string[];
   paradasIda: number;
   paradasVolta: number;
+  /** Time the trip started and ended (HH:MM). */
+  comecouEm?: string | undefined;
+  terminouEm?: string | undefined;
   /** Who boarded at the destino for the return. */
   naVolta: string[];
   desceram: string[];
@@ -109,6 +114,7 @@ export type ViagemDoDia = {
 
 export function iniciarViagem(destino: Destino, ordem: string[], data: string): ViagemDoDia {
   return {
+    id: `${destino.id}_${data}`,
     vanzeiroId: destino.vanzeiroId,
     destinoId: destino.id,
     data,
@@ -302,17 +308,6 @@ export function historicoDoPassageiro(
     else if (!porDia || foi) itens.push({ data, embarcou: true });
   }
   return itens;
-}
-
-/** Histórico do passageiro com dados de exemplo incluídos (não precisa importar embarques/faltas). */
-export function historicoDoPassageiroComDados(
-  p: Pick<Passageiro, "id" | "plano">,
-  d: Destino,
-  hoje: string,
-  viagemDeHoje: ViagemDoDia | undefined,
-  dias = 14,
-): ItemHistorico[] {
-  return historicoDoPassageiro(p, d, hoje, { embarques: embarquesExemplo, faltas: faltasExemplo }, viagemDeHoje, dias);
 }
 
 export type SituacaoParaPassageiro = {

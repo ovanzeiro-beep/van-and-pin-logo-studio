@@ -450,5 +450,5 @@ O dono perguntou o que falta arrumar, corrigir e remover para o banco poder entr
 
 ### 11.5 Plano por etapas
 - **Etapa J — Documento do banco:** `docs/banco-de-dados.md` com tudo o que o banco guarda, quem vê o quê, o que roda sozinho no servidor e o que muda em cada função. É o item 7 da Etapa C. **Só o documento.** **Feita em 15/11/2026.**
-- **Etapa K — Guardar o que hoje some (sem banco):** itens 1, 2, 3 e 9 da lista 11.2.
+- **Etapa K — Guardar o que hoje some (sem banco):** itens 1, 2, 3 e 9 da lista 11.2. **Feita em 15/11/2026, sem mudar nada na tela:** embarques e faltas avisadas no prazo viram registros (o histórico do passageiro lê deles, não mais dos exemplos); a viagem ganha número próprio e hora de início e de fim, e todo passo passa por uma função só; as respostas fechadas viram registro; os pedidos nunca somem (ficam "aguardando", "aceito" com a matrícula criada, ou "recusado", com datas); quem sai de um destino continua guardado com o dia da saída; a ordem de busca na cidade virou um número próprio (1, 2, 3…), trocado pelas setas.
 - **Depois das decisões do dono (11.4) e só quando ele mandar:** banco, login real, tarefas no servidor (item 4), espera e erro de internet (item 5), dois celulares (item 6), números do banco (item 7), relógio real (item 8) e remoção dos exemplos (11.3).
