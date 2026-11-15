@@ -5,7 +5,8 @@ import { MapaDaVan } from "@/components/app/MapaDaVan";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { buttonVariants } from "@/components/ui/button";
 import { cidadesNoMapa, textoDaChegada, vanSimulada } from "@/lib/mapa";
-import { nomeDestino } from "@/lib/destinos";
+import { caminhoCompleto, nomeDestino } from "@/lib/destinos";
+import { useCoordenadas, useProcurarCidades } from "@/lib/coordenadas-store";
 import { useSituacaoDaVan } from "@/lib/minha-viagem";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,8 @@ function OndeEstaAVan() {
   const navigate = useNavigate();
   const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/passageiro" }));
 
+  useCoordenadas();
+  useProcurarCidades(destino ? caminhoCompleto(destino) : []);
   const cidades = destino ? cidadesNoMapa(destino) : [];
   // Only a point the person marked: the city center is never shown as "seu ponto".
   const meuPonto = eu.ponto ?? null;

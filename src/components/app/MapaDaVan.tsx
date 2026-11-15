@@ -95,9 +95,13 @@ export function MapaDaVan({
     }
   }
 
-  // Redraws when the van moves or the point changes (keeps the zoom the person chose).
+  // Redraws when the van moves or the point changes (keeps the zoom the person chose);
+  // fits the map again when cities arrive from the search.
+  const quantasCidades = useRef(cidades.length);
   useEffect(() => {
-    desenhar(false);
+    const chegaramCidades = cidades.length !== quantasCidades.current;
+    quantasCidades.current = cidades.length;
+    desenhar(chegaramCidades);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [van?.lat, van?.lng, meuPonto?.lat, meuPonto?.lng, cidades]);
 

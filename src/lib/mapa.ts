@@ -1,4 +1,5 @@
-import { coordenadasExemplo, type Destino, type Passageiro } from "@/data/exemplo";
+import type { Destino, Passageiro } from "@/data/exemplo";
+import { obterCoordenadas } from "@/lib/coordenadas-store";
 import { caminhoCompleto } from "@/lib/destinos";
 import { proximoDaBusca, type ViagemDoDia } from "@/lib/viagem";
 
@@ -11,7 +12,7 @@ export type Ponto = { lat: number; lng: number };
 export const VELOCIDADE_MEDIA_KMH = 40;
 
 export function coordenadaDaCidade(nome: string): Ponto | null {
-  return coordenadasExemplo[nome] ?? null;
+  return obterCoordenadas()[nome] ?? null;
 }
 
 /** The passenger's boarding point: the one marked on the map, else the center of their city. */

@@ -979,3 +979,13 @@ Conferência (15/11/2026):
 - [x] P2.3 "Abrir no mapa": ponto marcado (coordenadas) quando existe; senão o endereço escrito.
 - [x] P2.4 Conferência: 247 testes (novo `src/test/etapa-p2.test.ts`), tipos, build; no navegador, Juliana com ponto abre nas coordenadas e os outros pelo endereço; 30 telas sem erro; Viagem rola como antes.
 - Próxima: Etapa P3 (busca de cidade/endereço para o mapa e Política de Privacidade), antes do piloto real.
+
+---
+
+## Etapa P3 — Itens 7 e 8 da seção 15 (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Sem banco de dados.
+- [x] P3.1 O mapa procura cidades novas (OpenStreetMap/Nominatim, só Brasil, uma por segundo, perto da primeira cidade conhecida), guarda o que acha, tenta de novo sem internet e não repete cidade não achada (`src/lib/coordenadas-store.ts`).
+- [x] P3.2 Telas com mapa (pedido para entrar, Onde você embarca, Onde está a van) procuram as cidades que faltam e se atualizam quando elas chegam.
+- [x] P3.3 Política de Privacidade: ponto no mapa, notificações, mapa e busca de cidades (OpenStreetMap), cópia do app no celular.
+- [x] P3.4 Conferência: 251 testes (novo `src/test/coordenadas.test.ts`; os testes nunca acessam a internet), tipos, build; no navegador, com a resposta do serviço simulada (ele é bloqueado no ambiente de teste): destino Jacarezinho → Ourinhos procura "Ourinhos" perto de Jacarezinho uma vez, e o pedido para entrar mostra o mapa com as duas cidades; Política com todos os trechos novos; 30 telas sem erro.
+- Pendências: conferir no celular a busca de verdade; contato do responsável e advogado; atualizar a Política quando o GPS ao vivo entrar; serviço pago de busca/mapa antes de vender.

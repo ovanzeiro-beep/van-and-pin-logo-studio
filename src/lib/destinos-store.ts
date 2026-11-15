@@ -1,3 +1,5 @@
+import { procurarCidades } from "@/lib/coordenadas-store";
+import { caminhoCompleto } from "@/lib/destinos";
 import { useSyncExternalStore } from "react";
 import { destinosExemplo, type Destino } from "@/data/exemplo";
 import { inicializarCodigosUsados } from "@/lib/convite";
@@ -34,6 +36,8 @@ export function salvarDestino(d: Destino) {
     ? destinos.map((x) => (x.id === d.id ? d : x))
     : [d, ...destinos];
   avisar();
+  // The map learns where the new cities are (origem first, so the others are searched near it).
+  void procurarCidades(caminhoCompleto(d));
 }
 
 export function alternarAtivo(id: string) {

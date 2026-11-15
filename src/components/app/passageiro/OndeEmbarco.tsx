@@ -4,6 +4,8 @@ import { MapaDaVan } from "@/components/app/MapaDaVan";
 import type { Destino } from "@/data/exemplo";
 import { pontoObrigatorio, type Embarque } from "@/lib/endereco";
 import { cidadesNoMapa } from "@/lib/mapa";
+import { useCoordenadas, useProcurarCidades } from "@/lib/coordenadas-store";
+import { caminhoCompleto } from "@/lib/destinos";
 import { pontosDeEmbarque } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +25,8 @@ export function OndeEmbarco({
   /** The map takes the space left on the screen (screens that must not scroll), instead of a fixed height. */
   mapaFlexivel?: boolean;
 }) {
+  useCoordenadas();
+  useProcurarCidades(caminhoCompleto(destino));
   const cidades = cidadesNoMapa(destino);
   return (
     <>

@@ -24,6 +24,7 @@ function Privacidade() {
           <li>E-mail</li>
           <li>Telefone</li>
           <li>Endereço de embarque</li>
+          <li>Ponto de embarque marcado no mapa (o lugar onde você espera a van)</li>
         </ul>
         <p>
           Para o app funcionar, também ficam guardadas as respostas "Vou" e "Não vou", os embarques e faltas, as
@@ -36,6 +37,10 @@ function Privacidade() {
           <li>Nome e e-mail: criar e acessar sua conta.</li>
           <li>Telefone: o vanzeiro e o passageiro conversarem pelo WhatsApp.</li>
           <li>Endereço de embarque: montar a ordem da busca.</li>
+          <li>
+            Ponto no mapa: mostrar a van chegando, calcular quanto falta e conferir se uma mudança de endereço fica perto
+            do combinado.
+          </li>
           <li>Respostas, embarques e cobranças: organizar as viagens e os pagamentos.</li>
         </ul>
         <p>Não vendemos seus dados.</p>
@@ -43,10 +48,11 @@ function Privacidade() {
 
       <Secao titulo="Quem vê seus dados">
         <p>
-          <strong>O vanzeiro vê os dados dos seus passageiros</strong>: nome, telefone, endereço de embarque, respostas,
-          viagens e pagamentos.
+          <strong>O vanzeiro vê os dados dos seus passageiros</strong>: nome, telefone, endereço e ponto de embarque no
+          mapa, respostas, viagens e pagamentos.
         </p>
         <p>O passageiro vê o nome, o telefone, a chave Pix e a van do seu vanzeiro.</p>
+        <p>Nenhum passageiro vê os dados de outro passageiro, nem o ponto dele no mapa.</p>
       </Secao>
 
       <Secao titulo="Seus direitos">
@@ -74,6 +80,36 @@ function Privacidade() {
           São registrados: as telas visitadas, de onde a pessoa veio, o país, o navegador, o sistema e o tipo de aparelho,
           quanto tempo ela fica, a velocidade das telas, erros e os toques em botões e links. Isso é registrado para todos
           os visitantes. Os dados detalhados ficam guardados por 90 dias, e os resumos de cada dia, por um ano.
+        </p>
+      </Secao>
+
+      <Secao titulo="Notificações no celular">
+        <p>
+          Só chegam se você ativar no Perfil. Elas mostram os mesmos avisos do sininho. Para parar, é só desligar nas
+          configurações do celular.
+        </p>
+      </Secao>
+
+      <Secao titulo="Mapa e busca de cidades">
+        <p>
+          O mapa e a busca de cidades vêm dos servidores do OpenStreetMap. Ao abrir uma tela com mapa, ou quando o app
+          procura uma cidade, o OpenStreetMap recebe o seu endereço IP, dados do navegador e o nome da cidade procurada. A{" "}
+          <a
+            href="https://osmfoundation.org/wiki/Privacy_Policy"
+            target="_blank"
+            rel="noreferrer"
+            className="font-bold text-primary underline underline-offset-2"
+          >
+            política de privacidade do OpenStreetMap
+          </a>{" "}
+          explica como ele cuida desses dados.
+        </p>
+      </Secao>
+
+      <Secao titulo="Cópia do app no celular">
+        <p>
+          Para abrir sem internet, o app guarda uma cópia das suas telas no próprio celular. Ela fica só no seu aparelho
+          e some se você apagar os dados do app ou do navegador.
         </p>
       </Secao>
 
