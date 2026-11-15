@@ -50,6 +50,18 @@ export function criarAviso(aviso: Omit<Aviso, "id">) {
   return novoAviso;
 }
 
+/** Creates the notice only if there is none with the same chave yet. */
+export function criarAvisoUmaVez(aviso: Omit<Aviso, "id">) {
+  if (aviso.chave && avisos.some((a) => a.chave === aviso.chave)) return;
+  criarAviso(aviso);
+}
+
+/** Creates the notice, replacing the one with the same chave (e.g. a passenger changed the answer). */
+export function trocarAviso(aviso: Omit<Aviso, "id">) {
+  avisos = avisos.filter((a) => !aviso.chave || a.chave !== aviso.chave);
+  criarAviso(aviso);
+}
+
 export function limparAvisos() {
   avisos = [];
   notificar();
@@ -62,7 +74,8 @@ export function useAvisos() {
       return () => listeners.delete(listener);
     },
     () => avisos,
-    () => avisos,
+    // While the page opens, show what the server showed; the clock's notices come right after.
+    () => avisosExemplo,
   );
 }
 

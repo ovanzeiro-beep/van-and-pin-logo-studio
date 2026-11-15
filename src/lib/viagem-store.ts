@@ -3,8 +3,10 @@ import type { Destino } from "@/data/exemplo";
 import { agora, dataDeHoje } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
-import { criarProximasCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
+import { criarProximasCobrancas, obterCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
 import { obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
+import { avisoDeVanSaiu, avisosDoRelogio } from "@/lib/avisos";
+import { criarAvisoUmaVez } from "@/lib/avisos-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, viagensDoDia, type Agora, type ViagemDoDia } from "@/lib/viagem";
 
@@ -55,6 +57,10 @@ export function comecarViagem(destino: Destino, ordem: string[]) {
     if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true);
   }
   mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: iniciarViagem(destino, ordem, dataDeHoje()) } });
+  for (const id of ordem) {
+    const p = passageiro(id);
+    if (p) criarAvisoUmaVez(avisoDeVanSaiu(p, destino, dataDeHoje()));
+  }
 }
 
 /** Applies one step of the trip in progress. */
@@ -100,6 +106,7 @@ export function registrarFaltasDoPrazo(momento: Agora = agora()) {
 export function passarDoTempo() {
   registrarFaltasDoPrazo();
   criarProximasCobrancas(obterPassageiros());
+  for (const aviso of avisosDoRelogio(agora(), obterDestinos(), obterPassageiros(), obterCobrancas(), obterRespostasParaTeste)) criarAvisoUmaVez(aviso);
 }
 
 /** Watches the clock while the app is open: on opening and then every minute. */

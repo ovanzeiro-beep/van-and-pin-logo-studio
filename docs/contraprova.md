@@ -819,3 +819,19 @@ Conferência (15/11/2026):
 - No navegador (390×844): Início e aba Viagem abrem na mesma viagem (Jacarezinho → Londrina, 06:00); com a viagem em andamento, "Pausar" mostra o aviso e o botão fica desligado; viagem terminada e destino excluído: o Histórico continua com as 2 viagens de Londrina, com nome e horários do dia.
 - Não pode quebrar: cores, palavras, cards e barra de navegação sem mudança; a tela do Histórico só trocou de onde lê o nome e os horários.
 - Pendências: nenhuma nova. Próxima: Etapa H (avisos de verdade no sininho).
+
+---
+
+## Etapa H — Avisos de verdade no sininho (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Erro 6 da seção 10 de `docs/fonte-da-verdade.md`. Sem banco de dados.
+- [x] H1. Tirar os 4 avisos de exemplo (eram de mentira).
+- [x] H2. Vanzeiro: "Resposta de passageiro" nasce quando o passageiro responde; mudar a resposta troca o aviso (não acumula).
+- [x] H3. Vanzeiro: "Cobrança vencida" nasce no dia seguinte ao vencimento não pago, com nome, valor e destino.
+- [x] H4. Passageiro: "Prazo chegando" 30 minutos antes do prazo, só para quem não respondeu.
+- [x] H5. Passageiro: "Van saiu" quando o vanzeiro inicia a viagem, só para quem vai.
+- [x] H6. Passageiro: "Cobrança vencendo" 3 dias antes do vencimento.
+- [x] H7. Todo aviso cita o destino e nunca se repete (o relógio passa a cada minuto sem duplicar).
+- [x] H8. Conferência: 195 testes (novo `src/test/etapa-h.test.ts`), tipos, build; no navegador (390×844) a Juliana vê "Prazo chegando" de Cambará → UENP e o Carlos vê a resposta dela e as 2 cobranças vencidas (Mariana e Beatriz); sininho do vanzeiro com 5 (2 pedidos + 3 avisos); a tela não rola a página; sem erro no console (corrigido um erro de montagem da página que esta etapa tinha causado).
+- Não pode quebrar: cores, palavras, cards e barra de navegação sem mudança. Pedido recusado continua avisando a pessoa.
+- Pendências para o dono: (1) pedido **aceito** deve avisar a pessoa? (2) tempos de 30 minutos e 3 dias estão bons?
+- Próxima: Etapa I (cadastros e textos: erros 5, 7, 8 e 9).

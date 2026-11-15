@@ -5,6 +5,8 @@ import { agora, dataDeHoje } from "@/lib/agora";
 import { obterDestinos } from "@/lib/destinos-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { prazoPassou } from "@/lib/destinos";
+import { avisoDeResposta } from "@/lib/avisos";
+import { trocarAviso } from "@/lib/avisos-store";
 
 // "Vou" / "Não vou" of each passenger, per trip day. Both panels read this same list,
 // so what the passenger answers shows up for the vanzeiro (Início and Viagem).
@@ -35,9 +37,11 @@ export const respostasDoDia = (todas: Respostas, data: string) => todas[data] ??
 export function responder(passageiroId: string, data: string, resposta: RespostaViagem) {
   const p = obterPassageiros().find((p) => p.id === passageiroId);
   const d = obterDestinos().find((d) => d.id === p?.destinoId);
-  if (!d || fechadas.has(`${d.id}_${data}`) || prazoPassou(d, data, agora())) return;
+  if (!p || !d || fechadas.has(`${d.id}_${data}`) || prazoPassou(d, data, agora())) return;
+  if (respostas[data]?.[passageiroId] === resposta) return;
   respostas = { ...respostas, [data]: { ...(respostas[data] ?? {}), [passageiroId]: resposta } };
   ouvintes.forEach((o) => o());
+  trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje()));
 }
 
 export const obterRespostasParaTeste = (data: string) => respostasDoDia(respostas, data);

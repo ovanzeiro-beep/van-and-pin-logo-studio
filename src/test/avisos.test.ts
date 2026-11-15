@@ -1,8 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { avisosExemplo } from "@/data/exemplo";
 import { avisosDaPessoa, marcarTodosComoLido, obterAvisos, obterAvisosNaoLidos } from "@/lib/avisos-store";
+import { passarDoTempo } from "@/lib/viagem-store";
 
 describe("Avisos lidos", () => {
+  beforeAll(() => passarDoTempo());
+
   it("todos os avisos da pessoa, mais novos primeiro, sem os de outras pessoas", () => {
     const daJuliana = avisosDaPessoa(obterAvisos(), "p-juliana");
     expect(daJuliana.length).toBeGreaterThan(0);
@@ -21,7 +24,7 @@ describe("Avisos lidos", () => {
     expect(avisosDaPessoa(obterAvisos(), "p-juliana").length).toBe(avisosDaPessoa(antes, "p-juliana").length);
   });
 
-  it("os dados de exemplo não mudam (recarregar a página volta ao início)", () => {
-    expect(avisosExemplo.some((a) => a.paraVanzeiroOuPassageiroId === "p-juliana" && !a.lido)).toBe(true);
+  it("não há avisos de exemplo: todos nascem do que acontece", () => {
+    expect(avisosExemplo).toEqual([]);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { avisosExemplo, destinosExemplo } from "@/data/exemplo";
+import { destinosExemplo } from "@/data/exemplo";
 import { entrar, escolherPapel, sair } from "@/lib/acesso";
 import { obterDestinos, salvarDestino } from "@/lib/destinos-store";
 import { excluirMinhaConta } from "@/lib/exclusoes";
@@ -25,9 +25,12 @@ describe("Quem usa o app e o papel, num lugar só", () => {
     expect(minhas.map((p) => p.id).sort()).toEqual(["p-juliana", "p-juliana-londrina"]);
   });
 
-  it("os avisos da Juliana são encontrados pela identidade dela", () => {
+  it("os avisos da Juliana são encontrados pela identidade dela", async () => {
+    const { passarDoTempo } = await import("@/lib/viagem-store");
+    const { obterAvisos } = await import("@/lib/avisos-store");
+    passarDoTempo();
     const eu = obterMinhasMatriculas()[0]!;
-    expect(avisosExemplo.filter((a) => a.paraVanzeiroOuPassageiroId === identidadePassageiro(eu)).length).toBeGreaterThan(0);
+    expect(obterAvisos().filter((a) => a.paraVanzeiroOuPassageiroId === identidadePassageiro(eu)).length).toBeGreaterThan(0);
   });
 
   it("'Excluir minha conta' do passageiro tira só a própria pessoa dos destinos", () => {
