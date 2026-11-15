@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, XCircle } from "lucide-react";
+import { ArrowLeft, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,10 @@ import { nomeDestino, quandoAcontece } from "@/lib/destinos";
 import { useDestino, useDestinos } from "@/lib/destinos-store";
 import { matriculasDaPessoa, formatarTelefone, somenteDigitos, telefoneValido } from "@/lib/passageiros";
 import { ConfirmarSair } from "@/components/app/ConfirmarSair";
-import { pedirParaEntrar, tentarOutroCodigo, useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
+import { pedirParaEntrar, tentarOutroCodigo, useEmAbertoDeQuemSaiu, useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
+import { InfoCard } from "@/components/app/InfoCard";
+import { BadgeSituacao } from "@/components/app/CobrancaItem";
+import { formatarReais } from "@/lib/dinheiro";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
 import { acharPorCodigo } from "@/lib/convite";
@@ -29,6 +32,7 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
     <div className="flex min-h-0 flex-1 flex-col">
       <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo="Use o código que o vanzeiro te enviou." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
+        {!outro && <EmAbertoDeQuemSaiu />}
         {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : recusadoOutro ? <Recusado /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
         {outro ? (
           <Link to="/passageiro/perfil" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground">
@@ -94,6 +98,24 @@ function Codigo({ primeiroUso }: { primeiroUso: boolean }) {
     </section>
     {primeiroUso && <OndeConseguir />}
     </>
+  );
+}
+
+/** Decision A3: left the last destino but still owes there. */
+function EmAbertoDeQuemSaiu() {
+  const emAberto = useEmAbertoDeQuemSaiu();
+  if (!emAberto) return null;
+  return (
+    <Link to="/passageiro/pagamentos" className="block">
+      <InfoCard
+        icon={Wallet}
+        tone="warning"
+        label="Em aberto"
+        value={formatarReais(emAberto.total)}
+        detail="De destino que você saiu. Toque para ver e pagar."
+        aside={<BadgeSituacao s={emAberto.devendo ? "devendo" : "pendente"} />}
+      />
+    </Link>
   );
 }
 

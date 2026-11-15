@@ -1,4 +1,7 @@
 import { type Passageiro, type PedidoEntrada } from "@/data/exemplo";
+import { dataDeHoje } from "@/lib/agora";
+import { situacao, valorFinal } from "@/lib/cobrancas";
+import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
 import { obterDestinos } from "@/lib/destinos-store";
 import { adicionarPedido, obterAceitos, obterPassageiros, obterPedidos, salvarDadosDoPassageiro, useAceitos, usePassageiros, usePedidos, useSaidas } from "@/lib/passageiros-store";
 
@@ -68,13 +71,38 @@ export function useMinhasMatriculas() {
   return matriculasDaPessoa(usePassageiros(), eu);
 }
 
-/** Whose charges the passenger sees: current destinos plus destinos they left (what they still owe there). */
+/** The destinos this person left, found by the person (or, with no destino left, by the session). */
+export function minhasSaidasDe(saidas: Passageiro[], euIdentidade: string | null, sessaoPassageiroId: string | null) {
+  const quem = euIdentidade ?? saidas.find((p) => p.id === sessaoPassageiroId || identidadePassageiro(p) === sessaoPassageiroId);
+  if (!quem) return [];
+  const identidade = typeof quem === "string" ? quem : identidadePassageiro(quem);
+  return saidas.filter((p) => identidadePassageiro(p) === identidade);
+}
+
+/** Whose charges the passenger sees: current destinos plus destinos they left (what they still owe there, decision A3). */
 export function useIdsDasMinhasCobrancas() {
-  const eu = useEu();
-  const matriculas = useMinhasMatriculas();
+  const s = useMinhaSituacao();
+  const sessao = useSessaoPassageiro();
+  const todos = usePassageiros();
   const saidas = useSaidas();
-  const minhas = saidas.filter((p) => identidadePassageiro(p) === identidadePassageiro(eu));
+  const eu = s.tipo === "membro" ? s.passageiro : null;
+  const matriculas = eu ? matriculasDaPessoa(todos, eu) : [];
+  const minhas = minhasSaidasDe(saidas, eu ? identidadePassageiro(eu) : null, sessao.passageiroId);
   return [...matriculas, ...minhas].map((p) => p.id);
+}
+
+/** Decision A3: someone who left their last destino still sees what they owe there (pendente or devendo). */
+export function useEmAbertoDeQuemSaiu() {
+  const s = useMinhaSituacao();
+  const ids = useIdsDasMinhasCobrancas();
+  const lista = useCobrancasDasMatriculas(ids);
+  if (s.tipo === "membro") return null;
+  const abertas = lista.filter((c) => {
+    const sit = situacao(c, dataDeHoje());
+    return sit === "pendente" || sit === "devendo";
+  });
+  if (abertas.length === 0) return null;
+  return { total: abertas.reduce((soma, c) => soma + valorFinal(c), 0), devendo: abertas.some((c) => situacao(c, dataDeHoje()) === "devendo") };
 }
 /** The memberships of whoever is using the passenger panel. */
 export function obterMinhasMatriculas() {

@@ -903,3 +903,14 @@ Conferência (15/11/2026):
 - [x] A2.5 Conferência: 216 testes (novos `src/test/notificacoes.test.ts` e `src/test/notificacoes-app.test.tsx`), tipos, build; na versão de produção, os 3 jeitos do cartão nos dois Perfis e a notificação mostrada pelo app; a A1 (sem sinal) repetida e funcionando; as 28 telas sem erro.
 - Fica para o dia do banco: notificação com o app totalmente fechado (mandada pelo servidor).
 - Próxima: A3 (pagamentos de quem saiu do último destino), só com a coordenada do dono.
+
+---
+
+## A3 — Pagamentos de quem saiu do último destino (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Decisão do dono: opção 1, continua vendo. Sem banco de dados.
+- [x] A3.1 Quem sai do último destino e ainda deve: cartão "Em aberto" na tela do código, com valor e selo, que abre Pagamentos.
+- [x] A3.2 Barra de baixo com Início e Pagamentos só nesse caso; Pagamentos e o detalhe da cobrança funcionam (Pagar com Pix, Já paguei).
+- [x] A3.3 Quem saiu sem dever nada vê a tela do código normal, sem cartão e sem barra.
+- [x] A3.4 Conferência: 218 testes (novo `src/test/a3-saiu-deve.test.tsx`), tipos, build; no navegador, a Beatriz sai do único destino e vê R$ 280,00 devendo, abre Pagamentos e o detalhe com Pagar com Pix; as 28 telas sem erro; criar conta, pedir para entrar e excluir conta sem mudança.
+- Achado: antes, isso só funcionava para quem ainda tinha outro destino (a confirmação de "Sair deste destino" já prometia "continua nos seus Pagamentos").
+- Próximo: com A1, A2 e A3 feitas, falta só o item 4 da seção 11.4 (contato da Política de Privacidade e advogado) antes do banco, que só entra quando o dono mandar.
