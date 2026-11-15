@@ -801,4 +801,4 @@ Como ficou (14/11/2026):
 
 ## Análise completa de 15/11/2026
 **Situação:** feita em 15/11/2026, na branch `analise-completa`, com merge na `main`. Só análise, nada corrigido.
-Resultado na seção 9 de `docs/fonte-da-verdade.md`: 11 erros/faltas numerados e o plano das Etapas G (viagem e histórico), H (avisos de verdade) e I (cadastros e textos). As 40 telas abertas sem erro; números entre telas conferidos e batendo; todos os fluxos de ação refeitos.
+Resultado na seção 10 de `docs/fonte-da-verdade.md`: 11 erros/faltas numerados e o plano das Etapas G (viagem e histórico), H (avisos de verdade) e I (cadastros e textos). As 40 telas abertas sem erro; números entre telas conferidos e batendo; todos os fluxos de ação refeitos.
