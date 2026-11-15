@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
@@ -30,13 +30,16 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
   const destinoPedido = !aceitos[sessao.pedidoId ?? ""] && destinos.find((d) => d.id === sPedido(sessao.pedidoId));
   // "Entrar em outro destino": the pedido is gone and was not accepted, so the vanzeiro declined it.
   const recusadoOutro = outro && !!sessao.pedidoId && !aceitos[sessao.pedidoId] && !sPedido(sessao.pedidoId);
+  // While asking to join, the header says the step ("Passo 1 de 2 · Seus dados").
+  const [passoDoPedido, setPassoDoPedido] = useState<0 | 1 | 2>(0);
+  const subtitulo = passoDoPedido === 1 ? "Passo 1 de 2 · Seus dados" : passoDoPedido === 2 ? "Passo 2 de 2 · Onde você embarca" : "Use o código que o vanzeiro te enviou.";
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo="Use o código que o vanzeiro te enviou." />
-      <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
+      <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo={subtitulo} />
+      <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col space-y-3 overflow-y-auto px-5 pb-4">
         {!outro && <EmAbertoDeQuemSaiu />}
-        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : recusadoOutro ? <Recusado /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} />}
-        {outro ? (
+        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : recusadoOutro ? <Recusado /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} aoMudarPasso={setPassoDoPedido} />}
+        {passoDoPedido === 2 ? null : outro ? (
           <Link to="/passageiro/perfil" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground">
             <ArrowLeft className="h-4 w-4" /> Voltar ao perfil
           </Link>
@@ -52,14 +55,14 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
   );
 }
 
-function Codigo({ primeiroUso }: { primeiroUso: boolean }) {
+function Codigo({ primeiroUso, aoMudarPasso }: { primeiroUso: boolean; aoMudarPasso: (p: 0 | 1 | 2) => void }) {
   const destinos = useDestinos();
   const [codigo, setCodigo] = useState("");
   const [achado, setAchado] = useState<Destino | null | undefined>(undefined);
 
   const procurar = () => setAchado(acharPorCodigo(destinos, codigo) ?? null);
 
-  if (achado) return <Confirmar destino={achado} voltar={() => setAchado(undefined)} />;
+  if (achado) return <Confirmar destino={achado} voltar={() => setAchado(undefined)} aoMudarPasso={aoMudarPasso} />;
 
   return (
     <>
@@ -157,7 +160,7 @@ function CardDaVan({ destino }: { destino: Destino }) {
   );
 }
 
-function Confirmar({ destino, voltar }: { destino: Destino; voltar: () => void }) {
+function Confirmar({ destino, voltar, aoMudarPasso }: { destino: Destino; voltar: () => void; aoMudarPasso: (p: 0 | 1 | 2) => void }) {
   const sessao = useSessaoPassageiro();
   const [nome, setNome] = useState(sessao.nome);
   const [telefone, setTelefone] = useState(sessao.telefone ? formatarTelefone(sessao.telefone) : "");
@@ -167,31 +170,34 @@ function Confirmar({ destino, voltar }: { destino: Destino; voltar: () => void }
   const [passo, setPasso] = useState(1);
   const [embarque, setEmbarque] = useState<Embarque>({ cidade: "", endereco: "", ponto: null });
   const pode = !ja && nome.trim() !== "" && telefoneValido(telefone);
+  useEffect(() => {
+    aoMudarPasso(passo === 2 ? 2 : 1);
+  }, [passo, aoMudarPasso]);
+  useEffect(() => () => aoMudarPasso(0), [aoMudarPasso]);
 
   if (passo === 2) {
     return (
-      <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card [@media(max-height:700px)]:space-y-2.5 [@media(max-height:700px)]:p-3.5">
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Passo 2 de 2 · Onde você embarca</p>
-        <OndeEmbarco destino={destino} valor={embarque} mudar={(m) => setEmbarque((e) => ({ ...e, ...m }))} />
-        <Button
-          variant="cta"
-          size="xl"
-          className="w-full"
-          disabled={!pode || !embarqueCompleto(destino, embarque)}
-          onClick={() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque)}
-        >
-          Pedir para entrar
-        </Button>
-        <Button variant="ghost" className="w-full" onClick={() => setPasso(1)}>
-          <ArrowLeft className="!h-4 !w-4" /> Voltar
-        </Button>
+      <section className="flex flex-1 flex-col gap-3 rounded-3xl bg-card p-4 shadow-card [@media(max-height:700px)]:gap-2 [@media(max-height:700px)]:p-3">
+        <OndeEmbarco destino={destino} valor={embarque} mudar={(m) => setEmbarque((e) => ({ ...e, ...m }))} mapaFlexivel />
+        <div className="grid shrink-0 grid-cols-2 gap-3">
+          <Button size="lg" variant="outline" onClick={() => setPasso(1)}>
+            <ArrowLeft className="!h-5 !w-5" /> Voltar
+          </Button>
+          <Button
+            size="lg"
+            variant="cta"
+            disabled={!pode || !embarqueCompleto(destino, embarque)}
+            onClick={() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque)}
+          >
+            Pedir para entrar
+          </Button>
+        </div>
       </section>
     );
   }
 
   return (
     <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card">
-      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Passo 1 de 2 · Seus dados</p>
       <CardDaVan destino={destino} />
       {ja && <p className="text-sm font-semibold text-muted-foreground">Você já está neste destino.</p>}
       <CampoComIcone id="meu-nome" label="Seu nome" icon={User} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome" />

@@ -90,11 +90,23 @@ Hoje: tipo `PedidoEntrada`, mais a lista `aceitos`.
 | vanzeiro dono, destino | |
 | pessoa | conta de quem pediu |
 | nome, telefone | |
+| onde embarca | cidade, endereço e ponto no mapa, preenchidos pela pessoa no pedido |
 | situação | aguardando, aceito ou recusado (**hoje o pedido some da lista; com o banco, fica guardado com a situação**) |
 | matrícula criada | quando aceito |
 | pedido em, respondido em | datas |
 
 **Quem vê:** o vanzeiro dono; a própria pessoa. **Quem muda:** a pessoa cria; o vanzeiro aceita ou recusa.
+
+### 2.5.1 Mudanças de endereço
+Hoje: `MudancaDeEndereco` em `passageiros-store.ts`.
+| Campo | O que é |
+| --- | --- |
+| identificador, vanzeiro dono, destino, matrícula | |
+| de, para | cidade, endereço e ponto no mapa (antes e o pedido) |
+| distância | km do ponto combinado |
+| situação | aguardando, aceita ou recusada, com datas |
+
+**Quem vê:** o vanzeiro dono; a própria pessoa. **Quem muda:** a pessoa cria; o vanzeiro aceita ou recusa. Até 1 km do ponto combinado não cria mudança: o endereço muda na hora.
 
 ### 2.6 Respostas (Vou / Não vou)
 Hoje: `respostas-store.ts`, mais a lista escondida `fechadas`.

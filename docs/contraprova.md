@@ -937,3 +937,14 @@ Conferência (15/11/2026):
 - [x] M5. Conferência: 230 testes (novo `src/test/mapa.test.ts`), tipos, build; no navegador (edição e produção): antes da viagem, viagem começada ("Faltam 2 pessoas antes de você · Está passando por Cambará · Chega no seu ponto em uns 25 min"), depois do embarque ("Na van"), marcar ponto; a tela não rola em nenhum tamanho; as outras telas sem erro. O fundo do mapa (ruas) não carrega no ambiente de teste (servidor de mapa bloqueado aqui); no celular carrega.
 - Pendência para antes de lançar: escolher o fornecedor do mapa e da busca de endereço.
 - Próxima: etapa 3 da seção 12 (tempo real de verdade), só junto com o banco e quando o dono mandar.
+
+---
+
+## Endereço pelo passageiro, com regra de distância (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Seção 13 da fonte da verdade. Decisões do dono: ponto obrigatório; medido do ponto combinado; 1 km; passou, o vanzeiro aprova. Sem banco de dados.
+- [x] E1. Pedido para entrar em 2 passos (passo no subtítulo): dados; cidade, endereço e ponto no mapa (obrigatório quando o mapa conhece o destino).
+- [x] E2. Vanzeiro ao aceitar vê cidade, endereço e ponto preenchidos pelo passageiro, sem poder mudar; define plano e valor. Cadastro direto continua como antes.
+- [x] E3. "Mudar onde embarco" (Perfil e mapa da van): até 1 km salva; mais longe vai ao vanzeiro, valendo o endereço antigo até ele responder.
+- [x] E4. Vanzeiro: "Mudanças de endereço" em Notificações (Aceitar / Recusar), no número do sininho; a pessoa recebe "Endereço aceito" / "Endereço não aceito".
+- [x] E5. Conferência: 236 testes (novo `src/test/endereco.test.ts`), tipos, build; no navegador: conta nova pede para entrar com ponto, vanzeiro aceita com tudo preenchido, Juliana muda para 27 km → enviado → vanzeiro aceita → "Endereço aceito"; nenhuma das telas novas rola nos 3 tamanhos (o passo 1 do pedido rola 34px no iPhone SE, menos que os 58px de antes); as 30 telas sem erro; contas (criar, pedir, sair, excluir) sem mudança.
+- Pendência pequena: notificação no celular (A2) para mudança de endereço nova.
