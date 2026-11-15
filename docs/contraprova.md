@@ -948,3 +948,12 @@ Conferência (15/11/2026):
 - [x] E4. Vanzeiro: "Mudanças de endereço" em Notificações (Aceitar / Recusar), no número do sininho; a pessoa recebe "Endereço aceito" / "Endereço não aceito".
 - [x] E5. Conferência: 236 testes (novo `src/test/endereco.test.ts`), tipos, build; no navegador: conta nova pede para entrar com ponto, vanzeiro aceita com tudo preenchido, Juliana muda para 27 km → enviado → vanzeiro aceita → "Endereço aceito"; nenhuma das telas novas rola nos 3 tamanhos (o passo 1 do pedido rola 34px no iPhone SE, menos que os 58px de antes); as 30 telas sem erro; contas (criar, pedir, sair, excluir) sem mudança.
 - Pendência pequena: notificação no celular (A2) para mudança de endereço nova.
+
+---
+
+## Ordem da busca: número e arrastar (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Seção 14 da fonte da verdade. Sem banco de dados.
+- [x] O1. Número da busca no destino inteiro no lugar da letra do nome (o mesmo da aba Viagem).
+- [x] O2. Setas ↑ ↓ removidas; segurar e arrastar muda a ordem dentro da cidade (nunca troca de cidade).
+- [x] O3. Toque rápido abre o passageiro; deslizar rápido rola a tela; o toque que termina o arrasto não abre o passageiro.
+- [x] O4. Conferência: 240 testes (novo `src/test/arrastar.test.ts`), tipos, build; no navegador com toque (celular) e mouse: Beatriz arrastada de 3ª para 1ª, Pedro de 2º para 1º, a aba Viagem segue a ordem nova; as 30 telas sem erro.

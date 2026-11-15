@@ -505,3 +505,14 @@ O dono pediu: o passageiro ver onde a van está, em tempo real, com informação
 - **Passageiro muda onde embarca:** "Mudar onde embarco" em cada destino do Perfil e no mapa da van abre **"Onde você embarca"** (cidade, endereço, mapa). Até 1 km do ponto combinado (ou do centro da cidade, se não houver ponto): **Salvar** e muda na hora. Mais longe (ou outra cidade): o título do mapa avisa "A N km do ponto combinado (mais de 1 km): o vanzeiro precisa aceitar." e o botão vira **Enviar ao vanzeiro** → "Mudança enviada ao vanzeiro. Até ele aceitar, a van continua passando em: <endereço atual>." O endereço saiu do "Editar" do Perfil (lá ficam só nome e telefone).
 - **Vanzeiro:** em Notificações, a seção **"Mudanças de endereço"** (nome, destino, distância, "Hoje" e "Quer mudar para", **Recusar** / **Aceitar**); conta no número do sininho. A pessoa recebe aviso "Endereço aceito" ou "Endereço não aceito" no sininho.
 - **Fica para depois:** a notificação no celular (A2) ainda não sai para "mudança de endereço" nova; só para os avisos e pedidos.
+
+---
+
+## 14. Ordem da busca na tela do destino: número e arrastar (15/11/2026)
+
+**Pedido do dono:** em "Passageiros deste destino", mostrar quem é o 1º, 2º, 3º a ser buscado e trocar as setas ↑ ↓ por arrastar com o dedo (segurar no passageiro e mover para cima ou para baixo).
+
+**Como ficou (feito em 15/11/2026):**
+- O círculo de cada passageiro mostra o **número da busca no destino inteiro** (1, 2, 3…): as cidades seguem a ordem do caminho e, dentro de cada cidade, a ordem escolhida. É o mesmo número da aba Viagem ("Quem vai · na ordem da busca").
+- **Sem setas.** Dica no alto da lista: "Segure o passageiro e arraste para mudar a ordem da busca." e o ícone de arrastar (⋮⋮) em cada passageiro.
+- **Segurar um instante e arrastar** muda a ordem (só dentro da mesma cidade: as cidades seguem o caminho). Um **toque rápido** continua abrindo o passageiro; **deslizar rápido** continua rolando a tela. No computador, funciona com o mouse.

@@ -87,6 +87,30 @@ export function porCidade<T extends Pick<Passageiro, "cidade">>(passageiros: T[]
     .filter((g) => g.passageiros.length > 0);
 }
 
+/** Pickup number of each passenger in the whole destino (1, 2, 3…): cities in route order, then the order inside the city. */
+export function numerosDaBusca<T extends Pick<Passageiro, "id" | "cidade">>(passageiros: T[], destino: Pick<Destino, "origem" | "destino" | "paradas">) {
+  const numeros = new Map<string, number>();
+  for (const g of porCidade(passageiros, destino)) for (const p of g.passageiros) numeros.set(p.id, numeros.size + 1);
+  return numeros;
+}
+
+/** Dragging: puts the passenger where `alvoId` is, inside the same city of the same destino (other cities never change). */
+export function moverParaNaCidade<T extends Pick<Passageiro, "id" | "destinoId" | "cidade">>(lista: T[], id: string, alvoId: string): T[] {
+  const p = lista.find((x) => x.id === id);
+  const alvo = lista.find((x) => x.id === alvoId);
+  if (!p || !alvo || id === alvoId || alvo.destinoId !== p.destinoId || alvo.cidade !== p.cidade) return lista;
+  const posicoes = lista.flatMap((x, i) => (x.destinoId === p.destinoId && x.cidade === p.cidade ? [i] : []));
+  const grupo = posicoes.map((i) => lista[i]!);
+  const de = grupo.findIndex((x) => x.id === id);
+  const para = grupo.findIndex((x) => x.id === alvoId);
+  const novo = [...grupo];
+  const [item] = novo.splice(de, 1);
+  novo.splice(para, 0, item!);
+  const resultado = [...lista];
+  posicoes.forEach((pos, k) => (resultado[pos] = novo[k]!));
+  return resultado;
+}
+
 /** Moves a passenger one place up (-1) or down (1) in the pickup order of their city, in the same destino. */
 export function moverNaCidade<T extends Pick<Passageiro, "id" | "destinoId" | "cidade">>(lista: T[], id: string, direcao: -1 | 1): T[] {
   const p = lista.find((x) => x.id === id);

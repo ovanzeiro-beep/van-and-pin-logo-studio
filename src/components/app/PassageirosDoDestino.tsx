@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, ChevronDown, ChevronRight, ChevronUp, Copy, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users } from "lucide-react";
+import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Check, ChevronRight, Copy, GripVertical, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RecusarPedido } from "@/components/app/RecusarPedido";
-import type { Destino, PedidoEntrada } from "@/data/exemplo";
+import type { Destino, Passageiro, PedidoEntrada } from "@/data/exemplo";
+import { cn } from "@/lib/utils";
 import { mensagemConvite } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
-import { descricaoPlano, formatarTelefone, porCidade } from "@/lib/passageiros";
-import { moverPassageiro, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
+import { descricaoPlano, formatarTelefone, numerosDaBusca, porCidade } from "@/lib/passageiros";
+import { reordenarPassageiro, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 
 function TituloSecao({ icon: Icon, children }: { icon: typeof Users; children: string }) {
   return (
@@ -110,6 +114,7 @@ export function PedidosParaEntrar({ destinoId }: { destinoId: string }) {
 export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
   const passageiros = usePassageirosDoDestino(destinoId);
   const destino = useDestino(destinoId);
+  const numeros = destino ? numerosDaBusca(passageiros, destino) : new Map<string, number>();
 
   return (
     <section className="rounded-3xl bg-card p-4 shadow-card">
@@ -129,59 +134,15 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
 
       {destino && passageiros.length > 0 && (
         <div className="space-y-3">
+          {porCidade(passageiros, destino).some((g) => g.passageiros.length > 1) && (
+            <p className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
+              <GripVertical className="h-3.5 w-3.5 shrink-0" /> Segure o passageiro e arraste para mudar a ordem da busca.
+            </p>
+          )}
           {porCidade(passageiros, destino).map((grupo) => (
             <div key={grupo.cidade}>
               <p className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{grupo.cidade}</p>
-              <ul className="space-y-2">
-                {grupo.passageiros.map((p, i) => (
-                  <li key={p.id} className="flex items-stretch gap-2">
-                    <Link
-                      to="/vanzeiro/destinos/$id/passageiros/$pid"
-                      params={{ id: destinoId, pid: p.id }}
-                      className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl bg-surface px-3 py-2.5 transition-transform active:scale-[0.98]"
-                    >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft font-display font-bold text-primary">
-                        {p.nome.charAt(0)}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-bold leading-snug text-foreground">{p.nome}</p>
-                        <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <MapPin className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">
-                            {p.cidade} · {p.endereco}
-                          </span>
-                        </p>
-                        <p className="text-sm font-semibold text-foreground">{descricaoPlano(p)}</p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    </Link>
-                    {grupo.passageiros.length > 1 && (
-                      <div className="flex shrink-0 flex-col gap-1">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-full min-h-10 w-10 rounded-xl"
-                          disabled={i === 0}
-                          aria-label={`Subir ${p.nome} na busca`}
-                          onClick={() => moverPassageiro(p.id, -1)}
-                        >
-                          <ChevronUp className="!h-5 !w-5" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-full min-h-10 w-10 rounded-xl"
-                          disabled={i === grupo.passageiros.length - 1}
-                          aria-label={`Descer ${p.nome} na busca`}
-                          onClick={() => moverPassageiro(p.id, 1)}
-                        >
-                          <ChevronDown className="!h-5 !w-5" />
-                        </Button>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <ListaArrastavel destinoId={destinoId} cidade={grupo.cidade} passageiros={grupo.passageiros} numeros={numeros} />
             </div>
           ))}
         </div>
@@ -193,5 +154,107 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
         </Link>
       </Button>
     </section>
+  );
+}
+
+/**
+ * The passengers of one city, in pickup order. Hold a passenger for a moment and drag up or down to change
+ * the order (only inside the city: the cities follow the route). A quick tap still opens the passenger.
+ */
+function ListaArrastavel({ destinoId, cidade, passageiros, numeros }: { destinoId: string; cidade: string; passageiros: Passageiro[]; numeros: Map<string, number> }) {
+  const sensores = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const acabouDeArrastar = useRef(false);
+  // The click that ends a drag must not open the passenger: it is blocked before anything else sees it.
+  const bloquearClique = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const comecar = () => {
+    acabouDeArrastar.current = true;
+    window.addEventListener("click", bloquearClique, true);
+  };
+  const largarDepois = () =>
+    setTimeout(() => {
+      acabouDeArrastar.current = false;
+      window.removeEventListener("click", bloquearClique, true);
+    }, 300);
+  const aoSoltar = (e: DragEndEvent) => {
+    largarDepois();
+    if (e.over && e.active.id !== e.over.id) reordenarPassageiro(String(e.active.id), String(e.over.id));
+  };
+  return (
+    <DndContext id={`busca-${destinoId}-${cidade}`} sensors={sensores} collisionDetection={closestCenter} onDragStart={comecar} onDragEnd={aoSoltar} onDragCancel={largarDepois}>
+      <SortableContext items={passageiros.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+        <ul className="space-y-2">
+          {passageiros.map((p) => (
+            <ItemArrastavel
+              key={p.id}
+              p={p}
+              destinoId={destinoId}
+              numero={numeros.get(p.id) ?? 0}
+              arrastavel={passageiros.length > 1}
+              acabouDeArrastar={acabouDeArrastar}
+            />
+          ))}
+        </ul>
+      </SortableContext>
+    </DndContext>
+  );
+}
+
+function ItemArrastavel({
+  p,
+  destinoId,
+  numero,
+  arrastavel,
+  acabouDeArrastar,
+}: {
+  p: Passageiro;
+  destinoId: string;
+  numero: number;
+  arrastavel: boolean;
+  acabouDeArrastar: { current: boolean };
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: p.id, disabled: !arrastavel });
+  const estilo = { transform: transform ? CSS.Transform.toString({ ...transform, x: 0, scaleX: 1, scaleY: 1 }) : undefined, transition };
+  return (
+    <li ref={setNodeRef} style={estilo} className={cn("relative", isDragging && "z-10")} {...attributes} {...listeners} aria-roledescription="passageiro arrastável">
+      <Link
+        to="/vanzeiro/destinos/$id/passageiros/$pid"
+        params={{ id: destinoId, pid: p.id }}
+        onClick={(e) => {
+          if (acabouDeArrastar.current) e.preventDefault();
+        }}
+        draggable={false}
+        onDragStart={(e) => e.preventDefault()}
+        className={cn(
+          "flex min-w-0 select-none items-center gap-3 rounded-2xl bg-surface px-3 py-2.5 transition-shadow [-webkit-touch-callout:none]",
+          isDragging ? "shadow-card ring-2 ring-primary" : "active:scale-[0.98]",
+        )}
+      >
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft font-display text-lg font-bold text-primary"
+          aria-label={`${numero}º a ser buscado`}
+        >
+          {numero}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-bold leading-snug text-foreground">{p.nome}</p>
+          <p className="flex items-center gap-1 text-sm text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">
+              {p.cidade} · {p.endereco}
+            </span>
+          </p>
+          <p className="text-sm font-semibold text-foreground">{descricaoPlano(p)}</p>
+        </div>
+        {arrastavel && <GripVertical className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />}
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+      </Link>
+    </li>
   );
 }
