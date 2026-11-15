@@ -9,6 +9,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { responder } from "@/lib/respostas-store";
+import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { cn } from "@/lib/utils";
 import { historicoDoPassageiro } from "@/lib/viagem";
 import { useRegistroDasViagens } from "@/lib/cobrancas-store";
@@ -125,13 +126,7 @@ function ProximaViagem({ v, saida, passageiroId }: { v: MinhaProximaViagem; said
       </p>
       {v.aberta && (
         <div className="mt-2 grid grid-cols-2 gap-2.5">
-          <Button
-            variant={v.resposta === "vai" ? "success" : "cta"}
-            onClick={() => responder(passageiroId, v.data, "vai")}
-            aria-pressed={v.resposta === "vai"}
-          >
-            <Check className="!h-5 !w-5" /> Vou
-          </Button>
+          <BotaoVou passageiroId={passageiroId} destinoId={v.destino.id} data={v.data} resposta={v.resposta} />
           <Button
             variant={v.resposta === "nao-vai" ? "destructive" : "outline"}
             onClick={() => responder(passageiroId, v.data, "nao-vai")}

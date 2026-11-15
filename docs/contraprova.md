@@ -914,3 +914,14 @@ Conferência (15/11/2026):
 - [x] A3.4 Conferência: 218 testes (novo `src/test/a3-saiu-deve.test.tsx`), tipos, build; no navegador, a Beatriz sai do único destino e vê R$ 280,00 devendo, abre Pagamentos e o detalhe com Pagar com Pix; as 28 telas sem erro; criar conta, pedir para entrar e excluir conta sem mudança.
 - Achado: antes, isso só funcionava para quem ainda tinha outro destino (a confirmação de "Sair deste destino" já prometia "continua nos seus Pagamentos").
 - Próximo: com A1, A2 e A3 feitas, falta só o item 4 da seção 11.4 (contato da Política de Privacidade e advogado) antes do banco, que só entra quando o dono mandar.
+
+---
+
+## Lugares na van — etapa 1 da seção 12 (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Decisões do dono: lotou → impede "Vou"; quem respondeu primeiro; sem lista de espera; uma van só. Sem banco de dados.
+- [x] L1. Perfil do vanzeiro: campo "Lugares para passageiros" (1 a 60, ou em branco) e "· N lugares" no cartão Sua van.
+- [x] L2. Viagem do vanzeiro: selo "N de M lugares" verde / âmbar (lotada) / vermelho (passou); sem lugares, "N vão" como antes.
+- [x] L3. Passageiro (Início e Viagens): "Van lotada" apagado no lugar do "Vou"; quem já disse "Vou" mantém; "Não vou" sempre funciona e libera o lugar. A regra também vale ao gravar a resposta.
+- [x] L4. Cadastro de passageiro e aceitar pedido: aviso âmbar quando o destino passa dos lugares (só avisa).
+- [x] L5. Conferência: 224 testes (novo `src/test/lugares.test.ts`), tipos, build; no navegador: lugares 3 → "3 de 3 lugares" em âmbar e "Van lotada" para a Juliana nas duas telas, "Não vou" funcionando; lugares 0 → "Use um número de 1 a 60."; aviso no resumo do cadastro sem rolagem; as 28 telas sem erro; Inícios sem rolar como antes.
+- Próxima: etapa 2 da seção 12 (tela do mapa com van simulada), só com a coordenada do dono.

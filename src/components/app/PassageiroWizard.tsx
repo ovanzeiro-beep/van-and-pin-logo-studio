@@ -24,7 +24,9 @@ import {
   telefoneValido,
   type RascunhoPassageiro,
 } from "@/lib/passageiros";
-import { salvarPassageiro, usePassageiros } from "@/lib/passageiros-store";
+import { salvarPassageiro, usePassageiros, usePassageirosDoDestino } from "@/lib/passageiros-store";
+import { destinoPassaDosLugares } from "@/lib/lugares";
+import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { cn } from "@/lib/utils";
 
 const PERGUNTAS = ["Nome e WhatsApp.", "Onde a pessoa embarca?", "Como a pessoa paga?", "Confira antes de salvar."];
@@ -104,7 +106,7 @@ export function PassageiroWizard({
       )}
       {passo === 2 && <Passo2 r={r} mudar={mudar} pontos={pontos} />}
       {passo === 3 && <Passo3 r={r} mudar={mudar} />}
-      {passo === 4 && <Resumo r={r} destino={destino} />}
+      {passo === 4 && <Resumo r={r} destino={destino} novo={!inicial} />}
     </PassosLayout>
   );
 }
@@ -289,10 +291,17 @@ function Passo3({ r, mudar }: PassoProps) {
   );
 }
 
-function Resumo({ r, destino }: { r: RascunhoPassageiro; destino: Destino }) {
+function Resumo({ r, destino, novo }: { r: RascunhoPassageiro; destino: Destino; novo: boolean }) {
   const p = passageiroDeRascunho(r, destino);
+  const lugares = usePerfilVanzeiro().van.lugares;
+  const noDestino = usePassageirosDoDestino(destino.id).length + (novo ? 1 : 0);
   return (
     <>
+      {novo && destinoPassaDosLugares(noDestino, lugares) && (
+        <p className="rounded-2xl bg-warning-soft px-3.5 py-2 text-sm font-semibold text-warning" role="status">
+          Este destino fica com {noDestino} passageiros e a van tem {lugares} lugares. Nem todos vão poder ir na mesma viagem.
+        </p>
+      )}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{nomeDestino(destino)}</p>
         <p className="mt-0.5 font-display text-lg font-bold leading-snug text-foreground">{p.nome}</p>

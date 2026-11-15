@@ -39,7 +39,7 @@ Hoje: `PerfilVanzeiro` em `src/lib/vanzeiro-store.ts`.
 | conta | de qual conta é |
 | nome, telefone | aparecem para os passageiros |
 | chave Pix | aparece para os passageiros na hora de pagar |
-| van | modelo e placa |
+| van | modelo, placa e lugares para passageiros (em branco = não informado) |
 
 **Quem vê:** o próprio vanzeiro; os passageiros dele veem nome, telefone, Pix e van. **Quem muda:** só o próprio vanzeiro.
 

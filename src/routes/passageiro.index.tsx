@@ -15,6 +15,7 @@ import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/mi
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { responder } from "@/lib/respostas-store";
+import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro, situacaoParaPassageiro } from "@/lib/viagem";
 import { confirmarNaVan } from "@/lib/viagem-store";
@@ -91,13 +92,7 @@ function InicioPassageiro() {
           {prox && <Prazo v={prox} />}
           {prox?.aberta && (
             <div className="mt-2 grid grid-cols-2 gap-3">
-              <Button
-                variant={prox.resposta === "vai" ? "success" : "cta"}
-                onClick={() => responder(prox.eu.id, prox.data, "vai")}
-                aria-pressed={prox.resposta === "vai"}
-              >
-                <Check className="!h-5 !w-5" /> Vou
-              </Button>
+              <BotaoVou passageiroId={prox.eu.id} destinoId={prox.destino.id} data={prox.data} resposta={prox.resposta} />
               <Button
                 variant={prox.resposta === "nao-vai" ? "destructive" : "outline"}
                 onClick={() => responder(prox.eu.id, prox.data, "nao-vai")}

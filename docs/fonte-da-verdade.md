@@ -486,7 +486,7 @@ O dono pediu: o passageiro ver onde a van está, em tempo real, com informação
 - **Decisões do dono:** (1) lotou: impedir novos "Vou" ou só avisar; (2) quem tem prioridade no lugar; (3) lista de espera; (4) uma van ou mais de uma por vanzeiro.
 
 ### 12.4 Plano por etapas
-1. **Lugares na van** — agora, sem banco.
+1. **Lugares na van** — agora, sem banco. **Decisões do dono (15/11/2026):** lotou → impede novos "Vou"; o lugar é de quem respondeu primeiro; sem lista de espera; uma van só. **Feita em 15/11/2026:** campo "Lugares para passageiros" no Editar do Perfil do vanzeiro (1 a 60; em branco = não informado, nada limita) e "Placa … · 15 lugares" no cartão Sua van; na Viagem, o selo "N de M lugares" (verde com lugar livre, âmbar lotada, vermelho se passou; sem lugares informados continua "N vão"); no passageiro (Início e aba Viagens), "Van lotada" apagado no lugar do "Vou" quando todos os lugares daquela viagem têm "Vou" — quem já disse "Vou" mantém o lugar, "Não vou" sempre funciona e libera o lugar; no resumo do cadastro de passageiro (e ao aceitar pedido), o aviso âmbar "Este destino fica com N passageiros e a van tem M lugares. Nem todos vão poder ir na mesma viagem." (só avisa). Exemplo: Sprinter com 15 lugares.
 2. **Tela do mapa com van simulada** — agora, sem banco, para o dono ver e aprovar (inclui marcar o ponto de embarque no mapa).
 3. **Tempo real de verdade** — junto com o banco (posição do vanzeiro chegando no passageiro; notificação "a van está chegando").
 4. **App Android** — depois, para o GPS funcionar com a tela apagada.

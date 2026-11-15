@@ -37,11 +37,11 @@ describe("Primeiro uso do vanzeiro", () => {
   });
 
   it("greets by first name and hides an empty van", () => {
-    const novo: PerfilVanzeiro = { nome: "Bruna Lima", telefone: "", pix: "", van: { modelo: "", placa: "" } };
+    const novo: PerfilVanzeiro = { nome: "Bruna Lima", telefone: "", pix: "", van: { modelo: "", placa: "", lugares: null } };
     expect(primeiroNome(novo)).toBe("Bruna");
     expect(primeiroNome({ ...novo, nome: " " })).toBe("Vanzeiro");
     expect(textoDaVan(novo)).toBe("");
-    expect(textoDaVan({ ...novo, van: { modelo: "Sprinter", placa: "ABC-1D23" } })).toBe("Sprinter · ABC-1D23");
+    expect(textoDaVan({ ...novo, van: { modelo: "Sprinter", placa: "ABC-1D23", lugares: 15 } })).toBe("Sprinter · ABC-1D23");
   });
 });
 

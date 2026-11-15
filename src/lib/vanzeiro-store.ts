@@ -6,7 +6,8 @@ export type PerfilVanzeiro = {
   nome: string;
   telefone: string;
   pix: string;
-  van: { modelo: string; placa: string };
+  /** lugares: seats for passengers (null = não informado, nothing is limited). */
+  van: { modelo: string; placa: string; lugares: number | null };
 };
 
 // The vanzeiro's profile. The Pix key saved here is the one passengers see.
@@ -24,6 +25,8 @@ function inscrever(o: () => void) {
   return () => ouvintes.delete(o);
 }
 
+export const obterPerfilVanzeiro = () => perfil;
+
 export function usePerfilVanzeiro() {
   return useSyncExternalStore(inscrever, () => perfil, () => inicial);
 }
@@ -35,7 +38,7 @@ export function salvarPerfilVanzeiro(novo: PerfilVanzeiro) {
 
 /** New vanzeiro account: only the name typed in "Criar conta" is known. */
 export function perfilNovo(nome: string) {
-  salvarPerfilVanzeiro({ nome: nome.trim(), telefone: "", pix: "", van: { modelo: "", placa: "" } });
+  salvarPerfilVanzeiro({ nome: nome.trim(), telefone: "", pix: "", van: { modelo: "", placa: "", lugares: null } });
 }
 
 /** Editar do Perfil: only name and phone are required; Pix and van may stay blank ("Não informado"). */

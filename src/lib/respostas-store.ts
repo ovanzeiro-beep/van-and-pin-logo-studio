@@ -3,8 +3,10 @@ import { vanzeiroExemplo, type RespostaViagem } from "@/data/exemplo";
 import { agora, dataDeHoje } from "@/lib/agora";
 
 import { obterDestinos } from "@/lib/destinos-store";
-import { obterPassageiros } from "@/lib/passageiros-store";
+import { obterPassageiros, usePassageiros } from "@/lib/passageiros-store";
 import { prazoPassou } from "@/lib/destinos";
+import { contarVou, podeDizerVou } from "@/lib/lugares";
+import { obterPerfilVanzeiro, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { avisoDeResposta } from "@/lib/avisos";
 import { trocarAviso } from "@/lib/avisos-store";
 
@@ -45,9 +47,22 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
   const d = obterDestinos().find((d) => d.id === p?.destinoId);
   if (!p || !d || estaFechada(d.id, data) || prazoPassou(d, data, agora())) return;
   if (respostas[data]?.[passageiroId] === resposta) return;
+  if (resposta === "vai") {
+    const doDia = respostas[data] ?? {};
+    const vao = contarVou(obterPassageiros(), d.id, doDia);
+    if (!podeDizerVou(obterPerfilVanzeiro().van.lugares, vao, doDia[passageiroId])) return;
+  }
   respostas = { ...respostas, [data]: { ...(respostas[data] ?? {}), [passageiroId]: resposta } };
   ouvintes.forEach((o) => o());
   trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje()));
+}
+
+/** Passenger screens: "Van lotada" instead of "Vou" when every seat of this trip is taken. */
+export function useVanLotadaPara(passageiroId: string, destinoId: string, data: string) {
+  const doDia = useRespostasDoDia(data);
+  const lugares = usePerfilVanzeiro().van.lugares;
+  const vao = contarVou(usePassageiros(), destinoId, doDia);
+  return !podeDizerVou(lugares, vao, doDia[passageiroId]);
 }
 
 export const obterRespostasParaTeste = (data: string) => respostasDoDia(respostas, data);

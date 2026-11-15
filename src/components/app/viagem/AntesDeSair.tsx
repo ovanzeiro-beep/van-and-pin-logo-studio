@@ -15,6 +15,10 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { nomeDestino, textoDaVolta } from "@/lib/destinos";
 import { LinhaPassageiro, Secao } from "./partes";
+import { situacaoDosLugares, textoDosLugares } from "@/lib/lugares";
+import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+
+const COR_DOS_LUGARES = { livre: "pago", lotada: "pendente", passou: "deve" } as const;
 
 /** Before leaving: the trip of the day, who goes in pickup order, who didn't answer and who doesn't go. */
 export function AntesDeSair({
@@ -35,6 +39,7 @@ export function AntesDeSair({
   prazo: string;
   aoIniciar: () => void;
 }) {
+  const lugares = usePerfilVanzeiro().van.lugares;
   const propsDoBotao = { variant: "cta" as const, size: "xl" as const, className: "w-full rounded-2xl font-display font-bold", disabled: vao.length === 0 };
   const botao = (
     <Button {...propsDoBotao}>
@@ -50,7 +55,7 @@ export function AntesDeSair({
           label="Viagem de hoje"
           value={nomeDestino(destino)}
           detail={`Saída ${destino.saida} · ${destino.volta ? `volta ${textoDaVolta(destino)}` : "sem volta"}`}
-          aside={<StatusBadge status="pago">{vao.length} {vao.length === 1 ? "vai" : "vão"}</StatusBadge>}
+          aside={<StatusBadge status={COR_DOS_LUGARES[situacaoDosLugares(vao.length, lugares)]}>{textoDosLugares(vao.length, lugares)}</StatusBadge>}
         />
       </div>
 

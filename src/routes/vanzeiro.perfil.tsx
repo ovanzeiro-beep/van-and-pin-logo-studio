@@ -1,8 +1,9 @@
 import { NotificacoesNoCelular } from "@/components/app/NotificacoesNoCelular";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Car, Check, Pencil, Phone, QrCode, RectangleHorizontal, User, X } from "lucide-react";
+import { Car, Check, Pencil, Phone, QrCode, RectangleHorizontal, User, X, Armchair } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
+import { lerLugares } from "@/lib/lugares";
 import { ExcluirMinhaConta } from "@/components/app/ExcluirMinhaConta";
 import { LinhaPerfil } from "@/components/app/LinhaPerfil";
 import { OpcoesDaConta } from "@/components/app/OpcoesDaConta";
@@ -59,7 +60,9 @@ function AbaPerfil() {
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sua van</p>
                   <p className="font-display text-lg font-bold leading-tight text-foreground">{ou(perfil.van.modelo)}</p>
-                  <p className="text-sm text-muted-foreground">{perfil.van.placa ? `Placa ${perfil.van.placa}` : "Placa não informada"}</p>
+                  <p className="text-sm text-muted-foreground">{perfil.van.placa ? `Placa ${perfil.van.placa}` : "Placa não informada"}
+                    {" · "}
+                    {perfil.van.lugares === null ? "lugares não informados" : `${perfil.van.lugares} ${perfil.van.lugares === 1 ? "lugar" : "lugares"}`}</p>
                 </div>
               </div>
             </section>
@@ -82,14 +85,16 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
   const [pix, setPix] = useState(perfil.pix);
   const [modelo, setModelo] = useState(perfil.van.modelo);
   const [placa, setPlaca] = useState(perfil.van.placa);
-  const pode = perfilPodeSalvar({ nome, telefone });
+  const [lugares, setLugares] = useState(perfil.van.lugares === null ? "" : String(perfil.van.lugares));
+  const lugaresLidos = lerLugares(lugares);
+  const pode = perfilPodeSalvar({ nome, telefone }) && lugaresLidos !== "invalido";
 
   const salvar = () => {
     salvarPerfilVanzeiro({
       nome: nome.trim(),
       telefone: somenteDigitos(telefone),
       pix: pix.trim(),
-      van: { modelo: modelo.trim(), placa: placa.trim().toUpperCase() },
+      van: { modelo: modelo.trim(), placa: placa.trim().toUpperCase(), lugares: lugaresLidos === "invalido" ? null : lugaresLidos },
     });
     fechar();
   };
@@ -117,6 +122,16 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
           onChange={(e) => setPlaca(e.target.value.toUpperCase())}
         />
       </div>
+      <CampoComIcone
+        id="v-lugares"
+        label="Lugares para passageiros"
+        icon={Armchair}
+        inputMode="numeric"
+        placeholder="Ex.: 15"
+        value={lugares}
+        erro={lugaresLidos === "invalido" ? "Use um número de 1 a 60." : undefined}
+        onChange={(e) => setLugares(e.target.value.replace(/\D/g, ""))}
+      />
       <div className="grid grid-cols-2 gap-3 pt-1">
         <Button size="lg" variant="outline" onClick={fechar}>
           <X className="!h-5 !w-5" /> Cancelar

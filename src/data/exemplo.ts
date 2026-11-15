@@ -7,7 +7,7 @@ export const vanzeiroExemplo = {
   telefone: "43999551234",
   /** Chave Pix que aparece para os passageiros. */
   pix: "carlos.vanzeiro@email.com",
-  van: { modelo: "Sprinter", placa: "ABC-1D23" },
+  van: { modelo: "Sprinter", placa: "ABC-1D23", lugares: 15 as number | null },
   viagemHoje: {
     /** Destino da viagem de hoje: nome e horários vêm do cadastro dele. */
     destinoId: "centro-unisul",
