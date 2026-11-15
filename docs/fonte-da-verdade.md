@@ -458,3 +458,35 @@ O dono perguntou o que falta arrumar, corrigir e remover para o banco poder entr
 - **Etapa J — Documento do banco:** `docs/banco-de-dados.md` com tudo o que o banco guarda, quem vê o quê, o que roda sozinho no servidor e o que muda em cada função. É o item 7 da Etapa C. **Só o documento.** **Feita em 15/11/2026.**
 - **Etapa K — Guardar o que hoje some (sem banco):** itens 1, 2, 3 e 9 da lista 11.2. **Feita em 15/11/2026, sem mudar nada na tela:** embarques e faltas avisadas no prazo viram registros (o histórico do passageiro lê deles, não mais dos exemplos); a viagem ganha número próprio e hora de início e de fim, e todo passo passa por uma função só; as respostas fechadas viram registro; os pedidos nunca somem (ficam "aguardando", "aceito" com a matrícula criada, ou "recusado", com datas); quem sai de um destino continua guardado com o dia da saída; a ordem de busca na cidade virou um número próprio (1, 2, 3…), trocado pelas setas.
 - **Depois das decisões do dono (11.4) e só quando ele mandar:** banco, login real, tarefas no servidor (item 4), espera e erro de internet (item 5), dois celulares (item 6), números do banco (item 7), relógio real (item 8) e remoção dos exemplos (11.3).
+
+---
+
+## 12. Mapa da van em tempo real e lugares na van (análise de 15/11/2026, pedida pelo dono)
+
+O dono pediu: o passageiro ver onde a van está, em tempo real, com informação de onde ela está passando; e o controle de quantos lugares a van tem.
+
+### 12.1 O que já existe
+- No Início do passageiro: "Aguardando a saída", "Saiu da garagem", "A caminho", "Você é o próximo — fique pronto no seu ponto", "Na van".
+- No vanzeiro: "Abrir no mapa" (Google Maps no endereço do próximo passageiro).
+- A van tem só modelo e placa; não existe número de lugares.
+
+### 12.2 Mapa da van em tempo real (o que daria)
+- **Passageiro:** mapa com a van andando e o ponto de embarque dele; "A van está em <cidade/rua>"; "Chega no seu ponto em uns N minutos" e "Faltam N paradas antes da sua"; notificação "A van está chegando"; sem sinal, "Última posição há N minutos"; na volta, "Você é o próximo a descer".
+- **Vanzeiro:** a localização liga sozinha em "Iniciar viagem" e desliga ao encerrar, com o aviso "Sua localização está sendo mostrada aos passageiros desta viagem".
+- **Limites:** (1) precisa do banco e de um servidor para a posição sair de um celular e chegar no outro; (2) como site instalado, o GPS só funciona com o app aberto na tela (dá para impedir a tela de apagar); com a tela apagada, só como app Android; (3) sem sinal, a posição não chega; (4) para calcular quanto falta, cada ponto de embarque precisa estar marcado no mapa (hoje é só texto).
+- **Privacidade (LGPD):** localização só com a viagem em andamento, só para os passageiros dessa viagem, some ao encerrar; a Política de Privacidade precisa dizer isso.
+- **Custo:** sugestão de usar mapa gratuito (OpenStreetMap) em vez do Google Maps, que cobra por uso.
+
+### 12.3 Lugares na van (o que daria)
+- Campo "Lugares para passageiros" no Perfil, junto de modelo e placa.
+- Na Viagem do vanzeiro: "N de M lugares" e aviso quando lotar.
+- No passageiro: "Van lotada" no lugar do "Vou", quando lotar.
+- Ao aceitar pedido ou cadastrar passageiro: aviso quando o destino passa do número de lugares.
+- Levar mais gente que os lugares é infração de trânsito: o controle protege o vanzeiro.
+- **Decisões do dono:** (1) lotou: impedir novos "Vou" ou só avisar; (2) quem tem prioridade no lugar; (3) lista de espera; (4) uma van ou mais de uma por vanzeiro.
+
+### 12.4 Plano por etapas
+1. **Lugares na van** — agora, sem banco.
+2. **Tela do mapa com van simulada** — agora, sem banco, para o dono ver e aprovar (inclui marcar o ponto de embarque no mapa).
+3. **Tempo real de verdade** — junto com o banco (posição do vanzeiro chegando no passageiro; notificação "a van está chegando").
+4. **App Android** — depois, para o GPS funcionar com a tela apagada.
