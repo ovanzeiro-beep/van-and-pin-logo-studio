@@ -4,7 +4,8 @@ import { obterAvisos, ouvirAvisos } from "@/lib/avisos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
-import { obterTodosOsPedidos, ouvirPassageiros } from "@/lib/passageiros-store";
+import { obterMudancasDeEndereco, obterTodosOsPedidos, ouvirPassageiros, type MudancaDeEndereco } from "@/lib/passageiros-store";
+import { textoDaDistancia } from "@/lib/endereco";
 import { idDoVanzeiro, obterSessao, type Papel } from "@/lib/sessao";
 import { obterMinhasMatriculas } from "@/lib/sessao-passageiro";
 
@@ -55,6 +56,16 @@ export function notificacaoDoPedido(p: PedidoEntrada, nomeDoDestino: string | un
   };
 }
 
+/** A passenger asked to board farther than 1 km from the agreed point: the vanzeiro must answer. */
+export function notificacaoDaMudanca(m: Pick<MudancaDeEndereco, "id" | "nome" | "distanciaKm">, nomeDoDestino: string | undefined): Notificacao {
+  return {
+    titulo: "Mudança de endereço",
+    corpo: `${m.nome} quer mudar onde embarca${nomeDoDestino ? ` em ${nomeDoDestino}` : ""}${m.distanciaKm !== null ? ` (${textoDaDistancia(m.distanciaKm)} do ponto combinado)` : ""}`,
+    url: "/vanzeiro/notificacoes",
+    tag: m.id,
+  };
+}
+
 /** Only what is new and for the person using this phone. */
 export function novosParaMim<T extends { id: string }>(conhecidos: Set<string>, lista: T[], ehMeu: (x: T) => boolean): T[] {
   return lista.filter((x) => !conhecidos.has(x.id) && ehMeu(x));
@@ -92,11 +103,13 @@ export function useNotificarAvisosNovos() {
     if (typeof window === "undefined" || !("Notification" in window)) return;
     let avisosConhecidos = new Set(obterAvisos().map((a) => a.id));
     let pedidosConhecidos = new Set(obterTodosOsPedidos().map((p) => p.id));
+    let mudancasConhecidas = new Set(obterMudancasDeEndereco().map((m) => m.id));
 
     const verificar = () => {
       const papel = obterSessao().papel;
       const avisos = obterAvisos();
       const pedidos = obterTodosOsPedidos();
+      const mudancas = obterMudancasDeEndereco();
       const avisar = papel !== null && permissaoAtual() === "ativada" && document.visibilityState === "hidden";
       if (avisar) {
         const id = meuId(papel);
@@ -108,10 +121,15 @@ export function useNotificarAvisosNovos() {
             const d = obterDestinos().find((x) => x.id === p.destinoId);
             void mostrar(notificacaoDoPedido(p, d ? nomeDestino(d) : undefined)).catch(() => undefined);
           }
+          for (const m of novosParaMim(mudancasConhecidas, mudancas, (x) => x.vanzeiroId === id && x.situacao === "aguardando")) {
+            const d = obterDestinos().find((x) => x.id === m.destinoId);
+            void mostrar(notificacaoDaMudanca(m, d ? nomeDestino(d) : undefined)).catch(() => undefined);
+          }
         }
       }
       avisosConhecidos = new Set(avisos.map((a) => a.id));
       pedidosConhecidos = new Set(pedidos.map((p) => p.id));
+      mudancasConhecidas = new Set(mudancas.map((m) => m.id));
     };
 
     const pararAvisos = ouvirAvisos(verificar);

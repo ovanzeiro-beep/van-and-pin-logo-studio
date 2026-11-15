@@ -504,7 +504,7 @@ O dono pediu: o passageiro ver onde a van está, em tempo real, com informação
 - **Vanzeiro ao aceitar:** no passo "Onde embarca", "Preenchido pelo passageiro, com o ponto marcado no mapa." — cidade e endereço só para conferir (não dá para mudar); ele define plano e valor. **Cadastrar direto** (sem pedido) continua: o vanzeiro preenche cidade e endereço (sem ponto; a regra usa o centro da cidade).
 - **Passageiro muda onde embarca:** "Mudar onde embarco" em cada destino do Perfil e no mapa da van abre **"Onde você embarca"** (cidade, endereço, mapa). Até 1 km do ponto combinado (ou do centro da cidade, se não houver ponto): **Salvar** e muda na hora. Mais longe (ou outra cidade): o título do mapa avisa "A N km do ponto combinado (mais de 1 km): o vanzeiro precisa aceitar." e o botão vira **Enviar ao vanzeiro** → "Mudança enviada ao vanzeiro. Até ele aceitar, a van continua passando em: <endereço atual>." O endereço saiu do "Editar" do Perfil (lá ficam só nome e telefone).
 - **Vanzeiro:** em Notificações, a seção **"Mudanças de endereço"** (nome, destino, distância, "Hoje" e "Quer mudar para", **Recusar** / **Aceitar**); conta no número do sininho. A pessoa recebe aviso "Endereço aceito" ou "Endereço não aceito" no sininho.
-- **Fica para depois:** a notificação no celular (A2) ainda não sai para "mudança de endereço" nova; só para os avisos e pedidos.
+- **Notificação no celular (feita em 15/11/2026):** com o app minimizado e as notificações ativadas, o vanzeiro recebe "Mudança de endereço — <nome> quer mudar onde embarca em <destino> (N km do ponto combinado)"; tocar abre as Notificações. Mudança perto (até 1 km) não notifica, porque salva direto.
 
 ---
 

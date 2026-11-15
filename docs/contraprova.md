@@ -947,7 +947,7 @@ Conferência (15/11/2026):
 - [x] E3. "Mudar onde embarco" (Perfil e mapa da van): até 1 km salva; mais longe vai ao vanzeiro, valendo o endereço antigo até ele responder.
 - [x] E4. Vanzeiro: "Mudanças de endereço" em Notificações (Aceitar / Recusar), no número do sininho; a pessoa recebe "Endereço aceito" / "Endereço não aceito".
 - [x] E5. Conferência: 236 testes (novo `src/test/endereco.test.ts`), tipos, build; no navegador: conta nova pede para entrar com ponto, vanzeiro aceita com tudo preenchido, Juliana muda para 27 km → enviado → vanzeiro aceita → "Endereço aceito"; nenhuma das telas novas rola nos 3 tamanhos (o passo 1 do pedido rola 34px no iPhone SE, menos que os 58px de antes); as 30 telas sem erro; contas (criar, pedir, sair, excluir) sem mudança.
-- Pendência pequena: notificação no celular (A2) para mudança de endereço nova.
+- Pendência pequena: notificação no celular (A2) para mudança de endereço nova. **Feita em 15/11/2026:** notificação "Mudança de endereço" para o vanzeiro (só as que precisam de aprovação); 242 testes (casos novos em `src/test/notificacoes-app.test.tsx`), tipos, build, 30 telas sem erro.
 
 ---
 
