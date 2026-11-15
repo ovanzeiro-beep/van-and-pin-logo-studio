@@ -969,3 +969,13 @@ Conferência (15/11/2026):
 - [x] P1.5 Testes, tipos, build, conferência no navegador, merge.
 - Conferência: 246 testes (novo `src/test/etapa-p1.test.ts`; regra da primeira marcação atualizada em `src/test/endereco.test.ts`), tipos, build; no navegador: mapa sem ponto mostra o aviso e não mostra pino, primeira marcação salva direto, mudança longe → vanzeiro recusa com confirmação, vanzeiro troca a cidade → aviso do ponto apagado sem rolagem nos 3 tamanhos; 30 telas sem erro.
 - Próxima: Etapa P2 (item 3 precisa da decisão do dono; item 6).
+
+---
+
+## Etapa P2 — Itens 3 e 6 da seção 15 (feita em 15/11/2026)
+**Situação:** feita (merge na `main`). Decisão do dono no item 3: A. Sem banco de dados.
+- [x] P2.1 Destino: "Ordem fixa da busca, com todos os passageiros. Segure e arraste para mudar."
+- [x] P2.2 Viagem: "Quem vai · na ordem de hoje".
+- [x] P2.3 "Abrir no mapa": ponto marcado (coordenadas) quando existe; senão o endereço escrito.
+- [x] P2.4 Conferência: 247 testes (novo `src/test/etapa-p2.test.ts`), tipos, build; no navegador, Juliana com ponto abre nas coordenadas e os outros pelo endereço; 30 telas sem erro; Viagem rola como antes.
+- Próxima: Etapa P3 (busca de cidade/endereço para o mapa e Política de Privacidade), antes do piloto real.

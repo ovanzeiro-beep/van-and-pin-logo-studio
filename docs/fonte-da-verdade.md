@@ -514,7 +514,7 @@ O dono pediu: o passageiro ver onde a van está, em tempo real, com informação
 
 **Como ficou (feito em 15/11/2026):**
 - O círculo de cada passageiro mostra o **número da busca no destino inteiro** (1, 2, 3…): as cidades seguem a ordem do caminho e, dentro de cada cidade, a ordem escolhida. **Correção (análise de 15/11/2026, item 3 da seção 15):** só é o mesmo número da aba Viagem quando todos vão; a aba Viagem numera só quem disse "Vou".
-- **Sem setas.** Dica no alto da lista: "Segure o passageiro e arraste para mudar a ordem da busca." e o ícone de arrastar (⋮⋮) em cada passageiro.
+- **Sem setas.** Dica no alto da lista: "Ordem fixa da busca, com todos os passageiros. Segure e arraste para mudar." (texto mudado na Etapa P2) e o ícone de arrastar (⋮⋮) em cada passageiro.
 - **Segurar um instante e arrastar** muda a ordem (só dentro da mesma cidade: as cidades seguem o caminho). Um **toque rápido** continua abrindo o passageiro; **deslizar rápido** continua rolando a tela. No computador, funciona com o mouse.
 
 ---
@@ -539,5 +539,5 @@ Cada item foi confirmado rodando o app (não é suposição).
 
 ### 15.4 Plano
 - **Etapa P1:** itens 1, 2, 4 e 5. **Feita em 15/11/2026:** (1) a mudança de endereço aguardando vira "cancelada" quando a pessoa sai, é removida ou o destino é excluído, some das Notificações do vanzeiro e nunca é aplicada a quem não está mais no destino; (2) quando o vanzeiro muda a cidade de embarque de um passageiro, o ponto no mapa é apagado, com o aviso "Mudou a cidade: o ponto que o passageiro marcou no mapa será apagado. Ele marca de novo." (mudar só o endereço mantém o ponto); (4) "Recusar" mudança de endereço pergunta "Recusar a mudança de <nome>? Continua valendo: <endereço>. Não dá para desfazer."; (5) sem ponto marcado, o mapa da van não mostra pino falso: aparece "Você ainda não marcou o seu ponto no mapa." e o botão "Marcar meu ponto no mapa"; marcar pela primeira vez na mesma cidade salva direto (outra cidade continua indo para o vanzeiro).
-- **Etapa P2:** item 3 (depois da decisão do dono) e item 6.
+- **Etapa P2:** item 3 (depois da decisão do dono) e item 6. **Decisão do dono: A** (cada tela com o seu sentido, com explicação). **Feita em 15/11/2026:** na tela do destino, a dica diz "Ordem fixa da busca, com todos os passageiros. Segure e arraste para mudar."; na aba Viagem, a lista é "Quem vai · na ordem de hoje" (numera só quem disse "Vou"); "Abrir no mapa" na busca abre o Google Maps no ponto marcado pelo passageiro (coordenadas) e, sem ponto, no endereço escrito.
 - **Etapa P3 (antes do piloto real):** itens 7 e 8.

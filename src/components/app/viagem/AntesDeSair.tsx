@@ -60,7 +60,7 @@ export function AntesDeSair({
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-3 pt-4">
-        <Secao titulo="Quem vai · na ordem da busca">
+        <Secao titulo="Quem vai · na ordem de hoje">
           {vao.length === 0 ? (
             <p className="rounded-2xl bg-card px-4 py-3 text-sm text-muted-foreground shadow-card">Ninguém confirmou ainda.</p>
           ) : (

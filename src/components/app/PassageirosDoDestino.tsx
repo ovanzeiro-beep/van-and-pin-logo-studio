@@ -136,7 +136,7 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
         <div className="space-y-3">
           {porCidade(passageiros, destino).some((g) => g.passageiros.length > 1) && (
             <p className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
-              <GripVertical className="h-3.5 w-3.5 shrink-0" /> Segure o passageiro e arraste para mudar a ordem da busca.
+              <GripVertical className="h-3.5 w-3.5 shrink-0" /> Ordem fixa da busca, com todos os passageiros. Segure e arraste para mudar.
             </p>
           )}
           {porCidade(passageiros, destino).map((grupo) => (

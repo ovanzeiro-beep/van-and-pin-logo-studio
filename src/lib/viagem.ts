@@ -243,9 +243,10 @@ export function encerrarViagem(v: ViagemDoDia): ViagemDoDia {
   return v.fase === "chegada" ? { ...v, fase: "encerrada" } : v;
 }
 
-/** Opens the address in Google Maps (the app on the phone). */
-export function linkDoMapa(p: Pick<Passageiro, "endereco" | "cidade">) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.endereco}, ${p.cidade}`)}`;
+/** Opens Google Maps (the app on the phone): on the point the passenger marked, else on the written address. */
+export function linkDoMapa(p: Pick<Passageiro, "endereco" | "cidade" | "ponto">) {
+  const busca = p.ponto ? `${p.ponto.lat},${p.ponto.lng}` : `${p.endereco}, ${p.cidade}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busca)}`;
 }
 
 // ---------- the passenger's side ----------
