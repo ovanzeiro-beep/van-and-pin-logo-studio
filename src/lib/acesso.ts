@@ -42,6 +42,23 @@ export function escolherPapel(papel: Papel) {
   mudarSessao({ papel, contaNova: null });
 }
 
+/**
+ * W1: a real account just logged in. Until each part of the app moves to the database (W2 to W8), what is in memory
+ * starts empty for it (the samples belong to the sample vanzeiro), as "Criar conta" already did.
+ */
+export function comecarContaDeVerdade(conta: { id: string; nome: string }) {
+  limparViagens();
+  limparRespostas();
+  limparCobrancas();
+  limparPassageiros();
+  limparDestinos();
+  limparAvisos();
+  limparViagensEncerradas();
+  limparGastos();
+  mudarSessao({ vanzeiroId: conta.id, contaNova: null, passageiro: { nome: conta.nome, telefone: "", passageiroId: null, pedidoId: null } });
+  perfilNovo(conta.nome);
+}
+
 export function sair() {
   mudarSessao({ papel: null, contaNova: null });
 }

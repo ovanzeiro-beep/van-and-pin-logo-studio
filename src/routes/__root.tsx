@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useRelogioDoApp } from "../lib/viagem-store";
 import { useFuncionarSemSinal } from "../lib/sem-sinal";
 import { useNotificarAvisosNovos } from "../lib/notificacoes";
+import { useContaDoBanco } from "../lib/conta";
 import "../lib/instalar";
 
 function NotFoundComponent() {
@@ -140,6 +141,8 @@ function RootComponent() {
   useRelogioDoApp();
   useFuncionarSemSinal();
   useNotificarAvisosNovos();
+  // W1: who is logged in (real account in Supabase).
+  useContaDoBanco();
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { sair } from "@/lib/acesso";
+import { excluirContaDoBanco, sairDaConta } from "@/lib/conta";
 import { contaComViagemEmAndamento, excluirMinhaConta } from "@/lib/exclusoes";
 import { useViagensDoDia } from "@/lib/viagem-store";
 import { fazer } from "@/lib/acoes";
@@ -28,7 +28,10 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
   const excluir = async () => {
     const r = await fazer(() => excluirMinhaConta(papel));
     if (!r.ok) return;
-    sair();
+    // W1: the login and the account in the database go too.
+    const banco = await fazer(excluirContaDoBanco);
+    if (!banco.ok) return;
+    await sairDaConta();
     await navigate({ to: "/entrar" });
   };
 

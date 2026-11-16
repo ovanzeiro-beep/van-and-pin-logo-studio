@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Lock, Mail, User } from "lucide-react";
+import { ArrowLeft, Lock, Mail, MailCheck, User } from "lucide-react";
 import { AuthLayout, OuDivisor } from "@/components/app/AuthLayout";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { GoogleButton } from "@/components/app/GoogleButton";
@@ -17,6 +17,9 @@ import {
   type DadosCadastro,
 } from "@/lib/cadastro";
 import { criarConta } from "@/lib/acesso";
+import { fazer } from "@/lib/acoes";
+import { criarContaComEmail, entrarComGoogle } from "@/lib/conta";
+import { USA_BANCO } from "@/lib/supabase";
 
 export const Route = createFileRoute("/criar-conta")({
   head: () => ({
@@ -38,6 +41,8 @@ function CriarConta() {
   const [dados, setDados] = useState<DadosCadastro>(rascunhoDoCadastro);
   const [passo, setPasso] = useState<1 | 2>(1);
   const [tentou, setTentou] = useState(false);
+  // W1: when Supabase asks to confirm the e-mail before the first login.
+  const [confirmarEmail, setConfirmarEmail] = useState(false);
   // Keeps what was typed while the person reads the Termos or the Política and comes back.
   useEffect(() => guardarRascunhoDoCadastro(dados), [dados]);
 
@@ -48,6 +53,24 @@ function CriarConta() {
     setTentou(false);
     setPasso(p);
   };
+
+  if (confirmarEmail) {
+    return (
+      <AuthLayout titulo="Confirme seu e-mail" subtitulo="Falta só um passo." rodape={null}>
+        <div className="flex flex-col items-center text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-success-soft text-success">
+            <MailCheck className="h-8 w-8" />
+          </div>
+          <p className="mt-5 text-base font-semibold leading-snug text-foreground">
+            Mandamos um link para {dados.email.trim()}. Abra o link para confirmar a conta e depois toque em Entrar.
+          </p>
+          <Button asChild variant="cta" size="xl" className="mt-8 w-full">
+            <Link to="/entrar">Ir para Entrar</Link>
+          </Button>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
@@ -130,6 +153,10 @@ function CriarConta() {
             disabled={!podeContinuarComGoogle(dados.aceitouTermos)}
             onClick={() => {
               if (!podeContinuarComGoogle(dados.aceitouTermos)) return;
+              if (USA_BANCO.conta) {
+                void fazer(entrarComGoogle);
+                return;
+              }
               criarConta("");
               avancar();
             }}
@@ -139,10 +166,19 @@ function CriarConta() {
         <form
           className="space-y-4"
           noValidate
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             setTentou(true);
             if (!cadastroOk(validarCadastro(dados))) return;
+            // W1: with the database, the account is created for real (with the moment the Termos were accepted).
+            if (USA_BANCO.conta) {
+              const r = await fazer(() => criarContaComEmail(dados));
+              if (!r.ok) return;
+              limparRascunhoDoCadastro();
+              if ("confirmarEmail" in r && r.confirmarEmail) setConfirmarEmail(true);
+              else avancar();
+              return;
+            }
             // A new account is not in any van yet: as a passenger it starts at "Entrar na van".
             criarConta(dados.nome);
             limparRascunhoDoCadastro();

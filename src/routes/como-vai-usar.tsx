@@ -3,7 +3,9 @@ import type { ComponentType } from "react";
 import { ArrowRight, UserRound } from "lucide-react";
 import { Logo, VanIcon } from "@/components/brand/Logo";
 import { MobileScreen } from "@/components/app/MobileScreen";
-import { escolherPapel } from "@/lib/acesso";
+import { fazer } from "@/lib/acoes";
+import { escolherPapelDaConta } from "@/lib/conta";
+import { ExigeConta } from "@/components/app/ExigeConta";
 
 export const Route = createFileRoute("/como-vai-usar")({
   head: () => ({
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/como-vai-usar")({
 
 function ComoVaiUsar() {
   return (
+    <ExigeConta>
     <MobileScreen>
       {/* Short screens (iPhone SE): less space around the title and cards, so it fits without scrolling (decision C). */}
       <div className="px-6 pt-safe-10">
@@ -37,17 +40,18 @@ function ComoVaiUsar() {
           titulo="Sou vanzeiro"
           descricao="Organize passageiros, rotas e cobranças da sua van."
           destaque
-          aoTocar={() => escolherPapel("vanzeiro")}
+          aoTocar={() => void fazer(() => escolherPapelDaConta("vanzeiro"))}
         />
         <OpcaoPerfil
           to="/passageiro"
           icon={UserRound}
           titulo="Sou passageiro"
           descricao="Acompanhe a van, confirme presença e veja seus pagamentos."
-          aoTocar={() => escolherPapel("passageiro")}
+          aoTocar={() => void fazer(() => escolherPapelDaConta("passageiro"))}
         />
       </div>
     </MobileScreen>
+    </ExigeConta>
   );
 }
 

@@ -16,10 +16,19 @@ export type Sessao = {
   contaNova: { nome: string } | null;
   vanzeiroId: string;
   passageiro: SessaoPassageiro;
+  /** W1: the real account logged in (Supabase), or null. */
+  conta: ContaLogada | null;
+  /** W1: false until the app knows whether someone is logged in (the login check takes a moment). */
+  contaPronta: boolean;
 };
+
+/** W1: who is logged in with a real account. */
+export type ContaLogada = { id: string; email: string; nome: string };
 
 const juliana = passageirosExemplo.find((p) => p.id === passageiroExemplo.passageiroId);
 const inicial: Sessao = {
+  conta: null,
+  contaPronta: false,
   papel: null,
   contaNova: null,
   vanzeiroId: vanzeiroExemplo.id,

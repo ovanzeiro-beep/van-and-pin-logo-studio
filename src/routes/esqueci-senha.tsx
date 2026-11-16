@@ -5,6 +5,9 @@ import { AuthLayout } from "@/components/app/AuthLayout";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { Button } from "@/components/ui/button";
 import { erroDoEmail } from "@/lib/cadastro";
+import { fazer } from "@/lib/acoes";
+import { pedirSenhaNova } from "@/lib/conta";
+import { USA_BANCO } from "@/lib/supabase";
 
 export const Route = createFileRoute("/esqueci-senha")({
   head: () => ({
@@ -58,8 +61,10 @@ function EsqueciSenha() {
           onSubmit={(e) => {
             e.preventDefault();
             setTentou(true);
-            // Nothing is sent for real yet: there is no real login.
-            if (!erroDoEmail(email)) setEnviado(true);
+            if (erroDoEmail(email)) return;
+            // W1: with the database, Supabase sends the e-mail with the link to "Criar senha nova".
+            if (!USA_BANCO.conta) return setEnviado(true);
+            void fazer(() => pedirSenhaNova(email)).then((r) => r.ok && setEnviado(true));
           }}
         >
           <CampoComIcone

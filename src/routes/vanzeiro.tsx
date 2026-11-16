@@ -5,6 +5,7 @@ import { MensagemDasAcoes } from "@/components/app/MensagemDasAcoes";
 import { MobileScreen } from "@/components/app/MobileScreen";
 import { PainelDoVanzeiro } from "@/lib/painel";
 import { useSessao } from "@/lib/sessao";
+import { ExigeConta } from "@/components/app/ExigeConta";
 
 const itens: NavItem[] = [
   { to: "/vanzeiro", label: "Início", icon: Home, exact: true },
@@ -22,6 +23,7 @@ function PainelVanzeiro() {
   // U3: everything read inside this panel belongs to the vanzeiro using the app.
   const vanzeiroId = useSessao().vanzeiroId;
   return (
+    <ExigeConta>
     <PainelDoVanzeiro.Provider value={vanzeiroId}>
       {/* Fixed-height shell: pages scroll inside <main>, so screens like Destinos can pin their header. */}
       <MobileScreen className="h-dvh md:h-[calc(100dvh-3rem)]">
@@ -32,5 +34,6 @@ function PainelVanzeiro() {
         <MensagemDasAcoes />
       </MobileScreen>
     </PainelDoVanzeiro.Provider>
+    </ExigeConta>
   );
 }

@@ -12,7 +12,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
-import { sair } from "@/lib/acesso";
+import { fazer } from "@/lib/acoes";
+import { sairDaConta } from "@/lib/conta";
 
 /** "Sair" with the "Quer mesmo sair?" confirmation; `children` is the button that opens it. */
 export function ConfirmarSair({ children }: { children: ReactNode }) {
@@ -31,9 +32,9 @@ export function ConfirmarSair({ children }: { children: ReactNode }) {
           </AlertDialogCancel>
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive", size: "lg" })}
-            onClick={() => {
-              sair();
-              navigate({ to: "/entrar" });
+            onClick={async () => {
+              await fazer(sairDaConta);
+              await navigate({ to: "/entrar" });
             }}
           >
             Sair

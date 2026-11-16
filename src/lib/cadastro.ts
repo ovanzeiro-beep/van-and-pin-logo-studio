@@ -55,3 +55,8 @@ export const guardarRascunhoDoCadastro = (d: DadosCadastro) => {
 export const limparRascunhoDoCadastro = () => {
   rascunho = vazio;
 };
+
+/** W1: "Criar senha nova" (from the link of "Esqueci minha senha"): the same rules as the password of "Criar conta". */
+export function validarSenhaNova(senha: string, confirmar: string): ErrosCadastro {
+  return validarPasso(2, { ...vazio, senha, confirmar });
+}

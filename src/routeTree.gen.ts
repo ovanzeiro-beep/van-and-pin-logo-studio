@@ -14,6 +14,7 @@ import { Route as ComoVaiUsarRouteImport } from './routes/como-vai-usar'
 import { Route as CriarContaRouteImport } from './routes/criar-conta'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
+import { Route as NovaSenhaRouteImport } from './routes/nova-senha'
 import { Route as PassageiroRouteImport } from './routes/passageiro'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as TermosRouteImport } from './routes/termos'
@@ -69,6 +70,11 @@ const EntrarRoute = EntrarRouteImport.update({
 const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
   id: '/esqueci-senha',
   path: '/esqueci-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NovaSenhaRoute = NovaSenhaRouteImport.update({
+  id: '/nova-senha',
+  path: '/nova-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PassageiroRoute = PassageiroRouteImport.update({
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/nova-senha': typeof NovaSenhaRoute
   '/passageiro': typeof PassageiroRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/nova-senha': typeof NovaSenhaRoute
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/passageiro/entrar-destino': typeof PassageiroEntrarDestinoRoute
@@ -310,6 +318,7 @@ export interface FileRoutesById {
   '/criar-conta': typeof CriarContaRoute
   '/entrar': typeof EntrarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/nova-senha': typeof NovaSenhaRoute
   '/passageiro': typeof PassageiroRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/criar-conta'
     | '/entrar'
     | '/esqueci-senha'
+    | '/nova-senha'
     | '/passageiro'
     | '/privacidade'
     | '/termos'
@@ -388,6 +398,7 @@ export interface FileRouteTypes {
     | '/criar-conta'
     | '/entrar'
     | '/esqueci-senha'
+    | '/nova-senha'
     | '/privacidade'
     | '/termos'
     | '/passageiro/entrar-destino'
@@ -421,6 +432,7 @@ export interface FileRouteTypes {
     | '/criar-conta'
     | '/entrar'
     | '/esqueci-senha'
+    | '/nova-senha'
     | '/passageiro'
     | '/privacidade'
     | '/termos'
@@ -460,6 +472,7 @@ export interface RootRouteChildren {
   CriarContaRoute: typeof CriarContaRoute
   EntrarRoute: typeof EntrarRoute
   EsqueciSenhaRoute: typeof EsqueciSenhaRoute
+  NovaSenhaRoute: typeof NovaSenhaRoute
   PassageiroRoute: typeof PassageiroRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   TermosRoute: typeof TermosRoute
@@ -501,6 +514,13 @@ declare module '@tanstack/react-router' {
       path: '/esqueci-senha'
       fullPath: '/esqueci-senha'
       preLoaderRoute: typeof EsqueciSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nova-senha': {
+      id: '/nova-senha'
+      path: '/nova-senha'
+      fullPath: '/nova-senha'
+      preLoaderRoute: typeof NovaSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/passageiro': {
@@ -832,6 +852,7 @@ const rootRouteChildren: RootRouteChildren = {
   CriarContaRoute: CriarContaRoute,
   EntrarRoute: EntrarRoute,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
+  NovaSenhaRoute: NovaSenhaRoute,
   PassageiroRoute: PassageiroRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   TermosRoute: TermosRoute,

@@ -63,3 +63,8 @@ export function horaDeAgora(): string {
 export function agora(): { data: string; hora: string } {
   return relogio();
 }
+
+/** The full moment now, to save in the database (e.g. when the Termos were accepted). Fixed in the tests. */
+export function instanteDeAgora(): string {
+  return RELOGIO_DE_VERDADE ? new Date().toISOString() : `${MOMENTO_DOS_EXEMPLOS.data}T08:10:00.000Z`;
+}

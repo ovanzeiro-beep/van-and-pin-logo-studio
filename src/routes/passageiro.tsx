@@ -5,6 +5,7 @@ import { MensagemDasAcoes } from "@/components/app/MensagemDasAcoes";
 import { MobileScreen } from "@/components/app/MobileScreen";
 import { EntrarNaVan } from "@/components/app/passageiro/EntrarNaVan";
 import { useEmAbertoDeQuemSaiu, useMinhaSituacao } from "@/lib/sessao-passageiro";
+import { ExigeConta } from "@/components/app/ExigeConta";
 
 const itens: NavItem[] = [
   { to: "/passageiro", label: "Início", icon: Home, exact: true },
@@ -28,6 +29,7 @@ function PainelPassageiro() {
   const emPagamentos = !!emAberto && caminho.startsWith("/passageiro/pagamentos");
   return (
     // Fixed-height shell: pages scroll inside <main>, so lists can scroll under a pinned header.
+    <ExigeConta>
     <MobileScreen className="h-dvh md:h-[calc(100dvh-3rem)]">
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {/* Until the passenger is in a van, the panel is the "Entrar na van" screen. */}
@@ -36,5 +38,6 @@ function PainelPassageiro() {
       {membro ? <BottomNav items={itens} /> : emAberto && <BottomNav items={itensDeQuemSaiu} />}
       <MensagemDasAcoes />
     </MobileScreen>
+    </ExigeConta>
   );
 }
