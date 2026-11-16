@@ -541,3 +541,27 @@ Cada item foi confirmado rodando o app (não é suposição).
 - **Etapa P1:** itens 1, 2, 4 e 5. **Feita em 15/11/2026:** (1) a mudança de endereço aguardando vira "cancelada" quando a pessoa sai, é removida ou o destino é excluído, some das Notificações do vanzeiro e nunca é aplicada a quem não está mais no destino; (2) quando o vanzeiro muda a cidade de embarque de um passageiro, o ponto no mapa é apagado, com o aviso "Mudou a cidade: o ponto que o passageiro marcou no mapa será apagado. Ele marca de novo." (mudar só o endereço mantém o ponto); (4) "Recusar" mudança de endereço pergunta "Recusar a mudança de <nome>? Continua valendo: <endereço>. Não dá para desfazer."; (5) sem ponto marcado, o mapa da van não mostra pino falso: aparece "Você ainda não marcou o seu ponto no mapa." e o botão "Marcar meu ponto no mapa"; marcar pela primeira vez na mesma cidade salva direto (outra cidade continua indo para o vanzeiro).
 - **Etapa P2:** item 3 (depois da decisão do dono) e item 6. **Decisão do dono: A** (cada tela com o seu sentido, com explicação). **Feita em 15/11/2026:** na tela do destino, a dica diz "Ordem fixa da busca, com todos os passageiros. Segure e arraste para mudar."; na aba Viagem, a lista é "Quem vai · na ordem de hoje" (numera só quem disse "Vou"); "Abrir no mapa" na busca abre o Google Maps no ponto marcado pelo passageiro (coordenadas) e, sem ponto, no endereço escrito.
 - **Etapa P3 (antes do piloto real):** itens 7 e 8. **Feita em 15/11/2026:** (7) o mapa aprende cidades novas: ao salvar um destino, e ao abrir uma tela com mapa, o app procura no mapa gratuito do OpenStreetMap (Nominatim) as cidades que ainda não conhece, só no Brasil, uma por segundo, dando preferência à que fica perto da primeira cidade já conhecida do caminho; o que acha fica guardado; sem internet, tenta de novo depois; cidade não achada (erro de digitação) não é procurada de novo. **Limites:** se a **origem** for uma cidade nova com nome repetido em outro estado (ex.: Cambará PR e RS), ela pode cair no lugar errado, porque é a primeira procurada (vale conferir no mapa); o serviço gratuito é para uso leve: serve para o piloto, mas para vender a muitos vanzeiros será preciso um serviço pago. (8) A Política de Privacidade passou a dizer: ponto de embarque no mapa (o que é, para que serve, que o vanzeiro vê e que nenhum passageiro vê o de outro), notificações no celular (só se ativar no Perfil), mapa e busca de cidades (OpenStreetMap recebe IP, navegador e o nome da cidade procurada, com link para a política deles) e a cópia do app no celular para abrir sem internet. **Quando o GPS ao vivo entrar, a Política precisa dizer isso também.** O contato do responsável continua "(a definir)" e o texto precisa da revisão do advogado.
+
+---
+
+## 16. O que falta para deixar pronto para o banco (análise de 16/11/2026, só leitura)
+
+O código já está quase todo pronto para o banco (seções 11 e `docs/banco-de-dados.md`). Esta análise olhou o que quebraria com **vários vanzeiros, contas reais e o relógio de verdade**.
+
+### 16.1 Ajustes de código antes do banco (um por vez)
+- **Q1. Um perfil por vanzeiro.** O app guardava um único perfil de vanzeiro, e o painel do passageiro usava esse perfil para nome, van, **chave Pix**, WhatsApp e **lugares** da "Van lotada". Com dois vanzeiros, o passageiro veria o Pix e a van do outro. **Feito em 16/11/2026:** um perfil por vanzeiro; o painel do vanzeiro usa o próprio; cada tela do passageiro usa o vanzeiro **do destino ou da cobrança** (e, para quem saiu do último destino, o do destino de que saiu); vanzeiro desconhecido aparece em branco, nunca o de outro; a "Van lotada" usa os lugares da van do vanzeiro do destino. Para quem usa o app, nada muda na tela.
+- **Q2. Lista de cidades do mapa no documento do banco** (para ficar guardada e compartilhada; sem isso cada celular procura de novo e gasta o limite do serviço gratuito).
+- **Q3. Dinheiro em centavos** (decidir e escrever no documento; hoje os valores são números com vírgula e as contas saem certas porque a tela arredonda).
+- **Q4. Fuso de Brasília** na função única da hora (com o relógio real, depois das 21h outro fuso já seria o dia seguinte: prazo "noite anterior", vencimentos e viagem do dia sairiam errados).
+- **Q5. Guardar a hora da resposta "Vou / Não vou"** (prova de que avisou dentro do prazo, que dá o desconto da falta).
+
+### 16.2 Decisões do dono antes do banco
+- Cancelar a viagem de um dia (feriado): vai ter? O mensalista ganha desconto?
+- Uma mesma conta pode ser vanzeiro **e** passageiro, ou cada conta é uma coisa só?
+- Contato do responsável na Política de Privacidade e revisão do advogado.
+
+### 16.3 Cuidado para o dia do banco
+- Ao **sair da conta**, apagar a cópia do app guardada no celular (ela vai ter dados pessoais nas telas).
+
+### 16.4 O que só acontece junto com o banco
+Login real; relógio real; números feitos pelo banco; tirar os exemplos; "carregando" e aviso de sem internet; os dois celulares se atualizando na hora; tarefas automáticas no servidor; fila do que foi feito sem sinal; notificação com o app fechado e GPS ao vivo; segurança de quem vê o quê conferida pelo banco.

@@ -41,7 +41,7 @@ Hoje: `PerfilVanzeiro` em `src/lib/vanzeiro-store.ts`.
 | chave Pix | aparece para os passageiros na hora de pagar |
 | van | modelo, placa e lugares para passageiros (em branco = não informado) |
 
-**Quem vê:** o próprio vanzeiro; os passageiros dele veem nome, telefone, Pix e van. **Quem muda:** só o próprio vanzeiro.
+**Quem vê:** o próprio vanzeiro; os passageiros dele veem nome, telefone, Pix e van. **Quem muda:** só o próprio vanzeiro. **Um perfil por vanzeiro** (hoje, em `vanzeiro-store.ts`, por `vanzeiroId`): o passageiro sempre vê o vanzeiro do destino ou da cobrança, nunca o de outro.
 
 ### 2.3 Destinos
 Hoje: tipo `Destino`.

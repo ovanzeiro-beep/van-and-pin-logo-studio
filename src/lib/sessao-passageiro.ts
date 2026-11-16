@@ -120,3 +120,12 @@ export function obterMinhasMatriculas() {
   const s = situacaoDe(obterSessao().passageiro, lista, obterPedidos(), obterAceitos());
   return s.tipo === "membro" ? matriculasDaPessoa(lista, s.passageiro) : [];
 }
+
+/** The vanzeiro of whoever uses the passenger panel: of their destino, or (decision A3) of the destino they left. */
+export function useMeuVanzeiroId() {
+  const s = useMinhaSituacao();
+  const sessao = useSessaoPassageiro();
+  const saidas = useSaidas();
+  if (s.tipo === "membro") return s.passageiro.vanzeiroId;
+  return minhasSaidasDe(saidas, null, sessao.passageiroId)[0]?.vanzeiroId ?? "";
+}

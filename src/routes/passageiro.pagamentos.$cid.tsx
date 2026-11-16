@@ -24,7 +24,7 @@ import { useDestino } from "@/lib/destinos-store";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { cn } from "@/lib/utils";
-import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/passageiro/pagamentos/$cid")({
   head: () => ({
@@ -47,7 +47,8 @@ function MinhaCobranca() {
   // A passenger only sees their own charges.
   const c = encontrada && minhas.includes(encontrada.passageiroId) ? encontrada : undefined;
   const destino = useDestino(c?.destinoId ?? "");
-  const vanzeiro = usePerfilVanzeiro();
+  // The vanzeiro of THIS charge (the passenger may ride with more than one).
+  const vanzeiro = usePerfilDoVanzeiro(c?.vanzeiroId ?? "");
   const router = useRouter();
   const podeVoltar = useCanGoBack();
   const navigate = useNavigate();

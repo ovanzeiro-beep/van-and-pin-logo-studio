@@ -5,11 +5,11 @@ import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { buttonVariants } from "@/components/ui/button";
 import { linkWhatsApp } from "@/lib/passageiros";
-import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { formatarReais } from "@/lib/dinheiro";
 import { ordenarRecentes, totalDevido } from "@/lib/cobrancas";
 import { useCobrancasDasMatriculas } from "@/lib/cobrancas-store";
-import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
+import { useIdsDasMinhasCobrancas, useMeuVanzeiroId } from "@/lib/sessao-passageiro";
 import { useDestinos } from "@/lib/destinos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ function MeusPagamentos() {
   const cobrancas = useCobrancasDasMatriculas(ids);
   const devido = ids.reduce((s, id) => s + totalDevido(cobrancas, id), 0);
   const lista = ordenarRecentes(cobrancas);
-  const vanzeiro = usePerfilVanzeiro();
+  const vanzeiro = usePerfilDoVanzeiro(useMeuVanzeiroId());
   const nomes = Object.fromEntries(destinos.map((d) => [d.id, nomeDestino(d)]));
 
   return (

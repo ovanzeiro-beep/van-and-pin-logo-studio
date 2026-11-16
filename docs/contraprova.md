@@ -989,3 +989,12 @@ Conferência (15/11/2026):
 - [x] P3.3 Política de Privacidade: ponto no mapa, notificações, mapa e busca de cidades (OpenStreetMap), cópia do app no celular.
 - [x] P3.4 Conferência: 251 testes (novo `src/test/coordenadas.test.ts`; os testes nunca acessam a internet), tipos, build; no navegador, com a resposta do serviço simulada (ele é bloqueado no ambiente de teste): destino Jacarezinho → Ourinhos procura "Ourinhos" perto de Jacarezinho uma vez, e o pedido para entrar mostra o mapa com as duas cidades; Política com todos os trechos novos; 30 telas sem erro.
 - Pendências: conferir no celular a busca de verdade; contato do responsável e advogado; atualizar a Política quando o GPS ao vivo entrar; serviço pago de busca/mapa antes de vender.
+
+---
+
+## Preparar para o banco — seção 16 (iniciada em 16/11/2026)
+- [x] Q1. Um perfil por vanzeiro (feito em 16/11/2026, merge na `main`): passageiro vê o vanzeiro do destino/cobrança; "Van lotada" pelos lugares do vanzeiro do destino; vanzeiro desconhecido em branco. Conferência: 254 testes (novo `src/test/dois-vanzeiros.test.ts`, com um segundo vanzeiro), tipos, build; no navegador, Juliana vê o Carlos e o Pix dele, o Pix novo do Carlos aparece para ela, a Beatriz que saiu continua vendo o Pix do Carlos, dia completo igual, 30 telas sem erro.
+- [ ] Q2. Lista de cidades do mapa no documento do banco.
+- [ ] Q3. Dinheiro em centavos.
+- [ ] Q4. Fuso de Brasília na hora do app.
+- [ ] Q5. Hora da resposta guardada.

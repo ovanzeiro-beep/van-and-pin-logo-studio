@@ -4,7 +4,8 @@ import { StatusBadge } from "@/components/app/InfoCard";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { Button } from "@/components/ui/button";
 import { linkWhatsApp } from "@/lib/passageiros";
-import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
+import { useMeuVanzeiroId } from "@/lib/sessao-passageiro";
 import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/passageiro/viagens")({
 
 function MinhasViagens() {
   const { matriculas, destinos, proximas, proximaDistante, viagens } = useMinhasViagens();
-  const vanzeiro = usePerfilVanzeiro();
+  const vanzeiro = usePerfilDoVanzeiro(useMeuVanzeiroId());
   const registro = useRegistroDasViagens();
   const historico = matriculas.flatMap((eu) => {
     const destino = destinos.find((d) => d.id === eu.destinoId);

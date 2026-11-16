@@ -15,7 +15,7 @@ import { useDestinos } from "@/lib/destinos-store";
 import { formatarTelefone, linkWhatsApp, meusDadosValidos } from "@/lib/passageiros";
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { salvarMeusDados, useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
-import { textoDaVan, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { textoDaVan, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/passageiro/perfil")({
   head: () => ({
@@ -35,7 +35,7 @@ function PerfilPassageiro() {
   const eu = useEu();
   const matriculas = useMinhasMatriculas();
   const destinos = useDestinos();
-  const vanzeiro = usePerfilVanzeiro();
+  const vanzeiro = usePerfilDoVanzeiro(eu.vanzeiroId);
   const [editando, setEditando] = useState(false);
 
   return (

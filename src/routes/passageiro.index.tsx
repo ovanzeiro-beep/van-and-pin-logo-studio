@@ -19,7 +19,7 @@ import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { confirmarNaVan } from "@/lib/viagem-store";
-import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 
 export const Route = createFileRoute("/passageiro/")({
   head: () => ({
@@ -39,7 +39,7 @@ const etapas = ["Saiu da garagem", "A caminho", "Na van"];
 
 function InicioPassageiro() {
   const { eu, destino, destaque, proximaDistante, viagemDeHoje, van } = useSituacaoDaVan();
-  const vanzeiro = usePerfilVanzeiro();
+  const vanzeiro = usePerfilDoVanzeiro(eu.vanzeiroId);
   const idsDasCobrancas = useIdsDasMinhasCobrancas();
   const cobrancas = useCobrancasDasMatriculas(idsDasCobrancas);
   const prox = destaque;

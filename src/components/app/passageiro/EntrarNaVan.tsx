@@ -16,7 +16,7 @@ import { OndeEmbarco } from "./OndeEmbarco";
 import { embarqueCompleto, type Embarque } from "@/lib/endereco";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { formatarReais } from "@/lib/dinheiro";
-import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
 import { acharPorCodigo } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
@@ -142,7 +142,7 @@ function OndeConseguir() {
 }
 
 function CardDaVan({ destino }: { destino: Destino }) {
-  const vanzeiro = usePerfilVanzeiro();
+  const vanzeiro = usePerfilDoVanzeiro(destino.vanzeiroId);
   return (
     <div className="flex items-start gap-3 rounded-2xl bg-surface p-3">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-success-soft text-success">
