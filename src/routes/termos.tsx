@@ -32,6 +32,8 @@ function Termos() {
           <li>Cadastra os passageiros e aceita ou recusa quem pede para entrar com o código de convite.</li>
           <li>O app cria as cobranças sozinho, pelo plano de cada passageiro.</li>
           <li>Só o vanzeiro marca uma cobrança como paga ou cancela uma cobrança.</li>
+          <li>Informa quantos lugares a van tem. Quando todos os lugares de uma viagem já têm "Vou", o app não deixa mais ninguém confirmar.</li>
+          <li>Aceita ou recusa quando um passageiro pede para embarcar a mais de 1 km do ponto combinado.</li>
           <li>O vanzeiro é o responsável pelo transporte, pela van e por manter os dados certos.</li>
         </ul>
       </Secao>
@@ -43,8 +45,26 @@ function Termos() {
             Confirma <strong>"Vou"</strong> ou <strong>"Não vou"</strong> até o prazo de cada viagem.{" "}
             <strong>Quem não confirmar "Vou" até o prazo não entra na busca: a van não passa.</strong>
           </li>
+          <li>
+            Se a van estiver lotada, aparece <strong>"Van lotada"</strong>: o lugar é de quem respondeu "Vou" primeiro.
+          </li>
           <li>Vê suas cobranças e paga direto ao vanzeiro, por Pix ou em dinheiro.</li>
           <li>Durante a viagem, confirma pelo celular que está na van.</li>
+          <li>
+            Pode mudar onde embarca: até 1 km do ponto combinado, muda na hora; mais longe, o vanzeiro precisa aceitar.
+            Até ele aceitar, vale o endereço de antes.
+          </li>
+        </ul>
+      </Secao>
+
+      <Secao titulo="Faltas e descontos">
+        <ul>
+          <li>
+            Nos planos Mensal e Quinzenal, o vanzeiro escolhe se desconta as faltas. Quando desconta,{" "}
+            <strong>só ganha o desconto quem avisou "Não vou" dentro do prazo.</strong>
+          </li>
+          <li>"Não estava no ponto" e "sem resposta" não descontam.</li>
+          <li>O desconto entra na próxima cobrança que ainda não venceu.</li>
         </ul>
       </Secao>
 
@@ -53,6 +73,10 @@ function Termos() {
           O app não recebe nem guarda dinheiro. O pagamento é feito direto entre o passageiro e o vanzeiro. O app só
           mostra quanto é, quando vence e se já foi pago.
         </p>
+        <ul>
+          <li>Uma cobrança nunca é mudada: ou ela é marcada como paga, ou é cancelada com um motivo.</li>
+          <li>Quem sai de um destino continua devendo o que já venceu. As cobranças que ainda não venceram são canceladas.</li>
+        </ul>
       </Secao>
 
       <Secao titulo="Sua conta">

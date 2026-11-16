@@ -573,7 +573,7 @@ Login real; relógio real; números feitos pelo banco; tirar os exemplos; "carre
 Nada quebrado no código. O que falta:
 
 ### 17.1 Eu faço (sem banco), uma etapa por vez
-- **R1. Termos de Uso atualizados:** faltam as regras que mexem com dinheiro e com o lugar na van — desconto de falta só para quem avisou "Não vou" no prazo; ao sair do destino, pendentes canceladas e devendo continua; van lotada (o lugar é de quem respondeu "Vou" primeiro); mudar onde embarca (até 1 km na hora, mais longe o vanzeiro aprova); cobrança nunca é editada (só paga ou cancelada).
+- **R1. Termos de Uso atualizados (feito em 16/11/2026; falta a revisão do advogado):** faltam as regras que mexem com dinheiro e com o lugar na van — desconto de falta só para quem avisou "Não vou" no prazo; ao sair do destino, pendentes canceladas e devendo continua; van lotada (o lugar é de quem respondeu "Vou" primeiro); mudar onde embarca (até 1 km na hora, mais longe o vanzeiro aprova); cobrança nunca é editada (só paga ou cancelada).
 - **R2. Fonte da verdade e contraprova iguais ao app de hoje:** as seções do começo (13/11) ainda dizem, por exemplo, que o sininho do passageiro "não faz nada", que recusar pedido "não avisa" e que "não existe histórico de viagens"; a contraprova tem caixinhas velhas sem marcar de coisas já feitas.
 - **R3. Limpeza e bibliotecas:** tirar o que sobrou sem uso (função das setas ↑ ↓, dado de exemplo `viagemHoje`); atualizar com cuidado as bibliotecas com alerta de segurança (das 28, só a que monta as páginas — "seroval", moderado — vai para o app de verdade; as outras, inclusive a crítica, são ferramentas de trabalho). Os 1.204 avisos de formatação **não** serão arrumados de uma vez (reescreveria 134 arquivos e atrapalharia o Lovable).
 

@@ -1002,9 +1002,10 @@ Conferência (15/11/2026):
 ---
 
 ## Etapa R1 — Termos de Uso atualizados (iniciada em 16/11/2026)
-**Situação:** em andamento, na branch `etapa-r1`. Seção 17 da fonte da verdade. Sem banco de dados.
-- [ ] R1.1 Faltas e descontos: só quem avisou "Não vou" no prazo; "não estava no ponto" e "sem resposta" não descontam.
-- [ ] R1.2 Pagamentos: cobrança nunca é editada (só paga ou cancelada com motivo); ao sair do destino, pendentes canceladas e devendo continua.
-- [ ] R1.3 Van lotada: o lugar é de quem respondeu "Vou" primeiro; o vanzeiro informa os lugares.
-- [ ] R1.4 Onde embarca: até 1 km do ponto combinado muda na hora; mais longe, o vanzeiro aceita ou recusa.
-- [ ] R1.5 Conferência e merge.
+**Situação:** feita em 16/11/2026 (merge na `main`). Seção 17 da fonte da verdade. Sem banco de dados.
+- [x] R1.1 Faltas e descontos: só quem avisou "Não vou" no prazo; "não estava no ponto" e "sem resposta" não descontam.
+- [x] R1.2 Pagamentos: cobrança nunca é editada (só paga ou cancelada com motivo); ao sair do destino, pendentes canceladas e devendo continua.
+- [x] R1.3 Van lotada: o lugar é de quem respondeu "Vou" primeiro; o vanzeiro informa os lugares.
+- [x] R1.4 Onde embarca: até 1 km do ponto combinado muda na hora; mais longe, o vanzeiro aceita ou recusa.
+- [x] R1.5 Conferência e merge.
+- Conferência: cada frase conferida contra o código (desconto na próxima cobrança não vencida; pendentes canceladas ao sair); página /termos com os 8 trechos novos, sem rolar para o lado no iPhone SE; 262 testes, tipos, build; 30 telas sem erro. O texto ainda precisa da revisão do advogado.
