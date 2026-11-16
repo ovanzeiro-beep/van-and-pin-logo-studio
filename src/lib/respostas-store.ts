@@ -167,11 +167,12 @@ function avisarPeriodo(periodo: { id: string; passageiroId: string; de: string; 
   if (p && d) trocarAviso(avisoDePeriodoDeNaoVou(p, d, periodo, acao, dataDeHoje()));
 }
 
-export function marcarNaoVouNoPeriodo(passageiroId: string, de: string, ate: string): Resultado {
+/** `id`: the one the database gave (W5); in memory a new one. */
+export function marcarNaoVouNoPeriodo(passageiroId: string, de: string, ate: string, id?: string): Resultado {
   if (!obterPassageiros().some((p) => p.id === passageiroId)) return naoDeu(SEM_DESTINO);
   const problema = problemaDoPeriodo(de, ate, dataDeHoje());
   if (problema) return naoDeu(problema);
-  const novo = { id: novoId("nao-vou"), passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null };
+  const novo = { id: id ?? novoId("nao-vou"), passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null };
   mudarFixas({ ...fixas, naoVou: [...fixas.naoVou, novo] });
   avisarPeriodo(novo, "marcou");
   return deuCerto;
@@ -190,6 +191,14 @@ export const vouSempreLigado = (f: RespostasFixas, passageiroId: string) => f.vo
 /** Periods still marked that are not over yet. */
 export const periodosDeNaoVou = (f: RespostasFixas, passageiroId: string, hoje: string) =>
   f.naoVou.filter((n) => n.passageiroId === passageiroId && n.tiradoEm === null && n.ate >= hoje).sort((a, b) => a.de.localeCompare(b.de));
+
+/** W5: the answers and the answers left set read from the database replace what is in memory. */
+export function carregarRespostasDoBanco(d: { respostas: Respostas; momentos: Record<string, Record<string, MomentoDaResposta>>; fixas: RespostasFixas }) {
+  respostas = d.respostas;
+  momentos = d.momentos;
+  fixas = d.fixas;
+  ouvintes.forEach((o) => o());
+}
 
 /** New vanzeiro account: no answers yet. */
 export function limparRespostas() {

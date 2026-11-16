@@ -14,13 +14,13 @@ import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useSituacaoDaVan, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
-import { responder } from "@/lib/respostas-store";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { confirmarNaVan } from "@/lib/viagem-store";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { fazer } from "@/lib/acoes";
+import { responderNoBanco } from "@/lib/banco/respostas";
 
 export const Route = createFileRoute("/passageiro/")({
   head: () => ({
@@ -84,7 +84,7 @@ function InicioPassageiro() {
               <BotaoVou passageiroId={prox.eu.id} destinoId={prox.destino.id} data={prox.data} resposta={prox.resposta} />
               <Button
                 variant={prox.resposta === "nao-vai" ? "destructive" : "outline"}
-                onClick={() => void fazer(() => responder(prox.eu.id, prox.data, "nao-vai"))}
+                onClick={() => void fazer(() => responderNoBanco(prox.eu.id, prox.data, "nao-vai"))}
                 aria-pressed={prox.resposta === "nao-vai"}
               >
                 <X className="!h-5 !w-5" /> Não vou

@@ -1,8 +1,9 @@
 import { Armchair, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { RespostaViagem } from "@/data/exemplo";
-import { responder, useVanLotadaPara } from "@/lib/respostas-store";
+import { useVanLotadaPara } from "@/lib/respostas-store";
 import { fazer } from "@/lib/acoes";
+import { responderNoBanco } from "@/lib/banco/respostas";
 
 /** "Vou", or "Van lotada" (disabled) when every seat of this trip is already taken. */
 export function BotaoVou({ passageiroId, destinoId, data, resposta }: { passageiroId: string; destinoId: string; data: string; resposta: RespostaViagem | undefined }) {
@@ -15,7 +16,7 @@ export function BotaoVou({ passageiroId, destinoId, data, resposta }: { passagei
     );
   }
   return (
-    <Button variant={resposta === "vai" ? "success" : "cta"} onClick={() => void fazer(() => responder(passageiroId, data, "vai"))} aria-pressed={resposta === "vai"}>
+    <Button variant={resposta === "vai" ? "success" : "cta"} onClick={() => void fazer(() => responderNoBanco(passageiroId, data, "vai"))} aria-pressed={resposta === "vai"}>
       <Check className="!h-5 !w-5" /> Vou
     </Button>
   );

@@ -9,13 +9,13 @@ import { useMeuVanzeiroId } from "@/lib/sessao-passageiro";
 import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
-import { responder } from "@/lib/respostas-store";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { RespostasFixas } from "@/components/app/passageiro/RespostasFixas";
 import { cn } from "@/lib/utils";
 import { historicoDoPassageiro } from "@/lib/viagem";
 import { useRegistroDasViagens } from "@/lib/cobrancas-store";
 import { fazer } from "@/lib/acoes";
+import { responderNoBanco } from "@/lib/banco/respostas";
 
 export const Route = createFileRoute("/passageiro/viagens")({
   head: () => ({
@@ -145,7 +145,7 @@ function ProximaViagem({ v, saida, passageiroId }: { v: MinhaProximaViagem; said
           <BotaoVou passageiroId={passageiroId} destinoId={v.destino.id} data={v.data} resposta={v.resposta} />
           <Button
             variant={v.resposta === "nao-vai" ? "destructive" : "outline"}
-            onClick={() => void fazer(() => responder(passageiroId, v.data, "nao-vai"))}
+            onClick={() => void fazer(() => responderNoBanco(passageiroId, v.data, "nao-vai"))}
             aria-pressed={v.resposta === "nao-vai"}
           >
             <X className="!h-5 !w-5" /> Não vou

@@ -18,15 +18,9 @@ import { dataDeHoje } from "@/lib/agora";
 import { diaMes } from "@/lib/cobrancas";
 import { nomeDestino } from "@/lib/destinos";
 import { problemaDoPeriodo } from "@/lib/respostas-fixas";
-import {
-  ligarVouSempre,
-  marcarNaoVouNoPeriodo,
-  periodosDeNaoVou,
-  tirarNaoVouDoPeriodo,
-  useRespostasFixas,
-  vouSempreLigado,
-} from "@/lib/respostas-store";
+import { periodosDeNaoVou, useRespostasFixas, vouSempreLigado } from "@/lib/respostas-store";
 import { fazer } from "@/lib/acoes";
+import { ligarVouSempreNoBanco, marcarNaoVouNoBanco, tirarNaoVouNoBanco } from "@/lib/banco/respostas";
 
 /** T3: "Vou sempre" and "Não vou de… até…", one card per destino the person is in. */
 export function RespostasFixas({ eu, destino }: { eu: Passageiro; destino: Destino }) {
@@ -42,7 +36,7 @@ export function RespostasFixas({ eu, destino }: { eu: Passageiro; destino: Desti
           <span className="block font-semibold text-foreground">Vou sempre</span>
           <span className="block text-sm text-muted-foreground">Todo dia de viagem já conta como "Vou". Se num dia não for, toque em "Não vou".</span>
         </label>
-        <Switch id={idDoSwitch} checked={ligado} onCheckedChange={(v) => void fazer(() => ligarVouSempre(eu.id, v))} />
+        <Switch id={idDoSwitch} checked={ligado} onCheckedChange={(v) => void fazer(() => ligarVouSempreNoBanco(eu.id, v))} />
       </div>
       {periodos.length > 0 && (
         <ul className="mt-2 space-y-1.5">
@@ -51,7 +45,7 @@ export function RespostasFixas({ eu, destino }: { eu: Passageiro; destino: Desti
               <span className="text-sm font-semibold text-destructive">
                 Não vou de {diaMes(n.de)} até {diaMes(n.ate)}
               </span>
-              <Button variant="ghost" size="sm" className="h-9 px-2.5 text-sm font-semibold" onClick={() => void fazer(() => tirarNaoVouDoPeriodo(n.id))}>
+              <Button variant="ghost" size="sm" className="h-9 px-2.5 text-sm font-semibold" onClick={() => void fazer(() => tirarNaoVouNoBanco(n.id))}>
                 <X className="!h-4 !w-4" /> Tirar
               </Button>
             </li>
@@ -80,7 +74,7 @@ function NaoVouNoPeriodo({ passageiroId }: { passageiroId: string }) {
   const salvar = async () => {
     setTentou(true);
     if (problema) return;
-    const r = await fazer(() => marcarNaoVouNoPeriodo(passageiroId, de, ate));
+    const r = await fazer(() => marcarNaoVouNoBanco(passageiroId, de, ate));
     if (r.ok) setAberto(false);
   };
   return (

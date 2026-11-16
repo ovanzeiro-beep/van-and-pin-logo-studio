@@ -1239,3 +1239,10 @@ Conferência (15/11/2026):
 - [x] Siglas de estado sempre maiúsculas nos lugares ("Jacarezinho PR").
 - [x] Conferência: 329 testes (novos `w4-pedidos.test.ts` e casos de estado em `formatos.test.ts`), tipos, build.
 - Pendente: respostas (Vou / Não vou), viagem, cobranças, gastos e avisos ainda na memória (próximas partes).
+
+## W5 — Respostas no banco (feita em 16/11/2026)
+**Situação:** código feito e testado (merge na `main`, publicado); o dono testa no celular.
+- [x] `src/lib/banco/respostas.ts`: ao entrar e a cada 30 s, carrega as respostas dos últimos 60 dias em diante, o "Vou sempre" e os "Não vou de… até…"; horários guardados em Brasília.
+- [x] "Vou" / "Não vou" (`responder`: só a própria pessoa, até o prazo, em dia com viagem, com lugar), "Vou sempre" (`ligar_vou_sempre`), "Não vou de… até…" (`marcar_nao_vou`, com o número do banco) e "Tirar" (`tirar_nao_vou`): o banco confere primeiro; o motivo da recusa aparece na faixa vermelha; o celular do vanzeiro vê as respostas em até 30 s.
+- [x] Conferência: 333 testes (novo `w5-respostas.test.ts`), tipos, build.
+- Pendente: o aviso no sininho do vanzeiro quando alguém responde ainda é da memória (vai com os avisos, W8); fechar as respostas ao iniciar a viagem passa a valer no banco com a viagem (W6).

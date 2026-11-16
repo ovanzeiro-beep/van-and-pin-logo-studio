@@ -21,6 +21,7 @@ import { somenteDigitos, type MeusDados } from "@/lib/passageiros";
 import { mudarSessaoPassageiro, obterSessao } from "@/lib/sessao";
 import { salvarMeusDados } from "@/lib/sessao-passageiro";
 import { supabase, USA_BANCO } from "@/lib/supabase";
+import { carregarRespostas } from "@/lib/banco/respostas";
 
 // W4 (docs/banco-de-dados.md, section 8.3): memberships (passengers in a destino), join requests and address changes
 // in the database. Invite → pedido → accepted → passenger panel works between two phones: the app looks for news
@@ -187,6 +188,7 @@ export async function carregarPassageirosEPedidos(): Promise<void> {
 export async function atualizarDoBanco(): Promise<void> {
   await carregarPerfisEDestinos();
   await carregarPassageirosEPedidos();
+  await carregarRespostas();
 }
 
 /** In the root of the app: news from the other phones every 30 seconds and when the app comes back to the screen. */
