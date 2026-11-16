@@ -1067,3 +1067,12 @@ Conferência (15/11/2026):
 - [x] T1.3 Fala em português do Brasil, só com a voz ligada; ao ligar, fala a frase do momento; desligar cala na hora; sem voz no celular, o botão não aparece.
 - [x] T1.4 Conferência: 270 testes (novo `src/test/voz.test.tsx`), tipos, build; no navegador (gravando o que o app manda falar): ligar → "Próximo passageiro: Mariana Souza…"; Embarcou → "…Pedro Henrique Lima…"; Não estava no ponto → "…Ana Clara Ribeiro…"; desligar → nada; 30 telas sem erro; dia completo igual.
 - Pendência: ouvir no celular de verdade (o ambiente de teste não tem alto-falante).
+
+## Etapa T2 — Pix com valor e cobrar quem está devendo (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18.3 da fonte da verdade. Sem banco de dados.
+- [x] T2.1 Código Pix copia e cola com o valor (`src/lib/pix.ts`), no padrão do Banco Central; confere com o exemplo do manual (número de conferência 1D3D). Chave de 11 números soltos não gera código (CPF ou celular?).
+- [x] T2.2 Passageiro: "Pagar com Pix" ganhou "Copiar Pix copia e cola (R$ X)"; o "Copiar" da chave virou "Copiar só a chave". Sem código possível, a tela fica como antes.
+- [x] T2.3 Vanzeiro: "Cobrar quem está devendo (N)" no Financeiro, só com alguém devendo; uma linha por pessoa com total; cada "Cobrar" abre o WhatsApp com as cobranças em atraso, o total, a chave e o Pix copia e cola; a linha vira "Enviado".
+- [x] T2.4 Conferência: 277 testes (novos `pix.test.ts` e `cobrar-devedores.test.tsx`), tipos, build; no navegador em 390×844, 360×740 e 375×667: Financeiro não rola (só a lista), as duas janelas cabem na tela, o código copiado bate com o valor (R$ 280,00), sem erros.
+- Não pode quebrar: conferido — cores, palavras (Devendo/Pendente/Pago), cobranças não são editadas, o passageiro continua sem marcar como pago.
+- Pendência: pagar de verdade com o código num app de banco, no celular, com a chave real do vanzeiro do piloto. Quando o banco entrar, o perfil do vanzeiro pode ganhar a cidade dele (hoje o código usa a cidade de origem do destino).
