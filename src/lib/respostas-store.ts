@@ -7,7 +7,7 @@ import { obterPassageiros, usePassageiros } from "@/lib/passageiros-store";
 import { prazoDaViagem, prazoPassou } from "@/lib/destinos";
 import { contarVou, podeDizerVou } from "@/lib/lugares";
 import { obterPerfilDoVanzeiro, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
-import { avisoDeResposta } from "@/lib/avisos";
+import { avisoDePeriodoDeNaoVou, avisoDeResposta } from "@/lib/avisos";
 import { trocarAviso } from "@/lib/avisos-store";
 import { respostaFixa, respostasComFixas, SEM_RESPOSTAS_FIXAS, textoDoPrazoIso, type RespostasFixas } from "@/lib/respostas-fixas";
 
@@ -153,13 +153,25 @@ export function ligarVouSempre(passageiroId: string, ligar: boolean) {
   });
 }
 
+/** T7: the vanzeiro gets a notice in the bell when a period is marked or taken off. */
+function avisarPeriodo(periodo: { id: string; passageiroId: string; de: string; ate: string }, acao: "marcou" | "tirou") {
+  const p = obterPassageiros().find((x) => x.id === periodo.passageiroId);
+  const d = obterDestinos().find((x) => x.id === p?.destinoId);
+  if (p && d) trocarAviso(avisoDePeriodoDeNaoVou(p, d, periodo, acao, dataDeHoje()));
+}
+
 export function marcarNaoVouNoPeriodo(passageiroId: string, de: string, ate: string) {
-  mudarFixas({ ...fixas, naoVou: [...fixas.naoVou, { id: `nv-${fixas.naoVou.length + 1}-${passageiroId}`, passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null }] });
+  const novo = { id: `nv-${fixas.naoVou.length + 1}-${passageiroId}`, passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null };
+  mudarFixas({ ...fixas, naoVou: [...fixas.naoVou, novo] });
+  avisarPeriodo(novo, "marcou");
 }
 
 /** Takes a period off; days whose deadline already passed keep their "Não vou". */
 export function tirarNaoVouDoPeriodo(id: string) {
-  mudarFixas({ ...fixas, naoVou: fixas.naoVou.map((n) => (n.id === id && n.tiradoEm === null ? { ...n, tiradoEm: momentoDeAgora() } : n)) });
+  const periodo = fixas.naoVou.find((n) => n.id === id && n.tiradoEm === null);
+  if (!periodo) return;
+  mudarFixas({ ...fixas, naoVou: fixas.naoVou.map((n) => (n === periodo ? { ...n, tiradoEm: momentoDeAgora() } : n)) });
+  avisarPeriodo(periodo, "tirou");
 }
 
 export const vouSempreLigado = (f: RespostasFixas, passageiroId: string) => f.vouSempre.some((v) => v.passageiroId === passageiroId && v.ate === null);

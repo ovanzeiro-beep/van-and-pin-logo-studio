@@ -39,6 +39,34 @@ export function avisoDeResposta(p: Passageiro, d: Destino, data: string, respost
   };
 }
 
+/**
+ * Vanzeiro (T7): a passenger marked or took off a "Não vou de… até…" period. Same kind as an answer
+ * ("Resposta de passageiro"); one notice per period, so taking it off replaces the "marcou" one.
+ */
+export function avisoDePeriodoDeNaoVou(
+  p: Passageiro,
+  d: Destino,
+  periodo: { id: string; de: string; ate: string },
+  acao: "marcou" | "tirou",
+  hoje: string,
+): NovoAviso {
+  const dias = periodo.de === periodo.ate ? `em ${diaMes(periodo.de)}` : `de ${diaMes(periodo.de)} até ${diaMes(periodo.ate)}`;
+  return {
+    chave: `nao_vou_periodo_${periodo.id}`,
+    vanzeiroId: d.vanzeiroId,
+    tipo: "resposta_passageiro",
+    paraVanzeiroOuPassageiroId: d.vanzeiroId,
+    passageiroId: p.id,
+    destinoId: d.id,
+    dataCriacao: hoje,
+    lido: false,
+    textoResumido:
+      acao === "marcou"
+        ? `${primeiroNome(p.nome)} marcou "Não vou" ${dias}, em ${nomeDestino(d)}`
+        : `${primeiroNome(p.nome)} tirou o "Não vou" ${dias}, em ${nomeDestino(d)}`,
+  };
+}
+
 /** Passenger: the van left (the vanzeiro started the trip they are in). */
 export function avisoDeVanSaiu(p: Passageiro, d: Destino, data: string): NovoAviso {
   return {
