@@ -37,7 +37,7 @@ describe("Decisão 6: cobranças de quem sai de um destino", () => {
 
 describe("Sair deste destino (passageiro)", () => {
   it("the person leaves only that destino; their pendente there is cancelled", () => {
-    expect(sairDoDestino("p-juliana")).toBe(true);
+    expect(sairDoDestino("p-juliana").ok).toBe(true);
     expect(obterPassageiros().some((p) => p.id === "p-juliana")).toBe(false);
     expect(obterPassageiros().some((p) => p.id === "p-juliana-londrina")).toBe(true);
     expect(obterSaidas().map((p) => p.id)).toContain("p-juliana");
@@ -49,7 +49,7 @@ describe("Sair deste destino (passageiro)", () => {
 
 describe("Excluir destino (vanzeiro)", () => {
   it("removes the destino, its passengers and pedidos, cancels pendentes and keeps devendo", () => {
-    expect(excluirDestino("jacarezinho-londrina")).toBe(true);
+    expect(excluirDestino("jacarezinho-londrina").ok).toBe(true);
     expect(obterDestinos().some((d) => d.id === "jacarezinho-londrina")).toBe(false);
     expect(obterPassageiros().some((p) => p.destinoId === "jacarezinho-londrina")).toBe(false);
     expect(obterPedidos().some((p) => p.destinoId === "jacarezinho-londrina")).toBe(false);
@@ -67,8 +67,8 @@ describe("Com a viagem de hoje em andamento", () => {
   it("neither excluir destino nor sair deste destino works", () => {
     const cambara = obterDestinos().find((d) => d.id === "centro-unisul")!;
     comecarViagem(cambara, ["p-gabriel"]);
-    expect(excluirDestino("centro-unisul")).toBe(false);
-    expect(sairDoDestino("p-gabriel")).toBe(false);
+    expect(excluirDestino("centro-unisul").ok).toBe(false);
+    expect(sairDoDestino("p-gabriel").ok).toBe(false);
     expect(obterDestinos().some((d) => d.id === "centro-unisul")).toBe(true);
     expect(obterPassageiros().some((p) => p.id === "p-gabriel")).toBe(true);
   });
@@ -83,7 +83,7 @@ describe("Excluir minha conta", () => {
   it("vanzeiro: deletes all destinos, passengers and their pendentes", () => {
     const numDestinos = obterDestinos().length;
     expect(numDestinos).toBeGreaterThan(0);
-    expect(excluirMinhaConta("vanzeiro")).toBe(true);
+    expect(excluirMinhaConta("vanzeiro").ok).toBe(true);
     expect(obterDestinos().length).toBe(0);
     expect(obterPassageiros().length).toBe(0);
   });

@@ -45,6 +45,7 @@ import { useDestino } from "@/lib/destinos-store";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
 import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/vanzeiro/financeiro/$cid")({
   head: () => ({
@@ -181,7 +182,7 @@ function MarcarComoPago({ c }: { c: Cobranca }) {
           <AlertDialogAction
             className={buttonVariants({ variant: "success", size: "lg" })}
             disabled={!forma}
-            onClick={() => forma && marcarComoPago(c.id, forma)}
+            onClick={() => forma && void fazer(() => marcarComoPago(c.id, forma))}
           >
             Confirmar pagamento
           </AlertDialogAction>
@@ -250,7 +251,7 @@ function CancelarCobranca({ c }: { c: Cobranca }) {
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive", size: "lg" })}
             disabled={!motivo.trim()}
-            onClick={() => cancelarCobranca(c.id, motivo)}
+            onClick={() => void fazer(() => cancelarCobranca(c.id, motivo))}
           >
             Cancelar cobrança
           </AlertDialogAction>

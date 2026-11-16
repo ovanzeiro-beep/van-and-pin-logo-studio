@@ -53,14 +53,14 @@ describe("Etapa G4: não dá para pausar com a viagem em andamento", () => {
   it("pausar avisa e não muda nada; depois de terminar funciona; ativar funciona sempre", () => {
     const d = obterDestinos().find((x) => x.id === "jacarezinho-londrina")!;
     comecarViagem(d, []);
-    expect(pausarOuAtivarDestino(d.id)).toBe(false);
+    expect(pausarOuAtivarDestino(d.id).ok).toBe(false);
     expect(obterDestinos().find((x) => x.id === d.id)?.ativo).toBe(true);
-    expect(excluirDestino(d.id)).toBe(false);
+    expect(excluirDestino(d.id).ok).toBe(false);
 
     const outro = obterDestinos().find((x) => x.id === "centro-unisul")!;
-    expect(pausarOuAtivarDestino(outro.id)).toBe(true);
+    expect(pausarOuAtivarDestino(outro.id).ok).toBe(true);
     expect(obterDestinos().find((x) => x.id === outro.id)?.ativo).toBe(false);
-    expect(pausarOuAtivarDestino(outro.id)).toBe(true);
+    expect(pausarOuAtivarDestino(outro.id).ok).toBe(true);
     expect(obterDestinos().find((x) => x.id === outro.id)?.ativo).toBe(true);
   });
 });

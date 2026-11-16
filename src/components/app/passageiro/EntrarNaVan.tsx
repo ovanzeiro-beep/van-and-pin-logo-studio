@@ -20,6 +20,7 @@ import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
 import { acharPorCodigo } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
+import { fazer } from "@/lib/acoes";
 
 /** Shown while the passenger is not in any van: invite code → "Pedir para entrar" → waiting for the vanzeiro. */
 export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
@@ -187,7 +188,7 @@ function Confirmar({ destino, voltar, aoMudarPasso }: { destino: Destino; voltar
             size="lg"
             variant="cta"
             disabled={!pode || !embarqueCompleto(destino, embarque)}
-            onClick={() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque)}
+            onClick={() => void fazer(() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque))}
           >
             Pedir para entrar
           </Button>

@@ -15,6 +15,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { sair } from "@/lib/acesso";
 import { contaComViagemEmAndamento, excluirMinhaConta } from "@/lib/exclusoes";
 import { useViagensDoDia } from "@/lib/viagem-store";
+import { fazer } from "@/lib/acoes";
 
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
 
@@ -25,7 +26,8 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
   const emViagem = contaComViagemEmAndamento(papel);
 
   const excluir = async () => {
-    if (!excluirMinhaConta(papel)) return;
+    const r = await fazer(() => excluirMinhaConta(papel));
+    if (!r.ok) return;
     sair();
     await navigate({ to: "/entrar" });
   };

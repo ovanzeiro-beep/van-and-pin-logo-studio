@@ -15,6 +15,7 @@ import { aceitarMudancaDeEndereco, useMudancasAguardando, usePedidos, type Mudan
 import { textoDaDistancia } from "@/lib/endereco";
 import { Button } from "@/components/ui/button";
 import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
+import { fazer } from "@/lib/acoes";
 
 const tipoAviso: Record<string, { label: string; cor: string }> = {
   pedido_novo: { label: "Pedido novo", cor: "text-primary" },
@@ -124,7 +125,7 @@ function MudancaCard({ m, destino }: { m: MudancaDeEndereco; destino: string | u
       </dl>
       <div className="mt-3 grid grid-cols-2 gap-3">
         <RecusarMudanca m={m} />
-        <Button size="lg" variant="success" onClick={() => aceitarMudancaDeEndereco(m.id)}>
+        <Button size="lg" variant="success" onClick={() => void fazer(() => aceitarMudancaDeEndereco(m.id))}>
           <Check className="!h-5 !w-5" /> Aceitar
         </Button>
       </div>

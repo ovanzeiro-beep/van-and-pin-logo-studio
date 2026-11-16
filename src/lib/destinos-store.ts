@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { destinosExemplo, type Destino } from "@/data/exemplo";
 import { inicializarCodigosUsados } from "@/lib/convite";
 import { useSoDoMeuPainel } from "@/lib/painel";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 
 // Registrar códigos de exemplo como já usados
 inicializarCodigosUsados(destinosExemplo);
@@ -32,13 +33,15 @@ export function useDestino(id: string) {
 }
 
 /** Adds a new destino at the top of the list, or replaces an existing one. */
-export function salvarDestino(d: Destino) {
+export function salvarDestino(d: Destino): Resultado {
+  if (destinos.some((x) => x.id !== d.id && x.convite === d.convite)) return naoDeu("Este código de convite já é de outro destino. Gere outro código.");
   destinos = destinos.some((x) => x.id === d.id)
     ? destinos.map((x) => (x.id === d.id ? d : x))
     : [d, ...destinos];
   avisar();
   // The map learns where the new cities are (origem first, so the others are searched near it).
   void procurarCidades(caminhoCompleto(d));
+  return deuCerto;
 }
 
 /** Days without a trip (feriado): replaces the list of cancelled days of this destino. */

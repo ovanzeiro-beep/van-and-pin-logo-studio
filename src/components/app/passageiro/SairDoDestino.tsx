@@ -18,6 +18,7 @@ import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { sairDoDestino } from "@/lib/exclusoes";
 import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
+import { fazer } from "@/lib/acoes";
 
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
 
@@ -56,7 +57,7 @@ export function SairDoDestino({ p, d }: { p: Passageiro; d: Destino }) {
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
           <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} disabled={emViagem} onClick={() => sairDoDestino(p.id)}>
+          <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} disabled={emViagem} onClick={() => void fazer(() => sairDoDestino(p.id))}>
             Sair deste destino
           </AlertDialogAction>
         </AlertDialogFooter>

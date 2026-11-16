@@ -51,13 +51,13 @@ describe("Mudar onde embarca: até 1 km salva; mais longe, o vanzeiro aprova", (
   });
 
   it("perto: salva na hora", () => {
-    expect(mudarMeuEmbarque("p-mariana", { cidade: "Jacarezinho", endereco: "Rua Nova, 10", ponto: pertinho })).toBe("salvo");
+    expect(mudarMeuEmbarque("p-mariana", { cidade: "Jacarezinho", endereco: "Rua Nova, 10", ponto: pertinho })).toEqual({ ok: true, situacao: "salvo" });
     const m = obterPassageiros().find((p) => p.id === "p-mariana")!;
     expect([m.endereco, m.ponto]).toEqual(["Rua Nova, 10", pertinho]);
   });
 
   it("longe: fica aguardando o vanzeiro, o endereço antigo continua; aceitar troca e avisa a pessoa", () => {
-    expect(mudarMeuEmbarque("p-mariana", { cidade: "Jacarezinho", endereco: "Sítio Longe", ponto: longe })).toBe("aguardando");
+    expect(mudarMeuEmbarque("p-mariana", { cidade: "Jacarezinho", endereco: "Sítio Longe", ponto: longe })).toEqual({ ok: true, situacao: "aguardando" });
     expect(obterPassageiros().find((p) => p.id === "p-mariana")!.endereco).toBe("Rua Nova, 10");
     const m = obterMudancasAguardando().find((x) => x.matriculaId === "p-mariana")!;
     expect(m.de.endereco).toBe("Rua Nova, 10");
@@ -68,7 +68,7 @@ describe("Mudar onde embarca: até 1 km salva; mais longe, o vanzeiro aprova", (
   });
 
   it("recusar: nada muda e a pessoa recebe aviso", () => {
-    expect(mudarMeuEmbarque("p-mariana", { cidade: "Santo Antônio da Platina", endereco: "Rua Z", ponto: { lat: -23.295, lng: -50.077 } })).toBe("aguardando");
+    expect(mudarMeuEmbarque("p-mariana", { cidade: "Santo Antônio da Platina", endereco: "Rua Z", ponto: { lat: -23.295, lng: -50.077 } })).toEqual({ ok: true, situacao: "aguardando" });
     const m = obterMudancasAguardando().find((x) => x.matriculaId === "p-mariana")!;
     recusarMudancaDeEndereco(m.id);
     const p = obterPassageiros().find((x) => x.id === "p-mariana")!;

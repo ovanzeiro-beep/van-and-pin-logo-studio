@@ -14,13 +14,14 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import type { Destino } from "@/data/exemplo";
 import { pausarOuAtivarDestino } from "@/lib/exclusoes";
 import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
+import { fazer } from "@/lib/acoes";
 
 /** "Pausar" asks first (the destino leaves the trips); "Ativar" works right away. */
 export function PausarDestino({ d }: { d: Pick<Destino, "id" | "ativo"> }) {
   const emViagem = emAndamento(useViagensDoDia())?.destinoId === d.id;
   if (!d.ativo) {
     return (
-      <Button size="lg" variant="success" onClick={() => pausarOuAtivarDestino(d.id)}>
+      <Button size="lg" variant="success" onClick={() => void fazer(() => pausarOuAtivarDestino(d.id))}>
         <Play className="!h-5 !w-5" /> Ativar
       </Button>
     );
@@ -48,7 +49,7 @@ export function PausarDestino({ d }: { d: Pick<Destino, "id" | "ativo"> }) {
           <AlertDialogAction
             className={buttonVariants({ size: "lg" })}
             disabled={emViagem}
-            onClick={() => pausarOuAtivarDestino(d.id)}
+            onClick={() => void fazer(() => pausarOuAtivarDestino(d.id))}
           >
             Pausar
           </AlertDialogAction>

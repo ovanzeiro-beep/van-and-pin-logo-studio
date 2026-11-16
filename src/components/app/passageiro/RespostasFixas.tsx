@@ -26,6 +26,7 @@ import {
   useRespostasFixas,
   vouSempreLigado,
 } from "@/lib/respostas-store";
+import { fazer } from "@/lib/acoes";
 
 /** T3: "Vou sempre" and "Não vou de… até…", one card per destino the person is in. */
 export function RespostasFixas({ eu, destino }: { eu: Passageiro; destino: Destino }) {
@@ -41,7 +42,7 @@ export function RespostasFixas({ eu, destino }: { eu: Passageiro; destino: Desti
           <span className="block font-semibold text-foreground">Vou sempre</span>
           <span className="block text-sm text-muted-foreground">Todo dia de viagem já conta como "Vou". Se num dia não for, toque em "Não vou".</span>
         </label>
-        <Switch id={idDoSwitch} checked={ligado} onCheckedChange={(v) => ligarVouSempre(eu.id, v)} />
+        <Switch id={idDoSwitch} checked={ligado} onCheckedChange={(v) => void fazer(() => ligarVouSempre(eu.id, v))} />
       </div>
       {periodos.length > 0 && (
         <ul className="mt-2 space-y-1.5">
@@ -50,7 +51,7 @@ export function RespostasFixas({ eu, destino }: { eu: Passageiro; destino: Desti
               <span className="text-sm font-semibold text-destructive">
                 Não vou de {diaMes(n.de)} até {diaMes(n.ate)}
               </span>
-              <Button variant="ghost" size="sm" className="h-9 px-2.5 text-sm font-semibold" onClick={() => tirarNaoVouDoPeriodo(n.id)}>
+              <Button variant="ghost" size="sm" className="h-9 px-2.5 text-sm font-semibold" onClick={() => void fazer(() => tirarNaoVouDoPeriodo(n.id))}>
                 <X className="!h-4 !w-4" /> Tirar
               </Button>
             </li>
@@ -76,11 +77,11 @@ function NaoVouNoPeriodo({ passageiroId }: { passageiroId: string }) {
       setTentou(false);
     }
   };
-  const salvar = () => {
+  const salvar = async () => {
     setTentou(true);
     if (problema) return;
-    marcarNaoVouNoPeriodo(passageiroId, de, ate);
-    setAberto(false);
+    const r = await fazer(() => marcarNaoVouNoPeriodo(passageiroId, de, ate));
+    if (r.ok) setAberto(false);
   };
   return (
     <AlertDialog open={aberto} onOpenChange={abrir}>

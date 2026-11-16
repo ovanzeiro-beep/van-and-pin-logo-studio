@@ -12,7 +12,7 @@ describe("A3 (opção 1): quem sai do último destino continua vendo o que deve"
     expect(renderHook(() => useMinhaSituacao()).result.current.tipo).toBe("membro");
     expect(renderHook(() => useEmAbertoDeQuemSaiu()).result.current).toBeNull();
 
-    expect(sairDoDestino("p-beatriz")).toBe(true);
+    expect(sairDoDestino("p-beatriz").ok).toBe(true);
     expect(renderHook(() => useMinhaSituacao()).result.current.tipo).toBe("sem-van");
     expect(renderHook(() => useIdsDasMinhasCobrancas()).result.current).toEqual(["p-beatriz"]);
     const emAberto = renderHook(() => useEmAbertoDeQuemSaiu()).result.current;
@@ -22,7 +22,7 @@ describe("A3 (opção 1): quem sai do último destino continua vendo o que deve"
 
   it("quem saiu sem dever nada não vê o cartão", () => {
     mudarSessaoPassageiro({ passageiroId: "p-thiago", pedidoId: null });
-    expect(sairDoDestino("p-thiago")).toBe(true);
+    expect(sairDoDestino("p-thiago").ok).toBe(true);
     expect(renderHook(() => useEmAbertoDeQuemSaiu()).result.current).toBeNull();
   });
 });

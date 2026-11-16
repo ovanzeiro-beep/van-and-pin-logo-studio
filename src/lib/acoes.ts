@@ -10,6 +10,9 @@ export type Resultado = { ok: true } | { ok: false; motivo: string };
 export const deuCerto: Resultado = { ok: true };
 export const naoDeu = (motivo: string): Resultado => ({ ok: false, motivo });
 
+/** The destino or the membership is no longer there (deleted, or the person left). */
+export const SEM_DESTINO = "Não achamos este destino. Ele pode ter sido excluído ou você saiu dele.";
+
 /** When the database does not answer (no signal, server down). */
 export const SEM_RESPOSTA = "Não deu para salvar. Confira o sinal e tente de novo.";
 
@@ -50,13 +53,13 @@ function mostrar(texto: string) {
  * Runs an action the person did. The change itself happens right away (in memory today); then "Salvando…" ends and,
  * if it did not work, the reason is shown at the top of the screen. The answer also comes back to the screen.
  */
-export async function fazer(acao: () => Resultado | Promise<Resultado>): Promise<Resultado> {
+export async function fazer<R extends Resultado>(acao: () => R | Promise<R>): Promise<R | { ok: false; motivo: string }> {
   mudar({ ...estado, salvando: estado.salvando + 1 });
-  let r: Resultado;
+  let r: R | { ok: false; motivo: string };
   try {
     r = await acao();
   } catch {
-    r = naoDeu(SEM_RESPOSTA);
+    r = { ok: false, motivo: SEM_RESPOSTA };
   }
   mudar({ ...estado, salvando: Math.max(0, estado.salvando - 1) });
   if (!r.ok) mostrar(r.motivo);

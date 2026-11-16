@@ -9,7 +9,8 @@ import { contarVou, podeDizerVou } from "@/lib/lugares";
 import { obterPerfilDoVanzeiro, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { avisoDePeriodoDeNaoVou, avisoDeResposta } from "@/lib/avisos";
 import { trocarAviso } from "@/lib/avisos-store";
-import { respostaFixa, respostasComFixas, SEM_RESPOSTAS_FIXAS, textoDoPrazoIso, type RespostasFixas } from "@/lib/respostas-fixas";
+import { problemaDoPeriodo, respostaFixa, respostasComFixas, SEM_RESPOSTAS_FIXAS, textoDoPrazoIso, type RespostasFixas } from "@/lib/respostas-fixas";
+import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
 import { novoId } from "@/lib/ids";
 
 // "Vou" / "Não vou" of each passenger, per trip day. Both panels read this same list,
@@ -102,15 +103,17 @@ export function useRespostasDoDia(data: string) {
 }
 
 /** Saves the answer. The screen only offers it while confirmations are open. */
-export function responder(passageiroId: string, data: string, resposta: RespostaViagem) {
+export function responder(passageiroId: string, data: string, resposta: RespostaViagem): Resultado {
   const p = obterPassageiros().find((p) => p.id === passageiroId);
   const d = obterDestinos().find((d) => d.id === p?.destinoId);
-  if (!p || !d || estaFechada(d.id, data) || prazoPassou(d, data, agora())) return;
+  if (!p || !d) return naoDeu(SEM_DESTINO);
+  if (estaFechada(d.id, data)) return naoDeu("A viagem já começou. Não dá mais para responder.");
+  if (prazoPassou(d, data, agora())) return naoDeu("O prazo para responder já passou.");
   const doDia = obterRespostasDoDia(data);
-  if (doDia[passageiroId] === resposta && respostas[data]?.[passageiroId] !== undefined) return;
+  if (doDia[passageiroId] === resposta && respostas[data]?.[passageiroId] !== undefined) return deuCerto;
   if (resposta === "vai") {
     const vao = contarVou(obterPassageiros(), d.id, doDia);
-    if (!podeDizerVou(obterPerfilDoVanzeiro(d.vanzeiroId).van.lugares, vao, doDia[passageiroId])) return;
+    if (!podeDizerVou(obterPerfilDoVanzeiro(d.vanzeiroId).van.lugares, vao, doDia[passageiroId])) return naoDeu("A van lotou. Não tem mais lugar nesta viagem.");
   }
   respostas = { ...respostas, [data]: { ...(respostas[data] ?? {}), [passageiroId]: resposta } };
   const agoraMesmo = agora();
@@ -118,6 +121,7 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
   momentos = { ...momentos, [data]: { ...(momentos[data] ?? {}), [passageiroId]: { em: `${agoraMesmo.data} ${agoraMesmo.hora}`, prazo: `${prazo.data} ${prazo.hora}` } } };
   ouvintes.forEach((o) => o());
   trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje()));
+  return deuCerto;
 }
 
 /** Passenger screens: "Van lotada" instead of "Vou" when every seat of this trip is taken. */
@@ -142,9 +146,10 @@ const mudarFixas = (novas: RespostasFixas) => {
 };
 
 /** "Vou sempre" on or off, for one destino (one membership). */
-export function ligarVouSempre(passageiroId: string, ligar: boolean) {
+export function ligarVouSempre(passageiroId: string, ligar: boolean): Resultado {
+  if (!obterPassageiros().some((p) => p.id === passageiroId)) return naoDeu(SEM_DESTINO);
   const ligado = fixas.vouSempre.some((v) => v.passageiroId === passageiroId && v.ate === null);
-  if (ligar === ligado) return;
+  if (ligar === ligado) return deuCerto;
   const em = momentoDeAgora();
   mudarFixas({
     ...fixas,
@@ -152,6 +157,7 @@ export function ligarVouSempre(passageiroId: string, ligar: boolean) {
       ? [...fixas.vouSempre, { passageiroId, desde: em, ate: null }]
       : fixas.vouSempre.map((v) => (v.passageiroId === passageiroId && v.ate === null ? { ...v, ate: em } : v)),
   });
+  return deuCerto;
 }
 
 /** T7: the vanzeiro gets a notice in the bell when a period is marked or taken off. */
@@ -161,18 +167,23 @@ function avisarPeriodo(periodo: { id: string; passageiroId: string; de: string; 
   if (p && d) trocarAviso(avisoDePeriodoDeNaoVou(p, d, periodo, acao, dataDeHoje()));
 }
 
-export function marcarNaoVouNoPeriodo(passageiroId: string, de: string, ate: string) {
+export function marcarNaoVouNoPeriodo(passageiroId: string, de: string, ate: string): Resultado {
+  if (!obterPassageiros().some((p) => p.id === passageiroId)) return naoDeu(SEM_DESTINO);
+  const problema = problemaDoPeriodo(de, ate, dataDeHoje());
+  if (problema) return naoDeu(problema);
   const novo = { id: novoId("nao-vou"), passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null };
   mudarFixas({ ...fixas, naoVou: [...fixas.naoVou, novo] });
   avisarPeriodo(novo, "marcou");
+  return deuCerto;
 }
 
 /** Takes a period off; days whose deadline already passed keep their "Não vou". */
-export function tirarNaoVouDoPeriodo(id: string) {
+export function tirarNaoVouDoPeriodo(id: string): Resultado {
   const periodo = fixas.naoVou.find((n) => n.id === id && n.tiradoEm === null);
-  if (!periodo) return;
+  if (!periodo) return naoDeu("Este período já tinha sido tirado.");
   mudarFixas({ ...fixas, naoVou: fixas.naoVou.map((n) => (n === periodo ? { ...n, tiradoEm: momentoDeAgora() } : n)) });
   avisarPeriodo(periodo, "tirou");
+  return deuCerto;
 }
 
 export const vouSempreLigado = (f: RespostasFixas, passageiroId: string) => f.vouSempre.some((v) => v.passageiroId === passageiroId && v.ate === null);

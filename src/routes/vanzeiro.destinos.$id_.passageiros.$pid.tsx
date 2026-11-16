@@ -29,6 +29,7 @@ import { removerPassageiroDoDestino } from "@/lib/exclusoes";
 import { usePassageiro, usePassageiros } from "@/lib/passageiros-store";
 import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
 import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")({
   head: () => ({
@@ -61,7 +62,7 @@ function DetalhePassageiro() {
   const remover = async () => {
     if (emViagem) return;
     await navigate({ to: "/vanzeiro/destinos/$id", params: { id: d.id } });
-    removerPassageiroDoDestino(p.id);
+    void fazer(() => removerPassageiroDoDestino(p.id));
   };
 
   return (

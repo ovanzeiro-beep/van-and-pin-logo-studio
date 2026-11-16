@@ -3,6 +3,7 @@ import { primeiroNomeDe } from "@/lib/datas";
 import { vanzeiroExemplo } from "@/data/exemplo";
 import { telefoneValido } from "@/lib/passageiros";
 import { idDoVanzeiro, useSessao } from "@/lib/sessao";
+import { deuCerto, type Resultado } from "@/lib/acoes";
 
 export type PerfilVanzeiro = {
   nome: string;
@@ -47,9 +48,10 @@ export function usePerfilVanzeiro() {
 }
 
 /** Saves the logged-in vanzeiro's own profile. */
-export function salvarPerfilVanzeiro(novo: PerfilVanzeiro) {
+export function salvarPerfilVanzeiro(novo: PerfilVanzeiro): Resultado {
   perfis = { ...perfis, [idDoVanzeiro()]: novo };
   ouvintes.forEach((o) => o());
+  return deuCerto;
 }
 
 /** New vanzeiro account: only the name typed in "Criar conta" is known. */

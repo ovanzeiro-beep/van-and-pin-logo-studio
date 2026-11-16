@@ -10,6 +10,7 @@ import { criarAvisoUmaVez } from "@/lib/avisos-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, viagensDoDia, type Agora, type ViagemDoDia } from "@/lib/viagem";
 import { useDonoDoPainel } from "@/lib/painel";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 
 // In-memory trips of the day for the visual stage: they last until the page is reloaded,
 // and survive switching tabs in the middle of a trip.
@@ -56,8 +57,9 @@ export function escolherViagem(destinoId: string) {
   mudar({ ...estado, escolhida: destinoId });
 }
 
-export function comecarViagem(destino: Destino, ordem: string[]) {
-  if (emAndamento(estado) || estado.viagens[destino.id]) return;
+export function comecarViagem(destino: Destino, ordem: string[]): Resultado {
+  if (emAndamento(estado)) return naoDeu("Já tem uma viagem acontecendo. Termine ela antes de começar outra.");
+  if (estado.viagens[destino.id]) return naoDeu("A viagem de hoje deste destino já foi feita.");
   fecharRespostas(destino.id, dataDeHoje());
   const respostas = obterRespostasDoDia(dataDeHoje());
   for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
@@ -68,36 +70,39 @@ export function comecarViagem(destino: Destino, ordem: string[]) {
     const p = passageiro(id);
     if (p) criarAvisoUmaVez(avisoDeVanSaiu(p, destino, dataDeHoje()));
   }
+  return deuCerto;
 }
 
 /** Applies one step of the trip in progress. */
-export function atualizarViagem(passo: (v: ViagemDoDia) => ViagemDoDia) {
+export function atualizarViagem(passo: (v: ViagemDoDia) => ViagemDoDia): Resultado {
   const atual = emAndamento(estado);
-  if (!atual) return;
+  if (!atual) return naoDeu("Nenhuma viagem está acontecendo agora.");
   let nova = passo(atual);
-  if (nova === atual) return;
+  if (nova === atual) return deuCerto;
   if (nova.fase === "encerrada") nova = { ...nova, terminouEm: horaDeAgora() };
   mudar({ ...estado, viagens: { ...estado.viagens, [atual.destinoId]: nova } });
+  return deuCerto;
 }
 
 const passageiro = (id: string) => obterPassageiros().find((p) => p.id === id);
 
 /** "Embarcou": a trip made, which the Financeiro counts. */
-export function marcarEmbarcou(id: string) {
+export function marcarEmbarcou(id: string): Resultado {
   const antes = emAndamento(estado);
-  atualizarViagem((v) => embarcou(v, id));
+  const r = atualizarViagem((v) => embarcou(v, id));
   const p = passageiro(id);
   if (p && antes && emAndamento(estado) !== antes) registrarEmbarque(p, antes.data, antes.id);
+  return r;
 }
 
 /** "Não estava no ponto": a falta, which the Financeiro counts. */
-export function marcarNaoEstava(id: string) {
-  atualizarViagem((v) => naoEstava(v, id));
+export function marcarNaoEstava(id: string): Resultado {
+  return atualizarViagem((v) => naoEstava(v, id));
 }
 
 /** "Estou na van" tapped on the passenger's phone during a check. */
-export function confirmarNaVan(id: string) {
-  atualizarViagem((v) => confirmarPeloCelular(v, id));
+export function confirmarNaVan(id: string): Resultado {
+  return atualizarViagem((v) => confirmarPeloCelular(v, id));
 }
 
 /** When a trip's deadline passes, an on-time "Não vou" counts as a falta, even if the trip is never started in the app. */

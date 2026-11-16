@@ -20,6 +20,7 @@ import { CancelarViagemDoDia } from "@/components/app/DiasSemViagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 import { alternarVoz, fraseDaViagem, useVozDaViagem, useVozLigada, vozDisponivel } from "@/lib/voz";
 import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
   head: () => ({
@@ -154,7 +155,7 @@ function AbaViagem() {
             {...lista}
             faltamResponder={faltamResponderAoIniciar(destino, dataDeHoje(), agora(), lista.semResposta.length)}
             prazo={textoDoPrazo(destino, dataDeHoje())}
-            aoIniciar={() => comecarViagem(destino, lista.vao.map((p) => p.id))}
+            aoIniciar={() => void fazer(() => comecarViagem(destino, lista.vao.map((p) => p.id)))}
             cancelarHoje={
               <CancelarViagemDoDia
                 d={destino}

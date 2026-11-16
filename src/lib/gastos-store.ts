@@ -1,8 +1,10 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { gastosExemplo } from "@/data/exemplo";
-import type { Gasto, TipoDeGasto } from "@/lib/gastos";
+import { problemaDoGasto, type Gasto, type TipoDeGasto } from "@/lib/gastos";
+import { dataDeHoje } from "@/lib/agora";
 import { idDoVanzeiro, useSessao } from "@/lib/sessao";
 import { novoId } from "@/lib/ids";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 
 // The vanzeiro's expenses, in memory (no database): reloading brings the samples back.
 const inicial: Gasto[] = [...gastosExemplo];
@@ -28,12 +30,17 @@ export function useGastos() {
 
 export const obterGastos = () => gastos.filter((g) => g.vanzeiroId === idDoVanzeiro());
 
-export function anotarGasto(g: { tipo: TipoDeGasto; descricao: string; valor: number; data: string }) {
+export function anotarGasto(g: { tipo: TipoDeGasto; descricao: string; valor: number; data: string }): Resultado {
+  const problema = problemaDoGasto(g, dataDeHoje());
+  if (problema) return naoDeu(problema);
   mudar([...gastos, { id: novoId("gasto"), vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? g.descricao.trim() : "", valor: g.valor, data: g.data }]);
+  return deuCerto;
 }
 
-export function apagarGasto(id: string) {
+export function apagarGasto(id: string): Resultado {
+  if (!gastos.some((g) => g.id === id && g.vanzeiroId === idDoVanzeiro())) return naoDeu("Este gasto já tinha sido apagado.");
   mudar(gastos.filter((g) => !(g.id === id && g.vanzeiroId === idDoVanzeiro())));
+  return deuCerto;
 }
 
 /** New vanzeiro account: no expenses. */

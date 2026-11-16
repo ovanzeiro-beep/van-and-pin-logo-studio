@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { formatarTelefone, somenteDigitos } from "@/lib/passageiros";
 import { useDestinos } from "@/lib/destinos-store";
 import { perfilPodeSalvar, salvarPerfilVanzeiro, usePerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/vanzeiro/perfil")({
   head: () => ({
@@ -89,14 +90,14 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
   const lugaresLidos = lerLugares(lugares);
   const pode = perfilPodeSalvar({ nome, telefone }) && lugaresLidos !== "invalido";
 
-  const salvar = () => {
-    salvarPerfilVanzeiro({
+  const salvar = async () => {
+    const r = await fazer(() => salvarPerfilVanzeiro({
       nome: nome.trim(),
       telefone: somenteDigitos(telefone),
       pix: pix.trim(),
       van: { modelo: modelo.trim(), placa: placa.trim().toUpperCase(), lugares: lugaresLidos === "invalido" ? null : lugaresLidos },
-    });
-    fechar();
+    }));
+    if (r.ok) fechar();
   };
 
   return (

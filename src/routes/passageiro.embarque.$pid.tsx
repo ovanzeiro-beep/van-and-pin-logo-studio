@@ -10,6 +10,7 @@ import { LIMITE_MUDANCA_KM, avaliarMudanca, embarqueCompleto, textoDaDistancia, 
 import { mudarMeuEmbarque, useMudancasAguardando } from "@/lib/passageiros-store";
 import { useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/passageiro/embarque/$pid")({
   head: () => ({
@@ -70,9 +71,10 @@ function OndeVoceEmbarca() {
   const mudou = valor.cidade !== eu.cidade || valor.endereco.trim() !== eu.endereco || valor.ponto?.lat !== eu.ponto?.lat || valor.ponto?.lng !== eu.ponto?.lng;
   const pode = mudou && embarqueCompleto(destino, valor);
 
-  const salvar = () => {
-    const r = mudarMeuEmbarque(eu.id, valor);
-    if (r === "aguardando") setEnviado(true);
+  const salvar = async () => {
+    const r = await fazer(() => mudarMeuEmbarque(eu.id, valor));
+    if (!r.ok) return;
+    if ("situacao" in r && r.situacao === "aguardando") setEnviado(true);
     else voltar();
   };
 

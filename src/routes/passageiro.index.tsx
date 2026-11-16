@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { confirmarNaVan } from "@/lib/viagem-store";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/passageiro/")({
   head: () => ({
@@ -56,7 +57,7 @@ function InicioPassageiro() {
       <PassageiroHeader compacto titulo="Início" subtitulo="Tudo sobre a sua próxima viagem." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-2">
         {conferencia === "perguntar" ? (
-          <AvisoConferencia onConfirmar={() => confirmarNaVan(eu.id)} />
+          <AvisoConferencia onConfirmar={() => void fazer(() => confirmarNaVan(eu.id))} />
         ) : conferencia === "confirmado" ? (
           <section className="flex items-center gap-3 rounded-3xl border-2 border-success bg-success-soft p-4 shadow-card" role="status">
             <CircleCheck className="h-8 w-8 shrink-0 text-success" />
@@ -83,7 +84,7 @@ function InicioPassageiro() {
               <BotaoVou passageiroId={prox.eu.id} destinoId={prox.destino.id} data={prox.data} resposta={prox.resposta} />
               <Button
                 variant={prox.resposta === "nao-vai" ? "destructive" : "outline"}
-                onClick={() => responder(prox.eu.id, prox.data, "nao-vai")}
+                onClick={() => void fazer(() => responder(prox.eu.id, prox.data, "nao-vai"))}
                 aria-pressed={prox.resposta === "nao-vai"}
               >
                 <X className="!h-5 !w-5" /> Não vou

@@ -14,15 +14,15 @@ const londrina = () => obterDestinos().find((d) => d.id === "jacarezinho-londrin
 
 describe("S1: cancelar a viagem de um dia (feriado)", () => {
   it("só dá para cancelar dia que tem viagem, com motivo", () => {
-    expect(cancelarViagemDoDia("centro-unisul", "2026-11-14", "Feriado")).toBe(false); // sábado: não tem viagem
-    expect(cancelarViagemDoDia("centro-unisul", hoje, "  ")).toBe(false);
-    expect(cancelarViagemDoDia("centro-unisul", "2026-11-12", "Feriado")).toBe(false); // já passou
+    expect(cancelarViagemDoDia("centro-unisul", "2026-11-14", "Feriado").ok).toBe(false); // sábado: não tem viagem
+    expect(cancelarViagemDoDia("centro-unisul", hoje, "  ").ok).toBe(false);
+    expect(cancelarViagemDoDia("centro-unisul", "2026-11-12", "Feriado").ok).toBe(false); // já passou
     expect(diasQuePodemSerCancelados(cambara()).slice(0, 3)).toEqual([hoje, "2026-11-16", "2026-11-17"]);
   });
 
   it("cancelar hoje: a viagem some, os passageiros são avisados, e quem disse 'Não vou' não ganha desconto", () => {
     const antes = obterAvisos().length;
-    expect(cancelarViagemDoDia("centro-unisul", hoje, "Feriado")).toBe(true);
+    expect(cancelarViagemDoDia("centro-unisul", hoje, "Feriado").ok).toBe(true);
     expect(viagensDoDia(obterDestinos(), hoje).map((d) => d.id)).toEqual(["jacarezinho-londrina"]);
     const novos = obterAvisos().slice(antes);
     expect(novos.every((a) => a.tipo === "viagem_cancelada")).toBe(true);
@@ -43,16 +43,16 @@ describe("S1: cancelar a viagem de um dia (feriado)", () => {
   });
 
   it("desfazer: a viagem volta e os passageiros são avisados", () => {
-    expect(desfazerCancelamento("centro-unisul", hoje)).toBe(true);
+    expect(desfazerCancelamento("centro-unisul", hoje).ok).toBe(true);
     expect(viagensDoDia(obterDestinos(), hoje).map((d) => d.id)).toContain("centro-unisul");
     expect(obterAvisos().at(-1)?.tipo).toBe("viagem_de_volta");
-    expect(desfazerCancelamento("centro-unisul", hoje)).toBe(false);
+    expect(desfazerCancelamento("centro-unisul", hoje).ok).toBe(false);
   });
 
   it("viagem que já começou não pode ser cancelada", () => {
     comecarViagem(londrina(), []);
     expect(diasQuePodemSerCancelados(londrina())).not.toContain(hoje);
-    expect(cancelarViagemDoDia("jacarezinho-londrina", hoje, "Feriado")).toBe(false);
-    expect(cancelarViagemDoDia("jacarezinho-londrina", "2026-11-14", "Feriado")).toBe(true); // sábado seguinte pode
+    expect(cancelarViagemDoDia("jacarezinho-londrina", hoje, "Feriado").ok).toBe(false);
+    expect(cancelarViagemDoDia("jacarezinho-londrina", "2026-11-14", "Feriado").ok).toBe(true); // sábado seguinte pode
   });
 });

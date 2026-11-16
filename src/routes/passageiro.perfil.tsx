@@ -16,6 +16,7 @@ import { formatarTelefone, linkWhatsApp, meusDadosValidos } from "@/lib/passagei
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { salvarMeusDados, useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { textoDaVan, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
+import { fazer } from "@/lib/acoes";
 
 export const Route = createFileRoute("/passageiro/perfil")({
   head: () => ({
@@ -115,9 +116,9 @@ function Editar({
   const enderecos = Object.fromEntries(matriculas.map((p) => [p.id, p.endereco]));
   const dados = { nome, telefone, enderecos };
 
-  const salvar = () => {
-    salvarMeusDados(eu.id, dados);
-    fechar();
+  const salvar = async () => {
+    const r = await fazer(() => salvarMeusDados(eu.id, dados));
+    if (r.ok) fechar();
   };
 
   return (

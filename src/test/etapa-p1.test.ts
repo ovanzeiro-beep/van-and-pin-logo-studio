@@ -18,9 +18,9 @@ const situacaoDe = (id: string) => obterMudancasDeEndereco().filter((m) => m.mat
 
 describe("Etapa P1: mudança de endereço some junto com quem sai", () => {
   it("a pessoa sai do destino: a mudança é cancelada e não aparece mais para o vanzeiro", () => {
-    expect(pedir("p-pedro")).toBe("aguardando");
+    expect(pedir("p-pedro")).toEqual({ ok: true, situacao: "aguardando" });
     const id = obterMudancasAguardando().find((m) => m.matriculaId === "p-pedro")!.id;
-    expect(sairDoDestino("p-pedro")).toBe(true);
+    expect(sairDoDestino("p-pedro").ok).toBe(true);
     expect(situacaoDe("p-pedro")).toBe("cancelada");
     expect(obterMudancasAguardando().some((m) => m.matriculaId === "p-pedro")).toBe(false);
     aceitarMudancaDeEndereco(id);
@@ -28,13 +28,13 @@ describe("Etapa P1: mudança de endereço some junto com quem sai", () => {
   });
 
   it("o vanzeiro remove a pessoa: cancelada", () => {
-    expect(pedir("p-beatriz")).toBe("aguardando");
+    expect(pedir("p-beatriz")).toEqual({ ok: true, situacao: "aguardando" });
     removerPassageiroDoDestino("p-beatriz");
     expect(situacaoDe("p-beatriz")).toBe("cancelada");
   });
 
   it("o destino é excluído: canceladas as de todos dele", () => {
-    expect(mudarMeuEmbarque("p-lucas", { cidade: "Jacarezinho", endereco: "Rua Outra", ponto: { lat: -23.1606, lng: -49.9692 } })).toBe("aguardando");
+    expect(mudarMeuEmbarque("p-lucas", { cidade: "Jacarezinho", endereco: "Rua Outra", ponto: { lat: -23.1606, lng: -49.9692 } })).toEqual({ ok: true, situacao: "aguardando" });
     excluirDestino("jacarezinho-londrina");
     expect(situacaoDe("p-lucas")).toBe("cancelada");
     expect(obterMudancasAguardando()).toEqual([]);

@@ -8,6 +8,7 @@ import { adicionarPedido, obterAceitos, obterPassageiros, obterPedidos, salvarDa
 
 import { matriculasDaPessoa, identidadePassageiro, somenteDigitos, type MeusDados } from "@/lib/passageiros";
 import { mudarSessaoPassageiro, obterSessao, useSessao, type SessaoPassageiro } from "@/lib/sessao";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 
 // The passenger panel of whoever is using the app (saved in sessao.ts). Starts as the sample
 // passenger (Juliana); a new account starts with no van and joins one with an invite code.
@@ -16,10 +17,10 @@ export function useSessaoPassageiro() {
   return useSessao().passageiro;
 }
 
-export function pedirParaEntrar(destinoId: string, nome: string, telefone: string, embarque?: Embarque) {
-  if (obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return;
+export function pedirParaEntrar(destinoId: string, nome: string, telefone: string, embarque?: Embarque): Resultado {
+  if (obterMinhasMatriculas().some((p) => p.destinoId === destinoId)) return naoDeu("Você já está neste destino.");
   const destino = obterDestinos().find((d) => d.id === destinoId);
-  if (!destino) return;
+  if (!destino) return naoDeu("Não achamos este destino. Confira o código com o vanzeiro.");
   const eu = obterMinhasMatriculas()[0];
   const pedidoId = adicionarPedido({
     vanzeiroId: destino.vanzeiroId,
@@ -34,12 +35,15 @@ export function pedirParaEntrar(destinoId: string, nome: string, telefone: strin
   // Someone already in a van keeps being who they are: the new pedido must not replace the accepted one that said so.
   const passageiroId = obterSessao().passageiro.passageiroId ?? eu?.id ?? null;
   mudarSessaoPassageiro({ nome: nome.trim(), telefone, pedidoId, passageiroId });
+  return deuCerto;
 }
 
 /** "Editar" on the passenger's Perfil: saves on every destino of this person and in this session. */
-export function salvarMeusDados(euId: string, dados: MeusDados) {
-  salvarDadosDoPassageiro(euId, dados);
+export function salvarMeusDados(euId: string, dados: MeusDados): Resultado {
+  const r = salvarDadosDoPassageiro(euId, dados);
+  if (!r.ok) return r;
   mudarSessaoPassageiro({ nome: dados.nome.trim(), telefone: somenteDigitos(dados.telefone) });
+  return deuCerto;
 }
 
 export function tentarOutroCodigo() {

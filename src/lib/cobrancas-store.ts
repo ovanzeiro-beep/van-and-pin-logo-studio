@@ -14,6 +14,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, type Cobranca } from "@/lib/cobrancas";
 import { somarDias } from "@/lib/datas";
 import { useSoDoMeuPainel } from "@/lib/painel";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 
 /** Sample history: charges the app created from each plan since the start of the history. */
 function cobrancasDeExemplo(): Cobranca[] {
@@ -63,19 +64,35 @@ export function useCobrancasDoPassageiro(passageiroId: string) {
 }
 
 /** The only change a charge accepts besides cancelling: it becomes paid, with the payment date. */
-export function marcarComoPago(id: string, forma: FormaPagamento, data = dataDeHoje()) {
+export function marcarComoPago(id: string, forma: FormaPagamento, data = dataDeHoje()): Resultado {
+  const problema = problemaDaCobranca(id);
+  if (problema) return naoDeu(problema);
   cobrancas = cobrancas.map((c) =>
     c.id === id && !c.pagamento && !c.cancelamento ? { ...c, pagamento: { data, forma } } : c,
   );
   avisar();
+  return deuCerto;
 }
 
 /** Leaves the totals but stays in the history. */
-export function cancelarCobranca(id: string, motivo: string, data = dataDeHoje()) {
+export function cancelarCobranca(id: string, motivo: string, data = dataDeHoje()): Resultado {
+  if (!motivo.trim()) return naoDeu("Escreva o motivo do cancelamento.");
+  const problema = problemaDaCobranca(id);
+  if (problema) return naoDeu(problema);
   cobrancas = cobrancas.map((c) =>
     c.id === id && !c.pagamento && !c.cancelamento ? { ...c, cancelamento: { data, motivo: motivo.trim() } } : c,
   );
   avisar();
+  return deuCerto;
+}
+
+/** Why a charge can't be paid or cancelled any more (it is never edited). */
+function problemaDaCobranca(id: string): string | null {
+  const c = cobrancas.find((x) => x.id === id);
+  if (!c) return "Não achamos esta cobrança.";
+  if (c.pagamento) return "Esta cobrança já estava paga.";
+  if (c.cancelamento) return "Esta cobrança já estava cancelada.";
+  return null;
 }
 
 /** A destino was deleted or a passenger left it: their pendentes are cancelled with the reason. */

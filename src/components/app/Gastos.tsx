@@ -20,6 +20,7 @@ import { problemaDoGasto, rotuloDoGasto, sobrouNoMes, TIPOS_DE_GASTO, totalDosGa
 import { anotarGasto, apagarGasto } from "@/lib/gastos-store";
 import { lerValor } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
+import { fazer } from "@/lib/acoes";
 
 /** T6: the month's expenses on "Seu mês na van": the list (each one can be deleted) and "Anotar gasto". */
 export function GastosDoMes({ gastos, mes }: { gastos: Gasto[]; mes: string }) {
@@ -63,7 +64,7 @@ function ApagarGasto({ g }: { g: Gasto }) {
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
           <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Voltar</AlertDialogCancel>
-          <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} onClick={() => apagarGasto(g.id)}>
+          <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} onClick={() => void fazer(() => apagarGasto(g.id))}>
             Apagar
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -93,11 +94,11 @@ function AnotarGasto({ mes }: { mes: string }) {
       setTentou(false);
     }
   };
-  const salvar = () => {
+  const salvar = async () => {
     setTentou(true);
     if (problema || !tipo || centavos === null) return;
-    anotarGasto({ tipo, descricao, valor: centavos, data });
-    setAberto(false);
+    const r = await fazer(() => anotarGasto({ tipo, descricao, valor: centavos, data }));
+    if (r.ok) setAberto(false);
   };
   return (
     <AlertDialog open={aberto} onOpenChange={abrir}>

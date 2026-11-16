@@ -35,14 +35,14 @@ describe("Quem usa o app e o papel, num lugar só", () => {
 
   it("'Excluir minha conta' do passageiro tira só a própria pessoa dos destinos", () => {
     const antes = obterPassageiros().map((p) => p.id);
-    expect(excluirMinhaConta("passageiro")).toBe(true);
+    expect(excluirMinhaConta("passageiro").ok).toBe(true);
     const sairam = antes.filter((id) => !obterPassageiros().some((p) => p.id === id));
     expect(sairam.sort()).toEqual(["p-juliana", "p-juliana-londrina"]);
   });
 
   it("'Excluir minha conta' do vanzeiro exclui só os destinos dele", () => {
     salvarDestino({ ...destinosExemplo[0]!, id: "de-outro", vanzeiroId: "vanzeiro-outro", convite: "VAN-1111" });
-    expect(excluirMinhaConta("vanzeiro")).toBe(true);
+    expect(excluirMinhaConta("vanzeiro").ok).toBe(true);
     expect(obterDestinos().map((d) => d.id)).toEqual(["de-outro"]);
     expect(obterDestinos().every((d) => d.vanzeiroId !== idDoVanzeiro())).toBe(true);
   });
@@ -58,7 +58,7 @@ describe("Excluir minha conta com viagem em andamento", () => {
     comecarViagem(destino, []);
     expect(contaComViagemEmAndamento("vanzeiro")).toBe(true);
     const antes = obterDestinos().length;
-    expect(excluirMinhaConta("vanzeiro")).toBe(false);
+    expect(excluirMinhaConta("vanzeiro").ok).toBe(false);
     expect(obterDestinos().length).toBe(antes);
   });
 });

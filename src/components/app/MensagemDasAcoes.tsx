@@ -30,7 +30,7 @@ export function MensagemDasAcoes() {
   }, [mensagem]);
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-40 flex flex-col items-center gap-2 px-4 pt-safe-3" aria-live="polite">
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-[60] flex flex-col items-center gap-2 px-4 pt-safe-3" aria-live="polite">
       {mensagem && (
         <div
           role="alert"

@@ -14,7 +14,7 @@ describe("Remover passageiro do destino (decisão 2)", () => {
     const devendo = dela().filter((c) => situacao(c, hoje) === "devendo").map((c) => c.id);
     const pagas = dela().filter((c) => situacao(c, hoje) === "pago").length;
     expect(pendentes.length).toBeGreaterThan(0);
-    expect(removerPassageiroDoDestino("p-pedro", hoje)).toBe(true);
+    expect(removerPassageiroDoDestino("p-pedro", hoje).ok).toBe(true);
     for (const id of pendentes) expect(obterCobrancas().find((c) => c.id === id)?.cancelamento?.motivo).toBe(MOTIVO_REMOVIDO_DO_DESTINO);
     for (const id of devendo) expect(situacao(obterCobrancas().find((c) => c.id === id)!, hoje)).toBe("devendo");
     expect(dela().filter((c) => situacao(c, hoje) === "pago").length).toBe(pagas);

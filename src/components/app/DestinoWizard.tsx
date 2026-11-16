@@ -39,6 +39,7 @@ import {
 } from "@/lib/destinos";
 import { salvarDestino } from "@/lib/destinos-store";
 import { cn } from "@/lib/utils";
+import { fazer } from "@/lib/acoes";
 export { Rotulo, ItemResumo };
 
 const PERGUNTAS = [
@@ -59,9 +60,10 @@ export function DestinoWizard({ inicial }: { inicial?: Destino }) {
       ? navigate({ to: "/vanzeiro/destinos/$id", params: { id: inicial.id } })
       : navigate({ to: "/vanzeiro/destinos" });
 
-  const salvar = () => {
+  const salvar = async () => {
     const d = destinoDeRascunho(r, inicial);
-    salvarDestino(d);
+    const resultado = await fazer(() => salvarDestino(d));
+    if (!resultado.ok) return;
     if (inicial) navigate({ to: "/vanzeiro/destinos/$id", params: { id: d.id } });
     else navigate({ to: "/vanzeiro/destinos" });
   };

@@ -62,7 +62,7 @@ describe("Etapa K: pedidos e matrículas nunca somem", () => {
   });
 
   it("quem sai do destino continua guardado, com o dia da saída", () => {
-    expect(sairDoDestino("p-thiago")).toBe(true);
+    expect(sairDoDestino("p-thiago").ok).toBe(true);
     expect(obterPassageiros().some((p) => p.id === "p-thiago")).toBe(false);
     expect(obterSaidas().find((p) => p.id === "p-thiago")?.saiuEm).toBe(hoje);
     expect(obterMatriculas().some((p) => p.id === "p-thiago")).toBe(true);

@@ -10,6 +10,7 @@ import { obterDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
 import { novoId } from "@/lib/ids";
 import { useSoDoMeuPainel } from "@/lib/painel";
+import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
 
 // In-memory records for the visual stage: changes last until the page is reloaded.
 // They are kept the way the database will keep them: every membership stays (with the day it ended),
@@ -125,17 +126,19 @@ export function useAvisosVanzeiro() {
 }
 
 /** Dragging in the destino: the passenger takes the place of `alvoId` in the pickup order of their city. */
-export function reordenarPassageiro(id: string, alvoId: string) {
+export function reordenarPassageiro(id: string, alvoId: string): Resultado {
+  if (!passageiros.some((p) => p.id === id)) return naoDeu("Não achamos este passageiro. Ele pode já ter saído do destino.");
   const nova = moverParaNaCidade(passageiros, id, alvoId);
-  if (nova === passageiros) return;
+  if (nova === passageiros) return deuCerto;
   matriculas = [...nova, ...saidas];
   avisar();
+  return deuCerto;
 }
 
-export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
+export function salvarPassageiro(p: Passageiro, pedidoId?: string): Resultado {
   const existente = passageiros.find((x) => x.destinoId === p.destinoId && identidadePassageiro(x) === identidadePassageiro(p));
-  if (existente && existente.id !== p.id) return;
-  if (telefoneJaNoDestino(passageiros, p.destinoId, p.telefone, p)) return;
+  if (existente && existente.id !== p.id) return naoDeu("Esta pessoa já está neste destino.");
+  if (telefoneJaNoDestino(passageiros, p.destinoId, p.telefone, p)) return naoDeu("Já tem outro passageiro com este telefone neste destino.");
   matriculas = matriculas.some((x) => x.id === p.id)
     ? matriculas.map((x) => (x.id === p.id ? p : x))
     : [...matriculas, p];
@@ -157,15 +160,17 @@ export function salvarPassageiro(p: Passageiro, pedidoId?: string) {
       textoResumido: `O vanzeiro aceitou seu pedido para ${destino ? nomeDestino(destino) : "o destino"}`,
     });
   }
+  return deuCerto;
 }
 
 /** The passenger's own "Editar" on their Perfil (all destinos of the same person). */
-export function salvarDadosDoPassageiro(euId: string, dados: MeusDados) {
+export function salvarDadosDoPassageiro(euId: string, dados: MeusDados): Resultado {
   const eu = passageiros.find((p) => p.id === euId);
-  if (!eu) return;
+  if (!eu) return naoDeu(SEM_DESTINO);
   const novos = atualizarMeusDados(passageiros, eu, dados);
   matriculas = matriculas.map((m) => novos.find((n) => n.id === m.id) ?? m);
   avisar();
+  return deuCerto;
 }
 
 // ---------- where the passenger boards: changes and the vanzeiro's approval ----------
@@ -203,16 +208,16 @@ function aplicarEmbarque(id: string, e: Embarque) {
  * The passenger changes where they board: up to 1 km from the agreed point it is saved at once ("salvo");
  * farther, it waits for the vanzeiro ("aguardando") and the old address counts until then.
  */
-export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): "salvo" | "aguardando" | null {
+export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): ({ ok: true; situacao: "salvo" | "aguardando" }) | { ok: false; motivo: string } {
   const p = passageiros.find((x) => x.id === matriculaId);
-  if (!p) return null;
+  if (!p) return { ok: false, motivo: SEM_DESTINO };
   const { distanciaKm, precisaAprovar } = avaliarMudanca(p, novo);
   const outras = mudancas.filter((m) => !(m.matriculaId === matriculaId && m.situacao === "aguardando"));
   if (!precisaAprovar) {
     mudancas = outras;
     aplicarEmbarque(matriculaId, novo);
     avisar();
-    return "salvo";
+    return { ok: true, situacao: "salvo" };
   }
   mudancas = [
     ...outras,
@@ -230,12 +235,13 @@ export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): "salvo" |
     },
   ];
   avisar();
-  return "aguardando";
+  return { ok: true, situacao: "aguardando" };
 }
 
-function responderMudanca(id: string, aceitar: boolean) {
+function responderMudanca(id: string, aceitar: boolean): Resultado {
   const m = mudancas.find((x) => x.id === id && x.situacao === "aguardando");
-  if (!m || !passageiros.some((p) => p.id === m.matriculaId)) return;
+  if (!m) return naoDeu("Este pedido de endereço já foi respondido.");
+  if (!passageiros.some((p) => p.id === m.matriculaId)) return naoDeu("Este passageiro já saiu do destino.");
   mudancas = mudancas.map((x) => (x.id === id ? { ...x, situacao: aceitar ? "aceita" : "recusada", respondidoEm: dataDeHoje() } : x));
   if (aceitar) aplicarEmbarque(m.matriculaId, m.para);
   avisar();
@@ -255,6 +261,7 @@ function responderMudanca(id: string, aceitar: boolean) {
         : `O vanzeiro não aceitou o novo endereço. Continua valendo: ${m.de.endereco}`,
     });
   }
+  return deuCerto;
 }
 
 export const aceitarMudancaDeEndereco = (id: string) => responderMudanca(id, true);
@@ -288,9 +295,9 @@ export function sairDaMatricula(id: string) {
   avisar();
 }
 
-export function recusarPedido(id: string) {
+export function recusarPedido(id: string): Resultado {
   const pedido = pedidos.find((p) => p.id === id);
-  if (!pedido) return;
+  if (!pedido) return naoDeu("Este pedido já foi respondido.");
   mudarPedido(id, { situacao: "recusado", respondidoEm: dataDeHoje() });
   avisar();
   // Someone already in the van (asking for another destino) hears about it on the bell.
@@ -306,6 +313,7 @@ export function recusarPedido(id: string) {
       textoResumido: `O vanzeiro não aceitou seu pedido para ${destino ? nomeDestino(destino) : "o destino"}`,
     });
   }
+  return deuCerto;
 }
 
 /** New vanzeiro account: no passengers, no pedidos. */
