@@ -998,3 +998,13 @@ Conferência (15/11/2026):
 - [x] Q3. Dinheiro em centavos (feito em 16/11/2026): `src/lib/dinheiro.ts` (centavos, `formatarReais`, `centavosParaTexto`), `lerValor` devolve centavos, `valorFinal` só com inteiros, exemplos em centavos. Conferência: 256 testes (testes antigos convertidos para centavos; novo `src/test/centavos.test.ts`), tipos, build; no navegador todos os valores iguais aos de antes e "45,50" entra e aparece como R$ 45,50; 30 telas sem erro.
 - [x] Q4. Fuso de Brasília na hora do app (feito em 16/11/2026): `emBrasilia` e o ponto único `relogio` em `src/lib/agora.ts`. Conferência: 259 testes (novos em `src/test/agora.test.ts`, também com o computador em fuso do Japão e UTC), tipos, build; nada muda na tela; 30 telas sem erro.
 - [x] Q5. Hora da resposta guardada (feito em 16/11/2026): momento e prazo de cada resposta aceita; "avisou em" na falta com desconto. Conferência: 262 testes (novo `src/test/hora-da-resposta.test.ts`), tipos, build; nada muda na tela; 30 telas sem erro. **Seção 16.1 completa (Q1 a Q5).**
+
+---
+
+## Etapa R1 — Termos de Uso atualizados (iniciada em 16/11/2026)
+**Situação:** em andamento, na branch `etapa-r1`. Seção 17 da fonte da verdade. Sem banco de dados.
+- [ ] R1.1 Faltas e descontos: só quem avisou "Não vou" no prazo; "não estava no ponto" e "sem resposta" não descontam.
+- [ ] R1.2 Pagamentos: cobrança nunca é editada (só paga ou cancelada com motivo); ao sair do destino, pendentes canceladas e devendo continua.
+- [ ] R1.3 Van lotada: o lugar é de quem respondeu "Vou" primeiro; o vanzeiro informa os lugares.
+- [ ] R1.4 Onde embarca: até 1 km do ponto combinado muda na hora; mais longe, o vanzeiro aceita ou recusa.
+- [ ] R1.5 Conferência e merge.
