@@ -272,6 +272,7 @@ export const cancelamentosExemplo: Record<string, { data: string; motivo: string
 export type TipoAviso =
   | "viagem_cancelada"
   | "viagem_de_volta"
+  | "destino_excluido"
   | "endereco_aceito"
   | "endereco_recusado"
   | "pedido_novo"

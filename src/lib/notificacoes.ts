@@ -41,6 +41,7 @@ export const ROTULO_DO_AVISO: Record<TipoAviso, string> = {
   endereco_recusado: "Endereço não aceito",
   viagem_cancelada: "Sem viagem",
   viagem_de_volta: "Vai ter viagem",
+  destino_excluido: "Destino excluído",
 };
 
 export type Notificacao = { titulo: string; corpo: string; url: string; tag: string };

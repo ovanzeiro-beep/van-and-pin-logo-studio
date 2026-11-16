@@ -179,11 +179,17 @@ export async function carregarPassageirosEPedidos(): Promise<void> {
     pedidos: (p.data as LinhaPedido[]).map(pedidoDaLinha),
     mudancas: (mu.data as LinhaMudanca[]).map(mudancaDaLinha),
   });
-  // The passenger side: without a van yet, the last pedido of this account says whether it is waiting or was refused.
+  // The passenger side: without a van, a pedido of this account still waiting puts the screen on "aguardando".
+  // Only a waiting one: an old pedido (accepted in a destino that was deleted, or refused) never takes the person
+  // away from the invite code screen while they type a new code. A refusal shows in the bell.
   const conta = obterSessao().conta;
   if (conta && !obterPassageiros().some((x) => x.pessoaId === conta.id)) {
-    const meu = (p.data as LinhaPedido[]).filter((x) => x.pessoa_id === conta.id).at(-1);
-    if (meu) mudarSessaoPassageiro({ pedidoId: meu.id });
+    const esperando = (p.data as LinhaPedido[]).filter((x) => x.pessoa_id === conta.id && x.situacao === "aguardando").at(-1);
+    const atual = obterSessao().passageiro.pedidoId;
+    // An accepted pedido of a destino that no longer has this person (deleted, or they left): back to the code screen.
+    const aceitoSemDestino = (p.data as LinhaPedido[]).some((x) => x.id === atual && x.situacao === "aceito");
+    if (esperando && atual !== esperando.id) mudarSessaoPassageiro({ pedidoId: esperando.id });
+    else if (!esperando && aceitoSemDestino) mudarSessaoPassageiro({ pedidoId: null });
   }
 }
 
