@@ -1154,3 +1154,12 @@ Conferência (15/11/2026):
 - [x] U3.4 Conferência: 300 testes (novo `cada-vanzeiro.test.tsx`: com um segundo vanzeiro, a Rosa, o painel do Carlos não mostra nada dela, o dela só mostra o dela, e fora do painel nada é cortado), tipos, build; 30 telas em 390×844 e 375×667 comparadas com a `main`: **texto igual nas 60**; dia completo (passageiro responde, vanzeiro faz a viagem, histórico, financeiro, avisos) **igual linha por linha** à `main`; aviso do "Não vou" (T7), cobrar quem deve (T2), resumo do grupo (T4) e Seu mês (T5) iguais; sem erros.
 - Não pode quebrar: conferido — nenhuma tela, texto, cor ou regra mudou para o vanzeiro e os passageiros dos exemplos.
 - **Seção 19 completa (U1, U2, U3).**
+## Etapa V1 — Documento do banco acertado (iniciada e feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 20 da fonte da verdade. Sem banco de dados. Só documento (e um comentário no código).
+- [x] V1.1 Trechos antigos de `docs/banco-de-dados.md` corrigidos: ordem de busca (campo `ordem`, arrastar), pedidos guardados com a situação, registros de embarque e falta (Etapa K), os 12 tipos de aviso, linhas de `passageiros-store` e `cobrancas-store` na seção 4.
+- [x] V1.2 Seção 2.17: juntar cadastro e conta pelo telefone, com confirmação do vanzeiro (decisão do dono).
+- [x] V1.3 Seção 7: as 20 regras que o banco garante sozinho (quem é quem, destinos e passageiros, respostas e viagem, dinheiro, avisos e conta).
+- [x] V1.4 Seção 8: método com o Supabase próprio (decisão do dono): o que o dono faz, o que o Claude faz, etapas W1 a W10.
+- [x] V1.5 Comentário antigo das setas ↑ ↓ em `src/data/exemplo.ts` corrigido.
+- [x] V1.6 Conferência: as regras da seção 7 batem com as seções 4, 5 e 6 do `CLAUDE.md` e com o código (`src/lib`); testes, tipos e build sem mudança (só documento e comentário).
+- Achado na leitura: o tipo de aviso "pedido novo" não vira aviso na lista (só notificação no celular); anotado no documento, sem mudar o app.

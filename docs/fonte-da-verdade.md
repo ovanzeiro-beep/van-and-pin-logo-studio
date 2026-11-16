@@ -644,3 +644,25 @@ Pensado no dia real: o vanzeiro dirige com uma mão, cedo, em estrada com pouco 
 **Seção 19 completa (U1, U2, U3).** O código está limpo e organizado para o banco. O que falta antes do banco são as pendências do dono (acima).
 
 Pendências do dono (não dependem do código): contato da Política de Privacidade; advogado revisar Termos e Política; teste no celular com o vanzeiro do piloto; dados reais do piloto; (opcional) cidade no perfil do vanzeiro, para o Pix copia e cola.
+
+## 20. Leitura profunda: deixar o app "liso" e o banco fácil (análise de 16/11/2026, pedida pelo dono)
+
+**Como está:** código limpo (seção 19), as mesmas regras em todas as telas, números batendo entre as telas, 300 testes.
+
+### 20.1 O que foi achado
+1. **Documento do banco com trechos antigos** (ordem de busca, pedido aceito, embarques e faltas, tipos de aviso) e um comentário antigo no código sobre as setas ↑ ↓. Faltava a lista única das regras que o banco precisa garantir sozinho.
+2. **Relógio parado** em 13/11 às 05:10: num teste de verdade, "hoje" é sempre 13/11 e o prazo nunca passa.
+3. **Recarregar apaga tudo**, até a viagem no meio.
+4. **As ações não dizem quando não deram certo.** Hoje as telas escondem o que não pode ser feito; com o banco, toda ação demora e pode falhar (sem sinal, prazo passou, van lotou).
+5. O que só fica de verdade com o banco (normal): login aceita qualquer e-mail; o Google só avança; "Esqueci a senha" só mostra a mensagem; o mapa de "Onde está a van" é uma animação; notificação só com o app aberto.
+
+### 20.2 Decisões do dono (16/11/2026)
+- Fazer V1, V2, V3 e V4 (abaixo), uma por vez.
+- Juntar o cadastro feito pelo vanzeiro com a conta da pessoa **pelo telefone**, com confirmação do vanzeiro (`docs/banco-de-dados.md`, seção 2.17).
+- O banco será um **Supabase próprio** do dono (`docs/banco-de-dados.md`, seção 8), só quando o dono disser "pode colocar o banco".
+
+### 20.3 Plano (uma etapa por vez)
+- **V1. Documento do banco acertado** — **feito em 16/11/2026:** trechos antigos corrigidos (ordem de busca, pedidos, embarques e faltas, os 12 tipos de aviso — "pedido novo" é só notificação no celular); seções novas 2.17 (juntar pelo telefone), 7 (as 20 regras que o banco garante sozinho) e 8 (método com o Supabase próprio: o que o dono faz, o que o Claude faz, e a entrada em 10 etapas, W1 a W10, uma parte por vez, com volta para a memória se algo der errado). Comentário das setas ↑ ↓ corrigido em `src/data/exemplo.ts`. Só documento: nada mudou no app.
+- **V2. Ações com resposta:** toda ação devolve "deu certo" ou "não deu, porque…"; as telas mostram "Salvando…" e a mensagem. A preparação que mais facilita o banco.
+- **V3. Relógio de verdade:** o app usa o dia e a hora reais, e os exemplos ficam sempre em volta de hoje.
+- **V4. Guardar no celular durante o teste:** os dados não somem ao recarregar (não é banco: cada celular só vê o que é dele).

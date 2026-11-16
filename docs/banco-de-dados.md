@@ -81,7 +81,7 @@ Hoje: tipo `Passageiro`. Uma pessoa pode ter várias matrículas, uma por destin
 | nome, telefone | telefone **não se repete no mesmo destino** |
 | cidade e endereço de embarque | |
 | ponto de embarque no mapa | latitude e longitude marcadas no mapa (opcional; sem ele, o centro da cidade) |
-| **ordem de busca na cidade** | **campo novo.** Hoje a ordem das setas ↑ ↓ é só a posição na lista |
+| **ordem de busca na cidade** | campo próprio, `ordem` (1, 2, 3…), mudado arrastando o nome na lista (**atualizado em 16/11, V1**: as setas ↑ ↓ saíram) |
 | plano | por viagem, diário, quinzenal, mensal |
 | valor | maior que zero |
 | dia do vencimento | quinzenal e mensal |
@@ -91,7 +91,7 @@ Hoje: tipo `Passageiro`. Uma pessoa pode ter várias matrículas, uma por destin
 **Quem vê:** o vanzeiro dono; a própria pessoa. **Quem muda:** o vanzeiro (cadastro, plano, valor, ordem, remover); a pessoa muda só nome, telefone e endereço de embarque e pode sair do destino.
 
 ### 2.5 Pedidos para entrar
-Hoje: tipo `PedidoEntrada`, mais a lista `aceitos`.
+Hoje: tipo `PedidoEntrada` (a lista `aceitos` é só uma conta feita a partir da situação de cada pedido).
 | Campo | O que é |
 | --- | --- |
 | identificador | feito pelo banco |
@@ -99,7 +99,7 @@ Hoje: tipo `PedidoEntrada`, mais a lista `aceitos`.
 | pessoa | conta de quem pediu |
 | nome, telefone | |
 | onde embarca | cidade, endereço e ponto no mapa, preenchidos pela pessoa no pedido |
-| situação | aguardando, aceito ou recusado (**hoje o pedido some da lista; com o banco, fica guardado com a situação**) |
+| situação | aguardando, aceito ou recusado. O pedido nunca é apagado: fica guardado com a situação (**atualizado em 16/11, V1**: já é assim na memória desde a Etapa K) |
 | matrícula criada | quando aceito |
 | pedido em, respondido em | datas |
 
@@ -158,7 +158,7 @@ Decisão do dono (16/11/2026): o vanzeiro pode cancelar a viagem de um dia só; 
 **Quem vê:** o vanzeiro dono; os passageiros do destino (o dia some das viagens deles, com aviso). **Quem muda:** só o vanzeiro, até o dia.
 
 ### 2.8 Acontecimentos da viagem (embarques, faltas, conferências)
-Hoje não existem como registro: ao marcar "Embarcou" o app cria a cobrança e esquece (lista escondida `registrados`), e o histórico antigo vem dos exemplos (`embarquesExemplo`, `faltasExemplo`).
+Hoje: os registros `Embarque` e `Falta` em `cobrancas-store.ts` (**atualizado em 16/11, V1**: desde a Etapa K ficam guardados, e o histórico antigo começa com os exemplos `embarquesExemplo` e `faltasExemplo`). Os toques da conferência ("Está na van", "Ficou aqui") e o "Desceu" ainda ficam só dentro da viagem do dia.
 | Campo | O que é |
 | --- | --- |
 | viagem, matrícula | |
@@ -201,7 +201,7 @@ Hoje: tipo `Aviso`.
 | --- | --- |
 | identificador | feito pelo banco |
 | para quem | o vanzeiro ou a pessoa |
-| tipo | resposta de passageiro, cobrança vencida, prazo chegando, van saiu, cobrança vencendo, pedido aceito, pedido recusado |
+| tipo | os 12 tipos de hoje (`TipoAviso` em `src/data/exemplo.ts`, **atualizado em 16/11, V1**). Para o vanzeiro: pedido novo (só como notificação no celular; o pedido em si aparece em "Pedidos para entrar", não na lista de avisos), resposta de passageiro (inclui "Não vou de… até…" marcado ou tirado), cobrança vencida. Para o passageiro: prazo chegando, van saiu, cobrança vencendo, pedido aceito, pedido recusado, mudança de endereço aceita, mudança de endereço recusada, sem viagem (dia cancelado), vai ter viagem (cancelamento desfeito) |
 | texto | sempre cita o destino |
 | chave | para o mesmo acontecimento nunca virar dois avisos |
 | destino, matrícula, cobrança | quando houver |
@@ -263,6 +263,16 @@ Nada é apagado: desligar ou tirar guarda o horário, para que os dias com prazo
 
 O gasto é do mês, não de um destino. Não é editado: se estiver errado, é apagado e anotado de novo. **Quem vê e muda:** só o vanzeiro dono. Passageiros nunca veem.
 
+### 2.17 Juntar o cadastro feito pelo vanzeiro com a conta da pessoa
+**Decisão do dono (16/11/2026, V1): pelo telefone.** Quando o vanzeiro cadastra um passageiro direto, a matrícula nasce sem conta (hoje `pessoaId` é o próprio identificador da matrícula). Quando essa pessoa cria a conta no app com **o mesmo telefone**, o app encontra a matrícula e pede ao vanzeiro para confirmar com um toque ("Esta conta é da Mariana Souza?"). Confirmado, a matrícula passa a ser da conta: a pessoa vê as viagens, responde e vê as cobranças. Telefone diferente: entra pelo código de convite, como hoje.
+| Campo | O que é |
+| --- | --- |
+| matrícula, conta | qual cadastro e qual conta |
+| telefone | o que bateu |
+| situação | aguardando o vanzeiro, confirmada ou recusada, com datas |
+
+**Quem vê:** o vanzeiro dono e a própria pessoa. **Quem confirma:** só o vanzeiro. O banco confere que o telefone é o mesmo e que a conta ainda não está nesse destino.
+
 ---
 
 ## 3. O que roda sozinho no servidor
@@ -287,11 +297,11 @@ As telas não mudam: continuam chamando as mesmas funções. Muda só o que essa
 | `sessao.ts`, `acesso.ts` | pessoa e papel na memória; Entrar aceita qualquer coisa | login real (e-mail e senha, ou Google), "Esqueci a senha" de verdade |
 | `vanzeiro-store.ts` | perfil na memória | lê e grava o perfil do vanzeiro |
 | `destinos-store.ts` | lista na memória, começa com os exemplos | lê e grava destinos; o código de convite é conferido pelo banco |
-| `passageiros-store.ts` | matrículas e pedidos na memória; `aceitos` e `saidas` escondidos | lê e grava matrículas e pedidos com situação e datas; ordem de busca em campo próprio |
+| `passageiros-store.ts` | matrículas, pedidos e mudanças de endereço na memória; `aceitos` e `saidas` são contas feitas a partir da situação e do "saiu em" | lê e grava matrículas e pedidos com situação e datas; ordem de busca em campo próprio |
 | `respostas-store.ts` | respostas na memória; `fechadas` escondida; respostas deixadas prontas (seção 2.15) | lê e grava respostas e as respostas deixadas prontas; o banco recusa depois do prazo |
 | `viagem-store.ts` | viagem do dia na memória; o relógio roda no celular | cada passo da viagem salvo na hora; o relógio vai para o servidor |
 | `viagens-encerradas-store.ts` | exemplos mais as de hoje | lê as viagens encerradas |
-| `cobrancas-store.ts` | cobranças geradas dos exemplos; `registrados` escondido | lê cobranças, pagamentos e cancelamentos; embarques e faltas viram registros |
+| `cobrancas-store.ts` | cobranças geradas dos exemplos; registros `Embarque` e `Falta` na memória | lê cobranças, pagamentos e cancelamentos; embarques e faltas viram registros |
 | `avisos-store.ts` | avisos na memória | lê e grava avisos; marca como lido |
 | `exclusoes.ts` | apaga da memória | apaga no banco, guardando o que a lei manda guardar |
 | `agora.ts` | data e hora fixas (13/11, 05:10) | relógio real |
@@ -325,3 +335,72 @@ Para o banco entrar mais fácil, a **Etapa K** (seção 11 da fonte da verdade) 
 2. **Notificação no celular com o app fechado — decidido: SIM (15/11/2026).** Já feito (sem banco): permissão no Perfil e notificação com o app minimizado; o celular já recebe notificação mandada pelo servidor (`public/sw.js`, no formato { titulo, corpo, url }). **No dia do banco:** guardar, para cada conta, o "endereço de notificação" de cada celular (conjunto novo: **Celulares para notificar** — conta, endereço, data; só a própria pessoa vê) e o servidor manda a notificação sempre que cria um aviso da seção 2.11 ou chega um pedido novo.
 3. **Pagamentos de quem saiu do último destino — decidido: continua vendo (15/11/2026).** Por isso a pessoa precisa continuar podendo ver, mesmo sem matrícula ativa, as cobranças das matrículas de que saiu (seção 2.4, "saiu em"), e só delas.
 4. **Contato da Política de Privacidade e revisão do advogado** antes de guardar dados reais.
+
+---
+
+## 7. Regras que o banco garante sozinho
+**Escrito em 16/11/2026 (V1).** Hoje quem confere estas regras é o celular (`src/lib`). Com o banco, **o banco também confere todas**, para que ninguém consiga burlar mexendo no app. Se o celular pedir algo fora da regra, o banco recusa e devolve o motivo (a tela mostra a mensagem; ver V2 na seção 20 da fonte da verdade).
+
+**Quem é quem**
+1. Cada pessoa só vê e muda a própria conta; o aceite dos Termos e da Política é obrigatório para criar a conta.
+2. O vanzeiro só vê e muda o que é dele (destinos, matrículas, pedidos, viagens, cobranças, gastos, avisos dele). O passageiro só vê o que é dele (matrículas, respostas, histórico, cobranças, avisos) e, do vanzeiro, só nome, telefone, Pix e van.
+
+**Destinos e passageiros**
+3. Código de convite único no app inteiro.
+4. Viagem avulsa nunca no passado; prazo só 30 min, 1 h, 2 h ou noite anterior às 20h.
+5. Telefone não se repete no mesmo destino; valor maior que zero; vencimento de 1 a 31 só em Mensal e Quinzenal; desconto de faltas só em Mensal e Quinzenal.
+6. O passageiro só muda o próprio nome, telefone e endereço de embarque. Endereço até 1 km do ponto combinado muda na hora; mais longe vira pedido para o vanzeiro aprovar.
+7. Pedido para entrar só com código válido; só o vanzeiro aceita ou recusa; pedido e mudança de endereço nunca são apagados.
+8. Juntar cadastro e conta (2.17) só com o mesmo telefone e a confirmação do vanzeiro.
+
+**Respostas e viagem**
+9. Só a própria pessoa responde "Vou" / "Não vou", e só até o prazo e antes de a viagem começar.
+10. "Vou" só com lugar livre na van; quem respondeu primeiro fica com o lugar. "Vou sempre" e "Não vou de… até…" só valem para os dias cujo prazo ainda não tinha passado quando foram marcados.
+11. Quem não confirmou "Vou" até o prazo não entra na busca.
+12. Só o vanzeiro faz a viagem; uma viagem em andamento por vanzeiro de cada vez; numa parada, a viagem só segue com todos conferidos. "Estou na van" só o próprio passageiro, para si; "Ficou aqui" só o vanzeiro.
+13. Dia sem viagem: só o vanzeiro, até o próprio dia; o mensalista não ganha desconto.
+
+**Dinheiro**
+14. Cobranças são criadas só pelo servidor, pelo plano de cada matrícula. **Nunca são editadas.**
+15. Só o vanzeiro marca como pago (Dinheiro ou Pix) ou cancela (com motivo). O passageiro nunca marca como pago.
+16. Desconto de falta só para quem avisou "Não vou" no prazo; "Não estava no ponto" e "sem resposta" não descontam.
+17. O total que alguém deve é sempre a soma das cobranças não pagas (nunca um número guardado à parte).
+18. Gastos: só o vanzeiro dono; valor maior que zero; dia até hoje; não são editados (apaga e anota de novo).
+
+**Avisos e conta**
+19. Só o destinatário vê e marca como lido; um aviso por acontecimento (`chave`).
+20. Excluir a conta apaga os dados pessoais e guarda só as cobranças pagas ou devendo, como registro (LGPD).
+
+---
+
+## 8. Método para colocar o banco (Supabase próprio)
+**Decisão do dono (16/11/2026, V1): Supabase próprio** (uma conta do dono no Supabase, ligada ao app). Só começa quando o dono disser **"pode colocar o banco"**.
+
+### 8.1 O que o dono faz (uma vez só, com o passo a passo do Claude)
+1. Criar a conta no Supabase e um projeto na região **São Paulo** (mais rápido aqui e os dados ficam no Brasil).
+2. Passar para o Claude, pelo lugar seguro de chaves (nunca pelo chat), o endereço do projeto e a chave pública ("anon"). A chave secreta ("service role") nunca vai para o app.
+3. Ligar o "Entrar com Google" (o Claude passa o caminho; precisa de uma conta Google do projeto).
+4. Antes de usar com dados reais: escolher o plano pago (o gratuito pausa o projeto parado há uma semana) e configurar o envio de e-mails do "Esqueci a senha".
+
+### 8.2 O que o Claude faz, tudo em arquivos no GitHub
+- `supabase/migrations/`: as tabelas da seção 2, quem vê o quê (seção 1) e as regras da seção 7, em arquivos que podem ser refeitos do zero.
+- `supabase/functions/` e tarefas agendadas: tudo da seção 3 (cobranças, faltas do prazo, avisos do relógio, fechar respostas, procurar cidades, notificações).
+- `supabase/seed.sql`: uma **conta de teste com os mesmos dados de exemplo** de hoje, para o primeiro dia com banco parecer o app de hoje.
+- No app: cada parte (`*-store.ts`) ganha **duas fontes, memória e banco**, escolhidas num lugar só. As telas não mudam: continuam chamando as mesmas funções, que já devolvem "deu certo" ou "não deu, porque…" (V2).
+
+### 8.3 Ordem de entrada: uma parte por etapa
+| Etapa | Parte | O que passa a ser de verdade |
+| --- | --- | --- |
+| W1 | Login e conta | e-mail e senha, Google, "Esqueci a senha", aceite dos Termos, papéis |
+| W2 | Perfis | perfil do vanzeiro e dados do passageiro |
+| W3 | Destinos | destinos, código de convite único, dias sem viagem |
+| W4 | Passageiros e pedidos | matrículas, pedidos, mudanças de endereço, juntar pelo telefone (2.17) |
+| W5 | Respostas | Vou / Não vou, Vou sempre, Não vou de… até…, lugares |
+| W6 | Viagem | cada toque salvo na hora; **fila sem sinal** (seção 6, decisão 1) |
+| W7 | Dinheiro | cobranças, pagamentos, cancelamentos, gastos |
+| W8 | Avisos | sininho dos dois painéis |
+| W9 | Tarefas automáticas | seção 3, rodando no servidor no horário certo |
+| W10 | Notificações | no celular, com o app fechado (seção 2.14) |
+
+Em cada etapa: conferir com os testes e no celular, merge, contraprova. Se uma parte der problema, ela volta para a memória sem quebrar o resto. Os testes automáticos continuam rodando com a memória.
+

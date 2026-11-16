@@ -137,7 +137,7 @@ export type Passageiro = {
   descontaFaltas: boolean;
   /** Valor descontado por falta, quando desconta faltas (em centavos). */
   valorFalta: number | null;
-  /** Ordem de busca dentro da cidade (1, 2, 3…), mudada pelas setas ↑ ↓. */
+  /** Ordem de busca dentro da cidade (1, 2, 3…), mudada arrastando o nome na lista. */
   ordem?: number | undefined;
   /** Ponto de embarque marcado no mapa (latitude e longitude). Sem ele, o mapa usa o centro da cidade. */
   ponto?: { lat: number; lng: number } | undefined;
