@@ -1,24 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  createFileRoute,
-  Link,
-  useCanGoBack,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  CalendarDays,
-  Check,
-  CircleCheck,
-  Copy,
-  Info,
-  MapPin,
-  MessageCircle,
-  QrCode,
-  ReceiptText,
-  type LucideIcon,
-} from "lucide-react";
+import { createFileRoute, Link, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
+import { ArrowLeft, CalendarDays, Check, CircleCheck, Copy, Info, MapPin, MessageCircle, QrCode, ReceiptText, type LucideIcon } from "lucide-react";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { ContaDasFaltas } from "@/components/app/ContaDasFaltas";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
@@ -53,10 +35,7 @@ export const Route = createFileRoute("/passageiro/pagamentos/$cid")({
       { title: "Minha cobrança — O Vanzeiro" },
       { name: "description", content: "Valor, vencimento e como pagar uma cobrança da van." },
       { property: "og:title", content: "Minha cobrança — O Vanzeiro" },
-      {
-        property: "og:description",
-        content: "Valor, vencimento e como pagar uma cobrança da van.",
-      },
+      { property: "og:description", content: "Valor, vencimento e como pagar uma cobrança da van." },
     ],
   }),
   component: MinhaCobranca,
@@ -74,8 +53,7 @@ function MinhaCobranca() {
   const router = useRouter();
   const podeVoltar = useCanGoBack();
   const navigate = useNavigate();
-  const voltar = () =>
-    podeVoltar ? router.history.back() : navigate({ to: "/passageiro/pagamentos" });
+  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/passageiro/pagamentos" }));
 
   const botaoVoltar = (
     <button
@@ -90,9 +68,7 @@ function MinhaCobranca() {
   if (!c) {
     return (
       <>
-        <PassageiroHeader compacto titulo="Cobrança">
-          {botaoVoltar}
-        </PassageiroHeader>
+        <PassageiroHeader compacto titulo="Cobrança">{botaoVoltar}</PassageiroHeader>
         <div className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary-soft text-primary">
             <ReceiptText className="h-8 w-8" />
@@ -114,18 +90,12 @@ function MinhaCobranca() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PassageiroHeader compacto titulo={c.referencia}>
-        {botaoVoltar}
-      </PassageiroHeader>
+      <PassageiroHeader compacto titulo={c.referencia}>{botaoVoltar}</PassageiroHeader>
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
-        <section
-          className={cn("rounded-3xl bg-card p-4 shadow-card", s === "cancelada" && "opacity-70")}
-        >
+        <section className={cn("rounded-3xl bg-card p-4 shadow-card", s === "cancelada" && "opacity-70")}>
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Valor
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Valor</p>
               <p
                 className={cn(
                   "font-display text-3xl font-bold leading-tight text-foreground",
@@ -150,9 +120,7 @@ function MinhaCobranca() {
             )}
             {c.cancelamento && (
               <div className="rounded-2xl bg-muted px-3.5 py-2.5 text-sm">
-                <p className="font-bold text-foreground">
-                  Cancelada em {diaMes(c.cancelamento.data)}
-                </p>
+                <p className="font-bold text-foreground">Cancelada em {diaMes(c.cancelamento.data)}</p>
                 <p className="text-muted-foreground">Motivo: {c.cancelamento.motivo}</p>
               </div>
             )}
@@ -163,20 +131,9 @@ function MinhaCobranca() {
 
         {aberta && (
           <div className="space-y-3 pt-1">
-            {vanzeiro.pix && (
-              <PagarComPix
-                chave={vanzeiro.pix}
-                nome={vanzeiro.nome}
-                cidade={destino?.origem ?? ""}
-                valor={valorFinal(c)}
-              />
-            )}
+            {vanzeiro.pix && <PagarComPix chave={vanzeiro.pix} nome={vanzeiro.nome} cidade={destino?.origem ?? ""} valor={valorFinal(c)} />}
             <Button asChild size="lg" variant="outline" className="w-full">
-              <a
-                href={linkWhatsApp(vanzeiro.telefone, mensagemJaPaguei(c, vanzeiro.nome))}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={linkWhatsApp(vanzeiro.telefone, mensagemJaPaguei(c, vanzeiro.nome))} target="_blank" rel="noreferrer">
                 <MessageCircle className="!h-5 !w-5 text-success" /> Já paguei — avisar o vanzeiro
               </a>
             </Button>
@@ -191,17 +148,7 @@ function MinhaCobranca() {
   );
 }
 
-function PagarComPix({
-  chave,
-  nome,
-  cidade,
-  valor,
-}: {
-  chave: string;
-  nome: string;
-  cidade: string;
-  valor: number;
-}) {
+function PagarComPix({ chave, nome, cidade, valor }: { chave: string; nome: string; cidade: string; valor: number }) {
   // T2: "copia e cola" already carries the value; when the key type is unclear, only the key is offered (as before).
   const codigo = pixCopiaECola({ chave, nome, cidade, centavos: valor });
   return (
@@ -220,17 +167,9 @@ function PagarComPix({
               : `Copie a chave, pague ${formatarReais(valor)} no app do seu banco e depois avise o vanzeiro.`}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        {codigo && (
-          <BotaoCopiar
-            texto={codigo}
-            rotulo={`Copiar Pix copia e cola (${formatarReais(valor)})`}
-            destaque
-          />
-        )}
+        {codigo && <BotaoCopiar texto={codigo} rotulo={`Copiar Pix copia e cola (${formatarReais(valor)})`} destaque />}
         <div className="rounded-2xl bg-surface p-3.5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Chave Pix de {nome}
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Chave Pix de {nome}</p>
           <p className="mt-1 break-all font-display text-lg font-bold text-foreground">{chave}</p>
         </div>
         <BotaoCopiar texto={chave} rotulo={codigo ? "Copiar só a chave" : "Copiar"} />
@@ -242,15 +181,7 @@ function PagarComPix({
   );
 }
 
-function BotaoCopiar({
-  texto,
-  rotulo,
-  destaque,
-}: {
-  texto: string;
-  rotulo: string;
-  destaque?: boolean;
-}) {
+function BotaoCopiar({ texto, rotulo, destaque }: { texto: string; rotulo: string; destaque?: boolean }) {
   const [copiado, setCopiado] = useState(false);
   useEffect(() => {
     if (!copiado) return;
@@ -266,30 +197,14 @@ function BotaoCopiar({
     }
   };
   return (
-    <Button
-      size="lg"
-      variant={destaque ? "default" : "outline"}
-      className="w-full"
-      onClick={copiar}
-      aria-live="polite"
-    >
+    <Button size="lg" variant={destaque ? "default" : "outline"} className="w-full" onClick={copiar} aria-live="polite">
       {copiado ? <Check className="!h-5 !w-5" /> : <Copy className="!h-5 !w-5" />}
       {copiado ? "Copiado" : rotulo}
     </Button>
   );
 }
 
-function Linha({
-  icon: Icon,
-  rotulo,
-  valor,
-  className,
-}: {
-  icon: LucideIcon;
-  rotulo: string;
-  valor: string;
-  className?: string;
-}) {
+function Linha({ icon: Icon, rotulo, valor, className }: { icon: LucideIcon; rotulo: string; valor: string; className?: string }) {
   return (
     <div className={cn("flex items-center gap-3 rounded-2xl bg-surface px-3.5 py-2.5", className)}>
       <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />

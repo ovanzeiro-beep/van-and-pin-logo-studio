@@ -37,20 +37,7 @@ export const SITUACAO_ROTULO: Record<Situacao, string> = {
 
 export const FORMA_ROTULO: Record<FormaPagamento, string> = { dinheiro: "Dinheiro", pix: "Pix" };
 
-const MESES = [
-  "janeiro",
-  "fevereiro",
-  "março",
-  "abril",
-  "maio",
-  "junho",
-  "julho",
-  "agosto",
-  "setembro",
-  "outubro",
-  "novembro",
-  "dezembro",
-];
+const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
 // ---------- dates (AAAA-MM-DD, no time zone surprises) ----------
 
@@ -87,10 +74,7 @@ export function diaMes(iso: string) {
 }
 
 /** "vence hoje", "vence em 20/11" or "venceu em 05/11" (for a charge not paid nor cancelled). */
-export function textoDoVencimento(
-  c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">,
-  hoje: string,
-) {
+export function textoDoVencimento(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string) {
   if (situacao(c, hoje) === "devendo") return `venceu em ${diaMes(c.vencimento)}`;
   return c.vencimento === hoje ? "vence hoje" : `vence em ${diaMes(c.vencimento)}`;
 }
@@ -105,10 +89,7 @@ export function valorFinal(c: Pick<Cobranca, "valorBase" | "faltas" | "valorFalt
   return Math.max(0, c.valorBase - c.faltas * c.valorFalta);
 }
 
-export function situacao(
-  c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">,
-  hoje: string,
-): Situacao {
+export function situacao(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string): Situacao {
   if (c.cancelamento) return "cancelada";
   if (c.pagamento) return "pago";
   return c.vencimento < hoje ? "devendo" : "pendente";
@@ -129,31 +110,21 @@ export function contaDoDesconto(c: Pick<Cobranca, "tipo" | "valorBase" | "faltas
 }
 
 /** The month of Financeiro and Início: charges due this month, plus older ones still unpaid ("A receber" includes them). */
-export function doMes(
-  c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">,
-  hoje: string,
-) {
+export function doMes(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string) {
   return mesmoMes(c.vencimento, hoje) || situacao(c, hoje) === "devendo";
 }
 
 /** Financeiro filters, over the same month as the summary, so the numbers always match the Início. */
 export function filtrarCobrancas(lista: Cobranca[], filtro: Filtro, hoje: string) {
-  const alvo: Record<Exclude<Filtro, "todas">, Situacao> = {
-    pendentes: "pendente",
-    devendo: "devendo",
-    pagas: "pago",
-  };
+  const alvo: Record<Exclude<Filtro, "todas">, Situacao> = { pendentes: "pendente", devendo: "devendo", pagas: "pago" };
   const doMesmoMes = lista.filter((c) => doMes(c, hoje));
-  const filtradas =
-    filtro === "todas" ? doMesmoMes : doMesmoMes.filter((c) => situacao(c, hoje) === alvo[filtro]);
+  const filtradas = filtro === "todas" ? doMesmoMes : doMesmoMes.filter((c) => situacao(c, hoje) === alvo[filtro]);
   return ordenarRecentes(filtradas);
 }
 
 /** Newest due date first. */
 export function ordenarRecentes(lista: Cobranca[]) {
-  return [...lista].sort(
-    (a, b) => b.vencimento.localeCompare(a.vencimento) || a.nome.localeCompare(b.nome),
-  );
+  return [...lista].sort((a, b) => b.vencimento.localeCompare(a.vencimento) || a.nome.localeCompare(b.nome));
 }
 
 /**
@@ -201,12 +172,7 @@ export function mensagemCobranca(c: Cobranca, destino: string, hoje: string) {
 
 // ---------- automatic creation from the plan ----------
 
-type Dia = {
-  passageiroId: string;
-  data: string;
-  viagemId?: string | undefined;
-  avisouNoPrazo?: boolean;
-};
+type Dia = { passageiroId: string; data: string; viagemId?: string | undefined; avisouNoPrazo?: boolean };
 
 type Historico = {
   /** Days the passenger boarded (Por viagem and Diário). */
@@ -218,8 +184,7 @@ type Historico = {
 /** Due dates of a mensal plan between two dates. */
 export function vencimentosMensais(dia: number, desde: string, ate: string) {
   const datas: string[] = [];
-  for (let v = somarMeses(desde, 0, dia); v <= ate; v = somarMeses(v, 1, dia))
-    if (v >= desde) datas.push(v);
+  for (let v = somarMeses(desde, 0, dia); v <= ate; v = somarMeses(v, 1, dia)) if (v >= desde) datas.push(v);
   return datas;
 }
 
@@ -233,8 +198,7 @@ export function vencimentosQuinzenais(dia: number, desde: string, ate: string) {
   const [d1, d2] = diasDaQuinzena(dia);
   const datas: string[] = [];
   for (let i = 0; somarMeses(desde, i, d1) <= ate; i++) {
-    for (const v of [somarMeses(desde, i, d1), somarMeses(desde, i, d2)])
-      if (v >= desde && v <= ate) datas.push(v);
+    for (const v of [somarMeses(desde, i, d1), somarMeses(desde, i, d2)]) if (v >= desde && v <= ate) datas.push(v);
   }
   return datas;
 }
@@ -247,8 +211,7 @@ export function quinzenaAnterior(dia: number, vencimento: string) {
 
 function referencia(tipo: PlanoPagamento, vencimento: string, dia = partes(vencimento).d) {
   if (tipo === "mensal") return `Mensalidade de ${MESES[partes(vencimento).m - 1] ?? ""}`;
-  if (tipo === "quinzenal")
-    return `Quinzena de ${diaMes(somarDias(quinzenaAnterior(dia, vencimento), 1))} a ${diaMes(vencimento)}`;
+  if (tipo === "quinzenal") return `Quinzena de ${diaMes(somarDias(quinzenaAnterior(dia, vencimento), 1))} a ${diaMes(vencimento)}`;
   if (tipo === "diario") return `Diária de ${diaMes(vencimento)}`;
   return `Viagem de ${diaMes(vencimento)}`;
 }
@@ -256,19 +219,10 @@ function referencia(tipo: PlanoPagamento, vencimento: string, dia = partes(venci
 /** Por viagem and Diário are named and identified by the boarding day, and fall due some days later. */
 export const DIAS_PARA_PAGAR_EMBARQUE = 7;
 function porEmbarque(p: Passageiro, data: string): Cobranca {
-  return {
-    ...nova(p, somarDias(data, DIAS_PARA_PAGAR_EMBARQUE)),
-    id: `${p.id}_${data}`,
-    referencia: referencia(p.plano, data),
-  };
+  return { ...nova(p, somarDias(data, DIAS_PARA_PAGAR_EMBARQUE)), id: `${p.id}_${data}`, referencia: referencia(p.plano, data) };
 }
 
-function nova(
-  p: Passageiro,
-  vencimento: string,
-  faltas = 0,
-  periodo: Cobranca["periodoFaltas"] = null,
-): Cobranca {
+function nova(p: Passageiro, vencimento: string, faltas = 0, periodo: Cobranca["periodoFaltas"] = null): Cobranca {
   return {
     id: `${p.id}_${vencimento}`,
     vanzeiroId: p.vanzeiroId,
@@ -294,51 +248,27 @@ function nova(
  * Quinzenal → one every 15 days on the due day; Mensal → one per month on the due day.
  * Faltas counted are those up to `hoje` in the period that ends on the due date.
  */
-export function gerarCobrancas(
-  p: Passageiro,
-  desde: string,
-  ate: string,
-  hoje: string,
-  h: Historico,
-): Cobranca[] {
+export function gerarCobrancas(p: Passageiro, desde: string, ate: string, hoje: string, h: Historico): Cobranca[] {
   if (p.plano === "viagem" || p.plano === "diario") {
-    const eventos = h.embarques
-      .filter((e) => e.passageiroId === p.id)
-      .sort((a, b) => a.data.localeCompare(b.data));
+    const eventos = h.embarques.filter((e) => e.passageiroId === p.id).sort((a, b) => a.data.localeCompare(b.data));
     const unicos = new Map<string, Dia>();
     for (const e of eventos) {
       const chave = p.plano === "viagem" ? (e.viagemId ?? e.data) : e.data;
       if (!unicos.has(chave)) unicos.set(chave, e);
     }
-    return [...unicos.entries()]
-      .filter(([, e]) => e.data >= desde && e.data <= ate)
-      .map(([chave, e]) => ({
-        ...porEmbarque(p, e.data),
-        ...(p.plano === "viagem" && e.viagemId ? { id: `${p.id}_${chave}`, viagemId: chave } : {}),
-      }));
+    return [...unicos.entries()].filter(([, e]) => e.data >= desde && e.data <= ate).map(([chave, e]) => ({ ...porEmbarque(p, e.data), ...(p.plano === "viagem" && e.viagemId ? { id: `${p.id}_${chave}`, viagemId: chave } : {}) }));
   }
   const dia = p.vencimento ?? 1;
-  const todas =
-    p.plano === "mensal"
-      ? vencimentosMensais(dia, desde, ate)
-      : vencimentosQuinzenais(dia, desde, ate);
+  const todas = p.plano === "mensal" ? vencimentosMensais(dia, desde, ate) : vencimentosQuinzenais(dia, desde, ate);
   // Decision 9: only one charge ahead of today; the next is created on the day this one falls due.
   const proxima = todas.find((v) => v > hoje);
   const datas = todas.filter((v) => proxima === undefined || v <= proxima);
   return datas.map((v) => {
     if (!p.descontaFaltas) return nova(p, v);
-    const de =
-      p.plano === "mensal"
-        ? somarDias(somarMeses(v, -1, dia), 1)
-        : somarDias(quinzenaAnterior(dia, v), 1);
+    const de = p.plano === "mensal" ? somarDias(somarMeses(v, -1, dia), 1) : somarDias(quinzenaAnterior(dia, v), 1);
     const fim = v < hoje ? v : hoje;
     const faltas = new Set(
-      h.faltas
-        .filter(
-          (f) =>
-            f.passageiroId === p.id && f.avisouNoPrazo === true && f.data >= de && f.data <= fim,
-        )
-        .map((f) => f.data),
+      h.faltas.filter((f) => f.passageiroId === p.id && f.avisouNoPrazo === true && f.data >= de && f.data <= fim).map((f) => f.data),
     ).size;
     return nova(p, v, faltas, { de, ate: v });
   });
@@ -349,9 +279,7 @@ export function proximaCobranca(p: Passageiro, hoje: string): Cobranca | null {
   if (p.plano !== "mensal" && p.plano !== "quinzenal") return null;
   const desde = p.plano === "mensal" ? hoje : somarMeses(hoje, -1, 1);
   const sem = { embarques: [], faltas: [] };
-  const [primeira] = gerarCobrancas(p, desde, somarDias(hoje, 45), hoje, sem).filter(
-    (c) => c.vencimento >= hoje,
-  );
+  const [primeira] = gerarCobrancas(p, desde, somarDias(hoje, 45), hoje, sem).filter((c) => c.vencimento >= hoje);
   return primeira ?? null;
 }
 
@@ -361,18 +289,9 @@ export function proximaCobranca(p: Passageiro, hoje: string): Cobranca | null {
  * Boarding: Por viagem deduplicates by trip identity (including later returns), Diário by date.
  * Other plans don't change.
  */
-export function aplicarEmbarque(
-  lista: Cobranca[],
-  p: Passageiro,
-  data: string,
-  hoje: string,
-  viagemId?: string,
-): Cobranca[] {
+export function aplicarEmbarque(lista: Cobranca[], p: Passageiro, data: string, hoje: string, viagemId?: string): Cobranca[] {
   if (p.plano !== "viagem" && p.plano !== "diario") return lista;
-  const [c] = gerarCobrancas(p, data, data, hoje, {
-    embarques: [{ passageiroId: p.id, data, viagemId }],
-    faltas: [],
-  });
+  const [c] = gerarCobrancas(p, data, data, hoje, { embarques: [{ passageiroId: p.id, data, viagemId }], faltas: [] });
   if (!c || lista.some((x) => x.id === c.id)) return lista;
   return [...lista, c];
 }
@@ -382,22 +301,11 @@ export function aplicarEmbarque(
  * their next open charge (created now if it doesn't exist yet). Charges already due, paid or
  * cancelled are never touched.
  */
-export function aplicarFalta(
-  lista: Cobranca[],
-  p: Passageiro,
-  data: string,
-  hoje: string,
-  avisouNoPrazo = false,
-): Cobranca[] {
+export function aplicarFalta(lista: Cobranca[], p: Passageiro, data: string, hoje: string, avisouNoPrazo = false): Cobranca[] {
   if (!avisouNoPrazo) return lista;
   if ((p.plano !== "mensal" && p.plano !== "quinzenal") || !p.descontaFaltas) return lista;
   const aberta = (c: Cobranca) =>
-    c.passageiroId === p.id &&
-    c.tipo === p.plano &&
-    !c.pagamento &&
-    !c.cancelamento &&
-    c.vencimento > hoje &&
-    c.vencimento >= data;
+    c.passageiroId === p.id && c.tipo === p.plano && !c.pagamento && !c.cancelamento && c.vencimento > hoje && c.vencimento >= data;
   const [alvo] = lista.filter(aberta).sort((a, b) => a.vencimento.localeCompare(b.vencimento));
   const valorFalta = p.valorFalta ?? 0;
   if (alvo) {
@@ -405,9 +313,7 @@ export function aplicarFalta(
   }
   const desde = p.plano === "mensal" ? data : somarMeses(data, -1, 1);
   const sem = { embarques: [], faltas: [] };
-  const [nova] = gerarCobrancas(p, desde, somarDias(data, 45), hoje, sem).filter(
-    (c) => c.vencimento > hoje && c.vencimento >= data,
-  );
+  const [nova] = gerarCobrancas(p, desde, somarDias(data, 45), hoje, sem).filter((c) => c.vencimento > hoje && c.vencimento >= data);
   if (!nova || lista.some((c) => c.id === nova.id)) return lista;
   return [...lista, { ...nova, faltas: 1, valorFalta }];
 }
@@ -427,12 +333,7 @@ export function resumoDaSaida(lista: Cobranca[], passageiroIds: string[], hoje: 
  * Decision 6: pendentes are cancelled with the reason; devendo keep being collected; paid and
  * cancelled ones stay in the history untouched.
  */
-export function cancelarPendentes(
-  lista: Cobranca[],
-  passageiroIds: string[],
-  motivo: string,
-  hoje: string,
-): Cobranca[] {
+export function cancelarPendentes(lista: Cobranca[], passageiroIds: string[], motivo: string, hoje: string): Cobranca[] {
   return lista.map((c) =>
     passageiroIds.includes(c.passageiroId) && situacao(c, hoje) === "pendente"
       ? { ...c, cancelamento: { data: hoje, motivo } }
