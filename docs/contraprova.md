@@ -1237,5 +1237,5 @@ Conferência (15/11/2026):
 - [x] Passageiro: pedir para entrar pelo código (`pedir_para_entrar`), mudar onde embarca (o banco mede a distância), meus dados, sair do destino.
 - [x] Vanzeiro: aceitar pedido (a matrícula nasce com a conta da pessoa, `aceitar_pedido`), recusar, cadastrar e editar passageiro, reordenar (arrastar), remover, aceitar/recusar mudança de endereço; excluir destino tira os passageiros e recusa os pedidos que esperavam.
 - [x] Siglas de estado sempre maiúsculas nos lugares ("Jacarezinho PR").
-- [x] Conferência: 333 testes (novos `w4-pedidos.test.ts` e casos de estado em `formatos.test.ts`), tipos, build.
+- [x] Conferência: 329 testes (novos `w4-pedidos.test.ts` e casos de estado em `formatos.test.ts`), tipos, build.
 - Pendente: respostas (Vou / Não vou), viagem, cobranças, gastos e avisos ainda na memória (próximas partes).
