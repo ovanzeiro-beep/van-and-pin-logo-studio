@@ -198,6 +198,29 @@ Hoje: tipo `Aviso`.
 
 **Quem vê:** só a própria pessoa (e o responsável pelos dados, para cumprir a lei).
 
+### 2.13 Cidades no mapa
+Hoje: `coordenadas-store.ts` (começa com as cidades dos exemplos; as outras são procuradas no OpenStreetMap e ficam guardadas só naquele celular, até recarregar).
+| Campo | O que é |
+| --- | --- |
+| nome da cidade | como aparece nos destinos (ex.: "Ourinhos", "UENP Jacarezinho") |
+| latitude e longitude | onde ela fica no mapa |
+| achada em | data da busca |
+| conferida | se o vanzeiro confirmou que é a cidade certa (nomes repetidos em outros estados, ex.: Cambará PR e RS) |
+
+**Uma lista só, compartilhada por todos:** cada cidade é procurada **uma vez** (pelo servidor, respeitando o limite do serviço gratuito de no máximo uma busca por segundo) e todos os celulares usam o resultado. Não tem dado pessoal: são só nomes de cidades.
+
+**Quem vê:** todos (só leitura). **Quem muda:** só o servidor (e, no futuro, o vanzeiro corrigindo uma cidade que caiu no lugar errado).
+
+### 2.14 Celulares para notificar
+Hoje: não existe (a notificação sai do próprio app aberto; ver `src/lib/notificacoes.ts`).
+| Campo | O que é |
+| --- | --- |
+| conta | de quem é o celular |
+| endereço de notificação | o "endereço" que o celular dá quando a pessoa toca em **Ativar** no Perfil |
+| criado em | data |
+
+**Quem vê:** só a própria pessoa. **Quem muda:** a própria pessoa (ativar e desativar); o servidor apaga o que o celular deixar de aceitar.
+
 ---
 
 ## 3. O que roda sozinho no servidor
@@ -208,6 +231,8 @@ Hoje isso roda no celular, só com o app aberto (`passarDoTempo` em `src/lib/via
 2. **Registrar as faltas do prazo:** quem avisou "Não vou" no prazo ganha o desconto quando o prazo passa, mesmo que a viagem não seja iniciada no app. Hoje: `registrarFaltasDoPrazo`.
 3. **Avisos do relógio:** cobrança vencida (vanzeiro), cobrança vencendo em 3 dias e prazo chegando em 30 minutos (passageiro). Hoje: `avisosDoRelogio` em `src/lib/avisos.ts`.
 4. **Fechar as respostas** quando o prazo passa.
+5. **Procurar as cidades novas no mapa** quando um destino é salvo (seção 2.13), uma por segundo, e guardar para todos. Hoje: `procurarCidades` em `src/lib/coordenadas-store.ts`, feito pelo celular.
+6. **Mandar as notificações** para os celulares da seção 2.14 sempre que nasce um aviso, um pedido novo ou uma mudança de endereço.
 
 ---
 
@@ -229,6 +254,8 @@ As telas não mudam: continuam chamando as mesmas funções. Muda só o que essa
 | `exclusoes.ts` | apaga da memória | apaga no banco, guardando o que a lei manda guardar |
 | `agora.ts` | data e hora fixas (13/11, 05:10) | relógio real |
 | `convite.ts` | confere o código só no celular | o banco garante que nenhum código se repete |
+| `coordenadas-store.ts` | lista de cidades na memória; cada celular procura as que faltam | lê a lista única do banco; quem procura as novas é o servidor |
+| `notificacoes.ts` | mostra a notificação com o app aberto em segundo plano | guarda o endereço de notificação do celular (seção 2.14); quem manda é o servidor |
 
 Além disso, com o banco:
 - cada ação demora um instante e pode falhar sem sinal: as telas ganham "carregando" e mensagem de erro;
