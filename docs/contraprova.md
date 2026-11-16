@@ -1195,3 +1195,11 @@ Conferência (15/11/2026):
 - [ ] W1.5 Dono: rodar o SQL no SQL Editor; em Authentication → URL Configuration, colocar o endereço do app; testar no celular: criar conta, confirmar e-mail, entrar, escolher o papel, sair, entrar de novo (abre o último painel), esqueci a senha.
 - [ ] W1b Google: ligar o Google no Supabase (precisa de uma conta Google Cloud) e gravar o aceite dos Termos de quem entra pelo Google.
 - Observação: a partir da W1, quem entra começa com o app vazio; até W2–W8, o que for criado some ao recarregar.
+
+## Banco completo (W2 a W8) num arquivo só — preparado em 16/11/2026
+**Situação:** feito e testado aqui; **falta o dono colar no Supabase.** O dono pediu para colar uma vez só e não mexer mais no Supabase; o app vai sendo ligado ao banco pelo Claude no GitHub, parte por parte (W2 a W8).
+- [x] `supabase/migrations/20261116130000_w2_w8_dados.sql`: tabelas de perfil, destinos, dias sem viagem, matrículas, pedidos, mudanças de endereço, juntar pelo telefone, respostas, Vou sempre, Não vou de… até…, viagens, embarques, faltas, cobranças, avisos, gastos, cidades, celulares; quem vê o quê em todas; regras da seção 7 (convite único, avulsa não no passado, telefone único no destino, Mensal/Quinzenal com vencimento, responder só até o prazo e antes da viagem, van lotada, cobrança nunca editada, só o vanzeiro paga/cancela, gasto até hoje, "Estou na van" só por si, juntar pelo telefone só com o vanzeiro).
+- [x] `supabase/COLAR-NO-SUPABASE.sql`: W1 + W2–W8 juntos, para colar uma vez.
+- [x] Conferência num Postgres 16 que imita o Supabase (auth.users, auth.uid(), papéis): o arquivo roda duas vezes seguidas sem erro; 51 testes de regras com 3 pessoas (vanzeira Rosa, passageiro Beto, outra vanzeira Carla, mais Dani para juntar pelo telefone): tudo o que devia passar passou e tudo o que devia ser recusado foi recusado (ex.: Carla não vê nada da Rosa; Beto não muda o próprio valor nem responde pela Dani; van lotada; prazo passou; cobrança paga não muda; gasto no futuro); excluir a conta da vanzeira apaga os dados dela sem erro.
+- [ ] Dono: colar `supabase/COLAR-NO-SUPABASE.sql` no SQL Editor e clicar em Run; em Authentication → URL Configuration, Site URL = https://van-and-pin-logo-studio.lovable.app.
+- Pendente (segundo arquivo, depois): tarefas automáticas no servidor (W9) e notificações com o app fechado (W10).
