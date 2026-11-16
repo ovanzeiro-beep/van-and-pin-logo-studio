@@ -1034,7 +1034,7 @@ Conferência (15/11/2026):
 ## Decisões do dono de 16/11/2026 (seção 17.1.1 da fonte da verdade)
 - [x] Feriado: sim, cancelar a viagem de um dia, sem desconto para o mensalista. → Etapa S1 (feita em 16/11/2026).
 - [x] Uma conta pode ser vanzeiro e passageiro: sim (como hoje). Registrado em `docs/banco-de-dados.md`.
-- [x] iPhone SE (decisão C): sim, diminuir o cabeçalho das 3 telas de entrada. → Etapa S2 (a fazer).
+- [x] iPhone SE (decisão C): sim, diminuir o cabeçalho das 3 telas de entrada. → Etapa S2 (feita em 16/11/2026).
 
 ---
 
@@ -1046,3 +1046,14 @@ Conferência (15/11/2026):
 - [x] S1.4 Proteções: só dia com viagem, de hoje em diante; motivo obrigatório (até 60 letras); viagem já começada não pode ser cancelada; editar o destino não perde os dias cancelados; sem desconto (quem disse "Não vou" no dia cancelado não ganha falta).
 - [x] S1.5 Conferência: 267 testes (novo `src/test/dias-sem-viagem.test.ts`), tipos, build; no navegador: cancelar hoje em Cambará → some da Viagem e do Início, Juliana vê a próxima viagem e recebe o aviso; Desfazer devolve a viagem; atalho da Viagem sem escolha de dia; 30 telas sem erro; dia completo igual.
 - Próxima: Etapa S2 (cabeçalho menor no iPhone SE), com o "pode seguir" do dono.
+
+---
+
+## Etapa S2 — Cabeçalho menor no iPhone SE (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Decisão C do dono. Sem banco de dados.
+- [x] S2.1 Só em telas até 700 de altura: menos espaço em volta do título em Entrar e Criar conta (`AuthLayout.tsx`) e no topo e nos cartões de "Como você vai usar o app?".
+- [x] S2.2 Rolagem no iPhone SE: Entrar 39px → 0, Criar conta 70px → 0, "Como você vai usar o app?" 69px → 0; Esqueci a senha continua 0; nenhuma rola em 390×844 e 360×740.
+- [x] S2.3 Celulares comuns: fotos de antes (main) e depois iguais em Entrar e "Como você vai usar o app?". No Criar conta aparece uma diferença de 0,3% dos pontos, mas ela aparece também entre duas fotos da mesma versão (variação da própria tela), então não vem desta etapa.
+- [x] S2.4 Conferência: 267 testes, tipos, build; 30 telas sem erro; criar conta, entrar, sair e excluir conta sem mudança.
+- Observação: o verificador de segurança dos comandos ficou fora do ar várias vezes durante esta etapa; o trabalho foi salvo na branch `etapa-s2` antes de seguir, e nada foi para a main sem conferência.
+- Anotação: a pendência antiga do iPhone SE (decisão C, telas de entrada) está resolvida.
