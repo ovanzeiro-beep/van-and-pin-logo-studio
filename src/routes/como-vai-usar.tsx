@@ -22,14 +22,15 @@ export const Route = createFileRoute("/como-vai-usar")({
 function ComoVaiUsar() {
   return (
     <MobileScreen>
+      {/* Short screens (iPhone SE): less space around the title and cards, so it fits without scrolling (decision C). */}
       <div className="px-6 pt-safe-10">
         <Logo size="sm" />
-        <h1 className="mt-10 text-[1.9rem] font-bold leading-tight text-foreground">
+        <h1 className="mt-10 text-[1.9rem] font-bold leading-tight text-foreground [@media(max-height:700px)]:mt-5">
           Como você vai usar o app?
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">Você poderá mudar isso depois no seu perfil.</p>
       </div>
-      <div className="flex flex-1 flex-col gap-4 px-6 pb-10 pt-8">
+      <div className="flex flex-1 flex-col gap-4 px-6 pb-10 pt-8 [@media(max-height:700px)]:gap-3 [@media(max-height:700px)]:pb-6 [@media(max-height:700px)]:pt-5">
         <OpcaoPerfil
           to="/vanzeiro"
           icon={VanIcon}
@@ -71,8 +72,8 @@ function OpcaoPerfil({
       onClick={aoTocar}
       className={
         destaque
-          ? "group relative overflow-hidden rounded-[1.75rem] bg-header p-6 text-header-foreground shadow-card transition-transform active:scale-[0.98]"
-          : "group relative overflow-hidden rounded-[1.75rem] border border-border bg-card p-6 text-foreground shadow-card transition-transform active:scale-[0.98]"
+          ? "group relative overflow-hidden rounded-[1.75rem] bg-header p-6 text-header-foreground shadow-card transition-transform active:scale-[0.98] [@media(max-height:700px)]:p-5"
+          : "group relative overflow-hidden rounded-[1.75rem] border border-border bg-card p-6 text-foreground shadow-card transition-transform active:scale-[0.98] [@media(max-height:700px)]:p-5"
       }
     >
       <div
@@ -84,7 +85,7 @@ function OpcaoPerfil({
       >
         <Icon className="h-8 w-8" />
       </div>
-      <h2 className="mt-6 text-2xl font-bold">{titulo}</h2>
+      <h2 className="mt-6 text-2xl font-bold [@media(max-height:700px)]:mt-4">{titulo}</h2>
       <p className={destaque ? "mt-1.5 text-sm text-header-muted" : "mt-1.5 text-sm text-muted-foreground"}>
         {descricao}
       </p>
