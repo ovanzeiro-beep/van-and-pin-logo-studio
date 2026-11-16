@@ -16,7 +16,11 @@ let som: AudioContext | null = null;
 export function tocarAlerta(agora = Date.now()): boolean {
   if (agora - ultimo < 3000) return false;
   ultimo = agora;
-  if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(VIBRACAO);
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    // The phone only lets a page vibrate after a touch on it: if it refused now, it vibrates on the next touch.
+    if (!navigator.vibrate(VIBRACAO))
+      window.addEventListener("pointerdown", () => navigator.vibrate(VIBRACAO), { once: true });
+  }
   try {
     const Contexto =
       window.AudioContext ??
