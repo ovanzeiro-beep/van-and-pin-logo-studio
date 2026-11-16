@@ -1,4 +1,4 @@
-import { Play, Route as RouteIcon } from "lucide-react";
+import { MessageCircle, Play, Route as RouteIcon } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import {
   AlertDialog,
@@ -17,6 +17,8 @@ import { nomeDestino, textoDaVolta } from "@/lib/destinos";
 import { LinhaPassageiro, Secao } from "./partes";
 import { situacaoDosLugares, textoDosLugares } from "@/lib/lugares";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { dataDeHoje } from "@/lib/agora";
+import { linkParaOGrupo, resumoParaOGrupo } from "@/lib/resumo-do-grupo";
 
 const COR_DOS_LUGARES = { livre: "pago", lotada: "pendente", passou: "deve" } as const;
 
@@ -94,6 +96,15 @@ export function AntesDeSair({
             ))}
           </Secao>
         )}
+        {/* T4: ready text for the van's WhatsApp group (name and city only; who hasn't answered while the deadline is open). */}
+        <a
+          href={linkParaOGrupo(resumoParaOGrupo({ destino, data: dataDeHoje(), vao, semResposta: faltamResponder > 0 ? semResposta : [], prazo, lugares }))}
+          target="_blank"
+          rel="noreferrer"
+          className={buttonVariants({ variant: "outline", className: "h-11 w-full rounded-2xl font-semibold" })}
+        >
+          <MessageCircle className="!h-5 !w-5 text-success" /> Mandar resumo no grupo
+        </a>
         {cancelarHoje}
       </div>
 
