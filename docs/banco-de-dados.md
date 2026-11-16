@@ -10,6 +10,10 @@ Escrito em 15/11/2026, conferido com o código de hoje (os tipos em `src/data/ex
 
 Todo valor em dinheiro (plano, falta, cobrança, total) é guardado em **centavos, número inteiro**: R$ 280,50 = 28050. Assim uma soma nunca ganha nem perde um centavo. O app já trabalha assim (`src/lib/dinheiro.ts`): só vira "R$ 280,50" na tela e só é lido do que a pessoa digita em `lerValor`. No banco, os campos de dinheiro são inteiros (nunca número com vírgula).
 
+## 0.1 Datas e horas sempre no horário de Brasília
+
+Dias e horas do app (viagem do dia, prazo de confirmação, vencimentos, "hoje") são contados no **horário de Brasília** ("America/Sao_Paulo"), não no do servidor nem no do mundo (UTC). O banco guarda os momentos completos (com fuso), e o app transforma em data e hora de Brasília em `emBrasilia` (`src/lib/agora.ts`). As tarefas do servidor (seção 3) também contam o dia em Brasília.
+
 ## 1. Regra geral de quem vê o quê
 
 - **Cada vanzeiro só vê o que é dele:** os seus destinos, os passageiros desses destinos, as cobranças, as viagens, os pedidos e os avisos que são para ele.
