@@ -133,7 +133,7 @@ export function criarProximasCobrancas(passageiros: Passageiro[], hoje = dataDeH
 export type Embarque = { passageiroId: string; data: string; viagemId?: string | undefined };
 /** avisouEm: when the person said "Não vou" ("AAAA-MM-DD HH:MM", Brasília), when the app knows it. */
 export type Falta = { passageiroId: string; data: string; avisouNoPrazo: boolean; avisouEm?: string | undefined };
-type Registro = { embarques: Embarque[]; faltas: Falta[] };
+export type Registro = { embarques: Embarque[]; faltas: Falta[] };
 const registroInicial: Registro = { embarques: [...embarquesExemplo], faltas: [...faltasExemplo] };
 let registro = registroInicial;
 
@@ -142,6 +142,16 @@ export const obterRegistroDasViagens = () => registro;
 export function useRegistroDasViagens() {
   return useSyncExternalStore(inscrever, obterRegistroDasViagens, () => registroInicial);
 }
+
+/** W7: what the database has (charges, boardings and on-time faltas) replaces what is in memory. */
+export function carregarDinheiroDoBanco(lista: Cobranca[], doBanco: Registro) {
+  cobrancas = lista;
+  registro = doBanco;
+  avisar();
+}
+
+/** W7: the database layer follows every change (new charges, faltas, cancellations) to save it. */
+export const inscreverNoDinheiro = inscrever;
 
 /** New vanzeiro account: no charges yet. */
 export function limparCobrancas() {

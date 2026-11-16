@@ -1253,3 +1253,13 @@ Conferência (15/11/2026):
 - [x] Passageiro: vê só o próprio lugar na viagem (`minha_viagem_de_hoje`: a van saiu, embarcou, conferência), nunca os outros; "Estou na van" pelo banco (`estou_na_van`).
 - [x] Conferência: 338 testes (novo `w6-viagem.test.ts`), tipos, build.
 - Pendente: embarques e faltas que viram cobrança/desconto vão com o dinheiro (W7); "a van saiu" no sininho vai com os avisos (W8).
+
+## W7 — Dinheiro no banco (feita em 16/11/2026)
+**Situação:** código feito e testado (merge na `main`, publicado); o dono testa no celular.
+- [x] `src/lib/banco/dinheiro.ts`: ao entrar e a cada 30 s, carrega cobranças, embarques, faltas e gastos; o que o celular do vanzeiro criou e ainda não salvou vai primeiro, para não se perder.
+- [x] Cobranças criadas sozinhas (viagem feita, próxima mensalidade, desconto de falta avisada no prazo) salvas no banco logo em seguida; só o vanzeiro dono grava.
+- [x] "Marcar como pago" e "Cancelar" (com motivo): salvos no banco primeiro; o motivo da recusa aparece na faixa vermelha.
+- [x] Gastos da van: anotar e apagar no banco.
+- [x] Regras conferidas numa cópia do banco (19 checagens): cobrança nunca editada; paga não muda mais; cancelar exige motivo; gasto não pode ser depois de hoje; o passageiro vê só as dele e não marca pago nem cria cobrança; outra pessoa não vê nem apaga nada.
+- [x] Conferência: 343 testes (novo `w7-dinheiro.test.ts`), tipos, build.
+- Pendente: o teste no Supabase de verdade ficou esperando a licença do dono (a pergunta do conector não teve resposta); cobranças criadas com o app fechado ficam para a W9 (tarefas no servidor); avisos de cobrança no sininho vão com a W8.

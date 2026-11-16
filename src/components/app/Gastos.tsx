@@ -17,7 +17,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { diaMes } from "@/lib/cobrancas";
 import { formatarReais } from "@/lib/dinheiro";
 import { problemaDoGasto, rotuloDoGasto, sobrouNoMes, TIPOS_DE_GASTO, totalDosGastos, type Gasto, type TipoDeGasto } from "@/lib/gastos";
-import { anotarGasto, apagarGasto } from "@/lib/gastos-store";
+import { anotarGastoNoBanco, apagarGastoNoBanco } from "@/lib/banco/dinheiro";
 import { lerValor } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
 import { fazer } from "@/lib/acoes";
@@ -64,7 +64,7 @@ function ApagarGasto({ g }: { g: Gasto }) {
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
           <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Voltar</AlertDialogCancel>
-          <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} onClick={() => void fazer(() => apagarGasto(g.id))}>
+          <AlertDialogAction className={buttonVariants({ variant: "destructive", size: "lg" })} onClick={() => void fazer(() => apagarGastoNoBanco(g.id))}>
             Apagar
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -97,7 +97,7 @@ function AnotarGasto({ mes }: { mes: string }) {
   const salvar = async () => {
     setTentou(true);
     if (problema || !tipo || centavos === null) return;
-    const r = await fazer(() => anotarGasto({ tipo, descricao, valor: centavos, data }));
+    const r = await fazer(() => anotarGastoNoBanco({ tipo, descricao, valor: centavos, data }));
     if (r.ok) setAberto(false);
   };
   return (
