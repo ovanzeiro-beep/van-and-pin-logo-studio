@@ -1217,3 +1217,16 @@ Conferência (15/11/2026):
 - [x] Falhas na consulta mostram erro de conexão, não "Código não encontrado". A pesquisa aguarda a resposta antes de liberar outra tentativa.
 - [x] 319 testes passando, incluindo VAN-6187 com serviço simulado, destino de outro vanzeiro, resposta vazia e erro de consulta; última compilação registrada sem erro. A tela protegida abre o login sem erros no navegador.
 - [ ] Conferir VAN-6187 com a conta real: não há sessão disponível do serviço externo; a consulta sem login retorna acesso negado, como previsto. A existência do convite e a busca autenticada real permanecem não verificadas. O envio e aceite de pedidos continuam fora desta correção.
+
+
+## Segurança do banco (auditoria do Lovable de 16/11/2026) — feita em 16/11/2026
+**Situação:** feita e testada aqui; **o dono precisa colar `supabase/SO-SQL-2-SEGURANCA.sql` no SQL Editor (uma vez).**
+- [x] `supabase/migrations/20261116140000_seguranca.sql`: horário válido; convite único sem diferenciar maiúscula; destino excluído só é marcado (`excluido_em`); quem saiu do destino não vê mais o destino; conta só muda por funções (`aceitar_termos` para o Google); conta ligada à matrícula só por pedido aceito (`aceitar_pedido`) ou telefone confirmado; uma conta por destino; ponto com latitude e longitude juntas; pedido e mudança respondidos só por funções (`recusar_pedido`, `responder_mudanca`); distância do endereço calculada pelo banco; juntar pelo telefone confere de novo; responder só em dia com viagem, destino ativo e sem disputa da última vaga; Vou sempre / Não vou de… até… só por funções (`ligar_vou_sempre`, `marcar_nao_vou`, `tirar_nao_vou`); uma viagem em andamento por vanzeiro; fases conhecidas; passageiro vê só a própria situação (`minha_viagem_de_hoje`); "Estou na van" só na viagem do próprio destino, durante a conferência, para quem está nela; cancelamento sempre com motivo; avisos só entre quem tem a ver com o destino, e lidos só por `marcar_avisos_lidos`; cidade nova nunca "conferida" pelo app; excluir a conta do passageiro apaga os dados pessoais; ninguém sem login chama funções nem lê tabelas.
+- [x] Conferência num Postgres 16 que imita o Supabase: os três arquivos rodam duas vezes seguidas sem erro; colar 1 + colar 2 sem erro; 33 checagens das falhas da auditoria: todas recusadas como deviam.
+- Pendente (com as tarefas automáticas, W9): cobranças criadas só pelo servidor e desconto de falta com prova; seguir a parada só com todos conferidos (hoje o app confere).
+
+## W2 e W3 — Perfil e destinos no banco (feita em 16/11/2026)
+**Situação:** código feito e testado (merge na `main`); **o dono testa no celular depois de colar o arquivo 2 e publicar.**
+- [x] `src/lib/banco/destinos.ts`: ao entrar, carrega do banco os perfis que a pessoa pode ver e os destinos (com os dias sem viagem, sem os excluídos); salvar destino (com novo código se o convite já for de outro vanzeiro), pausar/ativar, dia sem viagem e desfazer, excluir destino (marcado no banco) e salvar perfil gravam no banco primeiro e só então mudam a tela; erro do banco aparece na faixa vermelha e nada muda.
+- [x] Telas: assistente de destino, Pausar, Dias sem viagem, Excluir destino, Perfil do vanzeiro.
+- [x] Conferência: 325 testes (novo `w2-w3-destinos.test.ts`, com o Supabase simulado), tipos, build.

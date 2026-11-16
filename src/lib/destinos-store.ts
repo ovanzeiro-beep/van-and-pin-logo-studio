@@ -61,6 +61,12 @@ export function removerDestino(id: string) {
   avisar();
 }
 
+/** W3: the destinos read from the database replace what is in memory. */
+export function carregarDestinos(lista: Destino[]) {
+  destinos = lista;
+  avisar();
+}
+
 /** New vanzeiro account: starts with no destinos. */
 export function limparDestinos() {
   destinos = [];

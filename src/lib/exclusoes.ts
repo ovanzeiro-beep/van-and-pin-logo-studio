@@ -16,7 +16,7 @@ export const MOTIVO_REMOVIDO_DO_DESTINO = "Removido do destino";
 const VIAGEM_ACONTECENDO = "A viagem de hoje deste destino está acontecendo. Espere ela terminar.";
 
 /** Neither works while that destino's trip of today is in progress. */
-function viagemEmAndamentoNoDestino(destinoId: string) {
+export function viagemEmAndamentoNoDestino(destinoId: string) {
   return emAndamento(obterViagensDoDia())?.destinoId === destinoId;
 }
 

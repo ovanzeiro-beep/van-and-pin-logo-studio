@@ -37,9 +37,9 @@ import {
   voltaNoDiaSeguinte,
   type Rascunho,
 } from "@/lib/destinos";
-import { salvarDestino } from "@/lib/destinos-store";
 import { cn } from "@/lib/utils";
 import { fazer } from "@/lib/acoes";
+import { salvarDestinoNoBanco } from "@/lib/banco/destinos";
 export { Rotulo, ItemResumo };
 
 const PERGUNTAS = [
@@ -62,7 +62,7 @@ export function DestinoWizard({ inicial }: { inicial?: Destino }) {
 
   const salvar = async () => {
     const d = destinoDeRascunho(r, inicial);
-    const resultado = await fazer(() => salvarDestino(d));
+    const resultado = await fazer(() => salvarDestinoNoBanco(d));
     if (!resultado.ok) return;
     if (inicial) navigate({ to: "/vanzeiro/destinos/$id", params: { id: d.id } });
     else navigate({ to: "/vanzeiro/destinos" });

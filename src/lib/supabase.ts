@@ -13,6 +13,8 @@ export const SUPABASE_CHAVE_PUBLICA = "sb_publishable_cUlgPq_dbBSTRXJP5VfZLA_pA_
  */
 export const USA_BANCO = {
   conta: import.meta.env.MODE !== "test",
+  /** W2 and W3: the vanzeiro's profile and the destinos (with days without a trip). */
+  destinos: import.meta.env.MODE !== "test",
 } as const;
 
 let cliente: SupabaseClient | null = null;

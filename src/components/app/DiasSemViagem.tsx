@@ -16,9 +16,10 @@ import { Input } from "@/components/ui/input";
 import type { Destino } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarData } from "@/lib/destinos";
-import { cancelarViagemDoDia, desfazerCancelamento, diasCanceladosFuturos, diasQuePodemSerCancelados, MOTIVO_MAX } from "@/lib/dias-sem-viagem";
+import { diasCanceladosFuturos, diasQuePodemSerCancelados, MOTIVO_MAX } from "@/lib/dias-sem-viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
 import { fazer } from "@/lib/acoes";
+import { cancelarDiaNoBanco, desfazerDiaNoBanco } from "@/lib/banco/destinos";
 
 const rotuloDoDia = (data: string) => (data === dataDeHoje() ? `Hoje, ${formatarData(data).split(", ")[1] ?? ""}` : formatarData(data));
 
@@ -80,7 +81,7 @@ export function CancelarViagemDoDia({ d, dataFixa, gatilho }: { d: Destino; data
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive", size: "lg" })}
             disabled={!pode}
-            onClick={() => void fazer(() => cancelarViagemDoDia(d.id, data, motivo))}
+            onClick={() => void fazer(() => cancelarDiaNoBanco(d.id, data, motivo))}
           >
             Cancelar a viagem
           </AlertDialogAction>
@@ -109,7 +110,7 @@ export function DiasSemViagem({ d }: { d: Destino }) {
                 <p className="font-bold text-foreground">{rotuloDoDia(c.data)}</p>
                 <p className="truncate text-sm text-muted-foreground">{c.motivo}</p>
               </div>
-              <Button size="sm" variant="outline" className="shrink-0 rounded-xl" onClick={() => void fazer(() => desfazerCancelamento(d.id, c.data))}>
+              <Button size="sm" variant="outline" className="shrink-0 rounded-xl" onClick={() => void fazer(() => desfazerDiaNoBanco(d.id, c.data))}>
                 <Undo2 className="!h-4 !w-4" /> Desfazer
               </Button>
             </li>

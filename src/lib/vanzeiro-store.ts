@@ -41,6 +41,12 @@ export function usePerfilDoVanzeiro(vanzeiroId: string) {
   return todos[vanzeiroId] ?? PERFIL_VAZIO;
 }
 
+/** W2: the profiles read from the database (own and, for passengers, their vanzeiros') replace what is in memory. */
+export function carregarPerfis(novos: Record<string, PerfilVanzeiro>) {
+  perfis = { ...perfis, ...novos };
+  ouvintes.forEach((o) => o());
+}
+
 /** The logged-in vanzeiro's own profile (vanzeiro panel). */
 export const obterPerfilVanzeiro = () => obterPerfilDoVanzeiro(idDoVanzeiro());
 

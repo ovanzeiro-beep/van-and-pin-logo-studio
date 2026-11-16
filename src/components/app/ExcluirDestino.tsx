@@ -17,10 +17,10 @@ import { dataDeHoje } from "@/lib/agora";
 import { resumoDaSaida } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
-import { excluirDestino } from "@/lib/exclusoes";
 import { usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
 import { fazer } from "@/lib/acoes";
+import { excluirDestinoNoBanco } from "@/lib/banco/destinos";
 
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
 
@@ -34,7 +34,7 @@ export function ExcluirDestino({ d }: { d: Destino }) {
 
   const excluir = async () => {
     await navigate({ to: "/vanzeiro/destinos" });
-    void fazer(() => excluirDestino(d.id));
+    void fazer(() => excluirDestinoNoBanco(d.id));
   };
 
   return (

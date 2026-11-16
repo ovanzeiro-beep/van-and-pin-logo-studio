@@ -12,8 +12,10 @@ import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { formatarTelefone, somenteDigitos } from "@/lib/passageiros";
 import { useDestinos } from "@/lib/destinos-store";
-import { perfilPodeSalvar, salvarPerfilVanzeiro, usePerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { perfilPodeSalvar, usePerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { fazer } from "@/lib/acoes";
+import { salvarPerfilNoBanco } from "@/lib/banco/destinos";
+import { useSessao } from "@/lib/sessao";
 
 export const Route = createFileRoute("/vanzeiro/perfil")({
   head: () => ({
@@ -81,6 +83,7 @@ function AbaPerfil() {
 }
 
 function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void }) {
+  const perfilId = useSessao().vanzeiroId;
   const [nome, setNome] = useState(perfil.nome);
   const [telefone, setTelefone] = useState(formatarTelefone(perfil.telefone));
   const [pix, setPix] = useState(perfil.pix);
@@ -91,7 +94,7 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
   const pode = perfilPodeSalvar({ nome, telefone }) && lugaresLidos !== "invalido";
 
   const salvar = async () => {
-    const r = await fazer(() => salvarPerfilVanzeiro({
+    const r = await fazer(() => salvarPerfilNoBanco(perfilId, {
       nome: nome.trim(),
       telefone: somenteDigitos(telefone),
       pix: pix.trim(),
