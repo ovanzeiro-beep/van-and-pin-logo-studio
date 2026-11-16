@@ -1057,3 +1057,13 @@ Conferência (15/11/2026):
 - [x] S2.4 Conferência: 267 testes, tipos, build; 30 telas sem erro; criar conta, entrar, sair e excluir conta sem mudança.
 - Observação: o verificador de segurança dos comandos ficou fora do ar várias vezes durante esta etapa; o trabalho foi salvo na branch `etapa-s2` antes de seguir, e nada foi para a main sem conferência.
 - Anotação: a pendência antiga do iPhone SE (decisão C, telas de entrada) está resolvida.
+
+---
+
+## Etapa T1 — Modo direção com voz (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18 da fonte da verdade. Sem banco de dados.
+- [x] T1.1 Frase de cada momento da viagem, com as mesmas palavras da tela (`src/lib/voz.ts`, `fraseDaViagem`).
+- [x] T1.2 Botão "Ligar a voz" / "Voz ligada" no cabeçalho da viagem em andamento; no iPhone SE, só o ícone no canto (a tela da busca rolava 38px com o botão numa linha nova; agora não rola e "Fazer parada" aparece).
+- [x] T1.3 Fala em português do Brasil, só com a voz ligada; ao ligar, fala a frase do momento; desligar cala na hora; sem voz no celular, o botão não aparece.
+- [x] T1.4 Conferência: 270 testes (novo `src/test/voz.test.tsx`), tipos, build; no navegador (gravando o que o app manda falar): ligar → "Próximo passageiro: Mariana Souza…"; Embarcou → "…Pedro Henrique Lima…"; Não estava no ponto → "…Ana Clara Ribeiro…"; desligar → nada; 30 telas sem erro; dia completo igual.
+- Pendência: ouvir no celular de verdade (o ambiente de teste não tem alto-falante).

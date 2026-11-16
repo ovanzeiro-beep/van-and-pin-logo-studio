@@ -599,3 +599,26 @@ Nada quebrado no código. O que falta:
 - **Decisões:** feriado (cancelar a viagem de um dia? o mensalista ganha desconto?); uma conta pode ser vanzeiro e passageiro?; iPhone SE (decisão C, cabeçalho das telas de entrada). **Respondidas em 16/11 (ver 17.1.1).**
 - **Política e Termos:** contato do responsável e revisão do advogado (depois do R1).
 - **Testar no celular de verdade, de preferência com o vanzeiro do piloto:** app instalado em tela cheia (Android e iPhone), abrir sem sinal, notificações, mapa com ruas e busca de cidade nova, arrastar a ordem com o dedo.
+
+---
+
+## 18. Novidades que encantam (análise de 16/11/2026, pedida pelo dono)
+
+Pensado no dia real: o vanzeiro dirige com uma mão, cedo, em estrada com pouco sinal, e resolve tudo pelo WhatsApp; o passageiro quer saber se a van vem, não quer lembrar de responder todo dia e precisa pagar sem errar.
+
+### 18.1 Já, sem banco
+1. **Modo direção com voz (vanzeiro):** o app fala quem é o próximo ("Próximo passageiro: Mariana Souza, Praça Rui Barbosa, em Jacarezinho"), a próxima descida na volta, a parada, a conferência e a chegada. Segurança: não precisa ler a tela dirigindo. Voz do próprio celular, sem internet.
+2. **"Vou sempre" e "Não vou de… até…" (passageiro):** acaba com o "esqueci de responder e a van não passou". **Precisa de decisão do dono** (mexe no jeito de cumprir a regra "quem não confirma até o prazo não entra na busca").
+3. **Pix com o valor certo (copia e cola) + "Cobrar quem está devendo" no WhatsApp, um por um, com a mensagem pronta.**
+4. **Resumo do dia para o grupo da van** (texto pronto: saída, quantos vão, ordem).
+5. **"Seu mês na van"** (recebido, viagens, quem paga em dia, falta receber; com gastos, "sobrou R$ X").
+6. **Responder Vou / Não vou pela própria notificação** (com o app fechado, só com o banco).
+
+### 18.2 Carro-chefe, junto com o banco
+7. **"Compartilhar minha viagem":** a família acompanha a van no mapa por um link, sem instalar nada; recebe "embarcou" e "chegou". Confiança e segurança (decisivo no transporte escolar).
+
+### 18.3 Plano
+- **T1. Modo direção com voz** — **feito em 16/11/2026:** na viagem em andamento, o botão "Ligar a voz" / "Voz ligada" no cabeçalho (no iPhone SE, só o ícone de alto-falante no canto, para a tela da busca continuar cabendo); com a voz ligada, o celular fala em português do Brasil a frase do momento, com as mesmas palavras da tela — ao ligar, a cada "Embarcou" / "Não estava no ponto", na volta ("Próxima descida: …"), na parada e na conferência ("Confira quem está na van") e na chegada ("Chegamos em <destino>"); desligada, não fala nada; começa desligada e fica ligada até recarregar a página; onde o celular não tem voz, o botão não aparece.
+- **T2.** Pix com valor + cobrar quem está devendo (a fazer, com o "pode seguir" do dono).
+- **T3.** "Vou sempre / Não vou nestes dias" (depois da decisão do dono).
+- **Com o banco:** "Compartilhar minha viagem".

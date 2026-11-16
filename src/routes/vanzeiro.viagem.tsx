@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarClock, CalendarX2, History, Home, MapPin, UserPlus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CalendarClock, CalendarX2, History, Home, MapPin, UserPlus, Volume2, VolumeX } from "lucide-react";
 import { AntesDeSair } from "@/components/app/viagem/AntesDeSair";
 import { EscolhaDaViagem } from "@/components/app/viagem/partes";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDaAba, viagensDoDia, type FaseViagem } from "@/lib/viagem";
 import { CancelarViagemDoDia } from "@/components/app/DiasSemViagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
+import { alternarVoz, fraseDaViagem, useVozDaViagem, useVozLigada, vozDisponivel } from "@/lib/voz";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
   head: () => ({
@@ -49,13 +51,17 @@ function AbaViagem() {
   const respostas = useRespostasDoDia(dataDeHoje());
   const hoje = viagensDoDia(destinos, dataDeHoje());
   const andamento = emAndamento(estado);
+  // Driving voice: says who is next while the trip goes on (only when the vanzeiro turned it on).
+  useVozDaViagem(andamento ? fraseDaViagem(andamento, passageiros, destinos.find((d) => d.id === andamento.destinoId)) : null);
   const textoDeHoje = `Hoje, ${formatarData(dataDeHoje()).toLowerCase()}`;
 
   if (andamento) {
     const destino = destinos.find((d) => d.id === andamento.destinoId);
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <VanzeiroHeader compacto titulo={TITULO[andamento.fase]} subtitulo={destino ? nomeDestino(destino) : textoDeHoje} />
+        <VanzeiroHeader compacto titulo={TITULO[andamento.fase]} subtitulo={destino ? nomeDestino(destino) : textoDeHoje}>
+          <BotaoVoz />
+        </VanzeiroHeader>
         <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col">
           <ViagemEmCurso v={andamento} passageiros={passageiros} destino={destino} />
         </div>
@@ -175,5 +181,25 @@ function LinkViagensFeitas() {
     >
       <History className="h-4 w-4" /> Viagens feitas
     </Link>
+  );
+}
+
+/** Header pill: turns the driving voice on or off (only where the phone can speak). */
+function BotaoVoz() {
+  const ligada = useVozLigada();
+  const [pode, setPode] = useState(false);
+  useEffect(() => setPode(vozDisponivel()), []);
+  if (!pode) return null;
+  return (
+    <button
+      type="button"
+      onClick={alternarVoz}
+      aria-pressed={ligada}
+      // Short screens (iPhone SE): only the speaker icon, in the corner of the header, so the pickup screen still fits.
+      className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20 [@media(max-height:700px)]:absolute [@media(max-height:700px)]:bottom-4 [@media(max-height:700px)]:right-5 [@media(max-height:700px)]:mt-0 [@media(max-height:700px)]:w-9 [@media(max-height:700px)]:justify-center [@media(max-height:700px)]:px-0"
+    >
+      {ligada ? <Volume2 className="h-4 w-4 shrink-0" /> : <VolumeX className="h-4 w-4 shrink-0" />}
+      <span className="[@media(max-height:700px)]:sr-only">{ligada ? "Voz ligada" : "Ligar a voz"}</span>
+    </button>
   );
 }
