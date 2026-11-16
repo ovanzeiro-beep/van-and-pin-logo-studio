@@ -45,6 +45,9 @@ export function fecharMensagem() {
   if (estado.mensagem) mudar({ ...estado, mensagem: null });
 }
 
+/** Shows a message at the top of the screen (when it does not come from a tap, e.g. back from Google). */
+export const mostrarMensagem = (texto: string) => mostrar(texto);
+
 function mostrar(texto: string) {
   mudar({ ...estado, mensagem: { id: proximaMensagem++, texto } });
 }

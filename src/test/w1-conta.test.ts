@@ -18,7 +18,7 @@ const falso = vi.hoisted(() => {
       },
       signOut: async () => ({ error: null }),
     },
-    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { nome: "Rosa Lima", ultimo_papel: "vanzeiro" } }) }) }) }),
+    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { nome: "Rosa Lima", ultimo_papel: "vanzeiro", aceite_termos_em: "2026-11-16T10:00:00Z" } }) }) }) }),
     rpc: async (nome: string, args?: unknown) => {
       estado.rpc.push({ nome, args });
       return { error: null };

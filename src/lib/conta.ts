@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import type { AuthError, User } from "@supabase/supabase-js";
-import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
+import { deuCerto, mostrarMensagem, naoDeu, type Resultado } from "@/lib/acoes";
 import { instanteDeAgora } from "@/lib/agora";
 import { comecarContaDeVerdade, escolherPapel, sair } from "@/lib/acesso";
 import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
@@ -63,10 +63,20 @@ export async function criarContaComEmail(d: { nome: string; email: string; senha
   return deuCerto;
 }
 
+/** "Criar conta" with the box of the Termos checked: remembered on the phone while the person is at Google. */
+const ACEITE_GOOGLE = "vanzeiro-aceite-google";
+export const SEM_ACEITE_GOOGLE =
+  "Para criar sua conta com o Google, toque em Criar conta, marque o aceite dos Termos e toque em Continuar com Google.";
+
 /** Leaves for Google; it comes back to "Como você vai usar o app?". Works once Google is turned on in Supabase. */
-export async function entrarComGoogle(): Promise<Resultado> {
+export async function entrarComGoogle(aceitouTermos = false): Promise<Resultado> {
   const sb = supabase();
   if (!sb) return semBanco();
+  try {
+    if (aceitouTermos) localStorage.setItem(ACEITE_GOOGLE, "sim");
+  } catch {
+    // No storage: the account is asked to accept again.
+  }
   // Before leaving for Google, asks Supabase whether Google is turned on (otherwise the person would see an error page in English).
   try {
     const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_CHAVE_PUBLICA } });
@@ -129,7 +139,24 @@ export async function excluirContaDoBanco(): Promise<Resultado> {
 async function carregarConta(user: User) {
   const sb = supabase();
   if (!sb) return;
-  const { data } = await sb.from("contas").select("nome, ultimo_papel").eq("id", user.id).maybeSingle();
+  const { data } = await sb.from("contas").select("nome, ultimo_papel, aceite_termos_em").eq("id", user.id).maybeSingle();
+  // E4 (LGPD): an account made with Google needs the box of the Termos checked in "Criar conta" before it is used.
+  if (data && !data["aceite_termos_em"]) {
+    let aceitou = false;
+    try {
+      aceitou = localStorage.getItem(ACEITE_GOOGLE) !== null;
+      localStorage.removeItem(ACEITE_GOOGLE);
+    } catch {
+      aceitou = false;
+    }
+    const { error } = aceitou ? await sb.rpc("aceitar_termos") : { error: true };
+    if (error) {
+      await sb.auth.signOut();
+      mudarSessao({ conta: null, contaPronta: true });
+      mostrarMensagem(SEM_ACEITE_GOOGLE);
+      return;
+    }
+  }
   const nome = (data?.nome as string | undefined) || (user.user_metadata?.["nome"] as string | undefined) || "";
   const papel = (data?.ultimo_papel as Papel | null | undefined) ?? null;
   const antes = obterSessao().conta;
