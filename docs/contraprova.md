@@ -1295,3 +1295,4 @@ Conferência (15/11/2026):
 - [x] `src/lib/banco/viagem.ts`: iniciar e cada toque continuam funcionando sem sinal; ao abrir, o que espera sinal vale mais que o banco; recusa de verdade do banco continua voltando a tela.
 - [x] `public/sw.js`: cópia dos últimos dados lidos do banco, para abrir sem sinal; apagada ao sair ou excluir a conta.
 - [x] Conferência: 350 testes (novo `sem-sinal-viagem.test.ts`), tipos, build.
+- [x] (16/11, pedido do dono) Com o app na tela: aviso novo do servidor vibra forte (3 vezes) e toca dois bipes altos, e já aparece no sininho (`src/lib/alerta.ts`); minimizado, tela apagada ou app fechado: a notificação do celular (som e vibração seguem o ajuste de notificações do celular). Conferido no banco: notificações entregues ao celular do vanzeiro (Google confirmou). 351 testes.

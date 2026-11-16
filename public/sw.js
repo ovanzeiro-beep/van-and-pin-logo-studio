@@ -68,18 +68,31 @@ self.addEventListener("push", (event) => {
     dados = { corpo: event.data ? event.data.text() : "" };
   }
   event.waitUntil(
-    self.registration.showNotification(dados.titulo || "O Vanzeiro", {
-      body: dados.corpo || "",
-      icon: "/icones/icone-192.png",
-      badge: "/icones/icone-192.png",
-      // Each notice vibrates and plays the phone's notification sound (also when it replaces an older one).
-      vibrate: [300, 100, 300],
-      silent: false,
-      ...(dados.tag ? { tag: dados.tag, renotify: true } : {}),
-      data: { url: dados.url || "/" },
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((janelas) => {
+      // The app is on the screen: it plays its own loud alert (vibrates and rings) and shows the notice on the bell.
+      const naTela = janelas.filter((j) => j.visibilityState === "visible");
+      if (naTela.length > 0) {
+        naTela.forEach((j) => j.postMessage({ tipo: "aviso-novo" }));
+        return undefined;
+      }
+      return mostrarNotificacao(dados);
     }),
   );
 });
+
+/** Minimized, screen off or app closed: the phone's notification. */
+function mostrarNotificacao(dados) {
+  return self.registration.showNotification(dados.titulo || "O Vanzeiro", {
+    body: dados.corpo || "",
+    icon: "/icones/icone-192.png",
+    badge: "/icones/icone-192.png",
+    // Each notice vibrates and plays the phone's notification sound (also when it replaces an older one).
+    vibrate: [300, 100, 300],
+    silent: false,
+    ...(dados.tag ? { tag: dados.tag, renotify: true } : {}),
+    data: { url: dados.url || "/" },
+  });
+}
 
 // Tapping a notification opens the app on the Notificações screen (or brings it to the front).
 self.addEventListener("notificationclick", (event) => {

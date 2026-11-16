@@ -19,6 +19,8 @@ import { useContaDoBanco } from "../lib/conta";
 import "../lib/instalar";
 import { useNovidadesDoBanco } from "../lib/banco/passageiros";
 import { useCelularNoBanco } from "../lib/banco/celular";
+import { useAlertaComAppAberto } from "../lib/alerta";
+import { atualizarDoBanco } from "../lib/banco/passageiros";
 
 function NotFoundComponent() {
   return (
@@ -138,6 +140,8 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const atualizarNaHora = () => void atualizarDoBanco();
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   useRelogioDoApp();
@@ -149,6 +153,8 @@ function RootComponent() {
   useNovidadesDoBanco();
   // W10: this phone receives the notices even with the app closed.
   useCelularNoBanco();
+  // A notice arrives with the app on the screen: vibrates, rings and shows on the bell at once.
+  useAlertaComAppAberto(atualizarNaHora);
 
   return (
     <QueryClientProvider client={queryClient}>
