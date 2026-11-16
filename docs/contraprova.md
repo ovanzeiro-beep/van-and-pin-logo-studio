@@ -1308,3 +1308,8 @@ Conferência (15/11/2026):
 ## Vagas da van (16/11/2026, pedido do dono)
 - [x] Conferido no banco: a Monica respondeu "Vou" para 17/11 (o prazo de 16/11 já tinha passado), por isso 16/11 mostrava "sem resposta" e "0 de 15".
 - [x] O "Vou" é recusado com a van lotada ("A van lotou"); agora o "Vou sempre" também ocupa lugar (`supabase/migrations/20261116210000_vagas.sql`, aplicado direto no Supabase); quem sai do destino ou responde "Não vou" libera a vaga. Testado numa cópia do banco (lotada recusa; alguém saiu, aceita).
+
+## Varredura do dinheiro (16/11/2026, pedido do dono)
+- [x] Banco de verdade conferido: 1 passageira (Diário, R$ 150,00), nenhuma viagem feita ainda, então nenhuma cobrança (certo: Diário e Por viagem só cobram quando embarca); Pix do vanzeiro preenchido.
+- [x] Teste novo de ponta a ponta (`dinheiro-ponta-a-ponta.test.ts`): passageiro Mensal novo ganha a cobrança do mês; "Embarcou" de Diário cria a cobrança do dia e o embarque; pago (Pix) e cancelado (motivo) ficam no banco; cobrança paga não muda; o celular do passageiro lê pago/cancelado e o total devido.
+- [x] Já conferidos antes: regras no banco (W7, 19 checagens), tarefa do relógio (faltas, próxima mensalidade, avisos de cobrança, rodando sem erro), gastos. 357 testes.
