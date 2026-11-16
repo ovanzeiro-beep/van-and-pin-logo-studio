@@ -1174,8 +1174,10 @@ Conferência (15/11/2026):
 - Achado e corrigido durante a etapa: uma trava nova ("ninguém confirmou") tinha entrado sem querer em `comecarViagem`; os testes mostraram e ela foi tirada (a tela já não deixa iniciar sem ninguém).
 - Não pode quebrar: conferido — quando dá certo, nenhuma tela, texto, cor ou regra mudou.
 
-## Etapa V3 — Relógio de verdade (iniciada em 16/11/2026)
-**Situação:** em andamento. Seção 20 da fonte da verdade. Sem banco de dados.
-- [ ] V3.1 `src/lib/agora.ts`: o app usa o dia e a hora reais de Brasília; os testes continuam no momento fixo dos exemplos (sexta, 13/11/2026, 05:10), para conferirem sempre as mesmas contas.
-- [ ] V3.2 Os exemplos andam junto: todas as datas de `src/data/exemplo.ts` andam em semanas inteiras até a sexta mais recente (cada dia de exemplo continua no mesmo dia da semana); vencimentos de Mensal e Quinzenal ficam no mês certo; o histórico começa no mês certo.
-- [ ] V3.3 Conferência: testes, tipos, build; no navegador com o relógio de hoje e com outras datas (outro mês, virada de ano, fim de semana, noite): telas sem erro, viagens de hoje são de hoje, números batendo entre Início e Financeiro.
+## Etapa V3 — Relógio de verdade (iniciada e feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 20 da fonte da verdade. Sem banco de dados.
+- [x] V3.1 `src/lib/agora.ts`: o app usa o dia e a hora reais de Brasília; os testes continuam no momento fixo dos exemplos (sexta, 13/11/2026, 05:10), para conferirem sempre as mesmas contas.
+- [x] V3.2 Os exemplos andam junto: todas as datas de `src/data/exemplo.ts` andam em semanas inteiras até a sexta mais recente (cada dia de exemplo continua no mesmo dia da semana); vencimentos de Mensal e Quinzenal ficam no mês certo; o histórico começa no mês certo.
+- [x] V3.3 Conferência: testes, tipos, build; no navegador com o relógio de hoje e com outras datas (outro mês, virada de ano, fim de semana, noite): telas sem erro, viagens de hoje são de hoje, números batendo entre Início e Financeiro.
+  - Resultado: 306 testes (sem mudar nenhum: nos testes o relógio continua fixo), tipos, build. No navegador, 5 momentos — hoje de verdade (seg 16/11/2026 09:16), qua 02/12 06:00, dom 20/12 14:00, sex 01/01/2027 23:30, seg 15/03/2027 05:20: "Hoje" é o dia certo em Viagem e nas Viagens do passageiro (domingo mostra a viagem de domingo); prazo aberto às 05:20 e encerrado depois; "A receber" igual no Início e no Financeiro nos 5; Início do vanzeiro e do passageiro sem rolar; histórico com as datas andadas e os mesmos dias da semana (qui e dom); "Seu mês" no mês certo. Dia completo com o relógio do navegador em 13/11/2026 05:10: as 13 linhas iguais às da `main`. O único aviso é o "hydration" do próprio teste (servidor no dia de verdade, navegador num dia simulado), que se acerta sozinho.
+- Não pode quebrar: conferido — telas, textos, cores e regras iguais; só o dia e a hora passaram a ser os de verdade.

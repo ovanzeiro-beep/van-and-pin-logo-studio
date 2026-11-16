@@ -304,7 +304,7 @@ As telas não mudam: continuam chamando as mesmas funções. Muda só o que essa
 | `cobrancas-store.ts` | cobranças geradas dos exemplos; registros `Embarque` e `Falta` na memória | lê cobranças, pagamentos e cancelamentos; embarques e faltas viram registros |
 | `avisos-store.ts` | avisos na memória | lê e grava avisos; marca como lido |
 | `exclusoes.ts` | apaga da memória | apaga no banco, guardando o que a lei manda guardar |
-| `agora.ts` | data e hora fixas (13/11, 05:10) | relógio real |
+| `agora.ts` | relógio real de Brasília desde a V3 (16/11/2026); fixo em 13/11/2026 05:10 só nos testes; os exemplos andam junto (`diasParaOsExemplos`) | igual: relógio real; os exemplos viram a conta de teste (seção 8.2) |
 | `convite.ts` | confere o código só no celular | o banco garante que nenhum código se repete |
 | `coordenadas-store.ts` | lista de cidades na memória; cada celular procura as que faltam | lê a lista única do banco; quem procura as novas é o servidor |
 | `notificacoes.ts` | mostra a notificação com o app aberto em segundo plano | guarda o endereço de notificação do celular (seção 2.14); quem manda é o servidor |
