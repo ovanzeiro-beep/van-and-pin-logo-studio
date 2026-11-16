@@ -1164,9 +1164,12 @@ Conferência (15/11/2026):
 - [x] V1.6 Conferência: as regras da seção 7 batem com as seções 4, 5 e 6 do `CLAUDE.md` e com o código (`src/lib`); testes, tipos e build sem mudança (só documento e comentário).
 - Achado na leitura: o tipo de aviso "pedido novo" não vira aviso na lista (só notificação no celular); anotado no documento, sem mudar o app.
 
-## Etapa V2 — Ações com resposta (iniciada em 16/11/2026)
-**Situação:** em andamento. Seção 20 da fonte da verdade. Sem banco de dados (o dono vai conectar o Supabase depois).
-- [ ] V2.1 `src/lib/acoes.ts`: `Resultado` ("deu certo" ou "não deu, porque…") e `fazer(...)`, que mostra "Salvando…" (só se demorar) e a mensagem quando não dá certo, iguais no app inteiro.
-- [ ] V2.2 Cada ação que a pessoa faz nas telas devolve `Resultado`, com o motivo em português simples, onde hoje só para em silêncio: respostas, Vou sempre, Não vou de… até…, gastos, pago/cancelar cobrança, destinos, dias sem viagem, pausar/excluir destino, sair/remover, excluir conta, passageiros, pedidos, endereço, meus dados, perfil, viagem (iniciar, embarcou, não estava, conferência, Estou na van).
-- [ ] V2.3 As telas chamam as ações por `fazer(...)`; a mensagem aparece no alto da tela nos dois painéis.
-- [ ] V2.4 Conferência: testes (os que conferiam "true/false" passam a conferir "deu certo / motivo"), tipos, build, as telas iguais a antes quando dá certo, a mensagem aparece quando não dá, sem erros.
+## Etapa V2 — Ações com resposta (iniciada e feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 20 da fonte da verdade. Sem banco de dados (o dono vai conectar o Supabase depois).
+- [x] V2.1 `src/lib/acoes.ts`: `Resultado` ("deu certo" ou "não deu, porque…") e `fazer(...)`, que mostra "Salvando…" (só se demorar) e a mensagem quando não dá certo, iguais no app inteiro.
+- [x] V2.2 Cada ação que a pessoa faz nas telas devolve `Resultado`, com o motivo em português simples, onde hoje só para em silêncio: respostas, Vou sempre, Não vou de… até…, gastos, pago/cancelar cobrança, destinos, dias sem viagem, pausar/excluir destino, sair/remover, excluir conta, passageiros, pedidos, endereço, meus dados, perfil, viagem (iniciar, embarcou, não estava, conferência, Estou na van).
+- [x] V2.3 As telas chamam as ações por `fazer(...)`; a mensagem aparece no alto da tela nos dois painéis.
+- [x] V2.4 Conferência: testes (os que conferiam "true/false" passam a conferir "deu certo / motivo"), tipos, build, as telas iguais a antes quando dá certo, a mensagem aparece quando não dá, sem erros.
+  - Resultado: 306 testes (novo `acoes.test.tsx`: a peça única, a mensagem na tela e os motivos de respostas, cobranças, gastos e viagem; 9 arquivos de teste passaram a conferir "deu certo / motivo" no lugar de true/false, conferindo as mesmas regras), tipos (sem nada sobrando), build. 30 telas em 390×844 e 375×667 comparadas com a `main`: texto igual nas 60; dia completo igual linha por linha; T2 a T7 iguais; roteiros antigos de cadastro, endereço e exclusão com o mesmo resultado nas duas versões; perfil salva e fecha; marcar como pago funciona; a faixa vermelha aparece nos dois painéis, por cima de uma janela aberta (que continua aberta) e some em 6 s; sem erros.
+- Achado e corrigido durante a etapa: uma trava nova ("ninguém confirmou") tinha entrado sem querer em `comecarViagem`; os testes mostraram e ela foi tirada (a tela já não deixa iniciar sem ninguém).
+- Não pode quebrar: conferido — quando dá certo, nenhuma tela, texto, cor ou regra mudou.

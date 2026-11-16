@@ -386,7 +386,7 @@ Para o banco entrar mais fácil, a **Etapa K** (seção 11 da fonte da verdade) 
 - `supabase/migrations/`: as tabelas da seção 2, quem vê o quê (seção 1) e as regras da seção 7, em arquivos que podem ser refeitos do zero.
 - `supabase/functions/` e tarefas agendadas: tudo da seção 3 (cobranças, faltas do prazo, avisos do relógio, fechar respostas, procurar cidades, notificações).
 - `supabase/seed.sql`: uma **conta de teste com os mesmos dados de exemplo** de hoje, para o primeiro dia com banco parecer o app de hoje.
-- No app: cada parte (`*-store.ts`) ganha **duas fontes, memória e banco**, escolhidas num lugar só. As telas não mudam: continuam chamando as mesmas funções, que já devolvem "deu certo" ou "não deu, porque…" (V2).
+- No app: cada parte (`*-store.ts`) ganha **duas fontes, memória e banco**, escolhidas num lugar só. As telas não mudam: continuam chamando as mesmas funções, que já devolvem "deu certo" ou "não deu, porque…" pela peça `src/lib/acoes.ts` (V2, feito em 16/11/2026). Com o banco, cada função passa a esperar a resposta do Supabase e devolve o motivo que o banco der (seção 7); `fazer(...)` já espera e já mostra "Salvando…" e a mensagem.
 
 ### 8.3 Ordem de entrada: uma parte por etapa
 | Etapa | Parte | O que passa a ser de verdade |
