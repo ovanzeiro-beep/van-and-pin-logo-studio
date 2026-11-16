@@ -51,7 +51,7 @@ describe("W6: viagem no banco (Supabase simulado)", () => {
   });
 
   it("se o banco recusar o toque, a tela volta como estava", async () => {
-    falso.estado.erro = { code: "XX", message: "fetch failed" };
+    falso.estado.erro = { code: "P0001", message: "Recusado." };
     const r = await marcarNaoEstavaNoBanco("p-fernanda");
     expect(r.ok).toBe(false);
     expect(proximoDaBusca(emAndamento(obterViagensDoDia())!)).toBe("p-fernanda");

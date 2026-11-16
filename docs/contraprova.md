@@ -1288,3 +1288,10 @@ Conferência (15/11/2026):
 - [x] Regras conferidas numa cópia do banco (8 checagens). Conferência: 348 testes (novo `w10-celular.test.ts`), tipos, build.
 - Pendente: teste real no celular do dono (Android: Chrome; iPhone: só com o app na tela inicial).
 - [x] (16/11, pedido do dono) Cada notificação vibra e toca o som de notificação do celular, também quando troca um aviso antigo.
+
+## Sem sinal na van, com o banco (feita em 16/11/2026)
+**Situação:** feito e testado (merge na `main`, publicado); o dono testa no celular com o modo avião.
+- [x] `src/lib/banco/fila.ts`: os toques da viagem sem sinal ficam guardados no celular (sobrevivem a fechar o app) e vão para o banco quando o sinal volta (ao voltar a internet, a cada 30 s e ao abrir).
+- [x] `src/lib/banco/viagem.ts`: iniciar e cada toque continuam funcionando sem sinal; ao abrir, o que espera sinal vale mais que o banco; recusa de verdade do banco continua voltando a tela.
+- [x] `public/sw.js`: cópia dos últimos dados lidos do banco, para abrir sem sinal; apagada ao sair ou excluir a conta.
+- [x] Conferência: 350 testes (novo `sem-sinal-viagem.test.ts`), tipos, build.
