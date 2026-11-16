@@ -1279,3 +1279,11 @@ Conferência (15/11/2026):
 - [x] Teste da tarefa numa cópia do banco: falta só depois do prazo; desconto na cobrança; rodar de novo não repete nada; prazo chegando para quem não respondeu; cobrança vencendo e vencida; próxima mensalidade criada; o app não consegue chamar a tarefa.
 - [x] Conferência: 346 testes, tipos, build (o app não mudou nesta etapa).
 - Pendente: notificação no celular com o app fechado (W10).
+
+## W10 — Avisos na tela do celular (feita em 16/11/2026)
+**Situação:** função `avisos-no-celular` publicada no Supabase; app com merge na `main`, publicado; o dono cola `supabase/SO-SQL-5-CELULAR.sql` e testa no celular.
+- [x] `supabase/functions/avisos-no-celular`: cria as chaves uma vez (guardadas no banco), entrega avisos e pedidos novos, cada um uma vez só, nos celulares da pessoa; esquece celular que desligou.
+- [x] SQL: endereço de entrega por celular (`guardar_celular`), aviso/pedido novo chama a entrega, aviso trocado é entregue de novo; ninguém pelo app lê as chaves.
+- [x] App: ao entrar na conta (com notificações ativadas) e ao tocar em "Ativar", o celular guarda o endereço; a mesma notificação nunca aparece duas vezes (mesma marca).
+- [x] Regras conferidas numa cópia do banco (8 checagens). Conferência: 348 testes (novo `w10-celular.test.ts`), tipos, build.
+- Pendente: teste real no celular do dono (Android: Chrome; iPhone: só com o app na tela inicial).

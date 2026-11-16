@@ -56,8 +56,8 @@ function guardar(request, resposta) {
   return resposta;
 }
 
-// Phone notifications. Now they come from the open app; with the database, the server sends them ("push"),
-// even with the app closed, as { titulo, corpo, url }.
+// Phone notifications: from the open app, and from the server ("push", W10), even with the app closed, as
+// { titulo, corpo, url, tag }. The same notice has the same tag, so it never shows twice.
 self.addEventListener("push", (event) => {
   let dados = {};
   try {
@@ -70,6 +70,7 @@ self.addEventListener("push", (event) => {
       body: dados.corpo || "",
       icon: "/icones/icone-192.png",
       badge: "/icones/icone-192.png",
+      ...(dados.tag ? { tag: dados.tag } : {}),
       data: { url: dados.url || "/" },
     }),
   );

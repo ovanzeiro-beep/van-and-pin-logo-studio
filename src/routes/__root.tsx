@@ -18,6 +18,7 @@ import { useNotificarAvisosNovos } from "../lib/notificacoes";
 import { useContaDoBanco } from "../lib/conta";
 import "../lib/instalar";
 import { useNovidadesDoBanco } from "../lib/banco/passageiros";
+import { useCelularNoBanco } from "../lib/banco/celular";
 
 function NotFoundComponent() {
   return (
@@ -146,6 +147,8 @@ function RootComponent() {
   useContaDoBanco();
   // W4: news from the other phones (new pedido, pedido accepted…).
   useNovidadesDoBanco();
+  // W10: this phone receives the notices even with the app closed.
+  useCelularNoBanco();
 
   return (
     <QueryClientProvider client={queryClient}>
