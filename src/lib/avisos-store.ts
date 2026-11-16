@@ -15,7 +15,14 @@ export function obterAvisos() {
 }
 
 export function obterAvisosNaoLidos(paraId: string) {
-  return avisos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido);
+  return avisos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido && !a.apagado);
+}
+
+/** "Limpar" on the bell: every notice of this person leaves the list (they stay kept, hidden). */
+export function limparAvisosDaPessoa(paraId: string) {
+  if (!avisos.some((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.apagado)) return;
+  avisos = avisos.map((a) => (a.paraVanzeiroOuPassageiroId === paraId ? { ...a, apagado: true, lido: true } : a));
+  notificar();
 }
 
 // Changes always make a new list (never edit a notice in place), so the screens see them.
@@ -31,7 +38,7 @@ export function avisosDaPessoa(lista: Aviso[], paraId: string) {
   // Same day: the one created last comes first.
   return [...lista]
     .reverse()
-    .filter((a) => a.paraVanzeiroOuPassageiroId === paraId)
+    .filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.apagado)
     .sort((a, b) => b.dataCriacao.localeCompare(a.dataCriacao));
 }
 
@@ -94,7 +101,7 @@ function useAvisos() {
 
 export function useAvisosNaoLidos(paraId: string) {
   const todos = useAvisos();
-  return todos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido);
+  return todos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido && !a.apagado);
 }
 
 /** Notificações screen: every notice of the person; the ones not seen before opening are "novos", and now count as read. */

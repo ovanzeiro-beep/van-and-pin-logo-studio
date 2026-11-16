@@ -20,6 +20,7 @@ type LinhaAviso = {
   cobranca_id: string | null;
   criado_em: string;
   lido: boolean;
+  apagado?: boolean;
 };
 
 export const avisoDaLinha = (l: LinhaAviso): Aviso => ({
@@ -29,6 +30,7 @@ export const avisoDaLinha = (l: LinhaAviso): Aviso => ({
   paraVanzeiroOuPassageiroId: l.para,
   dataCriacao: l.criado_em,
   lido: l.lido,
+  ...(l.apagado ? { apagado: true } : {}),
   ...(l.destino_id ? { destinoId: l.destino_id } : {}),
   ...(l.matricula_id ? { passageiroId: l.matricula_id } : {}),
   ...(l.cobranca_id ? { cobrancaId: l.cobranca_id } : {}),
@@ -53,6 +55,8 @@ const usaBanco = () => USA_BANCO.destinos && supabase() !== null && obterSessao(
 /** Notices already in the database (or refused by it: they are not sent again), and whether this person's are read. */
 const salvos = new Set<string>();
 let lidosNoBanco = true;
+/** Notices already hidden ("Limpar") in the database. */
+const apagadosNoBanco = new Set<string>();
 let fila: Promise<boolean> = Promise.resolve(true);
 
 /** Saves the new notices and the "read". true when everything is saved. */
@@ -81,6 +85,15 @@ async function salvarMudancas(): Promise<boolean> {
     if (error) tudo = false;
     else lidosNoBanco = true;
   }
+  // "Limpar" on the bell: hidden in the database too (kept, so the same notice is never created again).
+  const apagar = obterAvisos()
+    .filter((a) => a.paraVanzeiroOuPassageiroId === conta.id && a.apagado && !apagadosNoBanco.has(a.id) && salvos.has(a.id))
+    .map((a) => a.id);
+  if (apagar.length > 0) {
+    const { error } = await sb.rpc("apagar_avisos", { ids: apagar });
+    if (error) tudo = false;
+    else apagar.forEach((id) => apagadosNoBanco.add(id));
+  }
   return tudo;
 }
 
@@ -107,11 +120,15 @@ export async function carregarAvisos(): Promise<void> {
     .from("avisos")
     .select("*")
     .eq("para", conta.id)
-    .order("criado_em")
+    .order("criado_em", { ascending: false })
     .limit(300);
   if (error) return;
-  const lista = (data as LinhaAviso[]).map(avisoDaLinha);
-  lista.forEach((a) => salvos.add(a.id));
-  lidosNoBanco = lista.every((a) => a.lido);
+  // The newest 300, in the order they were created (the hidden ones too: they keep the same notice from coming back).
+  const lista = (data as LinhaAviso[]).map(avisoDaLinha).reverse();
+  lista.forEach((a) => {
+    salvos.add(a.id);
+    if (a.apagado) apagadosNoBanco.add(a.id);
+  });
+  lidosNoBanco = lista.every((a) => a.lido || a.apagado);
   carregarAvisosDoBanco(lista, conta.id);
 }

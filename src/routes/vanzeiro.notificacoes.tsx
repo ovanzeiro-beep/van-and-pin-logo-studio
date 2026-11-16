@@ -6,7 +6,7 @@ import { TelaVazia } from "@/components/app/TelaVazia";
 import { Bell, Check, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useAvisosAoAbrir } from "@/lib/avisos-store";
+import { limparAvisosDaPessoa, useAvisosAoAbrir } from "@/lib/avisos-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
@@ -87,14 +87,7 @@ function PaginaNotificacoes() {
               </ul>
             </section>
           )}
-          {avisos.length > 0 && (
-            <section>
-              <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Avisos</h2>
-              <div className="mt-1.5">
-                <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} />
-              </div>
-            </section>
-          )}
+          {avisos.length > 0 && <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} onLimpar={() => limparAvisosDaPessoa(idDoVanzeiro())} />}
         </div>
       )}
     </div>
