@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import type { AuthError, User } from "@supabase/supabase-js";
-import { deuCerto, mostrarMensagem, naoDeu, type Resultado } from "@/lib/acoes";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 import { instanteDeAgora } from "@/lib/agora";
 import { comecarContaDeVerdade, escolherPapel, sair } from "@/lib/acesso";
 import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
@@ -65,8 +65,6 @@ export async function criarContaComEmail(d: { nome: string; email: string; senha
 
 /** "Criar conta" with the box of the Termos checked: remembered on the phone while the person is at Google. */
 const ACEITE_GOOGLE = "vanzeiro-aceite-google";
-export const SEM_ACEITE_GOOGLE =
-  "Para criar sua conta com o Google, toque em Criar conta, marque o aceite dos Termos e toque em Continuar com Google.";
 
 /** Leaves for Google; it comes back to "Como você vai usar o app?". Works once Google is turned on in Supabase. */
 export async function entrarComGoogle(aceitouTermos = false): Promise<Resultado> {
@@ -135,6 +133,48 @@ export async function excluirContaDoBanco(): Promise<Resultado> {
   return deuCerto;
 }
 
+// ---------- the box of the Termos after Google (LGPD) ----------
+
+let aceitePendente: User | null = null;
+const ouvintesDoAceite = new Set<() => void>();
+function mudarAceitePendente(u: User | null) {
+  aceitePendente = u;
+  ouvintesDoAceite.forEach((o) => o());
+}
+export const obterAceitePendente = () => aceitePendente;
+
+/** Whether a Google account is waiting for the box of the Termos (the window shows on any screen). */
+export function useAceitePendente() {
+  return useSyncExternalStore(
+    (o) => {
+      ouvintesDoAceite.add(o);
+      return () => ouvintesDoAceite.delete(o);
+    },
+    () => aceitePendente !== null,
+    () => false,
+  );
+}
+
+/** "Aceitar e continuar": the acceptance is saved and the person comes in. */
+export async function aceitarTermosEContinuar(): Promise<Resultado> {
+  const sb = supabase();
+  const u = aceitePendente;
+  if (!sb || !u) return deuCerto;
+  const { error } = await sb.rpc("aceitar_termos");
+  if (error) return naoDeu(motivo(error));
+  mudarAceitePendente(null);
+  await carregarConta(u);
+  return deuCerto;
+}
+
+/** "Agora não": leaves the Google account. */
+export async function naoAceitarTermos(): Promise<Resultado> {
+  mudarAceitePendente(null);
+  await supabase()?.auth.signOut();
+  mudarSessao({ conta: null, contaPronta: true });
+  return deuCerto;
+}
+
 /** Reads the account row (name, last role) and puts the person in the session. */
 async function carregarConta(user: User) {
   const sb = supabase();
@@ -149,11 +189,14 @@ async function carregarConta(user: User) {
     } catch {
       aceitou = false;
     }
-    const { error } = aceitou ? await sb.rpc("aceitar_termos") : { error: true };
+    // Came straight from "Entrar com Google": the box of the Termos shows right here, one tap (owner, 16/11/2026).
+    if (!aceitou) {
+      mudarAceitePendente(user);
+      return;
+    }
+    const { error } = await sb.rpc("aceitar_termos");
     if (error) {
-      await sb.auth.signOut();
-      mudarSessao({ conta: null, contaPronta: true });
-      mostrarMensagem(SEM_ACEITE_GOOGLE);
+      mudarAceitePendente(user);
       return;
     }
   }
