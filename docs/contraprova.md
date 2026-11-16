@@ -1144,3 +1144,13 @@ Conferência (15/11/2026):
 - [x] U2.3 Conferência: testes, tipos, build, nenhuma biblioteca ou peça faltando, as telas iguais a antes, número de alertas de segurança antes e depois.
   - Resultado: saíram 40 peças e `use-mobile.tsx` e 31 bibliotecas; 297 testes, tipos, build; a conferência de código sem uso não acusa peça nem biblioteca faltando (sobram só os 3 arquivos que a configuração usa — `public/sw.js`, `src/server.ts`, `src/lib/error-capture.ts` — e a `@tanstack/router-plugin`, mantida de propósito). 30 telas em 390×844 e 375×667 comparadas com a `main`: texto igual nas 60; as diferenças de imagem são pontos soltos de letras (ruído, como na U1). Botão da voz, "Voltar" e rolagem iguais; sem erros. Instalação: 433 MB → 350 MB. Alertas de segurança: 26 antes e 26 depois (todos de ferramentas de trabalho, nenhum vai para o celular).
 - Não pode quebrar: conferido — nenhuma tela, texto, cor ou regra mudou.
+
+
+## Etapa U3 — Cada vanzeiro só vê o que é dele (iniciada e feita em 16/11/2026)
+**Situação:** feita (merge na `main`), com o "pode fazer a próxima etapa" do dono de 16/11. Seção 19 da fonte da verdade. Sem banco de dados. Nada muda para quem usa o app.
+- [x] U3.1 `src/lib/painel.ts`: `PainelDoVanzeiro` (quem está olhando) e `useSoDoMeuPainel` (só o que é dele); o painel do vanzeiro (`vanzeiro.tsx`) passa o vanzeiro da sessão. Todas as telas do vanzeiro ficam dentro desse painel (conferido na lista de telas).
+- [x] U3.2 Separados por vanzeiro dentro do painel: `useDestinos`, `usePassageiros`, `usePedidos`, `useMudancasAguardando`, `useCobrancas`, `useViagensDoDia`, `useViagensEncerradasComDetalhes` (e as que dependem delas: `useDestino`, `useCobranca`, `usePassageiro`…). As regras que rodam sozinhas (relógio, avisos, faltas do prazo) continuam olhando tudo, como o servidor fará.
+- [x] U3.3 Painel do passageiro sem corte aqui (ele já filtra pelas próprias matrículas).
+- [x] U3.4 Conferência: 300 testes (novo `cada-vanzeiro.test.tsx`: com um segundo vanzeiro, a Rosa, o painel do Carlos não mostra nada dela, o dela só mostra o dela, e fora do painel nada é cortado), tipos, build; 30 telas em 390×844 e 375×667 comparadas com a `main`: **texto igual nas 60**; dia completo (passageiro responde, vanzeiro faz a viagem, histórico, financeiro, avisos) **igual linha por linha** à `main`; aviso do "Não vou" (T7), cobrar quem deve (T2), resumo do grupo (T4) e Seu mês (T5) iguais; sem erros.
+- Não pode quebrar: conferido — nenhuma tela, texto, cor ou regra mudou para o vanzeiro e os passageiros dos exemplos.
+- **Seção 19 completa (U1, U2, U3).**

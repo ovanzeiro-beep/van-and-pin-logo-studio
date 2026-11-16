@@ -300,6 +300,7 @@ As telas não mudam: continuam chamando as mesmas funções. Muda só o que essa
 | `notificacoes.ts` | mostra a notificação com o app aberto em segundo plano | guarda o endereço de notificação do celular (seção 2.14); quem manda é o servidor |
 | `gastos-store.ts` | gastos na memória, começa com os exemplos | lê, grava e apaga os gastos do vanzeiro (seção 2.16) |
 | `ids.ts` | `novoId` cria o identificador de cada dado novo no celular | quem cria o identificador é o banco; só esta função muda |
+| `painel.ts` | o painel do vanzeiro corta, na memória, o que não é dele (seção 1) | o banco só entrega o que é do vanzeiro logado; esta peça pode continuar como segunda garantia |
 
 Além disso, com o banco:
 - cada ação demora um instante e pode falhar sem sinal: as telas ganham "carregando" e mensagem de erro;
