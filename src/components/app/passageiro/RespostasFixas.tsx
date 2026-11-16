@@ -100,10 +100,10 @@ function NaoVouNoPeriodo({ passageiroId }: { passageiroId: string }) {
         </div>
         {tentou && problema && <p className="text-sm font-medium text-destructive">{problema}</p>}
         <AlertDialogFooter className="gap-2">
+          <AlertDialogCancel className="m-0 h-12 w-full">Voltar</AlertDialogCancel>
           <Button size="lg" className="h-12 w-full" onClick={salvar}>
             Salvar
           </Button>
-          <AlertDialogCancel className="m-0 h-12 w-full">Cancelar</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

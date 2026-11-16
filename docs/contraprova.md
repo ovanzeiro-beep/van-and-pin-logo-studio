@@ -1076,3 +1076,13 @@ Conferência (15/11/2026):
 - [x] T2.4 Conferência: 277 testes (novos `pix.test.ts` e `cobrar-devedores.test.tsx`), tipos, build; no navegador em 390×844, 360×740 e 375×667: Financeiro não rola (só a lista), as duas janelas cabem na tela, o código copiado bate com o valor (R$ 280,00), sem erros.
 - Não pode quebrar: conferido — cores, palavras (Devendo/Pendente/Pago), cobranças não são editadas, o passageiro continua sem marcar como pago.
 - Pendência: pagar de verdade com o código num app de banco, no celular, com a chave real do vanzeiro do piloto. Quando o banco entrar, o perfil do vanzeiro pode ganhar a cidade dele (hoje o código usa a cidade de origem do destino).
+
+## Etapa T3 — "Vou sempre" e "Não vou de… até…" (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18.3 da fonte da verdade. Sem banco de dados. Decisões do dono de 16/11: conta como "Vou"; desconta; vanzeiro vê só "Vou"; um destino por vez.
+- [x] T3.1 Regra em `src/lib/respostas-fixas.ts`: resposta do dia vale mais; período de "Não vou" vale mais que "Vou sempre"; só conta se foi marcado antes do prazo; desligar/tirar depois do prazo não muda aquele dia; "Vou" automático só com lugar livre.
+- [x] T3.2 Os dois painéis leem as mesmas respostas (`respostas-store`): Início e Viagem do vanzeiro, lugares, avisos de prazo e faltas veem o "Vou"/"Não vou" automático; ao iniciar a viagem, as respostas do dia ficam guardadas.
+- [x] T3.3 Desconto: dia do período vira falta avisada no prazo, com a hora em que o período foi marcado (`avisouEm`).
+- [x] T3.4 Tela: aba Viagens do passageiro, "Para não esquecer de responder", um cartão por destino com "Vou sempre", períodos com "Tirar" e "Não vou de… até…" (janela com Primeiro dia / Último dia, Salvar em cima e Voltar embaixo, como as outras janelas).
+- [x] T3.5 Conferência: 285 testes (novo `respostas-fixas.test.ts`), tipos, build; no navegador em 390×844, 360×740 e 375×667: ligar "Vou sempre" pôs "Vou" na viagem de hoje com prazo aberto e não mexeu na que já tinha passado do prazo; período 16/11–17/11 virou "Não vou" no dia 16; sem datas, mostra "Escolha o primeiro e o último dia."; a janela cabe na tela; sem erros. Telas abertas sem erro; o único 404 é do roteiro antigo de conferência ("/vanzeiro/pedidos" não existe mais), não do app.
+- Não pode quebrar: conferido — Início do passageiro igual (não rola), palavras Vou / Não vou / Sem resposta, cores, regra do prazo.
+- Pendência (sugestão, não feita): avisar o vanzeiro no sininho quando alguém marca "Não vou de… até…". Só se o dono quiser.
