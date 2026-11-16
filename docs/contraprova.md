@@ -1337,3 +1337,8 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 ## E3 — Varredura ponta a ponta no banco de verdade (feita em 16/11/2026)
 - [x] Teste `supabase/testes/e3-ponta-a-ponta.sql` rodado no Supabase de verdade (pelo dono, no SQL Editor): 28 de 28 certos. Vanzeiro e 2 passageiros de teste: contas, perfil, destino, código, pedido, aceite, van cheia (aceitar e pedir), recusar, "Vou", sininho, ninguém vê os dados dos outros, viagem, embarque, cobrança de R$ 150, passageiro não marca pago nem lê a viagem inteira, cobrança paga não muda, gasto, sair do destino libera a vaga, Mensal, destino excluído avisa e tira todos, tarefa do relógio.
 - [x] Conferido depois: nada do teste ficou no banco (0 contas, 0 destino, 0 função de teste).
+
+## E4 — Login com o Google (código feito em 16/11/2026)
+- [x] App: "Continuar com Google" em Criar conta (só com o aceite marcado) grava o aceite dos Termos na volta do Google (`aceitar_termos`); conta do Google sem aceite (ex.: tocou direto em "Entrar com Google" sem ter conta) não entra e vê: "Para criar sua conta com o Google, toque em Criar conta, marque o aceite dos Termos e toque em Continuar com Google." (LGPD).
+- [x] Conferência: 361 testes (novo `e4-google.test.ts`), tipos, build.
+- Pendente (dono): criar a chave no Google Cloud e ligar o Google no Supabase (passo a passo enviado no chat).

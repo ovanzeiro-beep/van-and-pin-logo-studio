@@ -154,7 +154,7 @@ function CriarConta() {
             onClick={() => {
               if (!podeContinuarComGoogle(dados.aceitouTermos)) return;
               if (USA_BANCO.conta) {
-                void fazer(entrarComGoogle);
+                void fazer(() => entrarComGoogle(true));
                 return;
               }
               criarConta("");
