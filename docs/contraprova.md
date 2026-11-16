@@ -1137,8 +1137,10 @@ Conferência (15/11/2026):
 - A mais (achado na conferência): 7 importações esquecidas (sem uso) tiradas, em `PassageiroHeader`, `ViagemEmCurso`, `avisos.ts`, `dias-sem-viagem.ts`, `passageiro.index`, `passageiro.viagens` e `vanzeiro.financeiro.$cid`.
 - Não pode quebrar: conferido — nenhuma tela, texto, cor ou regra mudou.
 
-## Etapa U2 — Tirar peças e bibliotecas sem uso (iniciada em 16/11/2026)
-**Situação:** em andamento, com o "pode fazer a próxima etapa" do dono de 16/11. Seção 19 da fonte da verdade. Sem banco de dados. Nada muda para quem usa o app.
-- [ ] U2.1 Tirar de `src/components/ui` as peças prontas que o app não usa (ficam só: alert-dialog, button, checkbox, input, label, switch) e `src/hooks/use-mobile.tsx` (só a barra lateral usava).
-- [ ] U2.2 Tirar do `package.json` / `bun.lock` as bibliotecas que só essas peças usavam (formulários, gráficos, calendário, menus, carrossel, avisos flutuantes etc.). Fica a `@tanstack/router-plugin`, por segurança (faz parte do jeito que as telas são montadas).
-- [ ] U2.3 Conferência: testes, tipos, build, nenhuma biblioteca ou peça faltando, as telas iguais a antes, número de alertas de segurança antes e depois.
+## Etapa U2 — Tirar peças e bibliotecas sem uso (iniciada e feita em 16/11/2026)
+**Situação:** feita (merge na `main`), com o "pode fazer a próxima etapa" do dono de 16/11. Seção 19 da fonte da verdade. Sem banco de dados. Nada muda para quem usa o app.
+- [x] U2.1 Tirar de `src/components/ui` as peças prontas que o app não usa (ficam só: alert-dialog, button, checkbox, input, label, switch) e `src/hooks/use-mobile.tsx` (só a barra lateral usava).
+- [x] U2.2 Tirar do `package.json` / `bun.lock` as bibliotecas que só essas peças usavam (formulários, gráficos, calendário, menus, carrossel, avisos flutuantes etc.). Fica a `@tanstack/router-plugin`, por segurança (faz parte do jeito que as telas são montadas).
+- [x] U2.3 Conferência: testes, tipos, build, nenhuma biblioteca ou peça faltando, as telas iguais a antes, número de alertas de segurança antes e depois.
+  - Resultado: saíram 40 peças e `use-mobile.tsx` e 31 bibliotecas; 297 testes, tipos, build; a conferência de código sem uso não acusa peça nem biblioteca faltando (sobram só os 3 arquivos que a configuração usa — `public/sw.js`, `src/server.ts`, `src/lib/error-capture.ts` — e a `@tanstack/router-plugin`, mantida de propósito). 30 telas em 390×844 e 375×667 comparadas com a `main`: texto igual nas 60; as diferenças de imagem são pontos soltos de letras (ruído, como na U1). Botão da voz, "Voltar" e rolagem iguais; sem erros. Instalação: 433 MB → 350 MB. Alertas de segurança: 26 antes e 26 depois (todos de ferramentas de trabalho, nenhum vai para o celular).
+- Não pode quebrar: conferido — nenhuma tela, texto, cor ou regra mudou.
