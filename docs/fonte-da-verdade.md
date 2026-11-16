@@ -2,6 +2,8 @@
 
 **O que é este arquivo:** a descrição de como o app está hoje e de como ele deve ser. Tela por tela, regra por regra, número por número. Escrito em 13/11/2026, depois de ler todo o código e abrir todas as telas, sem corrigir nada.
 
+**Como ler (atualizado em 16/11/2026):** as seções 0 a 9 foram escritas em 13/11 e descrevem o app daquele dia; as mudanças feitas depois foram registradas nas seções 10 a 17. Nas seções 0 a 9, cada trecho que mudou ganhou a marca **"Atualizado em 16/11:"** com o que vale hoje. Se algo ainda parecer contraditório, vale a seção de número maior.
+
 **Como ele convive com os outros dois arquivos:**
 
 | Arquivo | Responde |
@@ -18,7 +20,7 @@ Quando este arquivo e o código discordarem, o certo é o que está aqui, depois
 
 Sem banco de dados, o app vive de exemplos. "Hoje" é **sexta-feira, 13/11/2026, 05:10**, sempre. Tudo o que se vê nasce disso:
 
-- **O vanzeiro de exemplo:** Carlos Pereira, (43) 99955-1234, Pix `carlos.vanzeiro@email.com`, Sprinter ABC-1D23.
+- **O vanzeiro de exemplo:** Carlos Pereira, (43) 99955-1234, Pix `carlos.vanzeiro@email.com`, Sprinter ABC-1D23. **Atualizado em 16/11:** a van tem 15 lugares para passageiros (seção 12).
 - **Três destinos:**
   - **Jacarezinho → Londrina**, rota fixa, sex/sáb/dom, saída 06:00, volta 18:30, parada em Santo Antônio da Platina, código VAN-4821, confirmar até 1 h antes. **Hoje tem viagem; o prazo (05:00) já fechou.** 6 passageiros, 2 pedidos para entrar (Larissa e João Vitor).
   - **Cambará → UENP Jacarezinho**, rota fixa, seg a sex, saída 06:40, volta 17:50, parada em Jacarezinho, código VAN-3175, confirmar até 1 h antes. **Hoje tem viagem; o prazo (05:40) ainda está aberto.** 6 passageiros.
@@ -58,7 +60,7 @@ Dois cartões: **Sou vanzeiro** (azul, em destaque) e **Sou passageiro**. Texto:
 
 ### 1.6 Termos de Uso (`/termos`) e Política de Privacidade (`/privacidade`)
 Cabeçalho azul com **Voltar** e o selo "Versão provisória", depois seções em cartões. Rolam a tela inteira (é texto; esperado).
-- Os Termos dizem que "durante a viagem, a localização da van é mostrada aos passageiros" e que a pessoa "pode pedir para apagar a conta". **As duas coisas ainda não existem no app** (GPS é do "Depois"; excluir conta é o item 6 da Etapa B).
+- Os Termos dizem que "durante a viagem, a localização da van é mostrada aos passageiros" e que a pessoa "pode pedir para apagar a conta". **As duas coisas ainda não existem no app** (GPS é do "Depois"; excluir conta é o item 6 da Etapa B). **Atualizado em 16/11:** "Excluir minha conta" existe nos dois Perfis; os Termos foram reescritos na R1 (faltas e descontos, van lotada, onde embarca, regras das cobranças) e a Política na P3 (ponto no mapa, notificações, OpenStreetMap, cópia no celular). Falta o contato "(a definir)" e o advogado.
 - A Política lista os dados guardados, explica as estatísticas de visitas do Lovable e as fontes do Google, e tem o **contato do responsável como "(a definir)"** (pendência do dono do projeto).
 
 ### 1.7 Telas de erro
@@ -68,21 +70,21 @@ Cabeçalho azul com **Voltar** e o selo "Versão provisória", depois seções e
 
 ## 2. O painel do vanzeiro
 
-**Cabeçalho (igual em todas as abas):** bolinha com a inicial, saudação ("Bom dia" / "Boa tarde" / "Boa noite", **pelo relógio do celular**, não pela hora dos exemplos), primeiro nome do perfil, título da tela, subtítulo e o **sininho**, que mostra o número de pedidos para entrar e abre a tela Pedidos. Com zero pedidos, o sininho fica sem número.
+**Cabeçalho (igual em todas as abas):** bolinha com a inicial, saudação ("Bom dia" / "Boa tarde" / "Boa noite", **pelo relógio do celular**, não pela hora dos exemplos), primeiro nome do perfil, título da tela, subtítulo e o **sininho**, que mostra o número de pedidos para entrar e abre a tela Pedidos. Com zero pedidos, o sininho fica sem número. **Atualizado em 16/11:** o número do sininho soma pedidos para entrar + mudanças de endereço para aprovar + avisos não lidos, e ele abre **Notificações** (ver 2.7).
 
 **Barra de baixo:** Início · Destinos · Viagem · Financeiro · Perfil.
 
 **Sem nenhum destino (conta nova):** Início, Destinos, Viagem e Financeiro mostram a mesma tela: "Você ainda não tem destinos.", a ajuda "Como funciona" em 3 passos (Crie um destino → Convide os passageiros → Faça a viagem) e o único botão **Crie seu primeiro destino**.
 
 ### 2.1 Início (`/vanzeiro`)
-Resumo do dia em três cartões e um botão. Não rola num celular comum (no Android 360 × 740 rola 26px; no iPhone SE, 77px).
+Resumo do dia em três cartões e um botão. Não rola num celular comum (no Android 360 × 740 rola 26px; no iPhone SE, 77px). **Atualizado em 16/11:** não rola no Android 360 × 740; no iPhone SE rola 13px.
 
-1. **Viagem de hoje** (toque abre a aba Viagem): nome do destino, a van (modelo · placa), selo âmbar "Às HH:MM", linha "Saída HH:MM · Volta HH:MM/Sem volta". Qual viagem: a mesma da aba Viagem (a escolhida lá, ou a primeira do dia por horário). Destino pausado nunca aparece. **Sem viagem hoje:** "Nenhuma viagem hoje" e "Próxima: Sex, 20 de nov, Jacarezinho → Ourinhos" (ou "Nenhuma viagem marcada.").
+1. **Viagem de hoje** (toque abre a aba Viagem): nome do destino, a van (modelo · placa), selo âmbar "Às HH:MM", linha "Saída HH:MM · Volta HH:MM/Sem volta". Qual viagem: a mesma da aba Viagem (a escolhida lá, ou a primeira do dia por horário). **Atualizado em 16/11:** mostra a viagem em andamento ou a próxima de hoje que ainda não foi feita; a aba Viagem abre nessa mesma (Etapa G); com todas feitas, "Viagens de hoje feitas". Destino pausado nunca aparece. **Sem viagem hoje:** "Nenhuma viagem hoje" e "Próxima: Sex, 20 de nov, Jacarezinho → Ourinhos" (ou "Nenhuma viagem marcada.").
 2. **Passageiros confirmados:** "3 de 6", barra verde, selos "3 confirmados" / "2 sem resposta" / "1 não vão". Conta todos os passageiros do destino de hoje. **Sem passageiros:** "Nenhum passageiro ainda — Toque para convidar pelo código de convite." (toque abre o destino). Some quando não há viagem hoje.
-3. **Valores a receber** (toque abre o Financeiro): "R$ 1.811,00", "Total a receber" e três contagens: Pagos 9 · Pendentes 6 · Devendo 6. São os números do mês (ver seção 5).
+3. **Valores a receber** (toque abre o Financeiro): "R$ 1.811,00", "Total a receber" e três contagens: Pagos 9 · Pendentes 6 · Devendo 6. São os números do mês (ver seção 5). **Atualizado em 16/11:** hoje é "R$ 1.661,00" e Pagos 9 · Pendentes 9 · Devendo 2 (Por viagem e Diário passaram a vencer 7 dias depois; ver seção 5).
 4. Botão amarelo **Novo destino**.
 
-Limites de hoje: o Início **não acompanha a viagem** (depois de encerrada, continua "Às 06:40" e "3 de 6"); e com duas viagens no dia mostra a escolhida na aba Viagem, que começa sendo a das 06:40 (Cambará), não a das 06:00.
+Limites de hoje: o Início **não acompanha a viagem** (depois de encerrada, continua "Às 06:40" e "3 de 6"); e com duas viagens no dia mostra a escolhida na aba Viagem, que começa sendo a das 06:40 (Cambará), não a das 06:00. **Atualizado em 16/11:** os dois limites foram corrigidos (Etapas E e G).
 
 ### 2.2 Destinos — lista (`/vanzeiro/destinos`)
 Botão **Novo destino** no cabeçalho. Lista rolável de cartões: tipo (Rota fixa / Viagem avulsa), nome "Origem → Destino", "dias · saída HH:MM", selo **Ativo** (verde) ou **Pausado** (cinza, cartão esmaecido), e "N passageiros". Toque abre o detalhe. Destino novo entra no topo.
@@ -90,28 +92,28 @@ Botão **Novo destino** no cabeçalho. Lista rolável de cartões: tipo (Rota fi
 ### 2.3 Novo destino e Editar destino (`/vanzeiro/destinos/novo`, `/vanzeiro/destinos/editar/ID`)
 Formulário em passos ("Passo X de 3" + Resumo), com Voltar e Continuar/Salvar fixos embaixo. Continuar só liga quando o passo está completo.
 - **Passo 1 — "De onde sai e para onde vai?":** De onde sai?, Para onde vai?, tipo (Rota fixa "Repete toda semana" / Viagem avulsa "Uma data só").
-- **Passo 2 — "Quando e em que horário?":** dias da semana (rota fixa) ou data (avulsa); "Tem volta?" Sim/Não; Saída da ida e Horário da volta (lado a lado quando tem volta); **Confirmar até:** 30 min antes / 1 h antes (padrão) / 2 h antes / Noite anterior, 20h.
+- **Passo 2 — "Quando e em que horário?":** dias da semana (rota fixa) ou data (avulsa); "Tem volta?" Sim/Não; **Atualizado em 16/11:** "Tem volta?" é Sim/Não na rota fixa e Não / Mesmo dia / Outro dia (com a data da volta) na avulsa; a data da avulsa não aceita dia que já passou ("Essa data já passou."). Saída da ida e Horário da volta (lado a lado quando tem volta); **Confirmar até:** 30 min antes / 1 h antes (padrão) / 2 h antes / Noite anterior, 20h.
 - **Passo 3 — "Por onde a van passa?":** o caminho desenhado (Saída, Paradas, Chegada) com Subir, Descer e Remover em cada parada, e o campo "Nova parada" + Adicionar.
 - **Resumo — "Confira antes de salvar":** tipo, nome, Dias/Data, Ida, Volta, Confirmar até, caminho. Botão **Salvar destino**.
-- Ao salvar um destino novo: nasce **Ativo**, com um **código VAN-NNNN sorteado** (hoje pode repetir, ver 7.11). Editar mantém o código e o estado. Voltar no passo 1 sai sem salvar, sem perguntar.
+- Ao salvar um destino novo: nasce **Ativo**, com um **código VAN-NNNN sorteado** (hoje pode repetir, ver 7.11). **Atualizado em 16/11:** o código nunca se repete (Etapa C); ao salvar, o mapa procura as cidades que ainda não conhece (P3). Editar mantém o código e o estado. Voltar no passo 1 sai sem salvar, sem perguntar.
 
 ### 2.4 Detalhe do destino (`/vanzeiro/destinos/ID`)
 Cabeçalho com o nome e o botão "Todos os destinos". Rola a tela inteira, com o cabeçalho junto. Cartões, em ordem:
 1. **Como funciona:** selo Ativo/Pausado, Tipo, Dias (ou Data), Saída da ida, Volta, Confirmar até.
 2. **Caminho:** Saída → Paradas → Chegada.
 3. **Código de convite:** o código grande, **Copiar** (vira "Copiado" por 2 s), "Envie para quem quer entrar nesta rota." e **Enviar pelo WhatsApp** (abre o WhatsApp com a mensagem "Oi! Para entrar na minha van (Origem → Destino), abra o app O Vanzeiro e use o código VAN-NNNN.").
-4. **Pedidos para entrar** (só aparece se houver): borda amarela, contador, cada pedido com nome, telefone, **Aceitar** (abre o cadastro de passageiro já com nome e telefone) e **Recusar** (o pedido some na hora, sem perguntar).
-5. **Passageiros deste destino:** "N passageiros" ou "Nenhum passageiro ainda."; lista com inicial, nome, "cidade · endereço", "Plano · R$ valor"; botão **Adicionar passageiro**.
-6. **Editar** e **Pausar / Ativar** (troca na hora, sem confirmação). Pausado: some das viagens do dia e do Início; passageiros e cobranças continuam.
+4. **Pedidos para entrar** (só aparece se houver): borda amarela, contador, cada pedido com nome, telefone, **Aceitar** (abre o cadastro de passageiro já com nome e telefone) e **Recusar** (o pedido some na hora, sem perguntar). **Atualizado em 16/11:** Aceitar abre o cadastro já com nome, telefone, cidade, endereço e ponto no mapa preenchidos pelo passageiro (seção 13); Recusar pergunta antes e a pessoa recebe aviso.
+5. **Passageiros deste destino:** "N passageiros" ou "Nenhum passageiro ainda."; lista com inicial, nome, "cidade · endereço", "Plano · R$ valor"; botão **Adicionar passageiro**. **Atualizado em 16/11:** no lugar da inicial aparece o número da ordem fixa da busca; sem setas: segurar e arrastar muda a ordem dentro da cidade (seções 14 e 15).
+6. **Editar** e **Pausar / Ativar** (troca na hora, sem confirmação). **Atualizado em 16/11:** Pausar pede confirmação e não deixa pausar com a viagem do destino em andamento (Etapa G). Pausado: some das viagens do dia e do Início; passageiros e cobranças continuam.
 7. **Excluir destino** (vermelho, embaixo): pergunta antes, dizendo quantos passageiros saem, quantos pedidos são recusados, quantas cobranças pendentes são canceladas e quantas que estão devendo continuam a receber, e que não dá para desfazer. Ao excluir: some o destino, seus passageiros e pedidos; as pendentes viram "Cancelada — Destino excluído"; devendo, pagas e canceladas ficam; volta para a lista. Com a viagem de hoje daquele destino em andamento: "Termine a viagem antes de excluir." (decisão 6)
 
 ### 2.5 Novo passageiro e Editar passageiro (`.../passageiros/novo`, `.../passageiros/ID/editar`)
 Mesmos passos do destino.
 - **Passo 1 — "Nome e WhatsApp.":** no cadastro novo, dois botões: **Passageiro novo** ou **Já é meu passageiro** (abre uma lista com as pessoas que estão em outros destinos; nome e telefone vêm travados). Nome do passageiro; Telefone (WhatsApp) "Com DDD" (10 ou 11 números). Vindo de um pedido, nome e telefone já vêm preenchidos.
-- **Passo 2 — "Onde a pessoa embarca?":** a cidade, escolhida entre os pontos do caminho do destino (origem, paradas e destino), e o endereço ou ponto de embarque.
+- **Passo 2 — "Onde a pessoa embarca?":** a cidade, escolhida entre os pontos do caminho do destino (origem, paradas e destino), e o endereço ou ponto de embarque. **Atualizado em 16/11:** vindo de um pedido, cidade e endereço vêm do passageiro e não mudam ("Preenchido pelo passageiro"); se o vanzeiro muda a cidade de quem tem ponto no mapa, o ponto é apagado, com aviso.
 - **Passo 3 — "Como a pessoa paga?":** plano (Por viagem "Ida + volta: 1 cobrança, mesmo noutro dia." / Diário "1 cobrança por dia que embarcou." / Quinzenal "A cada 15 dias" / Mensal "Uma vez por mês"); valor (aceita vírgula); Dia do vencimento (1 a 31, só quinzenal e mensal); **Descontar faltas?** Não (padrão) / Sim, com a frase "Só desconta quem avisar 'Não vou' dentro do prazo." e, no Sim, "Valor de cada falta".
 - **Resumo:** destino, nome, telefone, Embarca em, Plano, Vencimento, "Desconta faltas: R$ X por falta" ou "Não desconta faltas". Botão **Salvar passageiro**.
-- Ao salvar: mensal e quinzenal ganham na hora a **próxima cobrança** (o primeiro vencimento de hoje em diante). Vindo de um pedido, o pedido sai da lista e a pessoa passa a ver o painel dela. A mesma pessoa não entra duas vezes no mesmo destino (o app simplesmente não salva, sem avisar). Editar e **mudar o plano** cria a próxima cobrança do plano novo; as antigas ficam como estão.
+- Ao salvar: mensal e quinzenal ganham na hora a **próxima cobrança** (o primeiro vencimento de hoje em diante). Vindo de um pedido, o pedido sai da lista e a pessoa passa a ver o painel dela. A mesma pessoa não entra duas vezes no mesmo destino (o app simplesmente não salva, sem avisar). **Atualizado em 16/11:** o mesmo telefone no mesmo destino mostra "Já tem um passageiro com este telefone neste destino."; valor zero não passa; o resumo avisa quando o destino passa do número de lugares da van. Editar e **mudar o plano** cria a próxima cobrança do plano novo; as antigas ficam como estão.
 
 ### 2.6 Detalhe do passageiro (`.../passageiros/ID`)
 Cabeçalho com o nome e o botão com o nome do destino (volta). Rola a tela inteira.
@@ -122,71 +124,71 @@ Cabeçalho com o nome e o botão com o nome do destino (volta). Rola a tela inte
 5. **Chamar no WhatsApp**, **Editar**, **Remover deste destino** (pergunta "Remover Fulano? A pessoa sai da lista de passageiros de Origem → Destino." Cancelar/Remover). Ao remover, **as cobranças ficam** (continuam no Financeiro e no "A receber"; ver 7.2).
 
 ### 2.7 Pedidos para entrar (`/vanzeiro/pedidos`)
-Abre pelo sininho. Lista todos os pedidos de todos os destinos: nome, telefone, "Quer entrar em Origem → Destino", **Aceitar** / **Recusar**. Vazio: "Nenhum pedido novo — Quando alguém usar o seu código de convite, aparece aqui." + **Ver destinos**.
+Abre pelo sininho. Lista todos os pedidos de todos os destinos: nome, telefone, "Quer entrar em Origem → Destino", **Aceitar** / **Recusar**. Vazio: "Nenhum pedido novo — Quando alguém usar o seu código de convite, aparece aqui." + **Ver destinos**. **Atualizado em 16/11:** esta tela saiu; o sininho abre **Notificações** (`/vanzeiro/notificacoes`) com três partes: Pedidos para entrar, Mudanças de endereço (Aceitar / Recusar com confirmação) e Avisos (resposta de passageiro, cobrança vencida).
 
 ### 2.8 Viagem (`/vanzeiro/viagem`)
 A tela de dentro da van. Uma viagem de cada vez. Subtítulo "Hoje, sex, 13 de nov".
 
-**Antes de sair:** se há mais de uma viagem hoje, dois botões no alto para escolher (06:00 Jacarezinho → Londrina / 06:40 Cambará → UENP), com o selo "Feita" na que já acabou. Cartão "Viagem de hoje" com "Saída · volta" e o selo verde "N vão". Depois, três listas: **Quem vai · na ordem da busca** (numerada; a ordem é a das cidades no caminho; dentro da mesma cidade, a ordem em que foram cadastrados), **Sem resposta** e **Não vão**. Botão **Iniciar viagem** (apagado se ninguém vai). Sem passageiros no destino: "Este destino ainda não tem passageiros." + **Convidar passageiros**. Sem viagem hoje: "Nenhuma viagem hoje — Próxima: Sáb, 28 de nov" + **Ver destinos**.
+**Antes de sair:** se há mais de uma viagem hoje, dois botões no alto para escolher (06:00 Jacarezinho → Londrina / 06:40 Cambará → UENP), com o selo "Feita" na que já acabou. Cartão "Viagem de hoje" com "Saída · volta" e o selo verde "N vão". **Atualizado em 16/11:** o selo mostra "N de M lugares" (verde com lugar, âmbar lotada, vermelho se passou). Depois, três listas: **Quem vai · na ordem da busca** (numerada; a ordem é a das cidades no caminho; dentro da mesma cidade, a ordem em que foram cadastrados), **Sem resposta** e **Não vão**. **Atualizado em 16/11:** a lista se chama "Quem vai · na ordem de hoje" e, dentro da cidade, segue a ordem fixa do destino (a que o vanzeiro arrasta). Botão **Iniciar viagem** (apagado se ninguém vai). Sem passageiros no destino: "Este destino ainda não tem passageiros." + **Convidar passageiros**. Sem viagem hoje: "Nenhuma viagem hoje — Próxima: Sáb, 28 de nov" + **Ver destinos**.
 
 **Ao tocar Iniciar viagem:** as respostas daquela viagem **fecham** (ninguém mais muda "Vou"/"Não vou"), quem disse "Não vou" no prazo tem a **falta registrada** (vale desconto se o plano desconta), e a lista "Quem vai" vira a ordem da busca. Quem não respondeu **não entra**.
 
 **Fases, uma tela por momento** (o título do cabeçalho muda):
-1. **Buscando passageiros:** "X de Y embarcados" com barra (e "N faltou" em vermelho); cartão "Próximo passageiro" (nome, endereço, cidade, "1º de 3", **Abrir no mapa** — abre o Google Maps com o endereço e a cidade); botões **Embarcou** (verde) e **Não estava no ponto** (vermelho); embaixo, **Fazer parada**. Quando todos foram tratados: "Todos buscados — seguir para o destino" e o botão **Cheguei ao destino**.
+1. **Buscando passageiros:** "X de Y embarcados" com barra (e "N faltou" em vermelho); cartão "Próximo passageiro" (nome, endereço, cidade, "1º de 3", **Abrir no mapa** — abre o Google Maps com o endereço e a cidade); **Atualizado em 16/11:** Abrir no mapa usa o ponto marcado pelo passageiro, quando existe. botões **Embarcou** (verde) e **Não estava no ponto** (vermelho); embaixo, **Fazer parada**. Quando todos foram tratados: "Todos buscados — seguir para o destino" e o botão **Cheguei ao destino**.
 2. **Parada:** "Parada em andamento — Antes de seguir, você confere quem está na van." e **Retomar viagem**. Se ninguém está a bordo, retomar volta direto para a busca.
 3. **Conferência:** "X de Y conferidos"; um cartão por pessoa a bordo (vermelho = "Falta conferir", verde = "Na van", apagado = "Ficou aqui"), cada um com **Está na van** e **Ficou aqui**; embaixo da pessoa, "Confirmou pelo celular" ou "Conferido pelo vanzeiro". **Seguir viagem** só liga com todos conferidos ("Confira todos para seguir."). Quem "ficou" sai das próximas conferências e da volta.
 4. **Chegou ao destino:** resumo da ida (Embarcaram X de Y; Não estavam no ponto, com os nomes; Paradas) e **Iniciar volta** (ou **Encerrar viagem**, se o destino não tem volta).
 5. **Conferência da volta:** quem embarcou na ida e não ficou pelo caminho; mesmos botões. Se ninguém fica "Na van", a viagem encerra.
 6. **Levando de volta:** "X de Y deixados em casa"; "Próxima descida" na **ordem inversa** da busca, com Abrir no mapa; botão **Desceu**; **Fazer parada** (com conferência igual).
-7. **Viagem encerrada:** resumo (Ida; Volta "Levados para casa" e Paradas; "Ficaram (desceram de propósito)" com nomes) e **Voltar ao início**. A viagem fica marcada como "Feita" e não pode ser refeita nem desfeita. Não existe histórico de viagens (item 8).
+7. **Viagem encerrada:** resumo (Ida; Volta "Levados para casa" e Paradas; "Ficaram (desceram de propósito)" com nomes) e **Voltar ao início**. A viagem fica marcada como "Feita" e não pode ser refeita nem desfeita. Não existe histórico de viagens (item 8). **Atualizado em 16/11:** existe o histórico **Viagens feitas** (no cabeçalho da aba Viagem), com nome e horários do dia de cada viagem.
 
 Durante a viagem, trocar de aba e voltar não perde nada. Não há como **desfazer** um toque errado (Embarcou / Não estava).
 
 **O que a viagem manda para o Financeiro:** "Embarcou" cria a cobrança do dia para Por viagem e Diário (uma só por viagem/dia); "Não vou" no prazo, ao iniciar, soma uma falta na próxima cobrança em aberto de quem tem desconto. "Não estava no ponto" e "sem resposta" **não mexem** em dinheiro.
 
 ### 2.9 Financeiro (`/vanzeiro/financeiro`)
-Subtítulo "Resumo de novembro." Três cartões fixos: **A receber** R$ 1.811,00 · **Recebido** R$ 663,00 · **Devendo** R$ 631,00. Filtros **Todas / Pendentes / Devendo / Pagas**. Lista rolável, do vencimento mais novo para o mais velho: nome, destino, referência ("Mensalidade de novembro", "Quinzena de 15/11 a 29/11", "Diária de 12/11", "Viagem de 08/11"), valor, selo da situação, e a linha da data ("Vence em 20/11", "Vence hoje", "Venceu em 05/11", "Vencimento 10/11 · Pago em 10/11 · Pix", "Vencimento 07/11 · Cancelada em 08/11"). Cobrança cancelada aparece esmaecida e riscada. Vazios: "Nenhuma cobrança ainda. — O app cria as cobranças sozinho, pelo plano de cada passageiro." + **Ver destinos**; filtros vazios ("Nenhuma cobrança pendente.", "Ninguém devendo. Muito bem!", "Nenhuma cobrança paga ainda.") + **Ver todas**.
+Subtítulo "Resumo de novembro." Três cartões fixos: **A receber** R$ 1.811,00 · **Recebido** R$ 663,00 · **Devendo** R$ 631,00. **Atualizado em 16/11:** hoje A receber R$ 1.661,00 · Recebido R$ 663,00 · Devendo R$ 530,00. Filtros **Todas / Pendentes / Devendo / Pagas**. Lista rolável, do vencimento mais novo para o mais velho: nome, destino, referência ("Mensalidade de novembro", "Quinzena de 15/11 a 29/11", "Diária de 12/11", "Viagem de 08/11"), valor, selo da situação, e a linha da data ("Vence em 20/11", "Vence hoje", "Venceu em 05/11", "Vencimento 10/11 · Pago em 10/11 · Pix", "Vencimento 07/11 · Cancelada em 08/11"). Cobrança cancelada aparece esmaecida e riscada. Vazios: "Nenhuma cobrança ainda. — O app cria as cobranças sozinho, pelo plano de cada passageiro." + **Ver destinos**; filtros vazios ("Nenhuma cobrança pendente.", "Ninguém devendo. Muito bem!", "Nenhuma cobrança paga ainda.") + **Ver todas**.
 
 ### 2.10 Cobrança (`/vanzeiro/financeiro/ID`)
 Cabeçalho com a referência e **Voltar**. Valor grande (riscado se cancelada), selo, Passageiro, Destino, Vencimento, "Pago em DD/MM · forma" (fundo verde) ou "Cancelada em DD/MM — Motivo: ...". Cartão **Desconto de faltas** quando a cobrança tem período de faltas: "Mensalidade R$ 280,00 / 2 faltas × R$ 15,00 − R$ 30,00 / Total R$ 250,00", a frase da conta e "Faltas contadas de 11/10 a 10/11." (ou "Nenhuma falta neste período."). Só em cobrança pendente ou devendo: **Marcar como pago** (pergunta "Como foi pago?" Dinheiro / Pix → **Confirmar pagamento**; a data do pagamento é hoje), **Cobrar no WhatsApp** (mensagem pronta com valor e vencimento, dizendo "que venceu" se já venceu) e **Cancelar cobrança** (pede o motivo, obrigatório, até 60 letras; o botão de desistir se chama "Voltar" para não confundir). Paga ou cancelada: só leitura.
 
 ### 2.11 Perfil (`/vanzeiro/perfil`)
-**Você:** Nome, Telefone, "Chave Pix (os passageiros veem esta)". **Sua van:** modelo e "Placa X". Conta nova mostra "Não informado". **Editar:** nome, telefone, chave Pix, modelo e placa, todos obrigatórios, Cancelar/Salvar; o nome novo vai para o cabeçalho e o Pix novo para o passageiro. **Trocar para passageiro**, **Termos de Uso**, **Política de Privacidade**, **Sair** (pergunta "Quer mesmo sair? Você volta para a tela Entrar."). Não existe "Excluir minha conta" (item 6). Rola um pouco (o "Sair" fica cortado num celular comum).
+**Você:** Nome, Telefone, "Chave Pix (os passageiros veem esta)". **Sua van:** modelo e "Placa X". Conta nova mostra "Não informado". **Editar:** nome, telefone, chave Pix, modelo e placa, todos obrigatórios, Cancelar/Salvar; **Atualizado em 16/11:** só nome e telefone são obrigatórios; Editar ganhou "Lugares para passageiros"; o Perfil ganhou o cartão "Notificações no celular". o nome novo vai para o cabeçalho e o Pix novo para o passageiro. **Trocar para passageiro**, **Termos de Uso**, **Política de Privacidade**, **Sair** (pergunta "Quer mesmo sair? Você volta para a tela Entrar."). Não existe "Excluir minha conta" (item 6). Rola um pouco (o "Sair" fica cortado num celular comum). **Atualizado em 16/11:** "Excluir minha conta" existe.
 
 ---
 
 ## 3. O painel do passageiro
 
-**Cabeçalho:** inicial, saudação, primeiro nome, título, subtítulo e o **sininho com uma bolinha amarela sempre acesa, que não faz nada** (os avisos são o item 7).
+**Cabeçalho:** inicial, saudação, primeiro nome, título, subtítulo e o **sininho com uma bolinha amarela sempre acesa, que não faz nada** (os avisos são o item 7). **Atualizado em 16/11:** o sininho mostra o número de avisos não lidos e abre Notificações (prazo chegando, van saiu, cobrança vencendo, pedido aceito ou não aceito, endereço aceito ou não aceito).
 
 **Barra de baixo:** Início · Viagens · Pagamentos · Perfil. Só aparece quando a pessoa está em alguma van.
 
 ### 3.1 Entrar na van (quem ainda não está em nenhuma van)
-- **Código:** "Digite o código de convite da sua van.", campo grande (aceita "VAN-4821", "van 4821" ou só "4821"), **Procurar van**. Errado: "Código não encontrado". Embaixo, no primeiro uso, "Onde consigo o código? — Peça ao seu vanzeiro. Ele envia o código pelo WhatsApp." Link **Sair** (sai direto para Entrar, sem perguntar).
-- **Van encontrada:** cartão com o vanzeiro, o destino, dias e saída; Seu nome; Seu WhatsApp; **Pedir para entrar**; **Usar outro código**.
+- **Código:** "Digite o código de convite da sua van.", campo grande (aceita "VAN-4821", "van 4821" ou só "4821"), **Procurar van**. Errado: "Código não encontrado". Embaixo, no primeiro uso, "Onde consigo o código? — Peça ao seu vanzeiro. Ele envia o código pelo WhatsApp." Link **Sair** (sai direto para Entrar, sem perguntar). **Atualizado em 16/11:** Sair pergunta antes. Quem saiu do último destino e ainda deve vê o cartão "Em aberto" e a barra Início / Pagamentos (A3).
+- **Van encontrada:** cartão com o vanzeiro, o destino, dias e saída; Seu nome; Seu WhatsApp; **Pedir para entrar**; **Usar outro código**. **Atualizado em 16/11:** o pedido tem 2 passos: dados (nome, WhatsApp) e "Onde você embarca" (cidade, endereço e ponto no mapa, obrigatório quando o mapa conhece o destino) (seção 13).
 - **Aguardando o vanzeiro aceitar:** "Assim que ele aceitar, o seu painel abre aqui." e o cartão da van. Quando o vanzeiro aceita, o painel abre sozinho.
 - **O vanzeiro não aceitou o pedido:** "Fale com ele ou tente outro código." + **Tentar outro código**.
 
 ### 3.2 Início (`/passageiro`)
 Três cartões. Não rola num celular comum.
-1. **Próxima viagem** (destino, "Hoje, 13 de nov · saída 06:00", selo Vou / Não vou / Confirmar): a linha do prazo muda com a situação — "Confirme até 05:40" (âmbar, sem resposta e prazo aberto), "Dá para mudar até 05:40" (já respondeu), "Prazo encerrado. Você respondeu: Vou", "Prazo encerrado — a van não vai passar" (vermelho, sem resposta), "A viagem já começou."; botões **Vou** / **Não vou** enquanto o prazo está aberto; **Falar com o vanzeiro** (WhatsApp) quando perdeu o prazo. **Qual viagem aparece:** a primeira dos próximos 7 dias, por data e horário. Por isso a Juliana vê Londrina (06:00, prazo fechado, "a van não vai passar") e não Cambará (06:40, que ainda dá para confirmar) — ela só acha essa na aba Viagens. **Durante uma conferência**, este cartão dá lugar ao aviso "Conferência da van — você está na van?" com **Estou na van**, e depois "Confirmado — boa viagem!".
-2. **Situação da van** (placa no selo; verde, ou vermelho quando é alerta) com a barra "Saiu da garagem / A caminho / No seu ponto". Textos possíveis: "Aguardando o dia da viagem — Próxima viagem: ...", "Aguardando a saída — A van sai às 06:40", "Você não vai hoje — O vanzeiro já sabe", "A van não vai passar — Você não confirmou a tempo", "Viagem começou — Faltam 2 pessoas antes de você", "Você é o próximo — Fique pronto no seu ponto", "Na van — Boa viagem!", "Você não estava no ponto — A van passou e seguiu viagem", "Viagem encerrada — Até a próxima!". Tudo segue a aba Viagem do vanzeiro, na hora.
+1. **Próxima viagem** (destino, "Hoje, 13 de nov · saída 06:00", selo Vou / Não vou / Confirmar): a linha do prazo muda com a situação — "Confirme até 05:40" (âmbar, sem resposta e prazo aberto), "Dá para mudar até 05:40" (já respondeu), "Prazo encerrado. Você respondeu: Vou", "Prazo encerrado — a van não vai passar" (vermelho, sem resposta), "A viagem já começou."; botões **Vou** / **Não vou** enquanto o prazo está aberto; **Falar com o vanzeiro** (WhatsApp) quando perdeu o prazo. **Qual viagem aparece:** a primeira dos próximos 7 dias, por data e horário. Por isso a Juliana vê Londrina (06:00, prazo fechado, "a van não vai passar") e não Cambará (06:40, que ainda dá para confirmar) — ela só acha essa na aba Viagens. **Atualizado em 16/11:** aparece a primeira viagem que ainda dá para responder, está em andamento ou tem "Vou"; por isso a Juliana vê Cambará (06:40). Com a van lotada, o "Vou" vira "Van lotada" (apagado). **Durante uma conferência**, este cartão dá lugar ao aviso "Conferência da van — você está na van?" com **Estou na van**, e depois "Confirmado — boa viagem!".
+2. **Situação da van** (placa no selo; verde, ou vermelho quando é alerta) com a barra "Saiu da garagem / A caminho / No seu ponto". **Atualizado em 16/11:** a barra é "Saiu da garagem / A caminho / Na van"; o detalhe termina com "· Ver no mapa", que abre "Onde está a van" (seção 12). Textos possíveis: "Aguardando o dia da viagem — Próxima viagem: ...", "Aguardando a saída — A van sai às 06:40", "Você não vai hoje — O vanzeiro já sabe", "A van não vai passar — Você não confirmou a tempo", "Viagem começou — Faltam 2 pessoas antes de você", "Você é o próximo — Fique pronto no seu ponto", "Na van — Boa viagem!", "Você não estava no ponto — A van passou e seguiu viagem", "Viagem encerrada — Até a próxima!". Tudo segue a aba Viagem do vanzeiro, na hora.
 3. **Valor em aberto:** soma de tudo o que não está pago, em todos os destinos; embaixo, a cobrança mais próxima de vencer ("Mensalidade de novembro · vence em 20/11") e o selo dela; "Tudo pago. Obrigado!" quando é zero.
 
 ### 3.3 Viagens (`/passageiro/viagens`)
 **Próximos 7 dias:** um cartão por viagem de cada destino (dia, destino, saída, selo, linha do prazo, Vou/Não vou enquanto aberto). Vazio: "Nenhuma viagem nos próximos 7 dias. A próxima é sáb, 28 de nov." e, se o histórico também está vazio, **Falar com o vanzeiro**. **Histórico:** os últimos 14 dias e hoje (quando a viagem já tem o resultado da pessoa), cada dia com **Embarcou** (verde) ou **Faltou** (vermelho). Por viagem e Diário mostram só os dias em que embarcaram; mensal e quinzenal mostram todos os dias de viagem como "Embarcou", menos os dias de falta. Vazio: "Suas viagens feitas aparecem aqui."
 
 ### 3.4 Pagamentos (`/passageiro/pagamentos`)
-Cartão **Você deve** (soma; "Soma das cobranças ainda não pagas." ou "Tudo pago. Obrigado!") e a lista de todas as cobranças da pessoa, de todos os destinos (destino, referência, valor, selo, data e, quando há desconto, a conta). Vazio: "Nenhuma cobrança ainda. — Quando houver, ela aparece aqui." + **Falar com o vanzeiro**.
+Cartão **Você deve** (soma; "Soma das cobranças ainda não pagas." ou "Tudo pago. Obrigado!") **Atualizado em 16/11:** o cartão se chama "Em aberto". e a lista de todas as cobranças da pessoa, de todos os destinos (destino, referência, valor, selo, data e, quando há desconto, a conta). Vazio: "Nenhuma cobrança ainda. — Quando houver, ela aparece aqui." + **Falar com o vanzeiro**.
 
 ### 3.5 Minha cobrança (`/passageiro/pagamentos/ID`)
-Igual à do vanzeiro, sem o nome e sem as ações dele. Em cobrança pendente ou devendo: **Pagar com Pix** (mostra "Chave Pix de Carlos Pereira", com **Copiar**), **Já paguei — avisar o vanzeiro** (WhatsApp com a mensagem "Já paguei a mensalidade de novembro da van, no valor de R$ 280,00. Pode conferir e marcar como pago?") e o aviso "Quem marca como pago é o vanzeiro, depois de conferir." A pessoa só abre as próprias cobranças.
+Igual à do vanzeiro, sem o nome e sem as ações dele. Em cobrança pendente ou devendo: **Pagar com Pix** (mostra "Chave Pix de Carlos Pereira", com **Copiar**), **Atualizado em 16/11:** o Pix é sempre o do vanzeiro daquela cobrança (Q1). **Já paguei — avisar o vanzeiro** (WhatsApp com a mensagem "Já paguei a mensalidade de novembro da van, no valor de R$ 280,00. Pode conferir e marcar como pago?") e o aviso "Quem marca como pago é o vanzeiro, depois de conferir." A pessoa só abre as próprias cobranças.
 
 ### 3.6 Perfil (`/passageiro/perfil`)
-**Você:** Nome, Telefone e, para cada destino, "Destino" e "Onde embarca". **Seu vanzeiro:** nome, van, **Chamar no WhatsApp**. **Editar** (nome, telefone, um "Onde embarca" por destino; cidade, plano e valor não mudam; Cancelar/Salvar). **Entrar em outro destino**. **Trocar para vanzeiro**, Termos, Política, **Sair** (com confirmação). Rola a tela inteira. Embaixo de cada destino, **Sair deste destino** (vermelho): pergunta antes ("Você deixa de ver as viagens deste destino", quantas pendentes são canceladas, quantas que estão devendo continuam nos Pagamentos, "Para voltar, peça um código novo ao vanzeiro"). Ao sair: as pendentes dali viram "Cancelada — Saiu do destino"; as devendo continuam e aparecem nos Pagamentos; se era o único destino, o painel volta para "Entrar na van". Com a viagem de hoje daquele destino já começada, não deixa sair. Não existe "Excluir minha conta" (item 6).
+**Você:** Nome, Telefone e, para cada destino, "Destino" e "Onde embarca". **Seu vanzeiro:** nome, van, **Chamar no WhatsApp**. **Editar** (nome, telefone, um "Onde embarca" por destino; cidade, plano e valor não mudam; Cancelar/Salvar). **Atualizado em 16/11:** Editar ficou só com nome e telefone; cada destino tem "Mudar onde embarco" (até 1 km muda na hora; mais longe, o vanzeiro aprova); o Perfil ganhou "Notificações no celular". **Entrar em outro destino**. **Trocar para vanzeiro**, Termos, Política, **Sair** (com confirmação). Rola a tela inteira. Embaixo de cada destino, **Sair deste destino** (vermelho): pergunta antes ("Você deixa de ver as viagens deste destino", quantas pendentes são canceladas, quantas que estão devendo continuam nos Pagamentos, "Para voltar, peça um código novo ao vanzeiro"). Ao sair: as pendentes dali viram "Cancelada — Saiu do destino"; as devendo continuam e aparecem nos Pagamentos; se era o único destino, o painel volta para "Entrar na van". Com a viagem de hoje daquele destino já começada, não deixa sair. Não existe "Excluir minha conta" (item 6). **Atualizado em 16/11:** "Excluir minha conta" existe; quem sai do último destino e ainda deve continua vendo os Pagamentos (A3).
 
 ### 3.7 Entrar em outro destino (`/passageiro/entrar-destino`)
-Mesma tela do código, com "Voltar ao perfil". Avisa "Você já está neste destino." quando é o caso. Depois de pedir, mostra "Aguardando o vanzeiro aceitar" ali mesmo. Se o vanzeiro recusa, **não há aviso**: a tela volta ao campo do código. Para uma pessoa que **entrou por conta nova e pedido** (não a Juliana dos exemplos), pedir um segundo destino **quebra o painel**: a pessoa cai em "Entrar na van / Aguardando" sem a barra de baixo, como se não estivesse em van nenhuma (confirmado no app).
+Mesma tela do código, com "Voltar ao perfil". Avisa "Você já está neste destino." quando é o caso. Depois de pedir, mostra "Aguardando o vanzeiro aceitar" ali mesmo. Se o vanzeiro recusa, **não há aviso**: a tela volta ao campo do código. Para uma pessoa que **entrou por conta nova e pedido** (não a Juliana dos exemplos), pedir um segundo destino **quebra o painel**: a pessoa cai em "Entrar na van / Aguardando" sem a barra de baixo, como se não estivesse em van nenhuma (confirmado no app). **Atualizado em 16/11:** recusar avisa a pessoa no sininho, e o painel não quebra mais ao pedir um segundo destino (corrigido e testado).
 
 ---
 
@@ -204,7 +206,7 @@ Legenda: **Certa** = funciona como a regra diz. **Diferente** = funciona, mas n�
 | Regra | Situação | O que foi visto |
 | --- | --- | --- |
 | Rota fixa (dias) ou avulsa (data); ida, volta opcional, paradas em ordem | **Certa** | Passos 1 a 3 do destino. |
-| Cada destino tem um código de convite | **Certa, com ressalva** | "VAN-" + 4 números sorteados. **Pode repetir** entre destinos (ver 7.11; é o item 5 da Etapa C). |
+| Cada destino tem um código de convite | **Certa, com ressalva** | "VAN-" + 4 números sorteados. **Pode repetir** entre destinos (ver 7.11; é o item 5 da Etapa C). **Atualizado em 16/11:** o código nunca se repete (Etapa C). |
 | Prazo "Confirmar até", padrão 1 hora antes | **Certa** | 30 min / 1 h / 2 h / noite anterior às 20h. Exemplo: saída 06:40 → prazo 05:40. |
 
 ### Passageiros
@@ -233,13 +235,13 @@ Legenda: **Certa** = funciona como a regra diz. **Diferente** = funciona, mas n�
 | Regra | Situação | O que foi visto |
 | --- | --- | --- |
 | Planos: Por viagem (ida e volta contam como uma), Diário, Quinzenal, Mensal | **Certa** | Por viagem: uma cobrança por viagem, mesmo que a volta seja noutro dia; duas viagens no mesmo dia cobram duas vezes. Diário: uma por dia, mesmo com duas viagens no dia. |
-| O app cria as cobranças sozinho | **Certa, com duas ressalvas** | (a) **Por viagem e Diário vencem no próprio dia do embarque**; no dia seguinte, sem pagar, já ficam "Devendo" (ver 7.8). (b) Hoje as cobranças futuras de mensal/quinzenal nascem só nos exemplos e ao salvar o passageiro; **não existe quem crie a do mês seguinte quando o tempo passar** (não há relógio). É assunto da Etapa C (ver 7.9). |
+| O app cria as cobranças sozinho | **Certa, com duas ressalvas** | (a) **Por viagem e Diário vencem no próprio dia do embarque**; no dia seguinte, sem pagar, já ficam "Devendo" (ver 7.8). (b) Hoje as cobranças futuras de mensal/quinzenal nascem só nos exemplos e ao salvar o passageiro; **não existe quem crie a do mês seguinte quando o tempo passar** (não há relógio). É assunto da Etapa C (ver 7.9). **Atualizado em 16/11:** Por viagem e Diário vencem 7 dias depois do embarque (decisão do dono, Etapa E). |
 | Quinzenal | **Diferente** | "A cada 15 dias" é contado a partir do dia do vencimento: Pedro (dia 15) vence em 15/10, 30/10, **14/11, 29/11, 14/12**... As datas vão andando; não é "dia 15 e dia 30". Ver 7.10. |
 | Mensal | **Certa** | Um vencimento por mês no dia escolhido (dia 31 vira o último dia do mês). O nome é o mês do vencimento: "Mensalidade de novembro" vence 10/11 e cobre as faltas de 11/10 a 10/11. Ver 7.3. |
 | Uma cobrança nunca é editada: só paga (Dinheiro/Pix) ou cancelada com motivo | **Certa** | Valor, nome e telefone ficam congelados na criação. |
 | O total que alguém deve é a soma das não pagas | **Certa** | Cancelada não conta. |
 | Desconto de faltas só em Mensal e Quinzenal, escolhido por passageiro | **Certa** | Por viagem e Diário nunca guardam desconto. |
-| Só desconta quem avisou "Não vou" dentro do prazo | **Certa, com ressalva** | A falta só é **registrada quando o vanzeiro toca "Iniciar viagem"**. Se naquele dia ele não iniciar a viagem no app, ninguém ganha desconto. Ver 7.7. O desconto entra na próxima cobrança ainda não vencida; cobrança vencida, paga ou cancelada nunca muda. |
+| Só desconta quem avisou "Não vou" dentro do prazo | **Certa, com ressalva** | A falta só é **registrada quando o vanzeiro toca "Iniciar viagem"**. Se naquele dia ele não iniciar a viagem no app, ninguém ganha desconto. Ver 7.7. O desconto entra na próxima cobrança ainda não vencida; cobrança vencida, paga ou cancelada nunca muda. **Atualizado em 16/11:** a falta passa a contar quando o prazo fecha, mesmo que a viagem não seja iniciada no app, e guarda quando a pessoa avisou (Q5). |
 | "A receber" inclui atrasados de meses anteriores | **Certa** | Soma pendentes e devendo do mês + qualquer devendo mais antiga. |
 | O passageiro paga direto e nunca marca como pago; só avisa pelo WhatsApp | **Certa** | "Pagar com Pix" só mostra a chave; "Já paguei — avisar o vanzeiro". |
 
@@ -268,10 +270,10 @@ Legenda: **Certa** = funciona como a regra diz. **Diferente** = funciona, mas n�
 
 | Número | Como é calculado | Onde aparece |
 | --- | --- | --- |
-| **A receber** (R$ 1.811,00) | Pendentes do mês (R$ 1.180) + Devendo (R$ 631). Devendo mais antigo entra mesmo de outro mês. Cancelada nunca conta. | Financeiro (cartão) e Início do vanzeiro ("Valores a receber"). |
+| **A receber** (R$ 1.811,00) | Pendentes do mês (R$ 1.180) + Devendo (R$ 631). Devendo mais antigo entra mesmo de outro mês. Cancelada nunca conta. | Financeiro (cartão) e Início do vanzeiro ("Valores a receber"). **Atualizado em 16/11:** hoje R$ 1.661,00 (Devendo R$ 530). |
 | **Recebido** (R$ 663,00) | Soma das pagas com vencimento neste mês. (Pagas em outubro não entram.) | Financeiro. |
-| **Devendo** (R$ 631,00) | Soma das vencidas e não pagas, de qualquer mês. | Financeiro. É também o nome do selo vermelho de cada cobrança. |
-| **Pagos 9 / Pendentes 6 / Devendo 6** | Contagem das cobranças do mês por situação (as mesmas regras acima). | Início do vanzeiro. **Não bate com o filtro "Pagas"** do Financeiro, que lista 19 (todas as pagas, de todos os meses). |
+| **Devendo** (R$ 631,00) | Soma das vencidas e não pagas, de qualquer mês. | Financeiro. É também o nome do selo vermelho de cada cobrança. **Atualizado em 16/11:** hoje R$ 530,00. |
+| **Pagos 9 / Pendentes 6 / Devendo 6** | Contagem das cobranças do mês por situação (as mesmas regras acima). | Início do vanzeiro. **Não bate com o filtro "Pagas"** do Financeiro, que lista 19 (todas as pagas, de todos os meses). **Atualizado em 16/11:** hoje Pagos 9 / Pendentes 9 / Devendo 2. |
 | **Deve no total** | Soma das não pagas daquela pessoa naquele destino (uma matrícula). | Detalhe do passageiro (vanzeiro). |
 | **Valor em aberto** / **Você deve** (R$ 460,00 para a Juliana) | Soma das não pagas da pessoa **em todos os destinos** (280 + 180). | Início e Pagamentos do passageiro. São o mesmo número com dois nomes; o vanzeiro vê a mesma coisa como "Deve no total", mas por destino. |
 | **Valor de uma cobrança com desconto** | Valor do plano − faltas × valor da falta, nunca abaixo de zero. Faltas: só "Não vou" no prazo, dentro do período (mensal: do dia seguinte ao vencimento anterior até o vencimento; quinzenal: os 15 dias), uma por dia. | Lista, detalhe e cartão "Desconto de faltas", nos dois painéis, com a mesma conta. |
@@ -280,7 +282,7 @@ Legenda: **Certa** = funciona como a regra diz. **Diferente** = funciona, mas n�
 | **Situação de uma cobrança** | Cancelada se tem cancelamento; Pago se tem pagamento; senão Devendo se o vencimento já passou, Pendente se não. "Vence hoje" ainda é Pendente. | Todos os selos. |
 | **Sininho do vanzeiro** | Número de pedidos para entrar. | Cabeçalho. |
 
-**Onde os números não batem (já apontados na revisão):** Início "9 Pagos" × Financeiro "Pagas" 19; "Boa noite" pelo relógio do celular enquanto o resto do app está em 05:10; Início mostrando a viagem das 06:40 enquanto a das 06:00 ainda não foi feita.
+**Onde os números não batem (já apontados na revisão):** Início "9 Pagos" × Financeiro "Pagas" 19; "Boa noite" pelo relógio do celular enquanto o resto do app está em 05:10; Início mostrando a viagem das 06:40 enquanto a das 06:00 ainda não foi feita. **Atualizado em 16/11:** estes pontos foram tratados nas Etapas D a G; a saudação continua pelo relógio do app (hoje 05:10).
 
 ---
 
@@ -303,6 +305,8 @@ Palavras que não são do Brasil ou são difíceis: "noutro dia" (plano Por viag
 ---
 
 ## 7. Decisões pendentes (para o dono do projeto responder)
+
+**Atualizado em 16/11:** todas as decisões desta seção foram respondidas pelo dono em 14/11 (lista "Respostas do dono do projeto", mais abaixo) e feitas nas Etapas E e seguintes. As decisões que ainda estão em aberto ficam na seção 17.2.
 
 As de 1 a 5 vêm da revisão (Etapa A). As outras apareceram nesta análise.
 
@@ -327,6 +331,8 @@ As de 1 a 5 vêm da revisão (Etapa A). As outras apareceram nesta análise.
 ---
 
 ## 8. O que o banco de dados vai precisar guardar (só a lista)
+
+**Atualizado em 16/11:** a lista completa e atual está em `docs/banco-de-dados.md` (inclui o que entrou depois: lugares da van, ponto no mapa, mudanças de endereço, cidades no mapa, celulares para notificar, dinheiro em centavos e horário de Brasília).
 
 Quando o dono do projeto mandar colocar o banco, é isto que ele precisa guardar. Nada disso é criado agora.
 
@@ -353,6 +359,8 @@ Quando o dono do projeto mandar colocar o banco, é isto que ele precisa guardar
 ---
 
 ## 9. Resumo do que falta no app (os próximos itens, em uma linha cada)
+
+**Atualizado em 16/11:** os itens 6, 7, 8 e 9, a Etapa C e a Etapa D desta lista estão feitos (ver `docs/contraprova.md`). O que falta hoje está na seção 17.
 
 - ~~**Etapa B, item 5:** Excluir destino e Sair de um destino.~~ Feito em 13/11/2026.
 - **Item 6:** Excluir minha conta nos dois perfis.
@@ -574,7 +582,7 @@ Nada quebrado no código. O que falta:
 
 ### 17.1 Eu faço (sem banco), uma etapa por vez
 - **R1. Termos de Uso atualizados (feito em 16/11/2026; falta a revisão do advogado):** faltam as regras que mexem com dinheiro e com o lugar na van — desconto de falta só para quem avisou "Não vou" no prazo; ao sair do destino, pendentes canceladas e devendo continua; van lotada (o lugar é de quem respondeu "Vou" primeiro); mudar onde embarca (até 1 km na hora, mais longe o vanzeiro aprova); cobrança nunca é editada (só paga ou cancelada).
-- **R2. Fonte da verdade e contraprova iguais ao app de hoje:** as seções do começo (13/11) ainda dizem, por exemplo, que o sininho do passageiro "não faz nada", que recusar pedido "não avisa" e que "não existe histórico de viagens"; a contraprova tem caixinhas velhas sem marcar de coisas já feitas.
+- **R2. Fonte da verdade e contraprova iguais ao app de hoje (feito em 16/11/2026: aviso "Como ler" no topo, trechos antigos marcados com "Atualizado em 16/11:", caixinhas velhas anotadas):** as seções do começo (13/11) ainda dizem, por exemplo, que o sininho do passageiro "não faz nada", que recusar pedido "não avisa" e que "não existe histórico de viagens"; a contraprova tem caixinhas velhas sem marcar de coisas já feitas.
 - **R3. Limpeza e bibliotecas:** tirar o que sobrou sem uso (função das setas ↑ ↓, dado de exemplo `viagemHoje`); atualizar com cuidado as bibliotecas com alerta de segurança (das 28, só a que monta as páginas — "seroval", moderado — vai para o app de verdade; as outras, inclusive a crítica, são ferramentas de trabalho). Os 1.204 avisos de formatação **não** serão arrumados de uma vez (reescreveria 134 arquivos e atrapalharia o Lovable).
 
 ### 17.2 Depende do dono

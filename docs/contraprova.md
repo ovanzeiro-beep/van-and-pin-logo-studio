@@ -466,7 +466,7 @@ Mapa: cada regra da seção 6 e o teste que confere.
 | Data e hora de um lugar só (Etapa C) | `agora.test.ts` |
 
 ### Item 7 — pendente
-- [ ] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê. **Fica para depois**: o dono do projeto pediu para não mexer com banco agora (14/11/2026). É só um documento; fazer quando ele pedir.
+- [x] 7. `docs/banco-de-dados.md` com dados (contas, papéis, destinos, passageiros, respostas, viagens, cobranças, avisos) e quem vê o quê. **Fica para depois**: o dono do projeto pediu para não mexer com banco agora (14/11/2026). É só um documento; fazer quando ele pedir. **Anotação de 16/11:** feito na Etapa J (15/11/2026) e completado nos itens Q2, Q3 e Q4 da seção 16.
 
 ### Conferência final da Etapa C (14/11/2026, antes do merge)
 - [x] `main` sem novidades desde o início da etapa (nada do Lovable para juntar).
@@ -582,7 +582,7 @@ Conferência (14/11/2026):
 - [x] Texto das telas comparado com a `main`: só "Viagens feitas", "Voltar" no Histórico e as viagens de exemplo corrigidas.
 
 Ainda pendente:
-- [ ] iPhone SE: o passo 1 do "Criar conta" rola 70px (antes a tela toda rolava 270px), "Entrar" rola 39px e "Como você vai usar o app?" rola 69px. Para zerar, só diminuindo o cabeçalho azul dessas telas (decisão do dono).
+- [ ] iPhone SE: o passo 1 do "Criar conta" rola 70px (antes a tela toda rolava 270px), "Entrar" rola 39px e "Como você vai usar o app?" rola 69px. Para zerar, só diminuindo o cabeçalho azul dessas telas (decisão do dono). **Anotação de 16/11:** continua esperando a decisão C do dono (seção 17.2 da fonte da verdade).
 - [x] Os avisos nunca ficam "lidos": o número do sininho não diminui depois de ver a tela de Notificações (já era assim na Etapa B). — feito em "Avisos lidos"
 - [x] A tela antiga "Pedidos para entrar" ficou sem caminho: apagar ou deixar? — apagada em 14/11/2026 (decisão B)
 
@@ -792,9 +792,9 @@ Como ficou (14/11/2026):
 - [ ] Dados reais do vanzeiro do piloto (rotas, horários, van, Pix), para trocar pelos exemplos.
 - [ ] Revisão dos Termos e da Política por um advogado antes de lançar ao público.
 - [ ] Testar no celular: o app instalado em tela cheia (Android e iPhone).
-- [ ] Decidir: quem sai do último destino deixa de ver os Pagamentos (se ainda deve algo, só o vanzeiro vê). Pendência desde o item 5 da Etapa B.
+- [x] Decidir: quem sai do último destino deixa de ver os Pagamentos (se ainda deve algo, só o vanzeiro vê). Pendência desde o item 5 da Etapa B. **Anotação de 16/11:** decidido pelo dono (A3, opção 1: continua vendo) e feito em 15/11/2026.
 - [ ] Decidir (decisão C): diminuir o cabeçalho azul de Entrar, Criar conta e "Como você vai usar o app?" para não rolar no iPhone SE.
-- [ ] Para depois, só quando o dono mandar: documento do banco (Etapa C, item 7), banco e login real, mapa e GPS, app na Play Store.
+- [ ] Para depois, só quando o dono mandar: documento do banco (Etapa C, item 7), banco e login real, mapa e GPS, app na Play Store. **Anotação de 16/11:** o documento do banco já está feito (Etapa J); banco e login real, GPS ao vivo e Play Store continuam esperando a ordem do dono.
 
 
 ---
@@ -1009,3 +1009,12 @@ Conferência (15/11/2026):
 - [x] R1.4 Onde embarca: até 1 km do ponto combinado muda na hora; mais longe, o vanzeiro aceita ou recusa.
 - [x] R1.5 Conferência e merge.
 - Conferência: cada frase conferida contra o código (desconto na próxima cobrança não vencida; pendentes canceladas ao sair); página /termos com os 8 trechos novos, sem rolar para o lado no iPhone SE; 262 testes, tipos, build; 30 telas sem erro. O texto ainda precisa da revisão do advogado.
+
+---
+
+## Etapa R2 — Fonte da verdade e contraprova iguais ao app de hoje (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 17 da fonte da verdade. Só documentos.
+- [x] R2.1 Fonte da verdade: aviso "Como ler" no topo; 40 trechos das seções 0 a 9 (escritas em 13/11) ganharam a marca "Atualizado em 16/11:" com o que vale hoje (sininho e Notificações, pedidos e mudanças de endereço, ordem fixa e arrastar, lugares, mapa, histórico de viagens, excluir conta, números do Financeiro e do Início, código único, vencimento de 7 dias, faltas no prazo, Termos e Política, pedido em 2 passos, A3); nada foi apagado.
+- [x] R2.2 Valores conferidos no app antes de escrever: Início R$ 1.661,00 · 9 pagos · 9 pendentes · 2 devendo; Financeiro "Pagas" com 9 itens (agora batem); Financeiro R$ 1.661 / 663 / 530.
+- [x] R2.3 Contraprova: caixinhas velhas marcadas ou anotadas, sem apagar (documento do banco feito, decisão A3 feita, iPhone SE e "para depois" anotados).
+- Próxima: R3 (limpeza e bibliotecas).
