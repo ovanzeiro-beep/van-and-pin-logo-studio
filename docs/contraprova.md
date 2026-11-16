@@ -1313,3 +1313,9 @@ Conferência (15/11/2026):
 - [x] Banco de verdade conferido: 1 passageira (Diário, R$ 150,00), nenhuma viagem feita ainda, então nenhuma cobrança (certo: Diário e Por viagem só cobram quando embarca); Pix do vanzeiro preenchido.
 - [x] Teste novo de ponta a ponta (`dinheiro-ponta-a-ponta.test.ts`): passageiro Mensal novo ganha a cobrança do mês; "Embarcou" de Diário cria a cobrança do dia e o embarque; pago (Pix) e cancelado (motivo) ficam no banco; cobrança paga não muda; o celular do passageiro lê pago/cancelado e o total devido.
 - [x] Já conferidos antes: regras no banco (W7, 19 checagens), tarefa do relógio (faltas, próxima mensalidade, avisos de cobrança, rodando sem erro), gastos. 357 testes.
+
+## Destino excluído e código de convite (16/11/2026, pedido do dono)
+- [x] Conferido no banco: o destino antigo ficou excluído e a Monica saiu dele; a matrícula nova está certa.
+- [x] Corrigido: o passageiro sem van digitava o código e a tela voltava sozinha a cada 30 s (o app pegava o pedido antigo, aceito no destino excluído). Agora só um pedido "aguardando" muda a tela; um pedido aceito de destino que não existe mais volta para a tela do código.
+- [x] Aviso novo "Destino excluído" no sininho (e no celular) para cada passageiro quando o vanzeiro exclui o destino, feito pelo banco (`20261116220000_destino_excluido.sql`, testado numa cópia do banco).
+- Pendente: o dono cola `supabase/SO-SQL-7-DESTINO-EXCLUIDO.sql` (o Supabase pediu licença e não teve resposta).

@@ -23,6 +23,7 @@ const TITULO: Record<string, string> = {
   endereco_recusado: "Endereço não aceito",
   viagem_cancelada: "Sem viagem",
   viagem_de_volta: "Vai ter viagem",
+  destino_excluido: "Destino excluído",
 };
 
 /** The keys are made once, here, and never leave the database. */
