@@ -11,6 +11,7 @@ import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { responder } from "@/lib/respostas-store";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
+import { RespostasFixas } from "@/components/app/passageiro/RespostasFixas";
 import { cn } from "@/lib/utils";
 import { historicoDoPassageiro } from "@/lib/viagem";
 import { useRegistroDasViagens } from "@/lib/cobrancas-store";
@@ -37,6 +38,10 @@ function MinhasViagens() {
     const destino = destinos.find((d) => d.id === eu.destinoId);
     return destino ? historicoDoPassageiro(eu, destino, dataDeHoje(), registro, viagens[destino.id]).map((h) => ({ ...h, destino })) : [];
   }).sort((a, b) => b.data.localeCompare(a.data));
+  const meusDestinos = matriculas.flatMap((eu) => {
+    const destino = destinos.find((d) => d.id === eu.destinoId);
+    return destino ? [{ eu, destino }] : [];
+  });
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -62,6 +67,15 @@ function MinhasViagens() {
             )}
           </div>
         </section>
+
+        {meusDestinos.length > 0 && (
+          <section>
+            <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Para não esquecer de responder</h2>
+            <div className="mt-1.5 space-y-2.5">
+              {meusDestinos.map(({ eu, destino }) => <RespostasFixas key={eu.id} eu={eu} destino={destino} />)}
+            </div>
+          </section>
+        )}
 
         <section>
           <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Histórico</h2>
