@@ -6,7 +6,7 @@ import { mesmoMes, situacao, valorFinal, type Cobranca } from "@/lib/cobrancas";
 // The month of a cobrança is the month it falls due, the same rule as the Financeiro, so "Recebido" matches it.
 
 export type SituacaoNoMes = "em-dia" | "atrasado" | "devendo" | "a-vencer";
-export type PessoaNoMes = { passageiroId: string; nome: string; situacao: SituacaoNoMes; falta: number };
+export type PessoaNoMes = { passageiroId: string; destinoId: string; nome: string; situacao: SituacaoNoMes; falta: number };
 
 export type SeuMes = {
   mes: string; // "AAAA-MM"
@@ -42,6 +42,7 @@ export function seuMes(cobrancas: Cobranca[], viagens: Pick<ViagemEncerrada, "da
   const pessoas: PessoaNoMes[] = [...porPessoa.entries()]
     .map(([passageiroId, cs]) => ({
       passageiroId,
+      destinoId: cs[0]!.destinoId,
       nome: cs[0]!.nome,
       situacao: situacaoDaPessoa(cs, hoje),
       falta: cs.filter((c) => !c.pagamento).reduce((s, c) => s + valorFinal(c), 0),

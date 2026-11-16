@@ -1095,3 +1095,13 @@ Conferência (15/11/2026):
 - [x] T4.4 Conferência: 288 testes (novo `resumo-do-grupo.test.ts`), tipos, build; no navegador em 390×844, 360×740 e 375×667: a página não rola (só a lista), "Iniciar viagem" continua visível, o texto das duas viagens de hoje está certo (Jacarezinho → Londrina sem "não responderam", porque o prazo passou; Cambará → UENP com Juliana e Rafael até 05:40); sem erros.
 - Não pode quebrar: conferido — lista de quem vai, cores, botões "Iniciar viagem" e "Não vai ter viagem hoje" iguais.
 - Pendência: mandar de verdade num grupo do WhatsApp, no celular.
+
+## Etapa T5 — "Seu mês na van" (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18.3 da fonte da verdade. Sem banco de dados. Decisões do dono de 16/11: sem gastos; pelo Financeiro; número e nomes; este mês e os anteriores.
+- [x] T5.1 Contas em `src/lib/seu-mes.ts`: Recebido, Falta receber, Viagens feitas e embarques, quem pagou em dia / atrasado / está devendo / pendente; meses disponíveis.
+- [x] T5.2 Tela nova `/vanzeiro/financeiro/mes`, com Voltar, setas de mês, 4 números e os grupos de nomes (com o destino embaixo).
+- [x] T5.3 Botão "Seu mês na van" no cabeçalho do Financeiro (mesmo jeito do "Viagens feitas" da aba Viagem).
+- [x] T5.4 Conferência: 291 testes (novo `seu-mes.test.ts`, incluindo "Recebido igual ao do Financeiro"), tipos, build; no navegador em 390×844, 360×740 e 375×667: nenhuma página rola (só as listas); novembro: Recebido R$ 663,00 (igual ao Financeiro), Falta receber R$ 1.661,00, 2 viagens / 11 embarques, 2 de 4 em dia; outubro: R$ 2.140,00, 8 de 8 em dia; sem erros.
+- Não pode quebrar: conferido — números e filtros do Financeiro iguais; cores verde/vermelho/âmbar; palavras Devendo/Pendentes/Pago.
+- Observação: no iPhone SE a lista do Financeiro ficou menor (267px) por causa do botão no cabeçalho; continua rolando só a lista.
+- Pendência: gastos ("sobrou R$ X") só se o dono pedir.

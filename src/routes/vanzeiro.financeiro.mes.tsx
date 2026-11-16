@@ -4,6 +4,8 @@ import { StatusBadge } from "@/components/app/InfoCard";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { dataDeHoje } from "@/lib/agora";
 import { useCobrancas } from "@/lib/cobrancas-store";
+import { nomeDestino } from "@/lib/destinos";
+import { useDestinos } from "@/lib/destinos-store";
 import { formatarReais } from "@/lib/dinheiro";
 import { mesesDisponiveis, nomeDoMes, seuMes, type PessoaNoMes } from "@/lib/seu-mes";
 import { cn } from "@/lib/utils";
@@ -36,6 +38,11 @@ function SeuMesNaVan() {
   const i = meses.indexOf(mes);
   const r = seuMes(cobrancas, viagens, mes, dataDeHoje());
   const decididos = r.emDia.length + r.atrasados.length + r.devendo.length;
+  const destinos = useDestinos();
+  const ondeVai = (p: PessoaNoMes) => {
+    const d = destinos.find((x) => x.id === p.destinoId);
+    return d ? nomeDestino(d) : "";
+  };
 
   const router = useRouter();
   const podeVoltar = useCanGoBack();
@@ -81,10 +88,10 @@ function SeuMesNaVan() {
           />
         </div>
 
-        <Grupo titulo="Devendo" pessoas={r.devendo} badge={(p) => <StatusBadge status="deve">{formatarReais(p.falta)}</StatusBadge>} />
-        <Grupo titulo="Pagaram atrasado" pessoas={r.atrasados} badge={() => <StatusBadge status="pendente">Atrasado</StatusBadge>} />
-        <Grupo titulo="Pagaram em dia" pessoas={r.emDia} badge={() => <StatusBadge status="pago">Em dia</StatusBadge>} />
-        <Grupo titulo="Pendentes" pessoas={r.aVencer} badge={(p) => <StatusBadge status="pendente">{formatarReais(p.falta)}</StatusBadge>} />
+        <Grupo onde={ondeVai} titulo="Devendo" pessoas={r.devendo} badge={(p) => <StatusBadge status="deve">{formatarReais(p.falta)}</StatusBadge>} />
+        <Grupo onde={ondeVai} titulo="Pagaram atrasado" pessoas={r.atrasados} badge={() => <StatusBadge status="pendente">Atrasado</StatusBadge>} />
+        <Grupo onde={ondeVai} titulo="Pagaram em dia" pessoas={r.emDia} badge={() => <StatusBadge status="pago">Em dia</StatusBadge>} />
+        <Grupo onde={ondeVai} titulo="Pendentes" pessoas={r.aVencer} badge={(p) => <StatusBadge status="pendente">{formatarReais(p.falta)}</StatusBadge>} />
         {r.devendo.length + r.atrasados.length + r.emDia.length + r.aVencer.length === 0 && (
           <p className="rounded-2xl bg-card px-4 py-3 text-sm text-muted-foreground shadow-card">Nenhuma cobrança neste mês.</p>
         )}
@@ -115,7 +122,7 @@ function Numero({ icone: Icone, rotulo, valor, detalhe, className }: { icone: ty
   );
 }
 
-function Grupo({ titulo, pessoas, badge }: { titulo: string; pessoas: PessoaNoMes[]; badge: (p: PessoaNoMes) => React.ReactNode }) {
+function Grupo({ titulo, pessoas, badge, onde }: { titulo: string; pessoas: PessoaNoMes[]; badge: (p: PessoaNoMes) => React.ReactNode; onde: (p: PessoaNoMes) => string }) {
   if (pessoas.length === 0) return null;
   return (
     <section>
@@ -125,7 +132,10 @@ function Grupo({ titulo, pessoas, badge }: { titulo: string; pessoas: PessoaNoMe
       <ul className="mt-1.5 space-y-1.5">
         {pessoas.map((p) => (
           <li key={p.passageiroId} className="flex items-center justify-between gap-3 rounded-2xl bg-card px-4 py-2.5 shadow-card">
-            <span className="truncate font-semibold text-foreground">{p.nome}</span>
+            <span className="min-w-0">
+              <span className="block truncate font-semibold text-foreground">{p.nome}</span>
+              <span className="block truncate text-xs text-muted-foreground">{onde(p)}</span>
+            </span>
             {badge(p)}
           </li>
         ))}
