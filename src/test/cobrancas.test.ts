@@ -23,7 +23,7 @@ const base: Passageiro = {
   cidade: "A",
   endereco: "B",
   plano: "mensal",
-  valor: 280,
+  valor: 28000,
   vencimento: 10,
   descontaFaltas: false,
   valorFalta: null,
@@ -48,7 +48,7 @@ describe("Cobranças criadas pelo plano", () => {
       { passageiroId: "p-x", data: "2026-11-08" },
       { passageiroId: "outro", data: "2026-11-07" },
     ];
-    const cs = gerarCobrancas({ ...base, plano: "viagem", vencimento: null, valor: 45 }, "2026-11-01", "2026-11-30", hoje, { embarques, faltas: [] });
+    const cs = gerarCobrancas({ ...base, plano: "viagem", vencimento: null, valor: 4500 }, "2026-11-01", "2026-11-30", hoje, { embarques, faltas: [] });
     expect(cs.map((c) => c.referencia)).toEqual(["Viagem de 06/11", "Viagem de 08/11"]);
   });
   it("diário: one charge per day the passenger went, even with two trips that day", () => {
@@ -57,7 +57,7 @@ describe("Cobranças criadas pelo plano", () => {
       { passageiroId: "p-x", data: "2026-11-09" },
       { passageiroId: "p-x", data: "2026-11-10" },
     ];
-    const cs = gerarCobrancas({ ...base, plano: "diario", vencimento: null, valor: 22 }, "2026-11-01", "2026-11-30", hoje, { embarques, faltas: [] });
+    const cs = gerarCobrancas({ ...base, plano: "diario", vencimento: null, valor: 2200 }, "2026-11-01", "2026-11-30", hoje, { embarques, faltas: [] });
     expect(cs).toHaveLength(2);
   });
 });
@@ -68,14 +68,14 @@ describe("Desconto de faltas", () => {
       { passageiroId: "p-x", avisouNoPrazo: true, data: "2026-10-17" },
       { passageiroId: "p-x", avisouNoPrazo: true, data: "2026-10-24" },
     ];
-    const [, nov] = gerarCobrancas({ ...base, descontaFaltas: true, valorFalta: 15 }, "2026-10-01", "2026-11-30", hoje, { embarques: [], faltas });
-    expect(valorFinal(nov!)).toBe(250);
+    const [, nov] = gerarCobrancas({ ...base, descontaFaltas: true, valorFalta: 1500 }, "2026-10-01", "2026-11-30", hoje, { embarques: [], faltas });
+    expect(valorFinal(nov!)).toBe(25000);
     expect(contaDoDesconto(nov!)?.replace(/\s/g, " ")).toBe("Mensalidade R$ 280,00 − 2 faltas × R$ 15,00 = R$ 250,00");
   });
   it("does not discount faltas when the plan does not ask for it", () => {
     const faltas = [{ passageiroId: "p-x", avisouNoPrazo: true, data: "2026-10-17" }];
     const [, nov] = gerarCobrancas(base, "2026-10-01", "2026-11-30", hoje, { embarques: [], faltas });
-    expect(valorFinal(nov!)).toBe(280);
+    expect(valorFinal(nov!)).toBe(28000);
   });
   it("the sample data has at least one passenger with discount", () => {
     expect(passageirosExemplo.some((p) => p.descontaFaltas)).toBe(true);
@@ -93,7 +93,7 @@ function cobranca(parcial: Partial<Cobranca>): Cobranca {
     tipo: "mensal",
     referencia: "Mensalidade de novembro",
     vencimento: "2026-11-20",
-    valorBase: 100,
+    valorBase: 10000,
     faltas: 0,
     valorFalta: 0,
     periodoFaltas: null,
@@ -111,23 +111,23 @@ describe("Situação das cobranças", () => {
   });
   it("what a passenger owes is the sum of their unpaid charges; cancelled ones don't count", () => {
     const lista = [
-      cobranca({ id: "1", valorBase: 100 }),
-      cobranca({ id: "2", valorBase: 50, vencimento: "2026-11-01" }),
-      cobranca({ id: "3", valorBase: 70, pagamento: { data: hoje, forma: "pix" } }),
-      cobranca({ id: "4", valorBase: 30, cancelamento: { data: hoje, motivo: "x" } }),
+      cobranca({ id: "1", valorBase: 10000 }),
+      cobranca({ id: "2", valorBase: 5000, vencimento: "2026-11-01" }),
+      cobranca({ id: "3", valorBase: 7000, pagamento: { data: hoje, forma: "pix" } }),
+      cobranca({ id: "4", valorBase: 3000, cancelamento: { data: hoje, motivo: "x" } }),
     ];
-    expect(totalDevido(lista, "p-x")).toBe(150);
+    expect(totalDevido(lista, "p-x")).toBe(15000);
   });
   it("month summary: a receber, recebido and devendo, without cancelled ones", () => {
     const lista = [
-      cobranca({ id: "1", valorBase: 100 }),
-      cobranca({ id: "2", valorBase: 50, vencimento: "2026-11-01" }),
-      cobranca({ id: "3", valorBase: 70, pagamento: { data: hoje, forma: "pix" } }),
-      cobranca({ id: "4", valorBase: 30, cancelamento: { data: hoje, motivo: "x" } }),
-      cobranca({ id: "5", valorBase: 40, vencimento: "2026-10-20" }),
-      cobranca({ id: "6", valorBase: 90, vencimento: "2026-10-10", pagamento: { data: "2026-10-10", forma: "pix" } }),
+      cobranca({ id: "1", valorBase: 10000 }),
+      cobranca({ id: "2", valorBase: 5000, vencimento: "2026-11-01" }),
+      cobranca({ id: "3", valorBase: 7000, pagamento: { data: hoje, forma: "pix" } }),
+      cobranca({ id: "4", valorBase: 3000, cancelamento: { data: hoje, motivo: "x" } }),
+      cobranca({ id: "5", valorBase: 4000, vencimento: "2026-10-20" }),
+      cobranca({ id: "6", valorBase: 9000, vencimento: "2026-10-10", pagamento: { data: "2026-10-10", forma: "pix" } }),
     ];
-    expect(resumoDoMes(lista, hoje)).toEqual({ aReceber: 190, recebido: 70, devendo: 90, pagos: 1, pendentes: 1, devendoQtd: 2 });
+    expect(resumoDoMes(lista, hoje)).toEqual({ aReceber: 19000, recebido: 7000, devendo: 9000, pagos: 1, pendentes: 1, devendoQtd: 2 });
   });
   it("filters keep only the chosen situation, newest first", () => {
     const lista = [
@@ -139,7 +139,7 @@ describe("Situação das cobranças", () => {
     expect(filtrarCobrancas(lista, "devendo", hoje).map((c) => c.id)).toEqual(["b"]);
   });
   it("the WhatsApp message has the value and the due date", () => {
-    const m = mensagemCobranca(cobranca({ valorBase: 280 }), "Centro → Unisul", hoje).replace(/\s/g, " ");
+    const m = mensagemCobranca(cobranca({ valorBase: 28000 }), "Centro → Unisul", hoje).replace(/\s/g, " ");
     expect(m).toContain("R$ 280,00");
     expect(m).toContain("20/11");
   });
@@ -173,11 +173,11 @@ describe("Viagem → Financeiro", () => {
   const p = (extra: Partial<Passageiro>): Passageiro => ({ ...base, id: "x", ...extra });
 
   it("'Embarcou' creates that day's charge for Por viagem and Diário, only once", () => {
-    const porViagem = p({ plano: "viagem", valor: 45, vencimento: null, descontaFaltas: false, valorFalta: null });
+    const porViagem = p({ plano: "viagem", valor: 4500, vencimento: null, descontaFaltas: false, valorFalta: null });
     const lista = aplicarEmbarque([], porViagem, "2026-11-13", "2026-11-13");
-    expect(lista.map((c) => [c.vencimento, c.valorBase, c.referencia])).toEqual([["2026-11-20", 45, "Viagem de 13/11"]]);
+    expect(lista.map((c) => [c.vencimento, c.valorBase, c.referencia])).toEqual([["2026-11-20", 4500, "Viagem de 13/11"]]);
     expect(aplicarEmbarque(lista, porViagem, "2026-11-13", "2026-11-13")).toHaveLength(1);
-    const diario = p({ plano: "diario", valor: 80, vencimento: null, descontaFaltas: false, valorFalta: null });
+    const diario = p({ plano: "diario", valor: 8000, vencimento: null, descontaFaltas: false, valorFalta: null });
     expect(aplicarEmbarque([], diario, "2026-11-13", "2026-11-13")[0]?.referencia).toBe("Diária de 13/11");
   });
 
@@ -186,20 +186,20 @@ describe("Viagem → Financeiro", () => {
   });
 
   it("On-time 'Não vou' adds a falta to the next open charge when the plan discounts", () => {
-    const quinzenal = p({ plano: "quinzenal", valor: 140, vencimento: 5, descontaFaltas: true, valorFalta: 10 });
-    const aberta = cobranca({ id: "q", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-19", valorBase: 140 });
-    const paga = cobranca({ id: "old", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-04", valorBase: 140, pagamento: { data: "2026-11-04", forma: "pix" } });
+    const quinzenal = p({ plano: "quinzenal", valor: 14000, vencimento: 5, descontaFaltas: true, valorFalta: 1000 });
+    const aberta = cobranca({ id: "q", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-19", valorBase: 14000 });
+    const paga = cobranca({ id: "old", passageiroId: "x", tipo: "quinzenal", vencimento: "2026-11-04", valorBase: 14000, pagamento: { data: "2026-11-04", forma: "pix" } });
     const [antiga, nova] = aplicarFalta([paga, aberta], quinzenal, "2026-11-13", "2026-11-13", true);
     expect(antiga).toBe(paga);
-    expect(valorFinal(nova!)).toBe(130);
+    expect(valorFinal(nova!)).toBe(13000);
   });
 
   it("without an open charge, the falta goes into the next one created", () => {
-    const mensal = p({ plano: "mensal", valor: 280, vencimento: 10, descontaFaltas: true, valorFalta: 15 });
+    const mensal = p({ plano: "mensal", valor: 28000, vencimento: 10, descontaFaltas: true, valorFalta: 1500 });
     const [c] = aplicarFalta([], mensal, "2026-11-13", "2026-11-13", true);
     expect(c?.vencimento).toBe("2026-12-10");
     expect(c?.faltas).toBe(1);
-    expect(valorFinal(c!)).toBe(265);
+    expect(valorFinal(c!)).toBe(26500);
   });
 
   it("no discount, no change", () => {
@@ -209,7 +209,7 @@ describe("Viagem → Financeiro", () => {
 
 describe("Por viagem e Diário vencem 7 dias depois do embarque (decisão 8)", () => {
   it("o nome e a chave seguem o dia do embarque; o vencimento é 7 dias depois", () => {
-    const [c] = gerarCobrancas({ ...base, plano: "diario", vencimento: null, valor: 22 }, "2026-11-01", "2026-11-30", hoje, { embarques: [{ passageiroId: "p-x", data: "2026-11-08" }], faltas: [] });
+    const [c] = gerarCobrancas({ ...base, plano: "diario", vencimento: null, valor: 2200 }, "2026-11-01", "2026-11-30", hoje, { embarques: [{ passageiroId: "p-x", data: "2026-11-08" }], faltas: [] });
     expect([c?.id, c?.referencia, c?.vencimento]).toEqual(["p-x_2026-11-08", "Diária de 08/11", "2026-11-15"]);
     expect(situacao(c!, "2026-11-15")).toBe("pendente");
     expect(situacao(c!, "2026-11-16")).toBe("devendo");
@@ -223,7 +223,7 @@ describe("Quinzenal com duas datas fixas (decisão 10)", () => {
     expect(vencimentosQuinzenais(15, "2027-01-01", "2027-03-31")).toEqual(["2027-01-15", "2027-01-30", "2027-02-15", "2027-02-28", "2027-03-15", "2027-03-30"]);
   });
   it("as faltas descontadas são da quinzena: do dia seguinte ao vencimento anterior até o vencimento", () => {
-    const cs = gerarCobrancas({ ...base, plano: "quinzenal", vencimento: 5, descontaFaltas: true, valorFalta: 10 }, "2026-11-01", "2026-11-30", "2026-11-25", {
+    const cs = gerarCobrancas({ ...base, plano: "quinzenal", vencimento: 5, descontaFaltas: true, valorFalta: 1000 }, "2026-11-01", "2026-11-30", "2026-11-25", {
       embarques: [],
       faltas: [
         { passageiroId: "p-x", data: "2026-10-21", avisouNoPrazo: true },

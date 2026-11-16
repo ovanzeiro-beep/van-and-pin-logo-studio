@@ -126,12 +126,13 @@ export type Passageiro = {
   /** Endereço ou ponto de embarque. */
   endereco: string;
   plano: PlanoPagamento;
+  /** Em centavos (R$ 280,00 = 28000). */
   valor: number;
   /** Dia do mês do vencimento (só quinzenal e mensal). */
   vencimento: number | null;
   /** Só mensal e quinzenal: desconta as faltas da cobrança. */
   descontaFaltas: boolean;
-  /** Valor descontado por falta, quando desconta faltas. */
+  /** Valor descontado por falta, quando desconta faltas (em centavos). */
   valorFalta: number | null;
   /** Ordem de busca dentro da cidade (1, 2, 3…), mudada pelas setas ↑ ↓. */
   ordem?: number | undefined;
@@ -165,24 +166,24 @@ export type PedidoEntrada = {
 
 export const passageirosExemplo: Passageiro[] = [
   // Jacarezinho → Londrina
-  { id: "p-mariana", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Mariana Souza", telefone: "43998123456", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa, ponto de embarque", plano: "mensal", valor: 280, vencimento: 10, descontaFaltas: true, valorFalta: 15 },
-  { id: "p-pedro", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Pedro Henrique Lima", telefone: "43999874512", cidade: "Jacarezinho", endereco: "Rua Paraná, 455", plano: "quinzenal", valor: 150, vencimento: 15, descontaFaltas: false, valorFalta: null },
-  { id: "p-ana", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Ana Clara Ribeiro", telefone: "43996541230", cidade: "Santo Antônio da Platina", endereco: "Rodoviária de Santo Antônio da Platina", plano: "viagem", valor: 45, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-lucas", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Lucas Ferreira", telefone: "43991237788", cidade: "Santo Antônio da Platina", endereco: "Av. Oliveira Motta, ponto de embarque", plano: "diario", valor: 80, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-beatriz", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Beatriz Martins", telefone: "43988452301", cidade: "Jacarezinho", endereco: "Av. Getúlio Vargas, 1020", plano: "mensal", valor: 280, vencimento: 5, descontaFaltas: false, valorFalta: null },
+  { id: "p-mariana", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Mariana Souza", telefone: "43998123456", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa, ponto de embarque", plano: "mensal", valor: 28000, vencimento: 10, descontaFaltas: true, valorFalta: 1500 },
+  { id: "p-pedro", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Pedro Henrique Lima", telefone: "43999874512", cidade: "Jacarezinho", endereco: "Rua Paraná, 455", plano: "quinzenal", valor: 15000, vencimento: 15, descontaFaltas: false, valorFalta: null },
+  { id: "p-ana", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Ana Clara Ribeiro", telefone: "43996541230", cidade: "Santo Antônio da Platina", endereco: "Rodoviária de Santo Antônio da Platina", plano: "viagem", valor: 4500, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-lucas", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Lucas Ferreira", telefone: "43991237788", cidade: "Santo Antônio da Platina", endereco: "Av. Oliveira Motta, ponto de embarque", plano: "diario", valor: 8000, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-beatriz", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "Beatriz Martins", telefone: "43988452301", cidade: "Jacarezinho", endereco: "Av. Getúlio Vargas, 1020", plano: "mensal", valor: 28000, vencimento: 5, descontaFaltas: false, valorFalta: null },
   // Cambará → UENP Jacarezinho (IDs preservados para manter cobranças e histórico).
-  { id: "p-juliana", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Juliana Alves", telefone: "43998771234", cidade: "Jacarezinho", endereco: "Rua Paraná, 210", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: false, valorFalta: null },
-  { id: "p-gabriel", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Gabriel Rocha", telefone: "43999125566", cidade: "Cambará", endereco: "Praça Dr. Miguel Dinizo, ponto de embarque", plano: "mensal", valor: 260, vencimento: 10, descontaFaltas: false, valorFalta: null },
-  { id: "p-fernanda", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Fernanda Costa", telefone: "43996654321", cidade: "Cambará", endereco: "Av. Brasil, 88", plano: "quinzenal", valor: 140, vencimento: 5, descontaFaltas: true, valorFalta: 10 },
-  { id: "p-rafael", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Rafael Mendes", telefone: "43991478523", cidade: "Jacarezinho", endereco: "Av. Getúlio Vargas, 1500", plano: "diario", valor: 22, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-camila", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Camila Duarte", telefone: "43988236547", cidade: "Cambará", endereco: "Rodoviária de Cambará", plano: "viagem", valor: 12, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-thiago", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Thiago Nunes", telefone: "43997563214", cidade: "Jacarezinho", endereco: "Rua dos Expedicionários, 37", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: false, valorFalta: null },
-  { id: "p-juliana-londrina", vanzeiroId: "vanzeiro-carlos", pessoaId: "p-juliana", destinoId: "jacarezinho-londrina", nome: "Juliana Alves", telefone: "43998771234", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "mensal", valor: 180, vencimento: 20, descontaFaltas: false, valorFalta: null },
+  { id: "p-juliana", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Juliana Alves", telefone: "43998771234", cidade: "Jacarezinho", endereco: "Rua Paraná, 210", plano: "mensal", valor: 28000, vencimento: 20, descontaFaltas: false, valorFalta: null },
+  { id: "p-gabriel", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Gabriel Rocha", telefone: "43999125566", cidade: "Cambará", endereco: "Praça Dr. Miguel Dinizo, ponto de embarque", plano: "mensal", valor: 26000, vencimento: 10, descontaFaltas: false, valorFalta: null },
+  { id: "p-fernanda", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Fernanda Costa", telefone: "43996654321", cidade: "Cambará", endereco: "Av. Brasil, 88", plano: "quinzenal", valor: 14000, vencimento: 5, descontaFaltas: true, valorFalta: 1000 },
+  { id: "p-rafael", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Rafael Mendes", telefone: "43991478523", cidade: "Jacarezinho", endereco: "Av. Getúlio Vargas, 1500", plano: "diario", valor: 2200, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-camila", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Camila Duarte", telefone: "43988236547", cidade: "Cambará", endereco: "Rodoviária de Cambará", plano: "viagem", valor: 1200, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-thiago", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Thiago Nunes", telefone: "43997563214", cidade: "Jacarezinho", endereco: "Rua dos Expedicionários, 37", plano: "mensal", valor: 28000, vencimento: 20, descontaFaltas: false, valorFalta: null },
+  { id: "p-juliana-londrina", vanzeiroId: "vanzeiro-carlos", pessoaId: "p-juliana", destinoId: "jacarezinho-londrina", nome: "Juliana Alves", telefone: "43998771234", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "mensal", valor: 18000, vencimento: 20, descontaFaltas: false, valorFalta: null },
   // Excursão Beto Carrero
-  { id: "p-rosana", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "Rosana Pereira", telefone: "43998012233", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-jose", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "José Carlos Silva", telefone: "43999347788", cidade: "Jacarezinho", endereco: "Rodoviária de Jacarezinho", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-patricia", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "Patrícia Gomes", telefone: "41998456123", cidade: "Curitiba", endereco: "Rodoferroviária", plano: "viagem", valor: 280, vencimento: null, descontaFaltas: false, valorFalta: null },
-  { id: "p-marcos", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "Marcos Antunes", telefone: "43991113344", cidade: "Jacarezinho", endereco: "Rua Paraná, 120", plano: "viagem", valor: 320, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-rosana", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "Rosana Pereira", telefone: "43998012233", cidade: "Jacarezinho", endereco: "Praça Rui Barbosa", plano: "viagem", valor: 32000, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-jose", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "José Carlos Silva", telefone: "43999347788", cidade: "Jacarezinho", endereco: "Rodoviária de Jacarezinho", plano: "viagem", valor: 32000, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-patricia", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "Patrícia Gomes", telefone: "41998456123", cidade: "Curitiba", endereco: "Rodoferroviária", plano: "viagem", valor: 28000, vencimento: null, descontaFaltas: false, valorFalta: null },
+  { id: "p-marcos", vanzeiroId: "vanzeiro-carlos", destinoId: "excursao-beto-carrero", nome: "Marcos Antunes", telefone: "43991113344", cidade: "Jacarezinho", endereco: "Rua Paraná, 120", plano: "viagem", valor: 32000, vencimento: null, descontaFaltas: false, valorFalta: null },
 ];
 
 export const pedidosExemplo: PedidoEntrada[] = [

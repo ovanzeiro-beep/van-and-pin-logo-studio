@@ -1,3 +1,4 @@
+import { centavosParaTexto } from "@/lib/dinheiro";
 import {
   type Destino,
   type Passageiro,
@@ -59,12 +60,12 @@ export function linkWhatsApp(telefone: string, texto?: string) {
   return texto ? `${base}?text=${encodeURIComponent(texto)}` : base;
 }
 
-/** Reads "280", "280,50" or "1.280,00" as a number; null when empty or invalid. */
+/** Reads "280", "280,50" or "1.280,00" as CENTAVOS (28000, 28050, 128000); null when empty, invalid or zero. */
 export function lerValor(texto: string): number | null {
   const limpo = texto.trim().replace(/^R\$\s*/, "");
   if (!limpo) return null;
   const normal = limpo.includes(",") ? limpo.replace(/\./g, "").replace(",", ".") : limpo;
-  const n = Math.round(Number(normal) * 100) / 100;
+  const n = Math.round(Number(normal) * 100);
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
@@ -172,10 +173,10 @@ export function rascunhoDePassageiro(p: Passageiro): RascunhoPassageiro {
     cidade: p.cidade,
     endereco: p.endereco,
     plano: p.plano,
-    valor: p.valor.toFixed(2).replace(".", ","),
+    valor: centavosParaTexto(p.valor),
     vencimento: p.vencimento ? String(p.vencimento) : "",
     descontaFaltas: p.descontaFaltas,
-    valorFalta: p.valorFalta ? p.valorFalta.toFixed(2).replace(".", ",") : "",
+    valorFalta: p.valorFalta ? centavosParaTexto(p.valorFalta) : "",
   };
 }
 

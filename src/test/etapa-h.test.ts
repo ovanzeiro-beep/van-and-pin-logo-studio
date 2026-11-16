@@ -17,7 +17,7 @@ describe("Etapa H: avisos que nascem do relógio", () => {
   it("cobrança vencida vai para o vanzeiro, com o nome, o valor e o destino", () => {
     const a = doRelogio("05:10").find((x) => x.chave === "cobranca_vencida_p-beatriz_2026-11-05")!;
     expect(a.paraVanzeiroOuPassageiroId).toBe("vanzeiro-carlos");
-    expect(a.textoResumido).toBe(`Beatriz está devendo ${formatarReais(280)}, em Jacarezinho → Londrina`);
+    expect(a.textoResumido).toBe(`Beatriz está devendo ${formatarReais(28000)}, em Jacarezinho → Londrina`);
     expect(a.dataCriacao).toBe("2026-11-06");
   });
 

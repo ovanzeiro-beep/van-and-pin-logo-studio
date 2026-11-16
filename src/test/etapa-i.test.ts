@@ -34,8 +34,8 @@ describe("Etapa I, erro 9: cadastro de passageiro", () => {
     expect(lerValor("0")).toBeNull();
     expect(lerValor("0,00")).toBeNull();
     expect(lerValor("0,001")).toBeNull();
-    expect(lerValor("0,01")).toBe(0.01);
-    expect(lerValor("280")).toBe(280);
+    expect(lerValor("0,01")).toBe(1);
+    expect(lerValor("280")).toBe(28000);
   });
 
   it("o mesmo telefone não entra duas vezes no mesmo destino; a própria pessoa editando não conta", () => {

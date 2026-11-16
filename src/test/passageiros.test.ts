@@ -29,13 +29,14 @@ describe("Passageiros de exemplo", () => {
 
 describe("Plano e contato", () => {
   it("shows the plan with its value", () => {
-    expect(descricaoPlano({ plano: "mensal", valor: 280 }).replace(/\s/g, " ")).toBe("Mensal · R$ 280,00");
+    expect(descricaoPlano({ plano: "mensal", valor: 28000 }).replace(/\s/g, " ")).toBe("Mensal · R$ 280,00");
   });
   it("formats a WhatsApp number with DDD", () => {
     expect(formatarTelefone("43998123456")).toBe("(43) 99812-3456");
   });
   it("reads values typed with a comma", () => {
-    expect(lerValor("280,50")).toBe(280.5);
+    expect(lerValor("280,50")).toBe(28050);
+    expect(lerValor("1.280,00")).toBe(128000);
     expect(lerValor("")).toBeNull();
   });
 });

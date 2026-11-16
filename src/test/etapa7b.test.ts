@@ -8,7 +8,7 @@ import { comecarViagem, marcarNaoEstava } from "@/lib/viagem-store";
 import { obterCobrancas, garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { salvarPassageiro } from "@/lib/passageiros-store";
 
-const p: Passageiro = { id: "regra", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Teste", telefone: "48999999999", cidade: "Centro", endereco: "Ponto", plano: "mensal", valor: 280, vencimento: 20, descontaFaltas: true, valorFalta: 15 };
+const p: Passageiro = { id: "regra", vanzeiroId: "vanzeiro-carlos", destinoId: "centro-unisul", nome: "Teste", telefone: "48999999999", cidade: "Centro", endereco: "Ponto", plano: "mensal", valor: 28000, vencimento: 20, descontaFaltas: true, valorFalta: 1500 };
 
 describe("Etapa 7B", () => {
   it("only an on-time negative answer discounts mensal and quinzenal", () => {
@@ -17,23 +17,23 @@ describe("Etapa 7B", () => {
       const sem = aplicarFalta([], pessoa, "2026-11-13", "2026-11-13");
       expect(sem).toEqual([]);
       const com = aplicarFalta([], pessoa, "2026-11-13", "2026-11-13", true);
-      expect(com[0] && valorFinal(com[0])).toBe(265);
+      expect(com[0] && valorFinal(com[0])).toBe(26500);
     }
   });
   it("no response and a missed pickup do not discount sample history", () => {
     const cs = gerarCobrancas(p, "2026-11-01", "2026-11-30", "2026-11-13", { embarques: [], faltas: [{ passageiroId: p.id, data: "2026-11-10" }, { passageiroId: p.id, data: "2026-11-11", avisouNoPrazo: false }] });
     expect(cs[0]?.faltas).toBe(0);
-    expect(cs[0] && valorFinal(cs[0])).toBe(280);
+    expect(cs[0] && valorFinal(cs[0])).toBe(28000);
   });
   it("trip includes return on another day, but another trip on the same day charges separately", () => {
-    const pessoa = { ...p, plano: "viagem" as const, valor: 45 };
+    const pessoa = { ...p, plano: "viagem" as const, valor: 4500 };
     const ida = aplicarEmbarque([], pessoa, "2026-11-13", "2026-11-13", "ida-volta");
     const volta = aplicarEmbarque(ida, pessoa, "2026-11-14", "2026-11-14", "ida-volta");
     expect(volta).toHaveLength(1);
     expect(aplicarEmbarque(volta, pessoa, "2026-11-13", "2026-11-14", "outra")).toHaveLength(2);
   });
   it("daily charges once per boarding date even within the same trip", () => {
-    const pessoa = { ...p, plano: "diario" as const, valor: 22 };
+    const pessoa = { ...p, plano: "diario" as const, valor: 2200 };
     const ida = aplicarEmbarque([], pessoa, "2026-11-13", "2026-11-13", "ida-volta");
     expect(aplicarEmbarque(ida, pessoa, "2026-11-13", "2026-11-13", "outra")).toHaveLength(1);
     expect(aplicarEmbarque(ida, pessoa, "2026-11-14", "2026-11-14", "ida-volta")).toHaveLength(2);
@@ -42,7 +42,7 @@ describe("Etapa 7B", () => {
     const juliana = passageirosExemplo.find((p) => p.id === "p-juliana");
     if (!juliana) throw new Error("Missing Juliana");
     const ms = matriculasDaPessoa(passageirosExemplo, juliana);
-    expect(ms.map((p) => p.valor)).toEqual([280, 180]);
+    expect(ms.map((p) => p.valor)).toEqual([28000, 18000]);
     expect(viagensDasMatriculas(ms, destinosExemplo, "2026-11-13").slice(0, 2).map((v) => v.destino.id)).toEqual(["jacarezinho-londrina", "centro-unisul"]);
     expect(pessoasParaDestino(passageirosExemplo, "centro-unisul").some((p) => p.id === juliana.id)).toBe(false);
   });

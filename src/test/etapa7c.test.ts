@@ -38,8 +38,8 @@ describe("Exemplos regionais da Etapa 7C", () => {
     if (!juliana) throw new Error("Missing Juliana");
     const matriculas = matriculasDaPessoa(passageirosExemplo, juliana);
     expect(matriculas.map((p) => [p.destinoId, p.plano, p.valor])).toEqual([
-      ["centro-unisul", "mensal", 280],
-      ["jacarezinho-londrina", "mensal", 180],
+      ["centro-unisul", "mensal", 28000],
+      ["jacarezinho-londrina", "mensal", 18000],
     ]);
     expect(new Set(matriculas.map((p) => p.telefone)).size).toBe(1);
   });
@@ -53,7 +53,7 @@ describe("Exemplos regionais da Etapa 7C", () => {
     expect(resumoDoMes(obterCobrancas(), "2026-11-13")).toEqual({
       // E6 (14/11/2026): Por viagem e Diário vencem 7 dias depois; 4 cobranças (R$ 101) passam de devendo a pendente.
       // E8 (14/11/2026): só uma cobrança à frente; a quinzena de 30/11 do Pedro (R$ 150) só nasce em 15/11.
-      aReceber: 1661, recebido: 663, devendo: 530, pagos: 9, pendentes: 9, devendoQtd: 2,
+      aReceber: 166100, recebido: 66300, devendo: 53000, pagos: 9, pendentes: 9, devendoQtd: 2,
     });
   });
 });

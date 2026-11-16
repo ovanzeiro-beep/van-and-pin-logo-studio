@@ -16,8 +16,8 @@ describe("A3 (opção 1): quem sai do último destino continua vendo o que deve"
     expect(renderHook(() => useMinhaSituacao()).result.current.tipo).toBe("sem-van");
     expect(renderHook(() => useIdsDasMinhasCobrancas()).result.current).toEqual(["p-beatriz"]);
     const emAberto = renderHook(() => useEmAbertoDeQuemSaiu()).result.current;
-    expect(emAberto).toEqual({ total: 280, devendo: true });
-    expect(formatarReais(emAberto!.total)).toBe(formatarReais(280));
+    expect(emAberto).toEqual({ total: 28000, devendo: true });
+    expect(formatarReais(emAberto!.total)).toBe(formatarReais(28000));
   });
 
   it("quem saiu sem dever nada não vê o cartão", () => {

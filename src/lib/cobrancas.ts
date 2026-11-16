@@ -15,6 +15,7 @@ export type Cobranca = {
   /** "Mensalidade de novembro", "Viagem de 14/11"… */
   referencia: string;
   vencimento: string;
+  /** Money in centavos (see src/lib/dinheiro.ts). */
   valorBase: number;
   faltas: number;
   valorFalta: number;
@@ -85,7 +86,7 @@ export function mesmoMes(a: string, b: string) {
 // ---------- values and status ----------
 
 export function valorFinal(c: Pick<Cobranca, "valorBase" | "faltas" | "valorFalta">) {
-  return Math.max(0, Math.round((c.valorBase - c.faltas * c.valorFalta) * 100) / 100);
+  return Math.max(0, c.valorBase - c.faltas * c.valorFalta);
 }
 
 export function situacao(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string): Situacao {

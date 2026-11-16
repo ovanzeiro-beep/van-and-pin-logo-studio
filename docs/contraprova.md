@@ -995,6 +995,6 @@ Conferência (15/11/2026):
 ## Preparar para o banco — seção 16 (iniciada em 16/11/2026)
 - [x] Q1. Um perfil por vanzeiro (feito em 16/11/2026, merge na `main`): passageiro vê o vanzeiro do destino/cobrança; "Van lotada" pelos lugares do vanzeiro do destino; vanzeiro desconhecido em branco. Conferência: 254 testes (novo `src/test/dois-vanzeiros.test.ts`, com um segundo vanzeiro), tipos, build; no navegador, Juliana vê o Carlos e o Pix dele, o Pix novo do Carlos aparece para ela, a Beatriz que saiu continua vendo o Pix do Carlos, dia completo igual, 30 telas sem erro.
 - [x] Q2. Lista de cidades do mapa no documento do banco (feito em 16/11/2026): conjuntos 2.13 e 2.14, tarefas 5 e 6 do servidor, duas linhas na tabela da seção 4. Só documento; nenhum código mudou; testes e build continuam passando.
-- [ ] Q3. Dinheiro em centavos.
+- [x] Q3. Dinheiro em centavos (feito em 16/11/2026): `src/lib/dinheiro.ts` (centavos, `formatarReais`, `centavosParaTexto`), `lerValor` devolve centavos, `valorFinal` só com inteiros, exemplos em centavos. Conferência: 256 testes (testes antigos convertidos para centavos; novo `src/test/centavos.test.ts`), tipos, build; no navegador todos os valores iguais aos de antes e "45,50" entra e aparece como R$ 45,50; 30 telas sem erro.
 - [ ] Q4. Fuso de Brasília na hora do app.
 - [ ] Q5. Hora da resposta guardada.
