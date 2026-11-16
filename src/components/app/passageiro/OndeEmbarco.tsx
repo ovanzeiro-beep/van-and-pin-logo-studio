@@ -17,7 +17,7 @@ export function OndeEmbarco({
   avisoDoMapa,
   mapaFlexivel = false,
 }: {
-  destino: Destino;
+  destino: Pick<Destino, "origem" | "destino" | "paradas">;
   valor: Embarque;
   mudar: (e: Partial<Embarque>) => void;
   /** Shown in place of the map's title (e.g. the distance warning), so the form does not grow. */

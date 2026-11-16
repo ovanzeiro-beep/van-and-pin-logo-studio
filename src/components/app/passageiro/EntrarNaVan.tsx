@@ -18,7 +18,7 @@ import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { formatarReais } from "@/lib/dinheiro";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
-import { acharPorCodigo } from "@/lib/convite";
+import { procurarPorCodigo, type DestinoDoConvite } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
 import { fazer } from "@/lib/acoes";
 
@@ -59,9 +59,22 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
 function Codigo({ primeiroUso, aoMudarPasso }: { primeiroUso: boolean; aoMudarPasso: (p: 0 | 1 | 2) => void }) {
   const destinos = useDestinos();
   const [codigo, setCodigo] = useState("");
-  const [achado, setAchado] = useState<Destino | null | undefined>(undefined);
+  const [achado, setAchado] = useState<DestinoDoConvite | null | undefined>(undefined);
+  const [procurando, setProcurando] = useState(false);
 
-  const procurar = () => setAchado(acharPorCodigo(destinos, codigo) ?? null);
+  const procurar = async () => {
+    setProcurando(true);
+    await fazer(async () => {
+      try {
+        setAchado(await procurarPorCodigo(codigo, destinos));
+        return { ok: true };
+      } catch {
+        return { ok: false, motivo: "Não deu para procurar a van. Confira o sinal e tente de novo." };
+      } finally {
+        setProcurando(false);
+      }
+    });
+  };
 
   if (achado) return <Confirmar destino={achado} voltar={() => setAchado(undefined)} aoMudarPasso={aoMudarPasso} />;
 
@@ -78,13 +91,14 @@ function Codigo({ primeiroUso, aoMudarPasso }: { primeiroUso: boolean; aoMudarPa
         className="space-y-3"
         onSubmit={(e) => {
           e.preventDefault();
-          procurar();
+          void procurar();
         }}
       >
         <Input
           aria-label="Código de convite"
           placeholder="Ex.: VAN-4821"
           value={codigo}
+          disabled={procurando}
           autoCapitalize="characters"
           onChange={(e) => {
             setCodigo(e.target.value.toUpperCase());
@@ -97,7 +111,7 @@ function Codigo({ primeiroUso, aoMudarPasso }: { primeiroUso: boolean; aoMudarPa
             <XCircle className="h-4 w-4" /> Código não encontrado
           </p>
         )}
-        <Button type="submit" variant="cta" size="xl" className="w-full" disabled={!codigo.trim()}>
+        <Button type="submit" variant="cta" size="xl" className="w-full" disabled={!codigo.trim() || procurando}>
           <Search className="!h-5 !w-5" /> Procurar van
         </Button>
       </form>
@@ -142,8 +156,10 @@ function OndeConseguir() {
   );
 }
 
-function CardDaVan({ destino }: { destino: Destino }) {
-  const vanzeiro = usePerfilDoVanzeiro(destino.vanzeiroId);
+function CardDaVan({ destino }: { destino: DestinoDoConvite | Destino }) {
+  const agenda = "vanzeiroId" in destino ? destino : destino.agenda;
+  const vanzeiro = usePerfilDoVanzeiro(agenda?.vanzeiroId ?? "");
+  const nome = "vanzeiroNome" in destino ? destino.vanzeiroNome : undefined;
   return (
     <div className="flex items-start gap-3 rounded-2xl bg-surface p-3">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-success-soft text-success">
@@ -151,17 +167,17 @@ function CardDaVan({ destino }: { destino: Destino }) {
       </div>
       <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Vanzeiro</p>
-        <p className="font-display text-lg font-bold leading-tight text-foreground">{vanzeiro.nome}</p>
+        <p className="font-display text-lg font-bold leading-tight text-foreground">{nome ?? vanzeiro.nome}</p>
         <p className="mt-1 font-semibold text-foreground">{nomeDestino(destino)}</p>
         <p className="text-sm text-muted-foreground">
-          {quandoAcontece(destino)} · saída {destino.saida}
+          {agenda ? `${quandoAcontece(agenda)} · ` : ""}saída {destino.saida}
         </p>
       </div>
     </div>
   );
 }
 
-function Confirmar({ destino, voltar, aoMudarPasso }: { destino: Destino; voltar: () => void; aoMudarPasso: (p: 0 | 1 | 2) => void }) {
+function Confirmar({ destino, voltar, aoMudarPasso }: { destino: DestinoDoConvite; voltar: () => void; aoMudarPasso: (p: 0 | 1 | 2) => void }) {
   const sessao = useSessaoPassageiro();
   const [nome, setNome] = useState(sessao.nome);
   const [telefone, setTelefone] = useState(sessao.telefone ? formatarTelefone(sessao.telefone) : "");

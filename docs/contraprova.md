@@ -1210,3 +1210,10 @@ Conferência (15/11/2026):
 - [x] `src/lib/formatos.ts`: `nomeDePessoa`, `nomeProprio` (lugares, com siglas), `emailPadrao`, `placaPadrao`, `frase`, `chavePixPadrao`.
 - [x] Aplicada ao salvar: destino (origem, destino, paradas), passageiro (nome, endereço), meus dados, pedir para entrar, mudar onde embarco, perfil do vanzeiro (nome, telefone, Pix, modelo, placa), criar conta e entrar (nome, e-mail), esqueci a senha (e-mail), motivo do dia sem viagem e do cancelamento, descrição do gasto.
 - [x] Conferência: 316 testes (novo `formatos.test.ts`), tipos, build.
+
+## Correção pontual da busca do convite — 16/11/2026
+- [x] Diagnóstico: o login real limpa os destinos locais; a tela procurava o convite somente nessa lista vazia, sem chamar a consulta já existente no banco.
+- [x] A busca de contas reais chama `destino_pelo_convite`, conserva o destino retornado e mostra `vanzeiro_nome`, sem substituir pelo perfil de exemplo ou pelo usuário atual. Nenhuma migração ou permissão alterada.
+- [x] Falhas na consulta mostram erro de conexão, não "Código não encontrado". A pesquisa aguarda a resposta antes de liberar outra tentativa.
+- [x] 319 testes passando, incluindo VAN-6187 com serviço simulado, destino de outro vanzeiro, resposta vazia e erro de consulta; última compilação registrada sem erro. A tela protegida abre o login sem erros no navegador.
+- [ ] Conferir VAN-6187 com a conta real: não há sessão disponível do serviço externo; a consulta sem login retorna acesso negado, como previsto. A existência do convite e a busca autenticada real permanecem não verificadas. O envio e aceite de pedidos continuam fora desta correção.

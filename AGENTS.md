@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Real-account invite searches use the authenticated `destino_pelo_convite` RPC and its returned driver name; local lists and profiles are not authoritative for another driver's invite.
 - Screens are phone-first: every page renders inside `MobileScreen` (max ~430px, centered on desktop) so the app reads as native mobile.
 - Role dashboards are layout routes (`vanzeiro.tsx`, `passageiro.tsx`) that own the fixed `BottomNav`; each tab is a child route file.
 - Sample data lives only in `src/data/exemplo.ts` until a real backend exists, so it can be swapped in one place.
