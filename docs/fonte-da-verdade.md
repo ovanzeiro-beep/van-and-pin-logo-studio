@@ -637,7 +637,7 @@ Pensado no dia real: o vanzeiro dirige com uma mão, cedo, em estrada com pouco 
 3. **"Cada vanzeiro só vê o que é dele" já nas funções:** hoje só gastos e exclusões separam por vanzeiro; destinos, passageiros, cobranças, viagens e avisos mostram tudo da memória (não aparece porque os exemplos têm um vanzeiro só). Com o banco quem separa é o banco, mas fazer já nas funções deixa as telas prontas e testáveis com dois vanzeiros.
 
 ### 19.2 Plano (uma etapa por vez)
-- **U1. Limpeza de código** (item 1) — em andamento, com o "pode seguir" do dono de 16/11.
+- **U1. Limpeza de código** (item 1) — **feito em 16/11/2026.** Saíram as funções sem uso (`marcarComoLido`, `limparSessao`) e 7 importações esquecidas em 7 arquivos; `obterRespostasParaTeste` virou `obterRespostasDoDia`; datas e nomes ficaram num lugar só, `src/lib/datas.ts` (lista de meses, somar dias, "hoje / sex, 13 de nov", nome do mês, primeiro nome), usado no lugar das 9 cópias (a tela do Financeiro não tem mais a própria lista de meses); o botão redondo do cabeçalho virou uma peça só, `src/components/app/PilulaDoCabecalho.tsx` (`PilulaDoCabecalho` e `BotaoVoltar`), nas 11 telas; identificadores novos saem de uma função só, `novoId` em `src/lib/ids.ts`, que não repete; 30 funções e constantes deixaram de ser marcadas para uso fora do próprio arquivo (os tipos de dados continuam marcados, de propósito: descrevem o que o banco vai guardar); os avisos de "react-refresh" das peças do app sumiram (sobram só nas peças prontas do Lovable, assunto da U2). Nada mudou para quem usa o app.
 - **U2. Tirar peças e bibliotecas sem uso** (item 2) — só com a aprovação do dono.
 - **U3. Cada vanzeiro vê só o que é dele nas funções** (item 3).
 
