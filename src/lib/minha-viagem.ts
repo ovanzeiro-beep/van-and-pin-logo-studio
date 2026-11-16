@@ -1,7 +1,7 @@
 import { type RespostaViagem, type Passageiro, type Destino } from "@/data/exemplo";
 import { formatarData, textoDoPrazo } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
-import { respostasDoDia, useRespostas } from "@/lib/respostas-store";
+import { useLeitorDeRespostas } from "@/lib/respostas-store";
 import { useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { confirmacaoAberta, proximasDatas, proximaViagem, situacaoParaPassageiro, type SituacaoParaPassageiro } from "@/lib/viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
@@ -30,14 +30,14 @@ export function useMinhasViagens() {
   const ancora = useEu();
   const matriculas = useMinhasMatriculas();
   const destinos = useDestinos();
-  const respostas = useRespostas();
+  const respostasDoDia = useLeitorDeRespostas();
   const { viagens } = useViagensDoDia();
   const agora_val = agora();
   const proximas: MinhaProximaViagem[] = viagensDasMatriculas(matriculas, destinos, agora_val.data)
     .filter((v) => !(v.data === agora_val.data && viagens[v.destino.id]?.fase === "encerrada"))
     .map((v) => {
       const comecou = v.data === agora_val.data && viagens[v.destino.id] !== undefined;
-      return { ...v, resposta: respostasDoDia(respostas, v.data)[v.eu.id], aberta: confirmacaoAberta(v.destino, v.data, agora_val, comecou), prazo: textoDoPrazo(v.destino, v.data), emAndamento: comecou };
+      return { ...v, resposta: respostasDoDia(v.data)[v.eu.id], aberta: confirmacaoAberta(v.destino, v.data, agora_val, comecou), prazo: textoDoPrazo(v.destino, v.data), emAndamento: comecou };
     });
   const meusDestinos = destinos.filter((d) => matriculas.some((p) => p.destinoId === d.id));
   const distante = proximas.length === 0 ? proximaViagem(meusDestinos, agora_val.data) : null;
@@ -46,7 +46,7 @@ export function useMinhasViagens() {
   const destaque = viagemEmDestaque(proximas);
   const eu = ativa ?? destaque?.eu ?? ancora;
   const destino = destinos.find((d) => d.id === (ativa?.destinoId ?? destaque?.destino.id ?? distante?.destino.id ?? eu.destinoId));
-  return { eu, destino, destaque, proximas, matriculas, destinos, viagens, proximaDistante: distante?.data ?? null, viagemDeHoje: viagens[eu.destinoId], respostaDeHoje: respostasDoDia(respostas, agora_val.data)[eu.id] };
+  return { eu, destino, destaque, proximas, matriculas, destinos, viagens, proximaDistante: distante?.data ?? null, viagemDeHoje: viagens[eu.destinoId], respostaDeHoje: respostasDoDia(agora_val.data)[eu.id] };
 }
 
 /** "Situação da van" (Início and "Onde está a van"): the same answer on both screens. */
