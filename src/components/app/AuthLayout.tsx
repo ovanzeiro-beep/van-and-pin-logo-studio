@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { InstalarApp } from "./InstalarApp";
+import { MensagemDasAcoes } from "./MensagemDasAcoes";
 import { MobileScreen } from "./MobileScreen";
 
 export function AuthLayout({
@@ -29,6 +30,7 @@ export function AuthLayout({
         {children}
         <div className="mt-auto pt-6 text-center text-sm text-muted-foreground">{rodape}</div>
       </div>
+      <MensagemDasAcoes />
     </MobileScreen>
   );
 }

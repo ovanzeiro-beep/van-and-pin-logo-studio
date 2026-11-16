@@ -1181,3 +1181,17 @@ Conferência (15/11/2026):
 - [x] V3.3 Conferência: testes, tipos, build; no navegador com o relógio de hoje e com outras datas (outro mês, virada de ano, fim de semana, noite): telas sem erro, viagens de hoje são de hoje, números batendo entre Início e Financeiro.
   - Resultado: 306 testes (sem mudar nenhum: nos testes o relógio continua fixo), tipos, build. No navegador, 5 momentos — hoje de verdade (seg 16/11/2026 09:16), qua 02/12 06:00, dom 20/12 14:00, sex 01/01/2027 23:30, seg 15/03/2027 05:20: "Hoje" é o dia certo em Viagem e nas Viagens do passageiro (domingo mostra a viagem de domingo); prazo aberto às 05:20 e encerrado depois; "A receber" igual no Início e no Financeiro nos 5; Início do vanzeiro e do passageiro sem rolar; histórico com as datas andadas e os mesmos dias da semana (qui e dom); "Seu mês" no mês certo. Dia completo com o relógio do navegador em 13/11/2026 05:10: as 13 linhas iguais às da `main`. O único aviso é o "hydration" do próprio teste (servidor no dia de verdade, navegador num dia simulado), que se acerta sozinho.
 - Não pode quebrar: conferido — telas, textos, cores e regras iguais; só o dia e a hora passaram a ser os de verdade.
+
+
+## Etapa V4 — Guardar no celular (cancelada em 16/11/2026)
+**Situação:** cancelada pelo dono: o banco entra agora, então não precisa.
+
+## Etapa W1 — Login e conta no banco (iniciada em 16/11/2026, com o "pode colocar o banco" do dono)
+**Situação:** código feito e conferido (merge na `main`); **falta o dono rodar o SQL no Supabase e testar no celular.**
+- [x] W1.1 `supabase/migrations/20261116120000_w1_contas.sql`: tabela `contas`, regra "cada um só vê a própria conta", conta criada sozinha no cadastro com nome e aceite (e-mail sem aceite é recusado), `escolher_papel`, `excluir_minha_conta`.
+- [x] W1.2 `src/lib/supabase.ts` (ligação, chave pública, `USA_BANCO` — nos testes tudo continua na memória) e `src/lib/conta.ts` (entrar, criar conta, Google, esqueci a senha, senha nova, papel, sair, excluir; motivos em português).
+- [x] W1.3 Telas: Entrar, Criar conta (com "Confirme seu e-mail"), Esqueci minha senha, nova tela Criar senha nova, Como você vai usar, Sair, Excluir minha conta; painéis só com login (`ExigeConta`); faixa vermelha também nas telas de login.
+- [x] W1.4 Conferência aqui: 311 testes (novo `w1-conta.test.ts`, com o Supabase simulado: senha errada, entrar, criar conta com aceite, confirmar e-mail, papel, excluir, sair, senha nova), tipos, build; no navegador: sem login, Vanzeiro, Passageiro e Como vai usar mandam para Entrar; entrar sem conexão mostra "Sem conexão com o servidor…"; Criar conta, Esqueci minha senha e Criar senha nova abrem sem rolar; sem erros.
+- [ ] W1.5 Dono: rodar o SQL no SQL Editor; em Authentication → URL Configuration, colocar o endereço do app; testar no celular: criar conta, confirmar e-mail, entrar, escolher o papel, sair, entrar de novo (abre o último painel), esqueci a senha.
+- [ ] W1b Google: ligar o Google no Supabase (precisa de uma conta Google Cloud) e gravar o aceite dos Termos de quem entra pelo Google.
+- Observação: a partir da W1, quem entra começa com o app vazio; até W2–W8, o que for criado some ao recarregar.

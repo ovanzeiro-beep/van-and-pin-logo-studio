@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ComponentType } from "react";
 import { ArrowRight, UserRound } from "lucide-react";
 import { Logo, VanIcon } from "@/components/brand/Logo";
+import { MensagemDasAcoes } from "@/components/app/MensagemDasAcoes";
 import { MobileScreen } from "@/components/app/MobileScreen";
 import { fazer } from "@/lib/acoes";
 import { escolherPapelDaConta } from "@/lib/conta";
@@ -50,6 +51,7 @@ function ComoVaiUsar() {
           aoTocar={() => void fazer(() => escolherPapelDaConta("passageiro"))}
         />
       </div>
+      <MensagemDasAcoes />
     </MobileScreen>
     </ExigeConta>
   );

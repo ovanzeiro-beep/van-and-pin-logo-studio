@@ -28,6 +28,7 @@ Dias e horas do app (viagem do dia, prazo de confirmação, vencimentos, "hoje")
 Para cada conjunto: os campos, quem pode ver e quem pode mudar. "Vanzeiro dono" é o vanzeiro do destino.
 
 ### 2.1 Contas
+**No banco desde a W1 (16/11/2026):** tabela `public.contas` (`id` = login do Supabase, `nome`, `aceite_termos_em`, `e_vanzeiro`, `e_passageiro`, `ultimo_papel`, `criada_em`), funções `escolher_papel` e `excluir_minha_conta`.
 | Campo | O que é |
 | --- | --- |
 | identificador | número da conta, feito pelo banco |
@@ -391,7 +392,7 @@ Para o banco entrar mais fácil, a **Etapa K** (seção 11 da fonte da verdade) 
 ### 8.3 Ordem de entrada: uma parte por etapa
 | Etapa | Parte | O que passa a ser de verdade |
 | --- | --- | --- |
-| W1 | Login e conta | e-mail e senha, Google, "Esqueci a senha", aceite dos Termos, papéis |
+| W1 | Login e conta | e-mail e senha, Google, "Esqueci a senha", aceite dos Termos, papéis — **código feito em 16/11/2026** (`supabase/migrations/20261116120000_w1_contas.sql`, `src/lib/conta.ts`); Google em W1b |
 | W2 | Perfis | perfil do vanzeiro e dados do passageiro |
 | W3 | Destinos | destinos, código de convite único, dias sem viagem |
 | W4 | Passageiros e pedidos | matrículas, pedidos, mudanças de endereço, juntar pelo telefone (2.17) |

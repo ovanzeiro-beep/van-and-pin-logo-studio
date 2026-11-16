@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import type { AuthError, User } from "@supabase/supabase-js";
-import { deuCerto, naoDeu, SEM_RESPOSTA, type Resultado } from "@/lib/acoes";
+import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 import { instanteDeAgora } from "@/lib/agora";
 import { comecarContaDeVerdade, escolherPapel, sair } from "@/lib/acesso";
 import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
@@ -24,11 +24,13 @@ function motivo(erro: AuthError | { message?: string; code?: string } | null): s
   if (texto.includes("provider is not enabled") || texto.includes("unsupported provider")) return "O login com Google ainda não foi ligado. Use e-mail e senha.";
   if (codigo === "same_password") return "A senha nova é igual à antiga. Escolha outra.";
   if (texto.includes("aceite os termos")) return "Para criar a conta, aceite os Termos de Uso e a Política de Privacidade.";
-  if (texto.includes("fetch") || texto.includes("network")) return SEM_RESPOSTA;
+  if (texto.includes("fetch") || texto.includes("network")) return SEM_CONEXAO;
   return "Não deu certo. Tente de novo em instantes.";
 }
 
-const semBanco = () => naoDeu(SEM_RESPOSTA);
+/** Login screens: no signal, or the server did not answer. */
+const SEM_CONEXAO = "Sem conexão com o servidor. Confira o sinal e tente de novo.";
+const semBanco = () => naoDeu(SEM_CONEXAO);
 
 export async function entrarComEmail(email: string, senha: string): Promise<Resultado> {
   const sb = supabase();
