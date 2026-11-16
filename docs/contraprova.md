@@ -1230,3 +1230,12 @@ Conferência (15/11/2026):
 - [x] `src/lib/banco/destinos.ts`: ao entrar, carrega do banco os perfis que a pessoa pode ver e os destinos (com os dias sem viagem, sem os excluídos); salvar destino (com novo código se o convite já for de outro vanzeiro), pausar/ativar, dia sem viagem e desfazer, excluir destino (marcado no banco) e salvar perfil gravam no banco primeiro e só então mudam a tela; erro do banco aparece na faixa vermelha e nada muda.
 - [x] Telas: assistente de destino, Pausar, Dias sem viagem, Excluir destino, Perfil do vanzeiro.
 - [x] Conferência: 325 testes (novo `w2-w3-destinos.test.ts`, com o Supabase simulado), tipos, build.
+
+## W4 — Convite, pedidos e passageiros no banco (feita em 16/11/2026)
+**Situação:** código feito e testado (merge na `main`, publicado); **o dono testa com dois celulares (ou duas contas).** Motivo: o pedido para entrar dava "Não achamos este destino" porque ainda ia para a memória.
+- [x] `src/lib/banco/passageiros.ts`: ao entrar, carrega matrículas, pedidos e mudanças de endereço que a pessoa pode ver; a identidade do passageiro é a conta; sem van, o último pedido da conta diz se está aguardando ou recusado; novidades dos outros celulares a cada 30 segundos e quando o app volta para a tela.
+- [x] Passageiro: pedir para entrar pelo código (`pedir_para_entrar`), mudar onde embarca (o banco mede a distância), meus dados, sair do destino.
+- [x] Vanzeiro: aceitar pedido (a matrícula nasce com a conta da pessoa, `aceitar_pedido`), recusar, cadastrar e editar passageiro, reordenar (arrastar), remover, aceitar/recusar mudança de endereço; excluir destino tira os passageiros e recusa os pedidos que esperavam.
+- [x] Siglas de estado sempre maiúsculas nos lugares ("Jacarezinho PR").
+- [x] Conferência: 333 testes (novos `w4-pedidos.test.ts` e casos de estado em `formatos.test.ts`), tipos, build.
+- Pendente: respostas (Vou / Não vou), viagem, cobranças, gastos e avisos ainda na memória (próximas partes).

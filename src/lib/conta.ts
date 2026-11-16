@@ -7,6 +7,7 @@ import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
 import { SUPABASE_CHAVE_PUBLICA, SUPABASE_URL, supabase, USA_BANCO } from "@/lib/supabase";
 import { emailPadrao, nomeDePessoa } from "@/lib/formatos";
 import { carregarPerfisEDestinos } from "@/lib/banco/destinos";
+import { carregarPassageirosEPedidos } from "@/lib/banco/passageiros";
 
 // W1 (docs/banco-de-dados.md, section 8.3): login and account for real, in the owner's Supabase.
 // E-mail and password, "Esqueci a senha", the Termos accepted at sign-up and the role of each account.
@@ -129,6 +130,8 @@ async function carregarConta(user: User) {
     comecarContaDeVerdade({ id: user.id, nome });
     // W2 and W3: the profile and the destinos come from the database.
     await carregarPerfisEDestinos();
+    // W4: memberships, pedidos and address changes.
+    await carregarPassageirosEPedidos();
   }
   mudarSessao({ conta: { id: user.id, email: user.email ?? "", nome }, papel, contaPronta: true });
 }

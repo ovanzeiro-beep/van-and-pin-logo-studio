@@ -25,11 +25,11 @@ import { nomeDestino } from "@/lib/destinos";
 import { useDestino, useDestinos } from "@/lib/destinos-store";
 import { matriculasDaPessoa, PLANO_ROTULO, formatarTelefone, linkWhatsApp, planoTemVencimento } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
-import { removerPassageiroDoDestino } from "@/lib/exclusoes";
 import { usePassageiro, usePassageiros } from "@/lib/passageiros-store";
 import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
 import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 import { fazer } from "@/lib/acoes";
+import { removerPassageiroNoBanco } from "@/lib/banco/passageiros";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")({
   head: () => ({
@@ -62,7 +62,7 @@ function DetalhePassageiro() {
   const remover = async () => {
     if (emViagem) return;
     await navigate({ to: "/vanzeiro/destinos/$id", params: { id: d.id } });
-    void fazer(() => removerPassageiroDoDestino(p.id));
+    void fazer(() => removerPassageiroNoBanco(p.id));
   };
 
   return (

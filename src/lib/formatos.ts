@@ -10,6 +10,9 @@ const limpar = (texto: string) => texto.trim().replace(/\s+/g, " ");
 
 const capitalizar = (palavra: string) => (palavra ? palavra.charAt(0).toLocaleUpperCase("pt-BR") + palavra.slice(1).toLocaleLowerCase("pt-BR") : palavra);
 
+/** Brazilian states (PR, SP…): in places they always stay in capitals. */
+const ESTADOS = new Set(["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"]);
+
 /** Longest acronym kept in places and van models ("UENP", "UTFPR", "PR", "VW"). */
 const SIGLA_MAX = 5;
 
@@ -28,6 +31,10 @@ export function nomeProprio(texto: string, siglas = true): string {
       const letras = palavra.replace(/[^\p{L}]/gu, "");
       const sigla = siglas && !tudoIgual && letras.length >= 2 && letras.length <= SIGLA_MAX && palavra === palavra.toLocaleUpperCase("pt-BR");
       if (sigla) return palavra;
+      // States always in capitals in places: "Jacarezinho PR", "Ourinhos - SP".
+      if (siglas && i > 0 && ESTADOS.has(letras.toLocaleUpperCase("pt-BR")) && letras.length === palavra.replace(/[^\p{L}]/gu, "").length && letras.length === 2) {
+        return palavra.toLocaleUpperCase("pt-BR");
+      }
       const minuscula = palavra.toLocaleLowerCase("pt-BR");
       if (i > 0 && MINUSCULAS.has(minuscula)) return minuscula;
       // Hyphenated parts and parts after an apostrophe: "Ana-Clara", "D'Ávila".

@@ -11,8 +11,9 @@ import { cn } from "@/lib/utils";
 import { mensagemConvite } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { descricaoPlano, formatarTelefone, numerosDaBusca, porCidade } from "@/lib/passageiros";
-import { reordenarPassageiro, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
+import { usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 import { fazer } from "@/lib/acoes";
+import { reordenarNoBanco } from "@/lib/banco/passageiros";
 
 function TituloSecao({ icon: Icon, children }: { icon: typeof Users; children: string }) {
   return (
@@ -186,7 +187,7 @@ function ListaArrastavel({ destinoId, cidade, passageiros, numeros }: { destinoI
   const aoSoltar = (e: DragEndEvent) => {
     largarDepois();
     const alvo = e.over;
-    if (alvo && e.active.id !== alvo.id) void fazer(() => reordenarPassageiro(String(e.active.id), String(alvo.id)));
+    if (alvo && e.active.id !== alvo.id) void fazer(() => reordenarNoBanco(String(e.active.id), String(alvo.id)));
   };
   return (
     <DndContext id={`busca-${destinoId}-${cidade}`} sensors={sensores} collisionDetection={closestCenter} onDragStart={comecar} onDragEnd={aoSoltar} onDragCancel={largarDepois}>

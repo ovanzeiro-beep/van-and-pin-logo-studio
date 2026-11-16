@@ -21,6 +21,8 @@ import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-stor
 import { procurarPorCodigo, type DestinoDoConvite } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
 import { fazer } from "@/lib/acoes";
+import { pedirParaEntrarNoBanco } from "@/lib/banco/passageiros";
+import { USA_BANCO } from "@/lib/supabase";
 
 /** Shown while the passenger is not in any van: invite code → "Pedir para entrar" → waiting for the vanzeiro. */
 export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
@@ -204,7 +206,7 @@ function Confirmar({ destino, voltar, aoMudarPasso }: { destino: DestinoDoConvit
             size="lg"
             variant="cta"
             disabled={!pode || !embarqueCompleto(destino, embarque)}
-            onClick={() => void fazer(() => pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque))}
+            onClick={() => void fazer(() => (USA_BANCO.destinos ? pedirParaEntrarNoBanco(destino.convite, nome, telefone, embarque) : pedirParaEntrar(destino.id, nome, somenteDigitos(telefone), embarque)))}
           >
             Pedir para entrar
           </Button>

@@ -18,6 +18,9 @@ describe("Formatação do que é digitado (decisão do dono, 16/11/2026)", () =>
   it("siglas digitadas em maiúscula continuam (quando o resto não está todo em maiúscula)", () => {
     expect(nomeProprio("UENP jacarezinho")).toBe("UENP Jacarezinho");
     expect(nomeProprio("Cambará → UENP Jacarezinho")).toBe("Cambará → UENP Jacarezinho");
+    expect(nomeProprio("JACAREZINHO PR")).toBe("Jacarezinho PR");
+    expect(nomeProprio("ourinhos - sp")).toBe("Ourinhos - SP");
+    expect(nomeProprio("Paraná")).toBe("Paraná");
   });
 
   it("e-mail, placa, motivos e chave Pix", () => {

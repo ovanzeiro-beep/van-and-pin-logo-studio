@@ -24,6 +24,7 @@ const falso = vi.hoisted(() => {
     return q;
   };
   const cliente = {
+    rpc: () => responder(null),
     from: (nome: string) => ({
       ...consulta(nome),
       upsert: (linha: Record<string, unknown>) => {
@@ -41,7 +42,7 @@ const falso = vi.hoisted(() => {
           estado.chamadas.push(`update ${nome}`);
           if (estado.erroNaProxima) return responder(null);
           tabela(nome).forEach((l) => l[c] === v && Object.assign(l, mudanca));
-          return responder(null);
+          return Object.assign(responder(null), { is: () => responder(null) });
         },
       }),
       delete: () => ({

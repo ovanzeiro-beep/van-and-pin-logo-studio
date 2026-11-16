@@ -24,11 +24,12 @@ import {
   telefoneValido,
   type RascunhoPassageiro,
 } from "@/lib/passageiros";
-import { salvarPassageiro, usePassageiros, usePassageirosDoDestino } from "@/lib/passageiros-store";
+import { usePassageiros, usePassageirosDoDestino } from "@/lib/passageiros-store";
 import { destinoPassaDosLugares } from "@/lib/lugares";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { cn } from "@/lib/utils";
 import { fazer } from "@/lib/acoes";
+import { salvarPassageiroNoBanco } from "@/lib/banco/passageiros";
 
 const PERGUNTAS = ["Nome e WhatsApp.", "Onde a pessoa embarca?", "Como a pessoa paga?", "Confira antes de salvar."];
 
@@ -70,7 +71,7 @@ export function PassageiroWizard({
 
   const salvar = async () => {
     const p = passageiroDeRascunho(r, destino, inicial);
-    const resultado = await fazer(() => salvarPassageiro(p, pedido?.id));
+    const resultado = await fazer(() => salvarPassageiroNoBanco(p, pedido?.id));
     if (!resultado.ok) return;
     if (inicial) irParaPassageiro(p.id);
     else irParaDestino();

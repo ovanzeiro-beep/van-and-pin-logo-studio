@@ -11,6 +11,8 @@ import { mudarMeuEmbarque, useMudancasAguardando } from "@/lib/passageiros-store
 import { useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 import { fazer } from "@/lib/acoes";
+import { mudarMeuEmbarqueNoBanco } from "@/lib/banco/passageiros";
+import { USA_BANCO } from "@/lib/supabase";
 
 export const Route = createFileRoute("/passageiro/embarque/$pid")({
   head: () => ({
@@ -72,7 +74,7 @@ function OndeVoceEmbarca() {
   const pode = mudou && embarqueCompleto(destino, valor);
 
   const salvar = async () => {
-    const r = await fazer(() => mudarMeuEmbarque(eu.id, valor));
+    const r = await fazer(() => (USA_BANCO.destinos ? mudarMeuEmbarqueNoBanco(eu.id, valor) : mudarMeuEmbarque(eu.id, valor)));
     if (!r.ok) return;
     if ("situacao" in r && r.situacao === "aguardando") setEnviado(true);
     else voltar();

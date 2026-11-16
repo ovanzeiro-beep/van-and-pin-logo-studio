@@ -56,7 +56,7 @@ export function comecarContaDeVerdade(conta: { id: string; nome: string }) {
   limparAvisos();
   limparViagensEncerradas();
   limparGastos();
-  mudarSessao({ vanzeiroId: conta.id, contaNova: null, passageiro: { nome: conta.nome, telefone: "", passageiroId: null, pedidoId: null } });
+  mudarSessao({ vanzeiroId: conta.id, contaNova: null, passageiro: { nome: conta.nome, telefone: "", passageiroId: conta.id, pedidoId: null } });
   perfilNovo(conta.nome);
 }
 

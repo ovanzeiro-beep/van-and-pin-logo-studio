@@ -7,6 +7,8 @@ import { carregarDestinos, obterDestinos, salvarDestino } from "@/lib/destinos-s
 import { excluirDestino, pausarOuAtivarDestino, viagemEmAndamentoNoDestino } from "@/lib/exclusoes";
 import { supabase, USA_BANCO } from "@/lib/supabase";
 import { carregarPerfis, obterPerfilDoVanzeiro, salvarPerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { obterPedidos } from "@/lib/passageiros-store";
+import { dataDeHoje } from "@/lib/agora";
 
 // W2 and W3 (docs/banco-de-dados.md, section 8.3): the vanzeiro's profile and the destinos in the database.
 // Each action first saves in Supabase; only when the database says it worked does the screen change (the same
@@ -159,8 +161,12 @@ export async function desfazerDiaNoBanco(destinoId: string, data: string): Promi
 export async function excluirDestinoNoBanco(destinoId: string): Promise<Resultado> {
   if (!usaBanco()) return excluirDestino(destinoId);
   if (viagemEmAndamentoNoDestino(destinoId)) return excluirDestino(destinoId);
-  const { error } = await supabase()!.from("destinos").update({ excluido_em: instanteDeAgora(), ativo: false }).eq("id", destinoId);
+  const sb = supabase()!;
+  const { error } = await sb.from("destinos").update({ excluido_em: instanteDeAgora(), ativo: false }).eq("id", destinoId);
   if (error) return naoDeu(motivo(error));
+  // Its passengers leave it and the waiting pedidos are refused (W4).
+  await sb.from("matriculas").update({ saiu_em: dataDeHoje() }).eq("destino_id", destinoId).is("saiu_em", null);
+  await Promise.all(obterPedidos().filter((x) => x.destinoId === destinoId).map((x) => sb.rpc("recusar_pedido", { pedido: x.id })));
   return excluirDestino(destinoId);
 }
 

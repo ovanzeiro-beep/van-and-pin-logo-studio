@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { type PedidoEntrada } from "@/data/exemplo";
-import { recusarPedido } from "@/lib/passageiros-store";
 import { fazer } from "@/lib/acoes";
+import { recusarPedidoNoBanco } from "@/lib/banco/passageiros";
 
 /** "Recusar pedido" with a confirmation dialog. */
 export function RecusarPedido({ pedido }: { pedido: PedidoEntrada }) {
   const recusar = () => {
-    void fazer(() => recusarPedido(pedido.id));
+    void fazer(() => recusarPedidoNoBanco(pedido.id));
   };
 
   return (

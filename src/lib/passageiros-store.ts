@@ -317,6 +317,14 @@ export function recusarPedido(id: string): Resultado {
   return deuCerto;
 }
 
+/** W4: what came from the database (memberships, pedidos, address changes) replaces what is in memory. */
+export function carregarPassageirosDoBanco(d: { matriculas: Passageiro[]; pedidos: PedidoEntrada[]; mudancas: MudancaDeEndereco[] }) {
+  matriculas = d.matriculas;
+  todosPedidos = d.pedidos;
+  mudancas = d.mudancas;
+  avisar();
+}
+
 /** New vanzeiro account: no passengers, no pedidos. */
 export function limparPassageiros() {
   matriculas = [];

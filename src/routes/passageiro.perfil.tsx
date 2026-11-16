@@ -14,9 +14,10 @@ import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { formatarTelefone, linkWhatsApp, meusDadosValidos } from "@/lib/passageiros";
 import type { Destino, Passageiro } from "@/data/exemplo";
-import { salvarMeusDados, useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
+import { useEu, useMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { textoDaVan, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { fazer } from "@/lib/acoes";
+import { salvarMeusDadosNoBanco } from "@/lib/banco/passageiros";
 
 export const Route = createFileRoute("/passageiro/perfil")({
   head: () => ({
@@ -117,7 +118,7 @@ function Editar({
   const dados = { nome, telefone, enderecos };
 
   const salvar = async () => {
-    const r = await fazer(() => salvarMeusDados(eu.id, dados));
+    const r = await fazer(() => salvarMeusDadosNoBanco(eu.id, dados));
     if (r.ok) fechar();
   };
 

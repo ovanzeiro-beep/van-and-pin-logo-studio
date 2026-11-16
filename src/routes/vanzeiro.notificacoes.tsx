@@ -11,11 +11,12 @@ import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
 import { RecusarMudanca } from "@/components/app/RecusarMudanca";
-import { aceitarMudancaDeEndereco, useMudancasAguardando, usePedidos, type MudancaDeEndereco } from "@/lib/passageiros-store";
+import { useMudancasAguardando, usePedidos, type MudancaDeEndereco } from "@/lib/passageiros-store";
 import { textoDaDistancia } from "@/lib/endereco";
 import { Button } from "@/components/ui/button";
 import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 import { fazer } from "@/lib/acoes";
+import { responderMudancaNoBanco } from "@/lib/banco/passageiros";
 
 const tipoAviso: Record<string, { label: string; cor: string }> = {
   pedido_novo: { label: "Pedido novo", cor: "text-primary" },
@@ -125,7 +126,7 @@ function MudancaCard({ m, destino }: { m: MudancaDeEndereco; destino: string | u
       </dl>
       <div className="mt-3 grid grid-cols-2 gap-3">
         <RecusarMudanca m={m} />
-        <Button size="lg" variant="success" onClick={() => void fazer(() => aceitarMudancaDeEndereco(m.id))}>
+        <Button size="lg" variant="success" onClick={() => void fazer(() => responderMudancaNoBanco(m.id, true))}>
           <Check className="!h-5 !w-5" /> Aceitar
         </Button>
       </div>

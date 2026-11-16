@@ -17,6 +17,7 @@ import { useFuncionarSemSinal } from "../lib/sem-sinal";
 import { useNotificarAvisosNovos } from "../lib/notificacoes";
 import { useContaDoBanco } from "../lib/conta";
 import "../lib/instalar";
+import { useNovidadesDoBanco } from "../lib/banco/passageiros";
 
 function NotFoundComponent() {
   return (
@@ -143,6 +144,8 @@ function RootComponent() {
   useNotificarAvisosNovos();
   // W1: who is logged in (real account in Supabase).
   useContaDoBanco();
+  // W4: news from the other phones (new pedido, pedido accepted…).
+  useNovidadesDoBanco();
 
   return (
     <QueryClientProvider client={queryClient}>
