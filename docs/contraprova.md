@@ -1271,3 +1271,11 @@ Conferência (15/11/2026):
 - [x] Regras conferidas numa cópia do banco (12 checagens): resposta trocada vira um aviso só; aviso repetido não duplica; ninguém de fora do destino cria aviso nem manda para quem não é do destino; cada um vê só os seus; marcar lido.
 - [x] Conferência: 346 testes (novo `w8-avisos.test.ts`), tipos, build.
 - Pendente: aplicar o SQL no Supabase de verdade; avisos criados com o app fechado (prazo chegando, cobrança vencendo) ficam para a W9; notificação no celular com o app fechado é a W10.
+
+## W9 — Tarefas do relógio no banco (feita em 16/11/2026)
+**Situação:** SQL feito e testado numa cópia do banco (merge na `main`); o dono cola `supabase/SO-SQL-4-RELOGIO.sql` no Supabase (ou dá a licença).
+- [x] `tarefas_do_relogio` a cada 5 minutos (pg_cron): faltas no prazo e desconto; próxima cobrança Mensal/Quinzenal; avisos de prazo chegando, cobrança vencendo e vencida.
+- [x] Mesmas contas do app conferidas lado a lado: vencimentos (dia 31 em novembro, quinzenas 5/20, 15/30, fevereiro), nomes das cobranças ("Mensalidade de novembro", "Quinzena de 06/11 a 20/11"), período das faltas, valores ("R$ 1.234,56"), datas ("sáb, 28 de nov").
+- [x] Teste da tarefa numa cópia do banco: falta só depois do prazo; desconto na cobrança; rodar de novo não repete nada; prazo chegando para quem não respondeu; cobrança vencendo e vencida; próxima mensalidade criada; o app não consegue chamar a tarefa.
+- [x] Conferência: 346 testes, tipos, build (o app não mudou nesta etapa).
+- Pendente: notificação no celular com o app fechado (W10).
