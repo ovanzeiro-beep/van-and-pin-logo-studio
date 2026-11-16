@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { List, MapPin, ReceiptText } from "lucide-react";
+import { CalendarDays, List, MapPin, ReceiptText } from "lucide-react";
 import { CobrancaItem } from "@/components/app/CobrancaItem";
 import { CobrarDevedores } from "@/components/app/CobrarDevedores";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
@@ -74,7 +74,15 @@ function Financeiro() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <VanzeiroHeader compacto titulo="Financeiro" subtitulo={`Resumo de ${mes}.`} />
+      <VanzeiroHeader compacto titulo="Financeiro" subtitulo={`Resumo de ${mes}.`}>
+        {/* T5: "Seu mês na van", the month in numbers (this one and the ones before). */}
+        <Link
+          to="/vanzeiro/financeiro/mes"
+          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
+        >
+          <CalendarDays className="h-4 w-4" /> Seu mês na van
+        </Link>
+      </VanzeiroHeader>
 
       <div className="relative z-10 -mt-4 shrink-0 px-5">
         <div className="grid grid-cols-3 gap-2">

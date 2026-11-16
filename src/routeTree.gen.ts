@@ -40,6 +40,7 @@ import { Route as VanzeiroDestinosIdRouteImport } from './routes/vanzeiro.destin
 import { Route as VanzeiroDestinosNovoRouteImport } from './routes/vanzeiro.destinos.novo'
 import { Route as VanzeiroFinanceiroIndexRouteImport } from './routes/vanzeiro.financeiro.index'
 import { Route as VanzeiroFinanceiroCidRouteImport } from './routes/vanzeiro.financeiro.$cid'
+import { Route as VanzeiroFinanceiroMesRouteImport } from './routes/vanzeiro.financeiro.mes'
 import { Route as VanzeiroDestinosEditarIdRouteImport } from './routes/vanzeiro.destinos.editar.$id'
 import { Route as VanzeiroDestinosIdPassageirosPidRouteImport } from './routes/vanzeiro.destinos.$id_.passageiros.$pid'
 import { Route as VanzeiroDestinosIdPassageirosNovoRouteImport } from './routes/vanzeiro.destinos.$id_.passageiros.novo'
@@ -201,6 +202,11 @@ const VanzeiroFinanceiroCidRoute = VanzeiroFinanceiroCidRouteImport.update({
   path: '/$cid',
   getParentRoute: () => VanzeiroFinanceiroRoute,
 } as any)
+const VanzeiroFinanceiroMesRoute = VanzeiroFinanceiroMesRouteImport.update({
+  id: '/mes',
+  path: '/mes',
+  getParentRoute: () => VanzeiroFinanceiroRoute,
+} as any)
 const VanzeiroDestinosEditarIdRoute =
   VanzeiroDestinosEditarIdRouteImport.update({
     id: '/editar/$id',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/financeiro/$cid': typeof VanzeiroFinanceiroCidRoute
+  '/vanzeiro/financeiro/mes': typeof VanzeiroFinanceiroMesRoute
   '/passageiro/pagamentos/': typeof PassageiroPagamentosIndexRoute
   '/vanzeiro/destinos/': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/financeiro/': typeof VanzeiroFinanceiroIndexRoute
@@ -287,6 +294,7 @@ export interface FileRoutesByTo {
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/financeiro/$cid': typeof VanzeiroFinanceiroCidRoute
+  '/vanzeiro/financeiro/mes': typeof VanzeiroFinanceiroMesRoute
   '/passageiro/pagamentos': typeof PassageiroPagamentosIndexRoute
   '/vanzeiro/destinos': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/financeiro': typeof VanzeiroFinanceiroIndexRoute
@@ -325,6 +333,7 @@ export interface FileRoutesById {
   '/vanzeiro/destinos/$id': typeof VanzeiroDestinosIdRoute
   '/vanzeiro/destinos/novo': typeof VanzeiroDestinosNovoRoute
   '/vanzeiro/financeiro/$cid': typeof VanzeiroFinanceiroCidRoute
+  '/vanzeiro/financeiro/mes': typeof VanzeiroFinanceiroMesRoute
   '/passageiro/pagamentos/': typeof PassageiroPagamentosIndexRoute
   '/vanzeiro/destinos/': typeof VanzeiroDestinosIndexRoute
   '/vanzeiro/financeiro/': typeof VanzeiroFinanceiroIndexRoute
@@ -364,6 +373,7 @@ export interface FileRouteTypes {
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/financeiro/$cid'
+    | '/vanzeiro/financeiro/mes'
     | '/passageiro/pagamentos/'
     | '/vanzeiro/destinos/'
     | '/vanzeiro/financeiro/'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/financeiro/$cid'
+    | '/vanzeiro/financeiro/mes'
     | '/passageiro/pagamentos'
     | '/vanzeiro/destinos'
     | '/vanzeiro/financeiro'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/vanzeiro/destinos/$id'
     | '/vanzeiro/destinos/novo'
     | '/vanzeiro/financeiro/$cid'
+    | '/vanzeiro/financeiro/mes'
     | '/passageiro/pagamentos/'
     | '/vanzeiro/destinos/'
     | '/vanzeiro/financeiro/'
@@ -673,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VanzeiroFinanceiroCidRouteImport
       parentRoute: typeof VanzeiroFinanceiroRoute
     }
+    '/vanzeiro/financeiro/mes': {
+      id: '/vanzeiro/financeiro/mes'
+      path: '/mes'
+      fullPath: '/vanzeiro/financeiro/mes'
+      preLoaderRoute: typeof VanzeiroFinanceiroMesRouteImport
+      parentRoute: typeof VanzeiroFinanceiroRoute
+    }
     '/vanzeiro/destinos/editar/$id': {
       id: '/vanzeiro/destinos/editar/$id'
       path: '/editar/$id'
@@ -770,11 +789,13 @@ const VanzeiroDestinosRouteWithChildren =
 
 interface VanzeiroFinanceiroRouteChildren {
   VanzeiroFinanceiroCidRoute: typeof VanzeiroFinanceiroCidRoute
+  VanzeiroFinanceiroMesRoute: typeof VanzeiroFinanceiroMesRoute
   VanzeiroFinanceiroIndexRoute: typeof VanzeiroFinanceiroIndexRoute
 }
 
 const VanzeiroFinanceiroRouteChildren: VanzeiroFinanceiroRouteChildren = {
   VanzeiroFinanceiroCidRoute: VanzeiroFinanceiroCidRoute,
+  VanzeiroFinanceiroMesRoute: VanzeiroFinanceiroMesRoute,
   VanzeiroFinanceiroIndexRoute: VanzeiroFinanceiroIndexRoute,
 }
 
