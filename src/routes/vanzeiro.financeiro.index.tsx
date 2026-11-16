@@ -1,17 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { List, MapPin, ReceiptText } from "lucide-react";
 import { CobrancaItem } from "@/components/app/CobrancaItem";
+import { CobrarDevedores } from "@/components/app/CobrarDevedores";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
 import { TelaVazia } from "@/components/app/TelaVazia";
 import { buttonVariants } from "@/components/ui/button";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
-import { filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
+import { devedores, filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { cn } from "@/lib/utils";
+import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 const FILTROS: { id: Filtro; rotulo: string }[] = [
   { id: "todas", rotulo: "Todas" },
@@ -27,7 +29,20 @@ const VAZIO: Record<Filtro, string> = {
   pagas: "Nenhuma cobrança paga ainda.",
 };
 
-const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const MESES = [
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
+];
 
 export const Route = createFileRoute("/vanzeiro/financeiro/")({
   validateSearch: (search: Record<string, unknown>): { filtro?: Filtro } => {
@@ -41,7 +56,10 @@ export const Route = createFileRoute("/vanzeiro/financeiro/")({
       { title: "Financeiro — O Vanzeiro" },
       { name: "description", content: "Resumo do mês e todas as cobranças dos seus passageiros." },
       { property: "og:title", content: "Financeiro — O Vanzeiro" },
-      { property: "og:description", content: "Resumo do mês e todas as cobranças dos seus passageiros." },
+      {
+        property: "og:description",
+        content: "Resumo do mês e todas as cobranças dos seus passageiros.",
+      },
     ],
   }),
   component: Financeiro,
@@ -58,6 +76,8 @@ function Financeiro() {
     const d = destinos.find((x) => x.id === id);
     return d ? nomeDestino(d) : undefined;
   };
+  const perfil = usePerfilVanzeiro();
+  const quemDeve = devedores(cobrancas, dataDeHoje());
 
   if (destinos.length === 0) {
     return (
@@ -90,7 +110,9 @@ function Financeiro() {
                 aria-pressed={ativo}
                 className={cn(
                   "flex h-10 items-center justify-center rounded-full px-1 text-sm font-semibold transition-colors",
-                  ativo ? "bg-primary text-primary-foreground" : "border border-border bg-card text-foreground",
+                  ativo
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-foreground",
                 )}
               >
                 {f.rotulo}
@@ -98,20 +120,39 @@ function Financeiro() {
             );
           })}
         </div>
+        <CobrarDevedores
+          lista={quemDeve}
+          pix={perfil.pix}
+          nomeDoVanzeiro={perfil.nome}
+          nomeDoDestino={(id) => nomeDoDestino(id) ?? ""}
+          cidadeDoDestino={(id) => destinos.find((x) => x.id === id)?.origem ?? ""}
+        />
       </div>
 
       {lista.length === 0 ? (
         <TelaVazia
           icon={ReceiptText}
           titulo={VAZIO[filtro]}
-          texto={filtro === "todas" ? "O app cria as cobranças sozinho, pelo plano de cada passageiro." : undefined}
+          texto={
+            filtro === "todas"
+              ? "O app cria as cobranças sozinho, pelo plano de cada passageiro."
+              : undefined
+          }
           botao={
             filtro === "todas" ? (
-              <Link to="/vanzeiro/destinos" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+              <Link
+                to="/vanzeiro/destinos"
+                className={cn(buttonVariants({ size: "lg" }), "w-full")}
+              >
                 <MapPin className="!h-5 !w-5" /> Ver destinos
               </Link>
             ) : (
-              <Link to="/vanzeiro/financeiro" search={{}} replace className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+              <Link
+                to="/vanzeiro/financeiro"
+                search={{}}
+                replace
+                className={cn(buttonVariants({ size: "lg" }), "w-full")}
+              >
                 <List className="!h-5 !w-5" /> Ver todas
               </Link>
             )
@@ -130,11 +171,21 @@ function Financeiro() {
   );
 }
 
-function CardResumo({ rotulo, valor, className }: { rotulo: string; valor: number; className: string }) {
+function CardResumo({
+  rotulo,
+  valor,
+  className,
+}: {
+  rotulo: string;
+  valor: number;
+  className: string;
+}) {
   return (
     <div className="rounded-2xl bg-card px-2.5 py-2.5 shadow-card">
       <p className="text-[0.7rem] font-semibold text-muted-foreground">{rotulo}</p>
-      <p className={cn("mt-0.5 font-display text-[0.95rem] font-bold leading-tight", className)}>{formatarReais(valor)}</p>
+      <p className={cn("mt-0.5 font-display text-[0.95rem] font-bold leading-tight", className)}>
+        {formatarReais(valor)}
+      </p>
     </div>
   );
 }
