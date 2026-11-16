@@ -1104,4 +1104,14 @@ Conferência (15/11/2026):
 - [x] T5.4 Conferência: 291 testes (novo `seu-mes.test.ts`, incluindo "Recebido igual ao do Financeiro"), tipos, build; no navegador em 390×844, 360×740 e 375×667: nenhuma página rola (só as listas); novembro: Recebido R$ 663,00 (igual ao Financeiro), Falta receber R$ 1.661,00, 2 viagens / 11 embarques, 2 de 4 em dia; outubro: R$ 2.140,00, 8 de 8 em dia; sem erros.
 - Não pode quebrar: conferido — números e filtros do Financeiro iguais; cores verde/vermelho/âmbar; palavras Devendo/Pendentes/Pago.
 - Observação: no iPhone SE a lista do Financeiro ficou menor (267px) por causa do botão no cabeçalho; continua rolando só a lista.
-- Pendência: gastos ("sobrou R$ X") só se o dono pedir.
+- Pendência: gastos ("sobrou R$ X") só se o dono pedir. **Atualizado em 16/11:** pedido e feito na T6.
+
+## Etapa T6 — Gastos da van no "Seu mês na van" (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18.3 da fonte da verdade. Sem banco de dados. Decisões do dono de 16/11: lista pronta de tipos; apagar e anotar de novo; gasto do mês; Sobrou = Recebido − Gastos.
+- [x] T6.1 Regras em `src/lib/gastos.ts` (tipos, o que falta para salvar, gastos do mês, total, Sobrou) e gastos na memória em `src/lib/gastos-store.ts`, com o vanzeiro dono; exemplos em `src/data/exemplo.ts` (novembro R$ 818,60; outubro R$ 1.140,00); conta nova de vanzeiro começa sem gastos.
+- [x] T6.2 Cartão "Sobrou" / "Faltou" no alto do "Seu mês na van".
+- [x] T6.3 "Gastos da van": lista com lixeira (confirmação "Apagar este gasto?"), "Anotar gasto" com os 5 tipos, "O que foi?" em Outros, valor e dia; mensagens quando falta algo.
+- [x] T6.4 `docs/banco-de-dados.md`: seções 2.15 (respostas deixadas prontas, da T3, que faltava) e 2.16 (gastos), e as linhas da tabela da seção 4.
+- [x] T6.5 Conferência: 295 testes (novo `gastos.test.tsx`), tipos, build; no navegador em 390×844, 360×740 e 375×667: a página não rola (só a lista); novembro "Faltou R$ 155,60" (R$ 663,00 − R$ 818,60); anotar "Lavagem" R$ 30,00 → "Faltou R$ 185,60"; apagar com confirmação volta; outubro "Sobrou R$ 1.000,00"; a janela de anotar cabe na tela, mesmo com "O que foi?"; sem erros.
+- Não pode quebrar: conferido — números de cobranças e "Pagaram em dia" iguais à T5; Financeiro igual.
+- Pendência: anotar gastos reais com o vanzeiro do piloto.

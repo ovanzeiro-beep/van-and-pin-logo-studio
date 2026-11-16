@@ -241,6 +241,28 @@ Hoje: não existe (a notificação sai do próprio app aberto; ver `src/lib/noti
 
 **Quem vê:** só a própria pessoa. **Quem muda:** a própria pessoa (ativar e desativar); o servidor apaga o que o celular deixar de aceitar.
 
+### 2.15 Respostas deixadas prontas ("Vou sempre" e "Não vou de… até…")
+**Atualizado em 16/11 (T3).** Hoje: `respostas-store.ts` (na memória) e as regras em `src/lib/respostas-fixas.ts`.
+| Campo | O que é |
+| --- | --- |
+| matrícula | vale um destino por vez |
+| "Vou sempre": ligado em, desligado em | horários (Brasília); só vale para o dia se foi ligado antes do prazo e desligado depois dele |
+| "Não vou": primeiro dia, último dia, marcado em, tirado em | o dia vira "Não vou" avisado no prazo (dá o desconto) se foi marcado antes do prazo daquele dia |
+
+Nada é apagado: desligar ou tirar guarda o horário, para que os dias com prazo já passado fiquem como estavam (e a prova do desconto continue certa). **Quem vê e muda:** o próprio passageiro. **O vanzeiro** vê só o resultado ("Vou" / "Não vou"), não a escolha.
+
+### 2.16 Gastos da van
+**Atualizado em 16/11 (T6).** Hoje: `gastos-store.ts` (na memória, começa com os exemplos) e as regras em `src/lib/gastos.ts`.
+| Campo | O que é |
+| --- | --- |
+| vanzeiro dono | cada vanzeiro vê só os seus |
+| tipo | Combustível, Manutenção, Pedágio, Documentos e seguro ou Outros |
+| o que foi | só em "Outros" |
+| valor | em centavos |
+| dia | do gasto (não pode ser depois de hoje) |
+
+O gasto é do mês, não de um destino. Não é editado: se estiver errado, é apagado e anotado de novo. **Quem vê e muda:** só o vanzeiro dono. Passageiros nunca veem.
+
 ---
 
 ## 3. O que roda sozinho no servidor
@@ -266,7 +288,7 @@ As telas não mudam: continuam chamando as mesmas funções. Muda só o que essa
 | `vanzeiro-store.ts` | perfil na memória | lê e grava o perfil do vanzeiro |
 | `destinos-store.ts` | lista na memória, começa com os exemplos | lê e grava destinos; o código de convite é conferido pelo banco |
 | `passageiros-store.ts` | matrículas e pedidos na memória; `aceitos` e `saidas` escondidos | lê e grava matrículas e pedidos com situação e datas; ordem de busca em campo próprio |
-| `respostas-store.ts` | respostas na memória; `fechadas` escondida | lê e grava respostas; o banco recusa depois do prazo |
+| `respostas-store.ts` | respostas na memória; `fechadas` escondida; respostas deixadas prontas (seção 2.15) | lê e grava respostas e as respostas deixadas prontas; o banco recusa depois do prazo |
 | `viagem-store.ts` | viagem do dia na memória; o relógio roda no celular | cada passo da viagem salvo na hora; o relógio vai para o servidor |
 | `viagens-encerradas-store.ts` | exemplos mais as de hoje | lê as viagens encerradas |
 | `cobrancas-store.ts` | cobranças geradas dos exemplos; `registrados` escondido | lê cobranças, pagamentos e cancelamentos; embarques e faltas viram registros |
@@ -276,6 +298,7 @@ As telas não mudam: continuam chamando as mesmas funções. Muda só o que essa
 | `convite.ts` | confere o código só no celular | o banco garante que nenhum código se repete |
 | `coordenadas-store.ts` | lista de cidades na memória; cada celular procura as que faltam | lê a lista única do banco; quem procura as novas é o servidor |
 | `notificacoes.ts` | mostra a notificação com o app aberto em segundo plano | guarda o endereço de notificação do celular (seção 2.14); quem manda é o servidor |
+| `gastos-store.ts` | gastos na memória, começa com os exemplos | lê, grava e apaga os gastos do vanzeiro (seção 2.16) |
 
 Além disso, com o banco:
 - cada ação demora um instante e pode falhar sem sinal: as telas ganham "carregando" e mensagem de erro;
