@@ -1086,3 +1086,12 @@ Conferência (15/11/2026):
 - [x] T3.5 Conferência: 285 testes (novo `respostas-fixas.test.ts`), tipos, build; no navegador em 390×844, 360×740 e 375×667: ligar "Vou sempre" pôs "Vou" na viagem de hoje com prazo aberto e não mexeu na que já tinha passado do prazo; período 16/11–17/11 virou "Não vou" no dia 16; sem datas, mostra "Escolha o primeiro e o último dia."; a janela cabe na tela; sem erros. Telas abertas sem erro; o único 404 é do roteiro antigo de conferência ("/vanzeiro/pedidos" não existe mais), não do app.
 - Não pode quebrar: conferido — Início do passageiro igual (não rola), palavras Vou / Não vou / Sem resposta, cores, regra do prazo.
 - Pendência (sugestão, não feita): avisar o vanzeiro no sininho quando alguém marca "Não vou de… até…". Só se o dono quiser.
+
+## Etapa T4 — Resumo do dia para o grupo da van (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18.3 da fonte da verdade. Sem banco de dados. Decisões do dono de 16/11: nome e cidade; lista quem não respondeu com o prazo; botão na aba Viagem.
+- [x] T4.1 Texto pronto (`src/lib/resumo-do-grupo.ts`): dia e destino, saída e volta, quantos vão (com os lugares, quando a van tem), ordem da busca com nome e cidade, sem endereço.
+- [x] T4.2 "Ainda não responderam (até HH:MM)" só enquanto o prazo está aberto; depois do prazo, não aparece.
+- [x] T4.3 Botão "Mandar resumo no grupo" na aba Viagem, antes de sair, no fim da lista; abre o WhatsApp sem número (o vanzeiro escolhe o grupo).
+- [x] T4.4 Conferência: 288 testes (novo `resumo-do-grupo.test.ts`), tipos, build; no navegador em 390×844, 360×740 e 375×667: a página não rola (só a lista), "Iniciar viagem" continua visível, o texto das duas viagens de hoje está certo (Jacarezinho → Londrina sem "não responderam", porque o prazo passou; Cambará → UENP com Juliana e Rafael até 05:40); sem erros.
+- Não pode quebrar: conferido — lista de quem vai, cores, botões "Iniciar viagem" e "Não vai ter viagem hoje" iguais.
+- Pendência: mandar de verdade num grupo do WhatsApp, no celular.
