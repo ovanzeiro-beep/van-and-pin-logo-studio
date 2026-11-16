@@ -142,9 +142,11 @@ function InicioPassageiro() {
           detail={
             aberta
               ? `${aberta.referencia} · ${textoDoVencimento(aberta, dataDeHoje())}`
-              : "Tudo pago. Obrigado!"
+              : cobrancas.length === 0
+                ? "Nenhuma cobrança ainda."
+                : "Tudo pago. Obrigado!"
           }
-          aside={sAberta ? <BadgeSituacao s={sAberta} /> : <BadgeSituacao s="pago" />}
+          aside={sAberta ? <BadgeSituacao s={sAberta} /> : cobrancas.length > 0 ? <BadgeSituacao s="pago" /> : undefined}
         />
       </div>
     </>

@@ -1327,3 +1327,9 @@ Decisão do dono (16/11): os lugares da van (Perfil) limitam quem está no desti
 - [x] Destino: "3 de 15 lugares ocupados"; cadastro de passageiro com a van cheia mostra o aviso vermelho e não salva.
 - [x] O "Vou" de cada viagem continua limitado aos lugares (já era assim; agora o "Vou sempre" também conta).
 - [x] Conferência: 359 testes (novo `e1-lugares-no-destino.test.ts`), tipos, build.
+
+## E2 — Financeiro coerente (feita em 16/11/2026)
+Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobrança só nasce no "Embarcou" (sem valor "previsto").
+- [x] Conferido: Início e Financeiro do vanzeiro usam a mesma conta (`resumoDoMes`); Início e Pagamentos do passageiro usam a mesma (`totalDevido`); teste de ponta a ponta do dinheiro passando.
+- [x] Corrigido: passageiro sem nenhuma cobrança via "R$ 0,00 · Pago · Tudo pago. Obrigado!" (parecia que tinha pago algo). Agora: "R$ 0,00 · Nenhuma cobrança ainda." (Início e Pagamentos), sem o selo "Pago".
+- [x] Conferência: 359 testes, tipos, build.
