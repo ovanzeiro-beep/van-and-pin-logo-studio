@@ -11,6 +11,7 @@ import { carregarPassageirosEPedidos } from "@/lib/banco/passageiros";
 import { carregarRespostas } from "@/lib/banco/respostas";
 import { carregarViagens } from "@/lib/banco/viagem";
 import { carregarDinheiro } from "@/lib/banco/dinheiro";
+import { carregarAvisos } from "@/lib/banco/avisos";
 
 // W1 (docs/banco-de-dados.md, section 8.3): login and account for real, in the owner's Supabase.
 // E-mail and password, "Esqueci a senha", the Termos accepted at sign-up and the role of each account.
@@ -143,6 +144,8 @@ async function carregarConta(user: User) {
     await carregarDinheiro();
   }
   mudarSessao({ conta: { id: user.id, email: user.email ?? "", nome }, papel, contaPronta: true });
+  // W8: the bell's notices of this account.
+  if (antes?.id !== user.id) await carregarAvisos();
 }
 
 /** In the root of the app: finds out who is logged in when the app opens, and follows logins and logouts. */

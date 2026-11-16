@@ -1263,3 +1263,11 @@ Conferência (15/11/2026):
 - [x] Regras conferidas numa cópia do banco (19 checagens): cobrança nunca editada; paga não muda mais; cancelar exige motivo; gasto não pode ser depois de hoje; o passageiro vê só as dele e não marca pago nem cria cobrança; outra pessoa não vê nem apaga nada.
 - [x] Conferência: 343 testes (novo `w7-dinheiro.test.ts`), tipos, build.
 - Pendente: o teste no Supabase de verdade ficou esperando a licença do dono (a pergunta do conector não teve resposta); cobranças criadas com o app fechado ficam para a W9 (tarefas no servidor); avisos de cobrança no sininho vão com a W8.
+
+## W8 — Avisos do sininho no banco (feita em 16/11/2026)
+**Situação:** código feito e testado (merge na `main`, publicado); o SQL novo espera a licença do dono no Supabase (ou ser colado: `supabase/SO-SQL-3-AVISOS.sql`).
+- [x] `supabase/migrations/20261116170000_w8_avisos.sql`: função `salvar_aviso` (só quem é do destino, só para alguém do destino, mesma chave não repete ou troca o texto); ninguém grava direto na tabela.
+- [x] `src/lib/banco/avisos.ts`: cada aviso criado vai para o banco logo em seguida; ao entrar e a cada 30 s, carrega os avisos da pessoa; abrir o sininho marca como lido no banco (`marcar_avisos_lidos`).
+- [x] Regras conferidas numa cópia do banco (12 checagens): resposta trocada vira um aviso só; aviso repetido não duplica; ninguém de fora do destino cria aviso nem manda para quem não é do destino; cada um vê só os seus; marcar lido.
+- [x] Conferência: 346 testes (novo `w8-avisos.test.ts`), tipos, build.
+- Pendente: aplicar o SQL no Supabase de verdade; avisos criados com o app fechado (prazo chegando, cobrança vencendo) ficam para a W9; notificação no celular com o app fechado é a W10.

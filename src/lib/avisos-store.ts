@@ -51,10 +51,20 @@ export function criarAvisoUmaVez(aviso: Omit<Aviso, "id">) {
   criarAviso(aviso);
 }
 
+// W8: the notices that replace an older one with the same chave (the database replaces it too).
+const trocados = new Set<string>();
+export const foiTrocado = (id: string) => trocados.has(id);
+
 /** Creates the notice, replacing the one with the same chave (e.g. a passenger changed the answer). */
 export function trocarAviso(aviso: Omit<Aviso, "id">) {
   avisos = avisos.filter((a) => !aviso.chave || a.chave !== aviso.chave);
-  criarAviso(aviso);
+  trocados.add(criarAviso(aviso).id);
+}
+
+/** W8: this person's notices come from the database; the ones this phone made for other people stay (already saved). */
+export function carregarAvisosDoBanco(lista: Aviso[], meuId: string) {
+  avisos = [...avisos.filter((a) => a.paraVanzeiroOuPassageiroId !== meuId), ...lista];
+  notificar();
 }
 
 export function limparAvisos() {
