@@ -5,7 +5,7 @@ import { TelaVazia } from "@/components/app/TelaVazia";
 import { Bell, Compass } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useAvisosAoAbrir } from "@/lib/avisos-store";
+import { limparAvisosDaPessoa, useAvisosAoAbrir } from "@/lib/avisos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
 import { useMinhaSituacao } from "@/lib/sessao-passageiro";
 
@@ -44,7 +44,7 @@ function PaginaNotificacoes() {
   return (
     <>
       <PassageiroHeader compacto titulo="Notificações" subtitulo="Seus avisos." />
-      <div className="relative z-10 -mt-4 space-y-3 px-5 pb-4">
+      <div className="space-y-3 px-5 pb-4 pt-4">
         {noAvisos ? (
           <TelaVazia
             icon={Bell}
@@ -57,7 +57,7 @@ function PaginaNotificacoes() {
             }
           />
         ) : (
-          <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} />
+          <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} onLimpar={() => limparAvisosDaPessoa(meuId)} />
         )}
       </div>
     </>

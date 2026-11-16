@@ -1297,3 +1297,10 @@ Conferência (15/11/2026):
 - [x] Conferência: 350 testes (novo `sem-sinal-viagem.test.ts`), tipos, build.
 - [x] (16/11, pedido do dono) Com o app na tela: aviso novo do servidor vibra forte (3 vezes) e toca dois bipes altos, e já aparece no sininho (`src/lib/alerta.ts`); minimizado, tela apagada ou app fechado: a notificação do celular (som e vibração seguem o ajuste de notificações do celular). Conferido no banco: notificações entregues ao celular do vanzeiro (Google confirmou). 351 testes.
 - [x] (16/11, pedido do dono) Vibração nova em todo aviso: uma forte, depois toques devagar que vão ficando mais longos (`VIBRACAO` em `src/lib/alerta.ts`, a mesma na notificação); se o celular recusar vibrar antes de um toque na tela, vibra no próximo toque. Com o app fechado, quem decide vibrar é o ajuste de notificações do celular (Android 8 ou mais novo).
+
+## Sininho mais bonito e "Limpar" (16/11/2026, pedido do dono)
+- [x] Cada aviso num cartão com ícone colorido da situação (verde, vermelho, âmbar, azul; van para "Van saiu"; carteira para cobrança), o tipo, o texto e "Hoje", "Ontem" ou o dia; os novos com fundo azul-claro e um ponto.
+- [x] Botão "Limpar" (lixeira) com confirmação: os avisos saem da lista e do número do sininho; ficam guardados escondidos no banco (`apagar_avisos`), para o mesmo aviso não voltar; resposta nova do passageiro aparece de novo.
+- [x] Passageiro: o título "Avisos" não fica mais por cima do cabeçalho.
+- [x] Conferência: 353 testes (novo `limpar-avisos.test.ts`), tipos, build; telas conferidas em tamanho de celular; regras do SQL numa cópia do banco.
+- Pendente: o dono cola `supabase/SO-SQL-6-LIMPAR-AVISOS.sql` no Supabase.

@@ -290,6 +290,8 @@ export type Aviso = {
   paraVanzeiroOuPassageiroId: string;
   dataCriacao: string;
   lido: boolean;
+  /** "Limpar" on the bell: hidden, but kept (so the same notice is never created again). */
+  apagado?: boolean;
   /** destinoId for vanzeiro/passageiro context. */
   destinoId?: string;
   /** passageiroId when the notification is about a specific passenger. */
