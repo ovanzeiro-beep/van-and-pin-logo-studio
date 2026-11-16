@@ -111,7 +111,8 @@ export function criarProximasCobrancas(passageiros: Passageiro[], hoje = dataDeH
 // What happened on each trip, kept as records (as the database will keep them): who boarded and who
 // warned "Não vou" in time. The passenger's history reads them, and they keep a day from being counted twice.
 export type Embarque = { passageiroId: string; data: string; viagemId?: string | undefined };
-export type Falta = { passageiroId: string; data: string; avisouNoPrazo: boolean };
+/** avisouEm: when the person said "Não vou" ("AAAA-MM-DD HH:MM", Brasília), when the app knows it. */
+export type Falta = { passageiroId: string; data: string; avisouNoPrazo: boolean; avisouEm?: string | undefined };
 type Registro = { embarques: Embarque[]; faltas: Falta[] };
 const registroInicial: Registro = { embarques: [...embarquesExemplo], faltas: [...faltasExemplo] };
 let registro = registroInicial;
@@ -140,10 +141,10 @@ export function registrarEmbarque(p: Passageiro, data = dataDeHoje(), viagemId?:
 }
 
 /** Final on-time "Não vou": discounts only the next open charge when the plan allows it. */
-export function registrarFalta(p: Passageiro, data = dataDeHoje(), avisouNoPrazo = false) {
+export function registrarFalta(p: Passageiro, data = dataDeHoje(), avisouNoPrazo = false, avisouEm?: string) {
   if (!avisouNoPrazo) return;
   if (registro.faltas.some((f) => f.passageiroId === p.id && f.data === data)) return;
-  registro = { ...registro, faltas: [...registro.faltas, { passageiroId: p.id, data, avisouNoPrazo: true }] };
+  registro = { ...registro, faltas: [...registro.faltas, { passageiroId: p.id, data, avisouNoPrazo: true, ...(avisouEm ? { avisouEm } : {}) }] };
   cobrancas = aplicarFalta(cobrancas, p, data, dataDeHoje(), true);
   avisar();
 }

@@ -4,7 +4,7 @@ import { agora, dataDeHoje } from "@/lib/agora";
 
 import { obterDestinos, useDestinos } from "@/lib/destinos-store";
 import { obterPassageiros, usePassageiros } from "@/lib/passageiros-store";
-import { prazoPassou } from "@/lib/destinos";
+import { prazoDaViagem, prazoPassou } from "@/lib/destinos";
 import { contarVou, podeDizerVou } from "@/lib/lugares";
 import { obterPerfilDoVanzeiro, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { avisoDeResposta } from "@/lib/avisos";
@@ -17,6 +17,14 @@ const inicial: Respostas = { [dataDeHoje()]: { ...vanzeiroExemplo.respostasHoje 
 let respostas = inicial;
 const VAZIO: Record<string, RespostaViagem> = {};
 const ouvintes = new Set<() => void>();
+/**
+ * When each answer was given (the last one counts) and what the deadline was, both "AAAA-MM-DD HH:MM" in Brasília.
+ * This is the proof that someone warned "Não vou" in time, which is what gives the falta discount.
+ */
+export type MomentoDaResposta = { em: string; prazo: string };
+let momentos: Record<string, Record<string, MomentoDaResposta>> = {};
+export const obterMomentoDaResposta = (passageiroId: string, data: string): MomentoDaResposta | undefined => momentos[data]?.[passageiroId];
+
 /** Trips whose answers were closed early (the vanzeiro started the trip), kept as records. */
 export type RespostasFechadas = { destinoId: string; data: string };
 let fechadas: RespostasFechadas[] = [];
@@ -53,6 +61,9 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
     if (!podeDizerVou(obterPerfilDoVanzeiro(d.vanzeiroId).van.lugares, vao, doDia[passageiroId])) return;
   }
   respostas = { ...respostas, [data]: { ...(respostas[data] ?? {}), [passageiroId]: resposta } };
+  const agoraMesmo = agora();
+  const prazo = prazoDaViagem(d, data);
+  momentos = { ...momentos, [data]: { ...(momentos[data] ?? {}), [passageiroId]: { em: `${agoraMesmo.data} ${agoraMesmo.hora}`, prazo: `${prazo.data} ${prazo.hora}` } } };
   ouvintes.forEach((o) => o());
   trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje()));
 }
@@ -71,6 +82,7 @@ export const obterRespostasParaTeste = (data: string) => respostasDoDia(resposta
 /** New vanzeiro account: no answers yet. */
 export function limparRespostas() {
   respostas = {};
+  momentos = {};
   fechadas = [];
   ouvintes.forEach((o) => o());
 }

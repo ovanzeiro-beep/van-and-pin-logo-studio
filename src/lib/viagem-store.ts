@@ -4,7 +4,7 @@ import { agora, dataDeHoje, horaDeAgora } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { criarProximasCobrancas, obterCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
-import { obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
+import { obterMomentoDaResposta, obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
 import { avisoDeVanSaiu, avisosDoRelogio } from "@/lib/avisos";
 import { criarAvisoUmaVez } from "@/lib/avisos-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
@@ -54,7 +54,7 @@ export function comecarViagem(destino: Destino, ordem: string[]) {
   fecharRespostas(destino.id, dataDeHoje());
   const respostas = obterRespostasParaTeste(dataDeHoje());
   for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
-    if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true);
+    if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true, obterMomentoDaResposta(p.id, dataDeHoje())?.em);
   }
   mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: { ...iniciarViagem(destino, ordem, dataDeHoje()), comecouEm: horaDeAgora() } } });
   for (const id of ordem) {
@@ -99,7 +99,7 @@ export function registrarFaltasDoPrazo(momento: Agora = agora()) {
   for (const d of viagensDoDia(obterDestinos(), momento.data)) {
     if (!prazoPassou(d, momento.data, momento)) continue;
     for (const p of obterPassageiros().filter((x) => x.destinoId === d.id)) {
-      if (respostas[p.id] === "nao-vai") registrarFalta(p, momento.data, true);
+      if (respostas[p.id] === "nao-vai") registrarFalta(p, momento.data, true, obterMomentoDaResposta(p.id, momento.data)?.em);
     }
   }
 }

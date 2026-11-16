@@ -122,7 +122,8 @@ Hoje: `respostas-store.ts`, mais a lista escondida `fechadas`.
 | --- | --- |
 | matrícula, destino, data da viagem | |
 | resposta | Vou ou Não vou |
-| respondida em | data e hora |
+| respondida em | data e hora (Brasília) da última resposta; hoje em `obterMomentoDaResposta` |
+| prazo | o prazo que valia no momento da resposta |
 | mudanças | a resposta pode mudar até o prazo; vale a última |
 
 "Respostas fechadas" deixa de ser uma lista escondida: o banco recusa resposta depois do prazo ou depois que a viagem começou.
@@ -152,6 +153,7 @@ Hoje não existem como registro: ao marcar "Embarcou" o app cria a cobrança e e
 | --- | --- |
 | viagem, matrícula | |
 | o que aconteceu | embarcou, não estava no ponto, está na van, ficou aqui, desceu, avisou "Não vou" no prazo |
+| avisou em | para a falta com desconto: quando a pessoa disse "Não vou" (hoje o campo `avisouEm` da falta) |
 | quem marcou | vanzeiro ou o próprio passageiro pelo celular ("Estou na van") |
 | hora | |
 
