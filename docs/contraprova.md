@@ -1136,3 +1136,9 @@ Conferência (15/11/2026):
   - Resultado: 297 testes, tipos (também sem nada declarado e não usado nas peças do app), build. 30 telas em 390×844 e 375×667 comparadas com a `main` lado a lado: **texto igual em todas as 60**; as poucas imagens com diferença têm de 0 a 118 pontos soltos de desenho de letra, inclusive em telas não mexidas ("Entrar") e entre duas fotos da mesma versão — é ruído da captura. Botão "Voltar" igual ponto a ponto; botão da voz na viagem em andamento no mesmo lugar e tamanho (390×844 e iPhone SE, no canto), sem rolar; "Voltar" aberto direto leva a Financeiro, Viagem e Início do passageiro, como antes; sem erros.
 - A mais (achado na conferência): 7 importações esquecidas (sem uso) tiradas, em `PassageiroHeader`, `ViagemEmCurso`, `avisos.ts`, `dias-sem-viagem.ts`, `passageiro.index`, `passageiro.viagens` e `vanzeiro.financeiro.$cid`.
 - Não pode quebrar: conferido — nenhuma tela, texto, cor ou regra mudou.
+
+## Etapa U2 — Tirar peças e bibliotecas sem uso (iniciada em 16/11/2026)
+**Situação:** em andamento, com o "pode fazer a próxima etapa" do dono de 16/11. Seção 19 da fonte da verdade. Sem banco de dados. Nada muda para quem usa o app.
+- [ ] U2.1 Tirar de `src/components/ui` as peças prontas que o app não usa (ficam só: alert-dialog, button, checkbox, input, label, switch) e `src/hooks/use-mobile.tsx` (só a barra lateral usava).
+- [ ] U2.2 Tirar do `package.json` / `bun.lock` as bibliotecas que só essas peças usavam (formulários, gráficos, calendário, menus, carrossel, avisos flutuantes etc.). Fica a `@tanstack/router-plugin`, por segurança (faz parte do jeito que as telas são montadas).
+- [ ] U2.3 Conferência: testes, tipos, build, nenhuma biblioteca ou peça faltando, as telas iguais a antes, número de alertas de segurança antes e depois.
