@@ -11,7 +11,8 @@ import {
   type Passageiro,
 } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
-import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, somarDias, type Cobranca } from "@/lib/cobrancas";
+import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, type Cobranca } from "@/lib/cobrancas";
+import { somarDias } from "@/lib/datas";
 
 /** Sample history: charges the app created from each plan since the start of the history. */
 function cobrancasDeExemplo(): Cobranca[] {

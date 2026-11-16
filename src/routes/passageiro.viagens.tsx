@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AlarmClock, Check, Clock, MessageCircle, X } from "lucide-react";
+import { AlarmClock, Clock, MessageCircle, X } from "lucide-react";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { Button } from "@/components/ui/button";

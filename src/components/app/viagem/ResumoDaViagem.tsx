@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { primeiroNomeDe } from "@/lib/datas";
 import { Coffee, UserCheck, UserMinus, UserX, type LucideIcon } from "lucide-react";
 import type { Passageiro } from "@/data/exemplo";
 import { cn } from "@/lib/utils";
@@ -25,7 +26,10 @@ const nomes = (ids: string[], nome: (id: string) => string) => ids.map(nome).joi
 
 /** Summary of the ida (on arrival) or of the whole day (when the trip ends). */
 export function ResumoDaViagem({ v, passageiros, completo }: { v: ViagemDoDia; passageiros: Passageiro[]; completo: boolean }) {
-  const nome = (id: string) => passageiros.find((p) => p.id === id)?.nome.split(" ")[0] ?? "Passageiro removido";
+  const nome = (id: string) => {
+    const p = passageiros.find((x) => x.id === id);
+    return p ? primeiroNomeDe(p.nome) : "Passageiro removido";
+  };
   const teveVolta = completo && v.naVolta.length > 0;
   return (
     <div className="space-y-3">

@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { primeiroNomeDe } from "@/lib/datas";
 import { vanzeiroExemplo } from "@/data/exemplo";
 import { telefoneValido } from "@/lib/passageiros";
 import { idDoVanzeiro, useSessao } from "@/lib/sessao";
@@ -60,6 +61,6 @@ export function perfilNovo(nome: string) {
 export const perfilPodeSalvar = (p: { nome: string; telefone: string }) => p.nome.trim() !== "" && telefoneValido(p.telefone);
 
 /** First name for the header greeting. */
-export const primeiroNome = (p: PerfilVanzeiro) => p.nome.trim().split(" ")[0] || "Vanzeiro";
+export const primeiroNome = (p: PerfilVanzeiro) => primeiroNomeDe(p.nome) || "Vanzeiro";
 
 export const textoDaVan = (p: PerfilVanzeiro) => [p.van.modelo, p.van.placa].filter(Boolean).join(" · ");

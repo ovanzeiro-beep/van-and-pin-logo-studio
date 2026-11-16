@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resumoDoMes, type Cobranca } from "@/lib/cobrancas";
-import { mesesDisponiveis, nomeDoMes, seuMes } from "@/lib/seu-mes";
+import { nomeDoMes } from "@/lib/datas";
+import { mesesDisponiveis, seuMes } from "@/lib/seu-mes";
 
 const hoje = "2026-11-13";
 const c = (o: Partial<Cobranca>): Cobranca => ({

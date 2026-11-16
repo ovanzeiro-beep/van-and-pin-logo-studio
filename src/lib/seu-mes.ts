@@ -77,10 +77,3 @@ export function mesesDisponiveis(cobrancas: Pick<Cobranca, "vencimento">[], viag
   return meses;
 }
 
-const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-/** "2026-11" → "Novembro de 2026". */
-export function nomeDoMes(mes: string) {
-  const [a, n = 1] = mes.split("-").map(Number);
-  const nome = MESES[n - 1] ?? "";
-  return `${nome.charAt(0).toUpperCase()}${nome.slice(1)} de ${a}`;
-}

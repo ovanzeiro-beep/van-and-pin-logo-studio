@@ -5,7 +5,7 @@ import { destinosExemplo, passageirosExemplo } from "@/data/exemplo";
 import { gerarConviteUnico } from "@/lib/convite";
 import { destinoDeRascunho, rascunhoVazio } from "@/lib/destinos";
 import { obterPassageiros, obterPedidos, recusarPedido } from "@/lib/passageiros-store";
-import { obterRespostasParaTeste, responder } from "@/lib/respostas-store";
+import { obterRespostasDoDia, responder } from "@/lib/respostas-store";
 import { listaDaViagem } from "@/lib/viagem";
 import { comecarViagem, obterViagensDoDia } from "@/lib/viagem-store";
 import { dataDeHoje } from "@/lib/agora";
@@ -45,19 +45,19 @@ describe("Passageiros", () => {
 describe("Confirmação", () => {
   it("o passageiro pode mudar 'Vou' / 'Não vou' até o prazo", () => {
     responder("p-juliana", dataDeHoje(), "vai");
-    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana"]).toBe("vai");
+    expect(obterRespostasDoDia(dataDeHoje())["p-juliana"]).toBe("vai");
     responder("p-juliana", dataDeHoje(), "nao-vai");
-    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana"]).toBe("nao-vai");
+    expect(obterRespostasDoDia(dataDeHoje())["p-juliana"]).toBe("nao-vai");
   });
 
   it("depois do prazo a resposta não muda mais", () => {
-    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana-londrina"]).toBeUndefined();
+    expect(obterRespostasDoDia(dataDeHoje())["p-juliana-londrina"]).toBeUndefined();
     responder("p-juliana-londrina", dataDeHoje(), "vai");
-    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana-londrina"]).toBeUndefined();
+    expect(obterRespostasDoDia(dataDeHoje())["p-juliana-londrina"]).toBeUndefined();
   });
 
   it("quem não confirmou ou disse 'Não vou' não entra na busca", () => {
-    const respostas = obterRespostasParaTeste(dataDeHoje());
+    const respostas = obterRespostasDoDia(dataDeHoje());
     const lista = listaDaViagem(passageirosExemplo, cambara, respostas);
     comecarViagem(cambara, lista.vao.map((p) => p.id));
     const ordem = obterViagensDoDia().viagens[cambara.id]!.ordem;
@@ -69,7 +69,7 @@ describe("Confirmação", () => {
 
   it("com a viagem começada, a resposta não muda mais, mesmo antes do prazo", () => {
     responder("p-juliana", dataDeHoje(), "vai");
-    expect(obterRespostasParaTeste(dataDeHoje())["p-juliana"]).toBe("nao-vai");
+    expect(obterRespostasDoDia(dataDeHoje())["p-juliana"]).toBe("nao-vai");
   });
 });
 

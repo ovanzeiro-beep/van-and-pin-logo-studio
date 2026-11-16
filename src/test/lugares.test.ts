@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DATA_DE_HOJE } from "@/data/exemplo";
 import { contarVou, destinoPassaDosLugares, lerLugares, podeDizerVou, situacaoDosLugares, textoDosLugares, vanLotada } from "@/lib/lugares";
 import { obterPassageiros } from "@/lib/passageiros-store";
-import { obterRespostasParaTeste, responder } from "@/lib/respostas-store";
+import { obterRespostasDoDia, responder } from "@/lib/respostas-store";
 import { obterPerfilVanzeiro, salvarPerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 describe("Lugares na van: regras", () => {
@@ -47,19 +47,19 @@ describe("Lugares na van: regras", () => {
 describe("Lugares na van: o 'Vou' é recusado com a van lotada", () => {
   it("Cambará → UENP com 4 lugares: quem chega depois não entra; 'Não vou' de alguém libera o lugar", () => {
     const hoje = DATA_DE_HOJE;
-    const vao = () => contarVou(obterPassageiros(), "centro-unisul", obterRespostasParaTeste(hoje));
+    const vao = () => contarVou(obterPassageiros(), "centro-unisul", obterRespostasDoDia(hoje));
     const perfil = obterPerfilVanzeiro();
     salvarPerfilVanzeiro({ ...perfil, van: { ...perfil.van, lugares: vao() } });
 
     responder("p-juliana", hoje, "vai");
-    expect(obterRespostasParaTeste(hoje)["p-juliana"]).toBeUndefined();
+    expect(obterRespostasDoDia(hoje)["p-juliana"]).toBeUndefined();
 
-    const algumQueVai = obterPassageiros().find((p) => p.destinoId === "centro-unisul" && obterRespostasParaTeste(hoje)[p.id] === "vai")!;
+    const algumQueVai = obterPassageiros().find((p) => p.destinoId === "centro-unisul" && obterRespostasDoDia(hoje)[p.id] === "vai")!;
     responder(algumQueVai.id, hoje, "nao-vai");
     responder("p-juliana", hoje, "vai");
-    expect(obterRespostasParaTeste(hoje)["p-juliana"]).toBe("vai");
+    expect(obterRespostasDoDia(hoje)["p-juliana"]).toBe("vai");
     responder(algumQueVai.id, hoje, "vai");
-    expect(obterRespostasParaTeste(hoje)[algumQueVai.id]).toBe("nao-vai");
+    expect(obterRespostasDoDia(hoje)[algumQueVai.id]).toBe("nao-vai");
     salvarPerfilVanzeiro(perfil);
   });
 });

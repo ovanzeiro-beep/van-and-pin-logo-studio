@@ -10,7 +10,8 @@ import { useDestinos } from "@/lib/destinos-store";
 import { formatarReais } from "@/lib/dinheiro";
 import { gastosDoMes, totalDosGastos } from "@/lib/gastos";
 import { useGastos } from "@/lib/gastos-store";
-import { mesesDisponiveis, nomeDoMes, seuMes, type PessoaNoMes } from "@/lib/seu-mes";
+import { nomeDoMes } from "@/lib/datas";
+import { mesesDisponiveis, seuMes, type PessoaNoMes } from "@/lib/seu-mes";
 import { cn } from "@/lib/utils";
 import { useViagensEncerradasComDetalhes } from "@/lib/viagens-encerradas-store";
 

@@ -1,6 +1,7 @@
 import type { DiaSemana, Destino, PrazoConfirmacao, TipoDestino } from "@/data/exemplo";
 import { gerarConviteUnico } from "@/lib/convite";
 import { dataDeHoje } from "@/lib/agora";
+import { formatarData, somarDias } from "@/lib/datas";
 import { idDoVanzeiro } from "@/lib/sessao";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
@@ -24,20 +25,15 @@ export const PRAZO_TEXTO = Object.fromEntries(PRAZOS.map((p) => [p.id, p.texto])
 
 const MINUTOS_ANTES: Record<Exclude<PrazoConfirmacao, "noite-anterior">, number> = { "30min": 30, "1h": 60, "2h": 120 };
 
-function somarDiasIso(iso: string, dias: number) {
-  const [a = 0, m = 1, d = 1] = iso.split("-").map(Number);
-  return new Date(Date.UTC(a, m - 1, d + dias)).toISOString().slice(0, 10);
-}
-
 /** Exact moment confirmations close for the trip on `data` (AAAA-MM-DD + HH:MM). */
 export function prazoDaViagem(d: Pick<Destino, "saida" | "prazo">, data: string): { data: string; hora: string } {
-  if (d.prazo === "noite-anterior") return { data: somarDiasIso(data, -1), hora: "20:00" };
+  if (d.prazo === "noite-anterior") return { data: somarDias(data, -1), hora: "20:00" };
   const [h = 0, min = 0] = d.saida.split(":").map(Number);
   let total = h * 60 + min - MINUTOS_ANTES[d.prazo];
   let dia = data;
   if (total < 0) {
     total += 24 * 60;
-    dia = somarDiasIso(data, -1);
+    dia = somarDias(data, -1);
   }
   const hora = `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
   return { data: dia, hora };
@@ -57,8 +53,6 @@ export function prazoPassou(d: Pick<Destino, "saida" | "prazo">, data: string, a
 
 export const TIPO_ROTULO: Record<TipoDestino, string> = { fixa: "Rota fixa", avulsa: "Viagem avulsa" };
 
-const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const SEMANA = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
 export function nomeDestino(d: { origem: string; destino: string }) {
   return `${d.origem} → ${d.destino}`;
@@ -82,13 +76,8 @@ export function formatarDias(dias: DiaSemana[]) {
   return `${nomes.slice(0, -1).join(", ")} e ${ultimo}`;
 }
 
-/** "2026-11-28" → "Sáb, 28 de nov". */
-export function formatarData(iso: string) {
-  const [a, m, d] = iso.split("-").map(Number);
-  if (!a || !m || !d) return "Sem data";
-  const semana = SEMANA[new Date(Date.UTC(a, m - 1, d)).getUTCDay()] ?? "";
-  return `${semana.charAt(0).toUpperCase()}${semana.slice(1)}, ${d} de ${MESES[m - 1] ?? ""}`;
-}
+/** "2026-11-28" → "Sáb, 28 de nov" (lives in src/lib/datas.ts; kept here because many screens import it from here). */
+export { formatarData };
 
 export function quandoAcontece(d: Pick<Destino, "tipo" | "dias" | "data">): string {
   return d.tipo === "fixa" ? formatarDias(d.dias) : d.data ? formatarData(d.data) : "Sem data";
@@ -204,7 +193,7 @@ export function voltaNoDiaSeguinte(d: Pick<Destino, "tipo" | "saida" | "volta">)
 export function dataDaVolta(d: Pick<Destino, "tipo" | "saida" | "volta" | "voltaData">, dataIda: string) {
   if (d.volta === null) return null;
   if (d.tipo === "avulsa" && d.voltaData) return d.voltaData;
-  return voltaNoDiaSeguinte(d) ? somarDiasIso(dataIda, 1) : dataIda;
+  return voltaNoDiaSeguinte(d) ? somarDias(dataIda, 1) : dataIda;
 }
 
 /** "19:00", "29/11, 19:00" (avulsa returning another day), "06:00 do dia seguinte" or "Sem volta". */

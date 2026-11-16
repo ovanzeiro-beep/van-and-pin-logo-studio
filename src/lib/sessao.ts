@@ -52,8 +52,3 @@ export function mudarSessaoPassageiro(parcial: Partial<SessaoPassageiro>) {
 /** Who owns what the vanzeiro creates. */
 export const idDoVanzeiro = () => sessao.vanzeiroId;
 
-/** Back to the start (used by tests). */
-export function limparSessao() {
-  sessao = inicial;
-  ouvintes.forEach((o) => o());
-}

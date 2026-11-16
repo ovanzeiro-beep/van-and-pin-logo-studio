@@ -1,6 +1,7 @@
 import type { Aviso, Destino, Passageiro, RespostaViagem } from "@/data/exemplo";
-import { type Cobranca, diaMes, situacao, somarDias, valorFinal } from "@/lib/cobrancas";
-import { formatarData, nomeDestino, prazoDaViagem } from "@/lib/destinos";
+import { type Cobranca, diaMes, situacao, valorFinal } from "@/lib/cobrancas";
+import { primeiroNomeDe as primeiroNome, quando, somarDias } from "@/lib/datas";
+import { nomeDestino, prazoDaViagem } from "@/lib/destinos";
 import { formatarReais } from "@/lib/dinheiro";
 import { identidadePassageiro } from "@/lib/passageiros";
 import { viagensDoDia } from "@/lib/viagem";
@@ -15,8 +16,6 @@ export const MINUTOS_ANTES_DO_PRAZO = 30;
 /** "Cobrança vencendo" is sent this many days before the due date. */
 export const DIAS_ANTES_DO_VENCIMENTO = 3;
 
-const primeiroNome = (nome: string) => nome.split(" ")[0] ?? nome;
-const quando = (data: string, hoje: string) => (data === hoje ? "hoje" : formatarData(data).toLowerCase());
 
 function minutos(data: string, hora: string) {
   const [a = 0, m = 1, d = 1] = data.split("-").map(Number);

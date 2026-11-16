@@ -29,7 +29,7 @@ export function obterMomentoDaResposta(passageiroId: string, data: string): Mome
   if (dada) return dada;
   // T3: an answer left set ("Vou sempre" / "Não vou de… até…") counts from when it was set.
   const d = obterDestinos().find((x) => x.id === obterPassageiros().find((p) => p.id === passageiroId)?.destinoId);
-  if (!d || obterRespostasParaTeste(data)[passageiroId] === undefined) return undefined;
+  if (!d || obterRespostasDoDia(data)[passageiroId] === undefined) return undefined;
   const prazo = textoDoPrazoIso(d, data);
   const fixa = respostaFixa(fixas, passageiroId, data, prazo);
   return fixa ? { em: fixa.em, prazo } : undefined;
@@ -43,7 +43,7 @@ const estaFechada = (destinoId: string, data: string) => fechadas.some((f) => f.
 export function fecharRespostas(destinoId: string, data: string) {
   if (estaFechada(destinoId, data)) return;
   // T3: the answers left set become the answers of this trip, so changing them later doesn't change it.
-  const efetivas = obterRespostasParaTeste(data);
+  const efetivas = obterRespostasDoDia(data);
   const doDestino = obterPassageiros().filter((p) => p.destinoId === destinoId && efetivas[p.id] !== undefined && respostas[data]?.[p.id] === undefined);
   if (doDestino.length > 0) {
     const novosMomentos = Object.fromEntries(doDestino.flatMap((p) => { const m = obterMomentoDaResposta(p.id, data); return m ? [[p.id, m]] : []; }));
@@ -105,7 +105,7 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
   const p = obterPassageiros().find((p) => p.id === passageiroId);
   const d = obterDestinos().find((d) => d.id === p?.destinoId);
   if (!p || !d || estaFechada(d.id, data) || prazoPassou(d, data, agora())) return;
-  const doDia = obterRespostasParaTeste(data);
+  const doDia = obterRespostasDoDia(data);
   if (doDia[passageiroId] === resposta && respostas[data]?.[passageiroId] !== undefined) return;
   if (resposta === "vai") {
     const vao = contarVou(obterPassageiros(), d.id, doDia);
@@ -129,7 +129,7 @@ export function useVanLotadaPara(passageiroId: string, destinoId: string, data: 
 }
 
 /** The answers of a day (with the ones left set), outside the screens. */
-export const obterRespostasParaTeste = (data: string) => efetivas(respostas, fixas, obterPassageiros(), obterDestinos(), data);
+export const obterRespostasDoDia = (data: string) => efetivas(respostas, fixas, obterPassageiros(), obterDestinos(), data);
 
 const momentoDeAgora = () => {
   const a = agora();

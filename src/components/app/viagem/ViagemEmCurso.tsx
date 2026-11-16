@@ -20,7 +20,7 @@ import {
   type ViagemDoDia,
 } from "@/lib/viagem";
 import { atualizarViagem, marcarEmbarcou, marcarNaoEstava } from "@/lib/viagem-store";
-import { LinhaPassageiro, PassageiroDaVez, Progresso } from "./partes";
+import { PassageiroDaVez, Progresso } from "./partes";
 import { ResumoDaViagem } from "./ResumoDaViagem";
 
 const botaoGrande = "h-[3.25rem] w-full rounded-2xl font-display text-base font-bold";

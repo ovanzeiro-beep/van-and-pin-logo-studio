@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { DATA_DE_HOJE, destinosExemplo, passageirosExemplo } from "@/data/exemplo";
 import { salvarDestino } from "@/lib/destinos-store";
 import { salvarPassageiro } from "@/lib/passageiros-store";
-import { obterRespostasParaTeste, responder } from "@/lib/respostas-store";
+import { obterRespostasDoDia, responder } from "@/lib/respostas-store";
 import { mudarSessao } from "@/lib/sessao";
 import { obterPerfilDoVanzeiro, obterPerfilVanzeiro, PERFIL_VAZIO, salvarPerfilVanzeiro, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -34,9 +34,9 @@ describe("Etapa Q1: um perfil por vanzeiro", () => {
     salvarPassageiro({ ...pBase, id: "p-r2", vanzeiroId: outro, destinoId: "destino-da-rosa", telefone: "43911110002", nome: "Dois" });
     responder("p-r1", DATA_DE_HOJE, "vai");
     responder("p-r2", DATA_DE_HOJE, "vai");
-    expect(obterRespostasParaTeste(DATA_DE_HOJE)["p-r1"]).toBe("vai");
-    expect(obterRespostasParaTeste(DATA_DE_HOJE)["p-r2"]).toBeUndefined();
+    expect(obterRespostasDoDia(DATA_DE_HOJE)["p-r1"]).toBe("vai");
+    expect(obterRespostasDoDia(DATA_DE_HOJE)["p-r2"]).toBeUndefined();
     responder("p-juliana", DATA_DE_HOJE, "vai");
-    expect(obterRespostasParaTeste(DATA_DE_HOJE)["p-juliana"]).toBe("vai");
+    expect(obterRespostasDoDia(DATA_DE_HOJE)["p-juliana"]).toBe("vai");
   });
 });

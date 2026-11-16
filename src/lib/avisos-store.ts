@@ -18,12 +18,6 @@ export function obterAvisosNaoLidos(paraId: string) {
 }
 
 // Changes always make a new list (never edit a notice in place), so the screens see them.
-export function marcarComoLido(avisoId: string) {
-  if (!avisos.some((a) => a.id === avisoId && !a.lido)) return;
-  avisos = avisos.map((a) => (a.id === avisoId ? { ...a, lido: true } : a));
-  notificar();
-}
-
 /** Opening Notificações: every notice of this person counts as read. */
 export function marcarTodosComoLido(paraId: string) {
   if (!avisos.some((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido)) return;

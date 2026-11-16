@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
+import { primeiroNomeDe } from "@/lib/datas";
 import { ScreenHeader, type ScreenHeaderProps } from "@/components/app/ScreenHeader";
-import { useMinhaSituacao, useIdsDasMinhasCobrancas, useSessaoPassageiro } from "@/lib/sessao-passageiro";
+import { useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
 
@@ -20,7 +21,7 @@ export function PassageiroHeader(props: Omit<ScreenHeaderProps, "nome">) {
   return (
     <ScreenHeader
       {...props}
-      nome={nome.split(" ")[0] || "Passageiro"}
+      nome={primeiroNomeDe(nome) || "Passageiro"}
       avisos={avisosNaoLidos.length}
       aoTocarAvisos={abrirNotificacoes}
     />

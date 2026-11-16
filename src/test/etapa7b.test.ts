@@ -3,7 +3,7 @@ import { destinosExemplo, passageirosExemplo, type Passageiro } from "@/data/exe
 import { aplicarEmbarque, aplicarFalta, gerarCobrancas, valorFinal } from "@/lib/cobrancas";
 import { matriculasDaPessoa, pessoasParaDestino } from "@/lib/passageiros";
 import { viagensDasMatriculas } from "@/lib/minha-viagem";
-import { responder, obterRespostasParaTeste } from "@/lib/respostas-store";
+import { responder, obterRespostasDoDia } from "@/lib/respostas-store";
 import { comecarViagem, marcarNaoEstava } from "@/lib/viagem-store";
 import { obterCobrancas, garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { salvarPassageiro } from "@/lib/passageiros-store";
@@ -59,6 +59,6 @@ describe("Etapa 7B", () => {
     marcarNaoEstava("p-fernanda");
     expect(obterCobrancas().filter((c) => c.passageiroId === "p-fernanda")).toEqual(antes);
     responder(p.id, "2026-11-13", "vai");
-    expect(obterRespostasParaTeste("2026-11-13")[p.id]).toBe("nao-vai");
+    expect(obterRespostasDoDia("2026-11-13")[p.id]).toBe("nao-vai");
   });
 });

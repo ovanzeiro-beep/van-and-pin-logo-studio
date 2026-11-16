@@ -4,7 +4,7 @@ import { obterAvisos } from "@/lib/avisos-store";
 import { obterCobrancas } from "@/lib/cobrancas-store";
 import { obterDestinos } from "@/lib/destinos-store";
 import { obterPassageiros, obterPedidos } from "@/lib/passageiros-store";
-import { obterRespostasParaTeste } from "@/lib/respostas-store";
+import { obterRespostasDoDia } from "@/lib/respostas-store";
 import { primeiroNome, textoDaVan, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { obterViagensEncerradas } from "@/lib/viagens-encerradas-store";
 import { DATA_DE_HOJE } from "@/data/exemplo";
@@ -31,7 +31,7 @@ describe("Primeiro uso do vanzeiro", () => {
     expect(obterPassageiros()).toEqual([]);
     expect(obterPedidos()).toEqual([]);
     expect(obterCobrancas()).toEqual([]);
-    expect(obterRespostasParaTeste(DATA_DE_HOJE)).toEqual({});
+    expect(obterRespostasDoDia(DATA_DE_HOJE)).toEqual({});
     expect(obterAvisos()).toEqual([]);
     expect(obterViagensEncerradas()).toEqual([]);
   });

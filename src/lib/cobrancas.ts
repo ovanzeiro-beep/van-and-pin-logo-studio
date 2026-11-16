@@ -1,4 +1,5 @@
 import { type FormaPagamento, type Passageiro, type PlanoPagamento } from "@/data/exemplo";
+import { MESES, primeiroNomeDe, somarDias } from "@/lib/datas";
 import { formatarReais } from "@/lib/dinheiro";
 
 /** A charge. Its values never change after creation: it can only be paid or cancelled. */
@@ -37,8 +38,6 @@ export const SITUACAO_ROTULO: Record<Situacao, string> = {
 
 export const FORMA_ROTULO: Record<FormaPagamento, string> = { dinheiro: "Dinheiro", pix: "Pix" };
 
-const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-
 // ---------- dates (AAAA-MM-DD, no time zone surprises) ----------
 
 function partes(iso: string) {
@@ -48,11 +47,6 @@ function partes(iso: string) {
 
 function paraIso(data: Date) {
   return data.toISOString().slice(0, 10);
-}
-
-export function somarDias(iso: string, dias: number) {
-  const { a, m, d } = partes(iso);
-  return paraIso(new Date(Date.UTC(a, m - 1, d + dias)));
 }
 
 /** Day `dia` of the given month, clamped to the month length (31 → 30 in november). */
@@ -160,7 +154,7 @@ export function totalDevido(lista: Cobranca[], passageiroId: string) {
 }
 
 export function mensagemCobranca(c: Cobranca, destino: string, hoje: string) {
-  const nome = c.nome.split(" ")[0] ?? c.nome;
+  const nome = primeiroNomeDe(c.nome);
   const venceu = situacao(c, hoje) === "devendo";
   return (
     `Olá, ${nome}! Tudo bem? Passando para lembrar da ${c.referencia.charAt(0).toLowerCase()}${c.referencia.slice(1)} ` +
@@ -343,9 +337,9 @@ export function cancelarPendentes(lista: Cobranca[], passageiroIds: string[], mo
 
 /** Message the passenger sends after paying, so the vanzeiro can check and mark it as paid. */
 export function mensagemJaPaguei(c: Cobranca, vanzeiro: string) {
-  const nome = vanzeiro.split(" ")[0] ?? vanzeiro;
+  const nome = primeiroNomeDe(vanzeiro);
   return (
-    `Olá, ${nome}! Aqui é ${c.nome.split(" ")[0] ?? c.nome}. Já paguei a ${c.referencia.charAt(0).toLowerCase()}${c.referencia.slice(1)} ` +
+    `Olá, ${nome}! Aqui é ${primeiroNomeDe(c.nome)}. Já paguei a ${c.referencia.charAt(0).toLowerCase()}${c.referencia.slice(1)} ` +
     `da van, no valor de ${formatarReais(valorFinal(c))}. Pode conferir e marcar como pago, por favor? Obrigado!`
   );
 }
@@ -387,7 +381,7 @@ export function mensagemDosAtrasados(
   nomeDoDestino: (destinoId: string) => string,
   pix: { chave: string; copiaECola: string | null },
 ) {
-  const nome = d.nome.split(" ")[0] ?? d.nome;
+  const nome = primeiroNomeDe(d.nome);
   const linhas = d.cobrancas.map((c) => {
     const destino = nomeDoDestino(c.destinoId);
     return `• ${c.referencia}${destino ? ` (${destino})` : ""}: ${formatarReais(valorFinal(c))}, venceu em ${diaMes(c.vencimento)}`;

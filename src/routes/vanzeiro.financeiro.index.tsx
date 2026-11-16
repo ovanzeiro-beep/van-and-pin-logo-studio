@@ -7,6 +7,7 @@ import { TelaVazia } from "@/components/app/TelaVazia";
 import { buttonVariants } from "@/components/ui/button";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { dataDeHoje } from "@/lib/agora";
+import { nomeDoMesDe } from "@/lib/datas";
 import { formatarReais } from "@/lib/dinheiro";
 import { devedores, filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
@@ -28,8 +29,6 @@ const VAZIO: Record<Filtro, string> = {
   devendo: "Ninguém devendo. Muito bem!",
   pagas: "Nenhuma cobrança paga ainda.",
 };
-
-const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
 export const Route = createFileRoute("/vanzeiro/financeiro/")({
   validateSearch: (search: Record<string, unknown>): { filtro?: Filtro } => {
@@ -55,7 +54,7 @@ function Financeiro() {
   const destinos = useDestinos();
   const resumo = resumoDoMes(cobrancas, dataDeHoje());
   const lista = filtrarCobrancas(cobrancas, filtro, dataDeHoje());
-  const mes = MESES[Number(dataDeHoje().slice(5, 7)) - 1] ?? "";
+  const mes = nomeDoMesDe(dataDeHoje());
   const nomeDoDestino = (id: string) => {
     const d = destinos.find((x) => x.id === id);
     return d ? nomeDestino(d) : undefined;

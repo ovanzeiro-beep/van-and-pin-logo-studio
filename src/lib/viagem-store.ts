@@ -4,7 +4,7 @@ import { agora, dataDeHoje, horaDeAgora } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { criarProximasCobrancas, obterCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
-import { obterMomentoDaResposta, obterRespostasParaTeste, fecharRespostas } from "@/lib/respostas-store";
+import { obterMomentoDaResposta, obterRespostasDoDia, fecharRespostas } from "@/lib/respostas-store";
 import { avisoDeVanSaiu, avisosDoRelogio } from "@/lib/avisos";
 import { criarAvisoUmaVez } from "@/lib/avisos-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
@@ -52,7 +52,7 @@ export function escolherViagem(destinoId: string) {
 export function comecarViagem(destino: Destino, ordem: string[]) {
   if (emAndamento(estado) || estado.viagens[destino.id]) return;
   fecharRespostas(destino.id, dataDeHoje());
-  const respostas = obterRespostasParaTeste(dataDeHoje());
+  const respostas = obterRespostasDoDia(dataDeHoje());
   for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
     if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true, obterMomentoDaResposta(p.id, dataDeHoje())?.em);
   }
@@ -95,7 +95,7 @@ export function confirmarNaVan(id: string) {
 
 /** When a trip's deadline passes, an on-time "Não vou" counts as a falta, even if the trip is never started in the app. */
 export function registrarFaltasDoPrazo(momento: Agora = agora()) {
-  const respostas = obterRespostasParaTeste(momento.data);
+  const respostas = obterRespostasDoDia(momento.data);
   for (const d of viagensDoDia(obterDestinos(), momento.data)) {
     if (!prazoPassou(d, momento.data, momento)) continue;
     for (const p of obterPassageiros().filter((x) => x.destinoId === d.id)) {
@@ -108,7 +108,7 @@ export function registrarFaltasDoPrazo(momento: Agora = agora()) {
 export function passarDoTempo() {
   registrarFaltasDoPrazo();
   criarProximasCobrancas(obterPassageiros());
-  for (const aviso of avisosDoRelogio(agora(), obterDestinos(), obterPassageiros(), obterCobrancas(), obterRespostasParaTeste)) criarAvisoUmaVez(aviso);
+  for (const aviso of avisosDoRelogio(agora(), obterDestinos(), obterPassageiros(), obterCobrancas(), obterRespostasDoDia)) criarAvisoUmaVez(aviso);
 }
 
 /** Watches the clock while the app is open: on opening and then every minute. */

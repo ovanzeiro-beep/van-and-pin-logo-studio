@@ -9,7 +9,7 @@ import {
   marcarNaoVouNoPeriodo,
   obterMomentoDaResposta,
   obterRespostasFixas,
-  obterRespostasParaTeste,
+  obterRespostasDoDia,
   periodosDeNaoVou,
   responder,
   tirarNaoVouDoPeriodo,
@@ -70,42 +70,42 @@ describe("T3: regras do 'Vou sempre' e do 'Não vou de… até…'", () => {
 
 describe("T3: no app (os dois painéis veem o mesmo)", () => {
   it("'Vou sempre' conta como 'Vou' hoje; a pessoa ainda pode dizer 'Não vou' até o prazo", () => {
-    expect(obterRespostasParaTeste(hoje)["p-juliana"]).toBeUndefined();
+    expect(obterRespostasDoDia(hoje)["p-juliana"]).toBeUndefined();
     ligarVouSempre("p-juliana", true);
-    expect(obterRespostasParaTeste(hoje)["p-juliana"]).toBe("vai");
-    expect(obterRespostasParaTeste("2026-11-16")["p-juliana"]).toBe("vai");
+    expect(obterRespostasDoDia(hoje)["p-juliana"]).toBe("vai");
+    expect(obterRespostasDoDia("2026-11-16")["p-juliana"]).toBe("vai");
     responder("p-juliana", hoje, "nao-vai");
-    expect(obterRespostasParaTeste(hoje)["p-juliana"]).toBe("nao-vai");
-    expect(obterRespostasParaTeste("2026-11-16")["p-juliana"]).toBe("vai");
+    expect(obterRespostasDoDia(hoje)["p-juliana"]).toBe("nao-vai");
+    expect(obterRespostasDoDia("2026-11-16")["p-juliana"]).toBe("vai");
     ligarVouSempre("p-juliana", false);
-    expect(obterRespostasParaTeste("2026-11-16")["p-juliana"]).toBeUndefined();
+    expect(obterRespostasDoDia("2026-11-16")["p-juliana"]).toBeUndefined();
   });
 
   it("vale só para o destino escolhido", () => {
     ligarVouSempre("p-juliana", true);
-    expect(obterRespostasParaTeste("2026-11-16")["p-juliana-londrina"]).toBeUndefined();
+    expect(obterRespostasDoDia("2026-11-16")["p-juliana-londrina"]).toBeUndefined();
     ligarVouSempre("p-juliana", false);
   });
 
   it("'Não vou de… até…' conta como avisado no prazo e dá o desconto quando o prazo passa", () => {
     marcarNaoVouNoPeriodo("p-fernanda", "2026-11-16", "2026-11-17");
-    expect(obterRespostasParaTeste("2026-11-16")["p-fernanda"]).toBe("nao-vai");
+    expect(obterRespostasDoDia("2026-11-16")["p-fernanda"]).toBe("nao-vai");
     expect(obterMomentoDaResposta("p-fernanda", "2026-11-16")?.em).toBe("2026-11-13 05:10");
     registrarFaltasDoPrazo({ data: "2026-11-16", hora: "06:00" });
     expect(obterRegistroDasViagens().faltas).toContainEqual({ passageiroId: "p-fernanda", data: "2026-11-16", avisouNoPrazo: true, avisouEm: "2026-11-13 05:10" });
     const [periodo] = periodosDeNaoVou(obterRespostasFixas(), "p-fernanda", hoje);
     tirarNaoVouDoPeriodo(periodo!.id);
     expect(periodosDeNaoVou(obterRespostasFixas(), "p-fernanda", hoje)).toEqual([]);
-    expect(obterRespostasParaTeste("2026-11-17")["p-fernanda"]).toBeUndefined();
+    expect(obterRespostasDoDia("2026-11-17")["p-fernanda"]).toBeUndefined();
   });
 
   it("quando a viagem começa, as respostas automáticas ficam guardadas como estavam", () => {
-    const quem = obterPassageiros().find((p) => p.destinoId === "centro-unisul" && obterRespostasParaTeste(hoje)[p.id] === undefined)!;
+    const quem = obterPassageiros().find((p) => p.destinoId === "centro-unisul" && obterRespostasDoDia(hoje)[p.id] === undefined)!;
     ligarVouSempre(quem.id, true);
-    expect(obterRespostasParaTeste(hoje)[quem.id]).toBe("vai");
+    expect(obterRespostasDoDia(hoje)[quem.id]).toBe("vai");
     fecharRespostas("centro-unisul", hoje);
     ligarVouSempre(quem.id, false);
-    expect(obterRespostasParaTeste(hoje)[quem.id]).toBe("vai");
-    expect(obterRespostasParaTeste("2026-11-16")[quem.id]).toBeUndefined();
+    expect(obterRespostasDoDia(hoje)[quem.id]).toBe("vai");
+    expect(obterRespostasDoDia("2026-11-16")[quem.id]).toBeUndefined();
   });
 });

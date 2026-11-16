@@ -114,12 +114,12 @@ describe("Descontar faltas no cadastro", () => {
   });
 });
 
-import { obterRespostasParaTeste, responder } from "@/lib/respostas-store";
+import { obterRespostasDoDia, responder } from "@/lib/respostas-store";
 
 describe("Resposta do passageiro chega ao vanzeiro", () => {
   it("Juliana answering 'Vou' counts as vão for today's trip", () => {
     responder("p-juliana", "2026-11-13", "vai");
-    const r = presencaDaViagem(passageirosExemplo, "centro-unisul", obterRespostasParaTeste("2026-11-13"));
+    const r = presencaDaViagem(passageirosExemplo, "centro-unisul", obterRespostasDoDia("2026-11-13"));
     expect(r).toEqual({ total: 6, vao: 4, semResposta: 1, naoVao: 1 });
   });
 });

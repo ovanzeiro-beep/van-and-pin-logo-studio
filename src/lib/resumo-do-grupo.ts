@@ -1,5 +1,6 @@
 import type { Destino, Passageiro } from "@/data/exemplo";
-import { formatarData, nomeDestino, textoDaVolta } from "@/lib/destinos";
+import { formatarData, primeiroNomeDe } from "@/lib/datas";
+import { nomeDestino, textoDaVolta } from "@/lib/destinos";
 
 // T4 (section 18 of docs/fonte-da-verdade.md): ready text for the van's WhatsApp group, sent by the vanzeiro.
 // Decisions of the owner (16/11): only name and city (nobody in the group sees the others' addresses);
@@ -7,7 +8,7 @@ import { formatarData, nomeDestino, textoDaVolta } from "@/lib/destinos";
 
 /** First name; the full name when two people of the list share the first name. */
 function nomesCurtos(pessoas: Pick<Passageiro, "id" | "nome">[]) {
-  const primeiro = (n: string) => n.split(" ")[0] ?? n;
+  const primeiro = primeiroNomeDe;
   return (p: Pick<Passageiro, "nome">) => (pessoas.filter((x) => primeiro(x.nome) === primeiro(p.nome)).length > 1 ? p.nome : primeiro(p.nome));
 }
 

@@ -1,5 +1,5 @@
 import { type Destino, type DiaSemana, type Passageiro, type RespostaViagem } from "@/data/exemplo";
-import { somarDias } from "@/lib/cobrancas";
+import { somarDias } from "@/lib/datas";
 import { pontosDeEmbarque } from "@/lib/passageiros";
 import { formatarData, nomeDestino, prazoPassou, textoDaVolta } from "@/lib/destinos";
 

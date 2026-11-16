@@ -34,7 +34,6 @@ import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
 import {
   FORMA_ROTULO,
-  contaDoDesconto,
   diaMes,
   mensagemCobranca,
   situacao,

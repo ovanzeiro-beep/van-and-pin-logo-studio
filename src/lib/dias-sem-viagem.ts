@@ -1,8 +1,8 @@
 import type { Destino } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
 import { criarAviso } from "@/lib/avisos-store";
-import { somarDias } from "@/lib/cobrancas";
-import { formatarData, nomeDestino } from "@/lib/destinos";
+import { quando, somarDias } from "@/lib/datas";
+import { nomeDestino } from "@/lib/destinos";
 import { mudarDiasCancelados, obterDestinos } from "@/lib/destinos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
 import { obterPassageiros } from "@/lib/passageiros-store";
@@ -15,7 +15,6 @@ import { obterViagensDoDia } from "@/lib/viagem-store";
 
 export const MOTIVO_MAX = 60;
 
-const quando = (data: string, hoje: string) => (data === hoje ? "hoje" : formatarData(data).toLowerCase());
 
 /** Whether the trip of that day already started (today only): then it can no longer be cancelled. */
 function viagemJaComecou(destinoId: string, data: string, hoje: string) {
