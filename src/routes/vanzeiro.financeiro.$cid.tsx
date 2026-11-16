@@ -39,7 +39,8 @@ import {
   valorFinal,
   type Cobranca,
 } from "@/lib/cobrancas";
-import { cancelarCobranca, marcarComoPago, useCobranca } from "@/lib/cobrancas-store";
+import { useCobranca } from "@/lib/cobrancas-store";
+import { cancelarCobrancaNoBanco, marcarComoPagoNoBanco } from "@/lib/banco/dinheiro";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { linkWhatsApp } from "@/lib/passageiros";
@@ -182,7 +183,7 @@ function MarcarComoPago({ c }: { c: Cobranca }) {
           <AlertDialogAction
             className={buttonVariants({ variant: "success", size: "lg" })}
             disabled={!forma}
-            onClick={() => forma && void fazer(() => marcarComoPago(c.id, forma))}
+            onClick={() => forma && void fazer(() => marcarComoPagoNoBanco(c.id, forma))}
           >
             Confirmar pagamento
           </AlertDialogAction>
@@ -251,7 +252,7 @@ function CancelarCobranca({ c }: { c: Cobranca }) {
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive", size: "lg" })}
             disabled={!motivo.trim()}
-            onClick={() => void fazer(() => cancelarCobranca(c.id, motivo))}
+            onClick={() => void fazer(() => cancelarCobrancaNoBanco(c.id, motivo))}
           >
             Cancelar cobrança
           </AlertDialogAction>

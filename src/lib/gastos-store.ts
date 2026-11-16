@@ -31,10 +31,10 @@ export function useGastos() {
 
 export const obterGastos = () => gastos.filter((g) => g.vanzeiroId === idDoVanzeiro());
 
-export function anotarGasto(g: { tipo: TipoDeGasto; descricao: string; valor: number; data: string }): Resultado {
+export function anotarGasto(g: { tipo: TipoDeGasto; descricao: string; valor: number; data: string }, id = novoId("gasto")): Resultado {
   const problema = problemaDoGasto(g, dataDeHoje());
   if (problema) return naoDeu(problema);
-  mudar([...gastos, { id: novoId("gasto"), vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? frase(g.descricao) : "", valor: g.valor, data: g.data }]);
+  mudar([...gastos, { id, vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? frase(g.descricao) : "", valor: g.valor, data: g.data }]);
   return deuCerto;
 }
 
@@ -42,6 +42,11 @@ export function apagarGasto(id: string): Resultado {
   if (!gastos.some((g) => g.id === id && g.vanzeiroId === idDoVanzeiro())) return naoDeu("Este gasto já tinha sido apagado.");
   mudar(gastos.filter((g) => !(g.id === id && g.vanzeiroId === idDoVanzeiro())));
   return deuCerto;
+}
+
+/** W7: the vanzeiro's expenses as the database has them. */
+export function carregarGastosDoBanco(lista: Gasto[]) {
+  mudar(lista);
 }
 
 /** New vanzeiro account: no expenses. */
