@@ -1304,3 +1304,7 @@ Conferência (15/11/2026):
 - [x] Passageiro: o título "Avisos" não fica mais por cima do cabeçalho.
 - [x] Conferência: 353 testes (novo `limpar-avisos.test.ts`), tipos, build; telas conferidas em tamanho de celular; regras do SQL numa cópia do banco.
 - Pendente: o dono cola `supabase/SO-SQL-6-LIMPAR-AVISOS.sql` no Supabase.
+
+## Vagas da van (16/11/2026, pedido do dono)
+- [x] Conferido no banco: a Monica respondeu "Vou" para 17/11 (o prazo de 16/11 já tinha passado), por isso 16/11 mostrava "sem resposta" e "0 de 15".
+- [x] O "Vou" é recusado com a van lotada ("A van lotou"); agora o "Vou sempre" também ocupa lugar (`supabase/migrations/20261116210000_vagas.sql`, aplicado direto no Supabase); quem sai do destino ou responde "Não vou" libera a vaga. Testado numa cópia do banco (lotada recusa; alguém saiu, aceita).
