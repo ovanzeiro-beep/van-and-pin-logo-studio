@@ -1014,7 +1014,7 @@ Conferência (15/11/2026):
 
 ## Etapa R2 — Fonte da verdade e contraprova iguais ao app de hoje (feita em 16/11/2026)
 **Situação:** feita (merge na `main`). Seção 17 da fonte da verdade. Só documentos.
-- [x] R2.1 Fonte da verdade: aviso "Como ler" no topo; 40 trechos das seções 0 a 9 (escritas em 13/11) ganharam a marca "Atualizado em 16/11:" com o que vale hoje (sininho e Notificações, pedidos e mudanças de endereço, ordem fixa e arrastar, lugares, mapa, histórico de viagens, excluir conta, números do Financeiro e do Início, código único, vencimento de 7 dias, faltas no prazo, Termos e Política, pedido em 2 passos, A3); nada foi apagado.
+- [x] R2.1 Fonte da verdade: aviso "Como ler" no topo; 42 trechos das seções 0 a 9 (escritas em 13/11) ganharam a marca "Atualizado em 16/11:" com o que vale hoje (sininho e Notificações, pedidos e mudanças de endereço, ordem fixa e arrastar, lugares, mapa, histórico de viagens, excluir conta, números do Financeiro e do Início, código único, vencimento de 7 dias, faltas no prazo, Termos e Política, pedido em 2 passos, A3); nada foi apagado.
 - [x] R2.2 Valores conferidos no app antes de escrever: Início R$ 1.661,00 · 9 pagos · 9 pendentes · 2 devendo; Financeiro "Pagas" com 9 itens (agora batem); Financeiro R$ 1.661 / 663 / 530.
 - [x] R2.3 Contraprova: caixinhas velhas marcadas ou anotadas, sem apagar (documento do banco feito, decisão A3 feita, iPhone SE e "para depois" anotados).
 - Próxima: R3 (limpeza e bibliotecas).
