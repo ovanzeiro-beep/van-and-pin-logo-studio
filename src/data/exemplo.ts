@@ -1,3 +1,5 @@
+import type { Gasto } from "@/lib/gastos";
+
 // Dados de exemplo da etapa visual. Substituir por dados reais nas próximas etapas.
 
 export const vanzeiroExemplo = {
@@ -335,3 +337,12 @@ export const coordenadasExemplo: Record<string, { lat: number; lng: number }> = 
   Joinville: { lat: -26.3045, lng: -48.8487 },
   "Beto Carrero World": { lat: -26.801, lng: -48.6176 },
 };
+
+/** Van expenses of the sample vanzeiro (T6, "Seu mês na van"), money in centavos. */
+export const gastosExemplo: Gasto[] = [
+  { id: "gasto-1", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 42000, data: "2026-11-03" },
+  { id: "gasto-2", vanzeiroId: "vanzeiro-carlos", tipo: "pedagio", descricao: "", valor: 1860, data: "2026-11-08" },
+  { id: "gasto-3", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 38000, data: "2026-11-11" },
+  { id: "gasto-4", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 79000, data: "2026-10-15" },
+  { id: "gasto-5", vanzeiroId: "vanzeiro-carlos", tipo: "manutencao", descricao: "", valor: 35000, data: "2026-10-22" },
+];

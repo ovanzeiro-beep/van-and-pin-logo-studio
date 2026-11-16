@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight, CircleCheck, Route as RouteIcon, Wallet } from "lucide-react";
+import { GastosDoMes, Sobrou } from "@/components/app/Gastos";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { dataDeHoje } from "@/lib/agora";
@@ -7,6 +8,8 @@ import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { formatarReais } from "@/lib/dinheiro";
+import { gastosDoMes, totalDosGastos } from "@/lib/gastos";
+import { useGastos } from "@/lib/gastos-store";
 import { mesesDisponiveis, nomeDoMes, seuMes, type PessoaNoMes } from "@/lib/seu-mes";
 import { cn } from "@/lib/utils";
 import { useViagensEncerradasComDetalhes } from "@/lib/viagens-encerradas-store";
@@ -32,11 +35,13 @@ export const Route = createFileRoute("/vanzeiro/financeiro/mes")({
 function SeuMesNaVan() {
   const cobrancas = useCobrancas();
   const viagens = useViagensEncerradasComDetalhes();
-  const meses = mesesDisponiveis(cobrancas, viagens, dataDeHoje());
+  const todosOsGastos = useGastos();
+  const meses = mesesDisponiveis(cobrancas, [...viagens, ...todosOsGastos], dataDeHoje());
   const pedido = Route.useSearch().mes;
   const mes = pedido && meses.includes(pedido) ? pedido : meses[meses.length - 1]!;
   const i = meses.indexOf(mes);
   const r = seuMes(cobrancas, viagens, mes, dataDeHoje());
+  const gastos = gastosDoMes(todosOsGastos, mes);
   const decididos = r.emDia.length + r.atrasados.length + r.devendo.length;
   const destinos = useDestinos();
   const ondeVai = (p: PessoaNoMes) => {
@@ -51,7 +56,7 @@ function SeuMesNaVan() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <VanzeiroHeader compacto titulo="Seu mês na van" subtitulo="Quanto entrou e quem paga em dia.">
+      <VanzeiroHeader compacto titulo="Seu mês na van" subtitulo="Quanto entrou, quanto gastou e quem paga em dia.">
         <button
           type="button"
           onClick={voltar}
@@ -70,6 +75,7 @@ function SeuMesNaVan() {
       </div>
 
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4 pt-3">
+        <Sobrou recebido={r.recebido} gastos={totalDosGastos(gastos)} />
         <div className="grid grid-cols-2 gap-2">
           <Numero icone={Wallet} rotulo="Recebido" valor={formatarReais(r.recebido)} className="text-success" />
           <Numero icone={Wallet} rotulo="Falta receber" valor={formatarReais(r.faltaReceber)} className="text-foreground" />
@@ -87,6 +93,8 @@ function SeuMesNaVan() {
             className="text-success"
           />
         </div>
+
+        <GastosDoMes key={mes} gastos={gastos} mes={mes} />
 
         <Grupo onde={ondeVai} titulo="Devendo" pessoas={r.devendo} badge={(p) => <StatusBadge status="deve">{formatarReais(p.falta)}</StatusBadge>} />
         <Grupo onde={ondeVai} titulo="Pagaram atrasado" pessoas={r.atrasados} badge={() => <StatusBadge status="pendente">Atrasado</StatusBadge>} />

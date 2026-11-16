@@ -1,6 +1,7 @@
 import { limparAvisos } from "@/lib/avisos-store";
 import { limparCobrancas } from "@/lib/cobrancas-store";
 import { limparDestinos } from "@/lib/destinos-store";
+import { limparGastos } from "@/lib/gastos-store";
 import { limparPassageiros } from "@/lib/passageiros-store";
 import { limparRespostas } from "@/lib/respostas-store";
 import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
@@ -35,6 +36,7 @@ export function escolherPapel(papel: Papel) {
     limparDestinos();
     limparAvisos();
     limparViagensEncerradas();
+    limparGastos();
     perfilNovo(contaNova.nome);
   }
   mudarSessao({ papel, contaNova: null });
