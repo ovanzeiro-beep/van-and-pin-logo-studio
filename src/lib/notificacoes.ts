@@ -82,7 +82,8 @@ function meuId(papel: Papel): string | null {
 }
 
 async function mostrar(n: Notificacao) {
-  const opcoes = { body: n.corpo, tag: n.tag, icon: "/icones/icone-192.png", badge: "/icones/icone-192.png", data: { url: n.url } };
+  // Vibrates and plays the phone's notification sound, the same as the notices sent by the server (public/sw.js).
+  const opcoes = { body: n.corpo, tag: n.tag, renotify: true, silent: false, vibrate: [300, 100, 300], icon: "/icones/icone-192.png", badge: "/icones/icone-192.png", data: { url: n.url } };
   const registro = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistration() : undefined;
   if (registro) await registro.showNotification(n.titulo, opcoes);
   else new Notification(n.titulo, opcoes);

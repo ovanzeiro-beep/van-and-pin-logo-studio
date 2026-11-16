@@ -70,7 +70,10 @@ self.addEventListener("push", (event) => {
       body: dados.corpo || "",
       icon: "/icones/icone-192.png",
       badge: "/icones/icone-192.png",
-      ...(dados.tag ? { tag: dados.tag } : {}),
+      // Each notice vibrates and plays the phone's notification sound (also when it replaces an older one).
+      vibrate: [300, 100, 300],
+      silent: false,
+      ...(dados.tag ? { tag: dados.tag, renotify: true } : {}),
       data: { url: dados.url || "/" },
     }),
   );
