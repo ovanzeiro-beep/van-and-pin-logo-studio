@@ -87,7 +87,8 @@ function mostrarNotificacao(dados) {
     icon: "/icones/icone-192.png",
     badge: "/icones/icone-192.png",
     // Each notice vibrates and plays the phone's notification sound (also when it replaces an older one).
-    vibrate: [300, 100, 300],
+    // Same as VIBRACAO in src/lib/alerta.ts: a strong one, then gentle taps that grow.
+    vibrate: [700, 300, 80, 250, 120, 220, 200, 180, 320, 150, 500, 120, 800],
     silent: false,
     ...(dados.tag ? { tag: dados.tag, renotify: true } : {}),
     data: { url: dados.url || "/" },
