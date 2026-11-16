@@ -2,11 +2,11 @@ import { useMemo, useSyncExternalStore } from "react";
 import { gastosExemplo } from "@/data/exemplo";
 import type { Gasto, TipoDeGasto } from "@/lib/gastos";
 import { idDoVanzeiro, useSessao } from "@/lib/sessao";
+import { novoId } from "@/lib/ids";
 
 // The vanzeiro's expenses, in memory (no database): reloading brings the samples back.
 const inicial: Gasto[] = [...gastosExemplo];
 let gastos = inicial;
-let proximo = 1;
 const ouvintes = new Set<() => void>();
 const inscrever = (o: () => void) => {
   ouvintes.add(o);
@@ -29,7 +29,7 @@ export function useGastos() {
 export const obterGastos = () => gastos.filter((g) => g.vanzeiroId === idDoVanzeiro());
 
 export function anotarGasto(g: { tipo: TipoDeGasto; descricao: string; valor: number; data: string }) {
-  mudar([...gastos, { id: `gasto-novo-${proximo++}`, vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? g.descricao.trim() : "", valor: g.valor, data: g.data }]);
+  mudar([...gastos, { id: novoId("gasto"), vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? g.descricao.trim() : "", valor: g.valor, data: g.data }]);
 }
 
 export function apagarGasto(id: string) {

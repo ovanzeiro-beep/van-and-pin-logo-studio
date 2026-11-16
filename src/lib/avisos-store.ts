@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { avisosExemplo, type Aviso } from "@/data/exemplo";
+import { novoId } from "@/lib/ids";
 
 let avisos = [...avisosExemplo];
 
@@ -37,7 +38,7 @@ export function avisosDaPessoa(lista: Aviso[], paraId: string) {
 export function criarAviso(aviso: Omit<Aviso, "id">) {
   const novoAviso: Aviso = {
     ...aviso,
-    id: `av-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    id: novoId("aviso"),
   };
   avisos = [...avisos, novoAviso];
   notificar();

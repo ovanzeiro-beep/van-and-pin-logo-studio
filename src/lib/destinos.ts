@@ -3,6 +3,7 @@ import { gerarConviteUnico } from "@/lib/convite";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarData, somarDias } from "@/lib/datas";
 import { idDoVanzeiro } from "@/lib/sessao";
+import { novoId } from "@/lib/ids";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "seg", curto: "Seg" },
@@ -154,7 +155,7 @@ export function passoCompleto(passo: number, r: Rascunho, hoje = dataDeHoje()) {
 export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
   const tipo = r.tipo ?? "fixa";
   return {
-    id: anterior?.id ?? `destino-${Date.now()}`,
+    id: anterior?.id ?? novoId("destino"),
     vanzeiroId: anterior?.vanzeiroId ?? idDoVanzeiro(),
     origem: r.origem.trim(),
     destino: r.destino.trim(),

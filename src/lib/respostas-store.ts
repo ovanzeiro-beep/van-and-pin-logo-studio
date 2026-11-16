@@ -10,6 +10,7 @@ import { obterPerfilDoVanzeiro, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store
 import { avisoDePeriodoDeNaoVou, avisoDeResposta } from "@/lib/avisos";
 import { trocarAviso } from "@/lib/avisos-store";
 import { respostaFixa, respostasComFixas, SEM_RESPOSTAS_FIXAS, textoDoPrazoIso, type RespostasFixas } from "@/lib/respostas-fixas";
+import { novoId } from "@/lib/ids";
 
 // "Vou" / "Não vou" of each passenger, per trip day. Both panels read this same list,
 // so what the passenger answers shows up for the vanzeiro (Início and Viagem).
@@ -161,7 +162,7 @@ function avisarPeriodo(periodo: { id: string; passageiroId: string; de: string; 
 }
 
 export function marcarNaoVouNoPeriodo(passageiroId: string, de: string, ate: string) {
-  const novo = { id: `nv-${fixas.naoVou.length + 1}-${passageiroId}`, passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null };
+  const novo = { id: novoId("nao-vou"), passageiroId, de, ate, em: momentoDeAgora(), tiradoEm: null };
   mudarFixas({ ...fixas, naoVou: [...fixas.naoVou, novo] });
   avisarPeriodo(novo, "marcou");
 }

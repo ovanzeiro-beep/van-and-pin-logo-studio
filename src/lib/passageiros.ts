@@ -8,6 +8,7 @@ import {
 } from "@/data/exemplo";
 import { formatarReais } from "@/lib/dinheiro";
 import { caminhoCompleto } from "@/lib/destinos";
+import { novoId } from "@/lib/ids";
 
 export const PLANOS: { id: PlanoPagamento; rotulo: string; texto: string; rotuloValor: string }[] = [
   { id: "viagem", rotulo: "Por viagem", texto: "Ida e volta contam como 1 cobrança, mesmo em dias diferentes.", rotuloValor: "Valor por viagem" },
@@ -181,7 +182,7 @@ export function passoPassageiroCompleto(passo: number, r: RascunhoPassageiro, po
 export function passageiroDeRascunho(r: RascunhoPassageiro, destino: Pick<Destino, "id" | "vanzeiroId">, anterior?: Passageiro): Passageiro {
   const plano = r.plano ?? "mensal";
   return {
-    id: anterior?.id ?? `passageiro-${Date.now()}`,
+    id: anterior?.id ?? novoId("passageiro"),
     vanzeiroId: destino.vanzeiroId,
     destinoId: destino.id,
     pessoaId: anterior?.pessoaId ?? anterior?.id ?? r.pessoaId,

@@ -8,6 +8,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
+import { novoId } from "@/lib/ids";
 
 // In-memory records for the visual stage: changes last until the page is reloaded.
 // They are kept the way the database will keep them: every membership stays (with the day it ended),
@@ -215,7 +216,7 @@ export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): "salvo" |
   mudancas = [
     ...outras,
     {
-      id: `mudanca-${Date.now()}`,
+      id: novoId("mudanca"),
       vanzeiroId: p.vanzeiroId,
       destinoId: p.destinoId,
       matriculaId,
@@ -316,7 +317,7 @@ export function limparPassageiros() {
 
 /** A person used an invite code: the request waits on the vanzeiro's bell. */
 export function adicionarPedido(pedido: Omit<PedidoEntrada, "id">) {
-  const novo: PedidoEntrada = { ...pedido, id: `pedido-${Date.now()}`, situacao: "aguardando", pedidoEm: dataDeHoje() };
+  const novo: PedidoEntrada = { ...pedido, id: novoId("pedido"), situacao: "aguardando", pedidoEm: dataDeHoje() };
   todosPedidos = [...todosPedidos, novo];
   avisar();
   return novo.id;
