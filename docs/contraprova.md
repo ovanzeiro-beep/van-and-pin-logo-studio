@@ -1349,3 +1349,8 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [ ] Limpeza dos dados de teste (decisão do dono: as 2 contas ficam): `supabase/SO-SQL-9-LIMPEZA.sql` — aguardando a licença do Supabase ou o dono colar.
 - Pendências do dono (CLAUDE.md, seção 8): contato do responsável na Política de Privacidade; revisão dos Termos e da Política por um advogado antes de lançar ao público.
 - [x] (16/11, pedido do dono) "Entrar com Google" pela primeira vez não manda mais para Criar conta: na volta do Google aparece na hora a janelinha "Falta só um passo" com a caixinha dos Termos e "Aceitar e continuar" (LGPD mantida: o aceite é marcado e gravado); "Agora não" sai da conta do Google. 361 testes.
+
+## Tempo real (16/11/2026, pedido do dono)
+- [x] O que um celular muda aparece no outro em 1 a 2 segundos, sem recarregar (Supabase Realtime, `20261117000000_tempo_real.sql`, aplicado direto no Supabase: 14 tabelas). Cada pessoa só recebe aviso do que já pode ler.
+- [x] A viagem: o passageiro não lê a viagem inteira; recebe só um "sinal" (`viagem_sinais`) de que a viagem do destino dele mudou e lê a própria situação.
+- [x] Continua a leitura a cada 30 s e ao voltar para o app, caso o tempo real caia. 361 testes, tipos, build.

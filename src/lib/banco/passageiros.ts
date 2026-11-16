@@ -18,7 +18,7 @@ import {
   type MudancaDeEndereco,
 } from "@/lib/passageiros-store";
 import { somenteDigitos, type MeusDados } from "@/lib/passageiros";
-import { mudarSessaoPassageiro, obterSessao } from "@/lib/sessao";
+import { mudarSessaoPassageiro, obterSessao, useSessao } from "@/lib/sessao";
 import { salvarMeusDados } from "@/lib/sessao-passageiro";
 import { supabase, USA_BANCO } from "@/lib/supabase";
 import { carregarRespostas } from "@/lib/banco/respostas";
@@ -203,8 +203,31 @@ export async function atualizarDoBanco(): Promise<void> {
   await carregarAvisos();
 }
 
-/** In the root of the app: news from the other phones every 30 seconds and when the app comes back to the screen. */
+/** The tables whose changes another phone hears at once (supabase/migrations/20261117000000_tempo_real.sql). */
+export const TABELAS_EM_TEMPO_REAL = [
+  "destinos",
+  "dias_sem_viagem",
+  "matriculas",
+  "pedidos",
+  "mudancas_endereco",
+  "respostas",
+  "vou_sempre",
+  "nao_vou_periodos",
+  "viagens",
+  "viagem_sinais",
+  "embarques",
+  "cobrancas",
+  "avisos",
+  "perfis_vanzeiro",
+] as const;
+
+/**
+ * In the root of the app: news from the other phones. In real time (the database tells this phone the moment
+ * something it can see changes; the screen reads it again a moment later), and also every 30 seconds and when the
+ * app comes back to the screen, in case the real-time connection dropped.
+ */
 export function useNovidadesDoBanco() {
+  const contaId = useSessao().conta?.id;
   useEffect(() => {
     if (!USA_BANCO.destinos) return;
     const atualizar = () => {
@@ -212,11 +235,28 @@ export function useNovidadesDoBanco() {
     };
     const t = setInterval(atualizar, 30_000);
     document.addEventListener("visibilitychange", atualizar);
+    // Real time: several changes together (a trip step saves more than one table) become one reading.
+    const sb = supabase();
+    let espera: ReturnType<typeof setTimeout> | null = null;
+    const logo = () => {
+      if (espera) clearTimeout(espera);
+      espera = setTimeout(() => {
+        espera = null;
+        if (obterSessao().conta) void atualizarDoBanco();
+      }, 400);
+    };
+    const canal = sb && contaId ? sb.channel(`novidades-${contaId}`) : null;
+    if (canal) {
+      for (const table of TABELAS_EM_TEMPO_REAL) canal.on("postgres_changes", { event: "*", schema: "public", table }, logo);
+      canal.subscribe();
+    }
     return () => {
       clearInterval(t);
       document.removeEventListener("visibilitychange", atualizar);
+      if (espera) clearTimeout(espera);
+      if (canal && sb) void sb.removeChannel(canal);
     };
-  }, []);
+  }, [contaId]);
 }
 
 // ---------- passenger ----------
