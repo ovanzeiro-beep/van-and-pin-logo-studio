@@ -9,6 +9,7 @@ import { nomeDestino } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
 import { idDoVanzeiro } from "@/lib/sessao";
 import { novoId } from "@/lib/ids";
+import { useSoDoMeuPainel } from "@/lib/painel";
 
 // In-memory records for the visual stage: changes last until the page is reloaded.
 // They are kept the way the database will keep them: every membership stays (with the day it ended),
@@ -91,11 +92,11 @@ export function useAceitos() {
 }
 
 export function usePassageiros() {
-  return useSyncExternalStore(inscrever, obterPassageiros, () => passageirosExemplo);
+  return useSoDoMeuPainel(useSyncExternalStore(inscrever, obterPassageiros, () => passageirosExemplo));
 }
 
 export function usePedidos() {
-  return useSyncExternalStore(inscrever, obterPedidos, () => pedidosExemplo);
+  return useSoDoMeuPainel(useSyncExternalStore(inscrever, obterPedidos, () => pedidosExemplo));
 }
 
 export function usePassageirosDoDestino(destinoId: string) {
@@ -189,7 +190,7 @@ export const obterMudancasDeEndereco = () => mudancas;
 export const obterMudancasAguardando = () => mudancasAguardando;
 
 export function useMudancasAguardando() {
-  return useSyncExternalStore(inscrever, () => mudancasAguardando, () => SEM_MUDANCAS);
+  return useSoDoMeuPainel(useSyncExternalStore(inscrever, () => mudancasAguardando, () => SEM_MUDANCAS));
 }
 
 const embarqueDe = (p: Passageiro): Embarque => ({ cidade: p.cidade, endereco: p.endereco, ponto: p.ponto ?? null });

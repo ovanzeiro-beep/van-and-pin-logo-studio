@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import type { Destino } from "@/data/exemplo";
 import { agora, dataDeHoje, horaDeAgora } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
@@ -9,6 +9,7 @@ import { avisoDeVanSaiu, avisosDoRelogio } from "@/lib/avisos";
 import { criarAvisoUmaVez } from "@/lib/avisos-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { confirmarPeloCelular, embarcou, iniciarViagem, naoEstava, viagensDoDia, type Agora, type ViagemDoDia } from "@/lib/viagem";
+import { useDonoDoPainel } from "@/lib/painel";
 
 // In-memory trips of the day for the visual stage: they last until the page is reloaded,
 // and survive switching tabs in the middle of a trip.
@@ -29,7 +30,13 @@ function inscrever(o: () => void) {
 }
 
 export function useViagensDoDia() {
-  return useSyncExternalStore(inscrever, () => estado, () => inicial);
+  const todas = useSyncExternalStore(inscrever, () => estado, () => inicial);
+  // U3: inside the vanzeiro panel, only that vanzeiro's trips of the day.
+  const dono = useDonoDoPainel();
+  return useMemo(
+    () => (dono === null ? todas : { ...todas, viagens: Object.fromEntries(Object.entries(todas.viagens).filter(([, v]) => v.vanzeiroId === dono)) }),
+    [todas, dono],
+  );
 }
 
 /** New vanzeiro account: no trips. */

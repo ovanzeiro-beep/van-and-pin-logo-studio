@@ -3,6 +3,7 @@ import { caminhoCompleto } from "@/lib/destinos";
 import { useSyncExternalStore } from "react";
 import { destinosExemplo, type Destino } from "@/data/exemplo";
 import { inicializarCodigosUsados } from "@/lib/convite";
+import { useSoDoMeuPainel } from "@/lib/painel";
 
 // Registrar códigos de exemplo como já usados
 inicializarCodigosUsados(destinosExemplo);
@@ -23,7 +24,7 @@ function inscrever(o: () => void) {
 export const obterDestinos = () => destinos;
 
 export function useDestinos() {
-  return useSyncExternalStore(inscrever, () => destinos, () => destinosExemplo);
+  return useSoDoMeuPainel(useSyncExternalStore(inscrever, () => destinos, () => destinosExemplo));
 }
 
 export function useDestino(id: string) {

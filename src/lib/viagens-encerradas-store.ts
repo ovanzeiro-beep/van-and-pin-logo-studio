@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import { viagensEncerradasExemplo, type ViagemEncerrada } from "@/data/exemplo";
 import type { ViagemDoDia } from "@/lib/viagem";
 import { useViagensDoDia } from "@/lib/viagem-store";
+import { useSoDoMeuPainel } from "@/lib/painel";
 
 let viagensEncerradas = [...viagensEncerradasExemplo];
 
@@ -41,6 +42,6 @@ export function viagensFeitas(passadas: ViagemEncerrada[], deHoje: Record<string
 
 /** Completed trips, newest first. Each one keeps how its destino was that day, even if it was edited or deleted later. */
 export function useViagensEncerradasComDetalhes() {
-  const viagens = viagensFeitas(useViagensEncerradas(), useViagensDoDia().viagens);
+  const viagens = useSoDoMeuPainel(viagensFeitas(useViagensEncerradas(), useViagensDoDia().viagens));
   return [...viagens].sort((a, b) => b.data.localeCompare(a.data));
 }

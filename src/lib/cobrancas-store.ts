@@ -13,6 +13,7 @@ import {
 import { dataDeHoje } from "@/lib/agora";
 import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, type Cobranca } from "@/lib/cobrancas";
 import { somarDias } from "@/lib/datas";
+import { useSoDoMeuPainel } from "@/lib/painel";
 
 /** Sample history: charges the app created from each plan since the start of the history. */
 function cobrancasDeExemplo(): Cobranca[] {
@@ -49,7 +50,7 @@ function inscrever(o: () => void) {
 export const obterCobrancas = () => cobrancas;
 
 export function useCobrancas() {
-  return useSyncExternalStore(inscrever, obterCobrancas, () => inicial);
+  return useSoDoMeuPainel(useSyncExternalStore(inscrever, obterCobrancas, () => inicial));
 }
 
 export function useCobranca(id: string) {
