@@ -626,3 +626,19 @@ Pensado no dia real: o vanzeiro dirige com uma mão, cedo, em estrada com pouco 
 - **T6. Gastos da van no "Seu mês na van"** — **feito em 16/11/2026.** Decisões do dono (16/11): lista pronta de tipos (Combustível, Manutenção, Pedágio, Documentos e seguro, Outros — em "Outros" o vanzeiro escreve o que foi); errou, apaga e anota de novo (não edita); o gasto é do mês, não de um destino; "Sobrou" = Recebido − Gastos. Como funciona: no alto do "Seu mês na van", o cartão "Sobrou R$ X" em verde (ou "Faltou R$ X" em vermelho, quando os gastos passam do recebido), com "Recebido R$ … − gastos R$ …" embaixo. Depois dos números, "Gastos da van · total", com cada gasto (tipo, dia, valor e lixeira para apagar, com confirmação) e o botão "Anotar gasto": escolhe o tipo, o valor e o dia (até hoje). Os meses com gasto também aparecem nas setas. Os gastos são só do vanzeiro; passageiros nunca veem.
 - **T7. Aviso no sininho do vanzeiro para o "Não vou de… até…"** — **feito em 16/11/2026.** Decisão do dono (16/11): avisa quando o passageiro marca e também quando tira. Texto: "Juliana marcou "Não vou" de 16/11 até 17/11, em <destino>" (um dia só: "em 20/11"); ao tirar, o mesmo aviso vira "Juliana tirou o "Não vou" de 16/11 até 17/11, em <destino>" (um aviso por período, para o vanzeiro não ficar com a informação velha). Usa o tipo de aviso que já existe, "Resposta de passageiro". O "Vou sempre" não gera aviso (o vanzeiro vê só "Vou").
 - **Com o banco:** "Compartilhar minha viagem".
+
+## 19. Limpeza e organização antes do banco (análise de 16/11/2026, pedida pelo dono)
+
+**Como está:** as regras de preparo para o banco (seção 7, Etapa C) estão cumpridas: nenhuma tela lê `src/data/exemplo.ts` direto; a data e a hora vêm só de `src/lib/agora.ts`; todo dado leva o vanzeiro dono; `docs/banco-de-dados.md` lista tudo (seções 2.1 a 2.16). 297 testes, tipos e build sem erro.
+
+### 19.1 O que falta arrumar
+1. **Código morto e desorganizado (não muda nada na tela):** funções sem uso (`marcarComoLido`, `limparSessao`); nome enganoso (`obterRespostasParaTeste` é usado pelo app → `obterRespostasDoDia`); contas repetidas (lista de meses em 3 lugares, uma delas numa tela; "somar dias" em 2; "hoje / dia" em 2; "primeiro nome" em 2); o botão redondo do cabeçalho (Voltar, Viagens feitas, Seu mês na van) copiado em 10 telas; identificadores novos criados de 5 jeitos diferentes, com a hora (dois no mesmo instante podem repetir); cerca de 30 funções marcadas para uso fora do arquivo sem precisar; funções misturadas em arquivos de tela (avisos do "react-refresh"). Os 1.368 avisos de formatação continuam **sem mexer** (decisão da R3).
+2. **Peças e bibliotecas do Lovable nunca usadas:** 40 peças visuais prontas (`src/components/ui`) e 33 bibliotecas instaladas sem uso. Não vão para o celular, mas pesam na instalação e aparecem nos alertas de segurança. **Precisa da decisão do dono.**
+3. **"Cada vanzeiro só vê o que é dele" já nas funções:** hoje só gastos e exclusões separam por vanzeiro; destinos, passageiros, cobranças, viagens e avisos mostram tudo da memória (não aparece porque os exemplos têm um vanzeiro só). Com o banco quem separa é o banco, mas fazer já nas funções deixa as telas prontas e testáveis com dois vanzeiros.
+
+### 19.2 Plano (uma etapa por vez)
+- **U1. Limpeza de código** (item 1) — em andamento, com o "pode seguir" do dono de 16/11.
+- **U2. Tirar peças e bibliotecas sem uso** (item 2) — só com a aprovação do dono.
+- **U3. Cada vanzeiro vê só o que é dele nas funções** (item 3).
+
+Pendências do dono (não dependem do código): contato da Política de Privacidade; advogado revisar Termos e Política; teste no celular com o vanzeiro do piloto; dados reais do piloto; (opcional) cidade no perfil do vanzeiro, para o Pix copia e cola.

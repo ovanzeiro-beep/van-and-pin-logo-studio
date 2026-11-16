@@ -1122,3 +1122,14 @@ Conferência (15/11/2026):
 - [x] T7.2 `marcarNaoVouNoPeriodo` e `tirarNaoVouDoPeriodo` (`respostas-store.ts`) criam / trocam o aviso; tirar duas vezes não cria outro.
 - [x] T7.3 Conferência: 297 testes (novo `aviso-nao-vou.test.ts`), tipos, build; no navegador (390×844): passageiro marca 16/11–17/11 → no sininho do vanzeiro "Juliana marcou "Não vou" de 16/11 até 17/11, em Cambará → UENP Jacarezinho"; passageiro tira → o aviso vira "tirou"; sem erros.
 - Não pode quebrar: conferido — os outros avisos e as respostas iguais.
+
+## Etapa U1 — Limpeza de código (iniciada em 16/11/2026)
+**Situação:** em andamento. Seção 19 da fonte da verdade. Sem banco de dados. Nada muda para quem usa o app.
+- [ ] U1.1 Tirar as funções sem uso: `marcarComoLido` (`avisos-store.ts`) e `limparSessao` (`sessao.ts`).
+- [ ] U1.2 Trocar o nome `obterRespostasParaTeste` → `obterRespostasDoDia` (é usado pelo app).
+- [ ] U1.3 Juntar as contas repetidas num lugar só (`src/lib/datas.ts`): lista de meses, somar dias, "hoje / dia", primeiro nome; a tela do Financeiro deixa de ter a própria lista de meses.
+- [ ] U1.4 Botão redondo do cabeçalho numa peça só, com o mesmo visual, nas 10 telas.
+- [ ] U1.5 Uma função só para criar identificadores novos, que não repete.
+- [ ] U1.6 Tirar a marca de "uso fora do arquivo" das funções que só são usadas dentro dele.
+- [ ] U1.7 Tirar as funções dos arquivos de tela do app (avisos "react-refresh" em `src/components/app`).
+- [ ] U1.8 Conferência: testes, tipos, build, as telas iguais a antes (comparação de imagens com a `main`), sem erros.
