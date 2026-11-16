@@ -1333,3 +1333,7 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [x] Conferido: Início e Financeiro do vanzeiro usam a mesma conta (`resumoDoMes`); Início e Pagamentos do passageiro usam a mesma (`totalDevido`); teste de ponta a ponta do dinheiro passando.
 - [x] Corrigido: passageiro sem nenhuma cobrança via "R$ 0,00 · Pago · Tudo pago. Obrigado!" (parecia que tinha pago algo). Agora: "R$ 0,00 · Nenhuma cobrança ainda." (Início e Pagamentos), sem o selo "Pago".
 - [x] Conferência: 359 testes, tipos, build.
+
+## E3 — Varredura ponta a ponta no banco de verdade (feita em 16/11/2026)
+- [x] Teste `supabase/testes/e3-ponta-a-ponta.sql` rodado no Supabase de verdade (pelo dono, no SQL Editor): 28 de 28 certos. Vanzeiro e 2 passageiros de teste: contas, perfil, destino, código, pedido, aceite, van cheia (aceitar e pedir), recusar, "Vou", sininho, ninguém vê os dados dos outros, viagem, embarque, cobrança de R$ 150, passageiro não marca pago nem lê a viagem inteira, cobrança paga não muda, gasto, sair do destino libera a vaga, Mensal, destino excluído avisa e tira todos, tarefa do relógio.
+- [x] Conferido depois: nada do teste ficou no banco (0 contas, 0 destino, 0 função de teste).
