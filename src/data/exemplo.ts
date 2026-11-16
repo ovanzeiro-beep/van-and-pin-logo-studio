@@ -8,10 +8,6 @@ export const vanzeiroExemplo = {
   /** Chave Pix que aparece para os passageiros. */
   pix: "carlos.vanzeiro@email.com",
   van: { modelo: "Sprinter", placa: "ABC-1D23", lugares: 15 as number | null },
-  viagemHoje: {
-    /** Destino da viagem de hoje: nome e horários vêm do cadastro dele. */
-    destinoId: "centro-unisul",
-  },
   /** Resposta de cada passageiro para a viagem de hoje. Quem não está aqui ainda não respondeu. */
   respostasHoje: {
     "p-gabriel": "vai",

@@ -1018,3 +1018,13 @@ Conferência (15/11/2026):
 - [x] R2.2 Valores conferidos no app antes de escrever: Início R$ 1.661,00 · 9 pagos · 9 pendentes · 2 devendo; Financeiro "Pagas" com 9 itens (agora batem); Financeiro R$ 1.661 / 663 / 530.
 - [x] R2.3 Contraprova: caixinhas velhas marcadas ou anotadas, sem apagar (documento do banco feito, decisão A3 feita, iPhone SE e "para depois" anotados).
 - Próxima: R3 (limpeza e bibliotecas).
+
+---
+
+## Etapa R3 — Limpeza e bibliotecas (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 17 da fonte da verdade.
+- [x] R3.1 Código sem uso tirado: `moverPassageiro` e `moverNaCidade` (as setas ↑ ↓ que saíram) e `viagemHoje` dos exemplos. Os testes que usavam as setas passaram a usar o arrastar (`moverParaNaCidade`, `reordenarPassageiro`), conferindo as mesmas coisas.
+- [x] R3.2 "seroval" e "seroval-plugins" (montam as páginas; a única biblioteca com alerta que vai para o app) fixadas na 1.6.12, a mais nova da mesma linha, com a correção. `bun audit` não lista mais a seroval. Os alertas que sobraram (inclusive o crítico) são de ferramentas de trabalho (eslint, servidor de edição, testes), que não vão para o celular.
+- [x] R3.3 Formatação (1.204 avisos de espaços e quebras de linha): **não mexida de propósito** (reescreveria 134 arquivos e atrapalharia o Lovable).
+- [x] R3.4 Conferência completa depois da atualização: 262 testes, tipos, build; servidor de edição: 30 telas sem erro, sem erro de montagem da página, dia completo, A3 (Beatriz), endereço, P1, arrastar e lugares iguais a antes; produção: 30 telas sem erro, sem erro de montagem e o teste sem internet completo.
+- **Seção 17.1 completa (R1, R2, R3).** O que falta antes do banco é a seção 17.2 (decisões, Política/Termos com o advogado, teste no celular).

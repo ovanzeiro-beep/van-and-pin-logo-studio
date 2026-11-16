@@ -1,7 +1,7 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { avaliarMudanca, type Embarque } from "@/lib/endereco";
-import { atualizarMeusDados, identidadePassageiro, moverNaCidade, moverParaNaCidade, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
+import { atualizarMeusDados, identidadePassageiro, moverParaNaCidade, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { criarAviso, useAvisosNaoLidos } from "@/lib/avisos-store";
 import { dataDeHoje } from "@/lib/agora";
@@ -120,15 +120,6 @@ export function useAvisosVanzeiro() {
   const pedidosCount = usePedidos().length + useMudancasAguardando().length;
   const avisosNaoLidos = useAvisosNaoLidos(idDoVanzeiro());
   return pedidosCount + avisosNaoLidos.length;
-}
-
-/** Adds or replaces a passenger. When it came from a pedido, the pedido leaves the waiting list. */
-/** "↑ / ↓" in the destino: changes the pickup order inside the passenger's city. */
-export function moverPassageiro(id: string, direcao: -1 | 1) {
-  const nova = moverNaCidade(passageiros, id, direcao);
-  if (nova === passageiros) return;
-  matriculas = [...nova, ...saidas];
-  avisar();
 }
 
 /** Dragging in the destino: the passenger takes the place of `alvoId` in the pickup order of their city. */

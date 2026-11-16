@@ -4,7 +4,7 @@ import { obterRegistroDasViagens, registrarEmbarque, registrarFalta } from "@/li
 import { obterDestinos } from "@/lib/destinos-store";
 import { sairDoDestino } from "@/lib/exclusoes";
 import {
-  moverPassageiro,
+  reordenarPassageiro,
   obterAceitos,
   obterMatriculas,
   obterPassageiros,
@@ -70,7 +70,7 @@ describe("Etapa K: pedidos e matrículas nunca somem", () => {
 });
 
 describe("Etapa K: ordem de busca em campo próprio", () => {
-  it("cada cidade de cada destino tem 1, 2, 3…; as setas trocam os números", () => {
+  it("cada cidade de cada destino tem 1, 2, 3…; arrastar troca os números", () => {
     const daCidade = () =>
       obterPassageiros()
         .filter((p) => p.destinoId === "jacarezinho-londrina" && p.cidade === "Jacarezinho")
@@ -78,7 +78,7 @@ describe("Etapa K: ordem de busca em campo próprio", () => {
     const antes = daCidade();
     expect(antes.map(([, o]) => o)).toEqual(antes.map((_, i) => i + 1));
     const [primeiro, segundo] = antes;
-    moverPassageiro(String(segundo![0]), -1);
+    reordenarPassageiro(String(segundo![0]), String(primeiro![0]));
     const depois = daCidade();
     expect(depois[0]).toEqual([segundo![0], 1]);
     expect(depois[1]).toEqual([primeiro![0], 2]);

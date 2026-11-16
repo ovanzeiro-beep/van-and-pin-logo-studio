@@ -112,20 +112,6 @@ export function moverParaNaCidade<T extends Pick<Passageiro, "id" | "destinoId" 
   return resultado;
 }
 
-/** Moves a passenger one place up (-1) or down (1) in the pickup order of their city, in the same destino. */
-export function moverNaCidade<T extends Pick<Passageiro, "id" | "destinoId" | "cidade">>(lista: T[], id: string, direcao: -1 | 1): T[] {
-  const p = lista.find((x) => x.id === id);
-  if (!p) return lista;
-  const mesmos = lista.flatMap((x, i) => (x.destinoId === p.destinoId && x.cidade === p.cidade ? [i] : []));
-  const k = mesmos.findIndex((i) => lista[i]?.id === id);
-  const de = mesmos[k];
-  const para = mesmos[k + direcao];
-  if (de === undefined || para === undefined) return lista;
-  const nova = [...lista];
-  [nova[de], nova[para]] = [lista[para]!, lista[de]!];
-  return nova;
-}
-
 export function contarPassageiros(lista: Pick<Passageiro, "destinoId">[], destinoId: string) {
   return lista.filter((p) => p.destinoId === destinoId).length;
 }
