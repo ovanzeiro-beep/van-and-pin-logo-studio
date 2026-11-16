@@ -1246,3 +1246,10 @@ Conferência (15/11/2026):
 - [x] "Vou" / "Não vou" (`responder`: só a própria pessoa, até o prazo, em dia com viagem, com lugar), "Vou sempre" (`ligar_vou_sempre`), "Não vou de… até…" (`marcar_nao_vou`, com o número do banco) e "Tirar" (`tirar_nao_vou`): o banco confere primeiro; o motivo da recusa aparece na faixa vermelha; o celular do vanzeiro vê as respostas em até 30 s.
 - [x] Conferência: 333 testes (novo `w5-respostas.test.ts`), tipos, build.
 - Pendente: o aviso no sininho do vanzeiro quando alguém responde ainda é da memória (vai com os avisos, W8); fechar as respostas ao iniciar a viagem passa a valer no banco com a viagem (W6).
+
+## W6 — Viagem no banco (feita em 16/11/2026)
+**Situação:** código feito e testado (merge na `main`, publicado); o dono testa no celular.
+- [x] `src/lib/banco/viagem.ts`: iniciar viagem grava a viagem inteira (uma em andamento por vanzeiro); cada toque (Embarcou, Não estava no ponto, parada, conferência, chegada, volta, Desceu, encerrar) é salvo na hora; se o banco recusar, a tela volta como estava; ao entrar e a cada 30 s, carrega a viagem de hoje (continua de onde parou) e o histórico dos dias anteriores.
+- [x] Passageiro: vê só o próprio lugar na viagem (`minha_viagem_de_hoje`: a van saiu, embarcou, conferência), nunca os outros; "Estou na van" pelo banco (`estou_na_van`).
+- [x] Conferência: 338 testes (novo `w6-viagem.test.ts`), tipos, build.
+- Pendente: embarques e faltas que viram cobrança/desconto vão com o dinheiro (W7); "a van saiu" no sininho vai com os avisos (W8).

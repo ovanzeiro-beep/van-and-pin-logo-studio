@@ -17,10 +17,10 @@ import { linkWhatsApp } from "@/lib/passageiros";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
-import { confirmarNaVan } from "@/lib/viagem-store";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { fazer } from "@/lib/acoes";
 import { responderNoBanco } from "@/lib/banco/respostas";
+import { confirmarNaVanNoBanco } from "@/lib/banco/viagem";
 
 export const Route = createFileRoute("/passageiro/")({
   head: () => ({
@@ -57,7 +57,7 @@ function InicioPassageiro() {
       <PassageiroHeader compacto titulo="Início" subtitulo="Tudo sobre a sua próxima viagem." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-2">
         {conferencia === "perguntar" ? (
-          <AvisoConferencia onConfirmar={() => void fazer(() => confirmarNaVan(eu.id))} />
+          <AvisoConferencia onConfirmar={() => void fazer(() => confirmarNaVanNoBanco(eu.id))} />
         ) : conferencia === "confirmado" ? (
           <section className="flex items-center gap-3 rounded-3xl border-2 border-success bg-success-soft p-4 shadow-card" role="status">
             <CircleCheck className="h-8 w-8 shrink-0 text-success" />

@@ -40,6 +40,16 @@ export function useViagensDoDia() {
   );
 }
 
+/** W6: the trips of today read from the database replace what is in memory (the chosen tab stays). */
+export function carregarViagensDoDia(viagens: Record<string, ViagemDoDia>) {
+  mudar({ ...estado, viagens });
+}
+
+/** W6: puts a trip back as it was (when the database refused a step). */
+export function restaurarViagem(v: ViagemDoDia) {
+  mudar({ ...estado, viagens: { ...estado.viagens, [v.destinoId]: v } });
+}
+
 /** New vanzeiro account: no trips. */
 export function limparViagens() {
   mudar({ escolhida: "", viagens: {} });

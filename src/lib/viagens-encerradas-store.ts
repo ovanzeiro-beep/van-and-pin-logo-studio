@@ -16,6 +16,12 @@ export function obterViagensEncerradas() {
   return viagensEncerradas;
 }
 
+/** W6: the finished trips of the days before, read from the database. */
+export function carregarViagensEncerradas(lista: ViagemEncerrada[]) {
+  viagensEncerradas = lista;
+  notificar();
+}
+
 export function limparViagensEncerradas() {
   viagensEncerradas = [];
   notificar();

@@ -17,10 +17,11 @@ import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
 import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDaAba, viagensDoDia, type FaseViagem } from "@/lib/viagem";
 import { CancelarViagemDoDia } from "@/components/app/DiasSemViagem";
-import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
+import { emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 import { alternarVoz, fraseDaViagem, useVozDaViagem, useVozLigada, vozDisponivel } from "@/lib/voz";
 import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 import { fazer } from "@/lib/acoes";
+import { comecarViagemNoBanco } from "@/lib/banco/viagem";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
   head: () => ({
@@ -155,7 +156,7 @@ function AbaViagem() {
             {...lista}
             faltamResponder={faltamResponderAoIniciar(destino, dataDeHoje(), agora(), lista.semResposta.length)}
             prazo={textoDoPrazo(destino, dataDeHoje())}
-            aoIniciar={() => void fazer(() => comecarViagem(destino, lista.vao.map((p) => p.id)))}
+            aoIniciar={() => void fazer(() => comecarViagemNoBanco(destino, lista.vao.map((p) => p.id)))}
             cancelarHoje={
               <CancelarViagemDoDia
                 d={destino}

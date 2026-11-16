@@ -19,16 +19,16 @@ import {
   seguirViagem,
   type ViagemDoDia,
 } from "@/lib/viagem";
-import { atualizarViagem, marcarEmbarcou, marcarNaoEstava } from "@/lib/viagem-store";
 import { PassageiroDaVez, Progresso } from "./partes";
 import { ResumoDaViagem } from "./ResumoDaViagem";
 import { fazer } from "@/lib/acoes";
+import { atualizarViagemNoBanco, marcarEmbarcouNoBanco, marcarNaoEstavaNoBanco } from "@/lib/banco/viagem";
 
 const botaoGrande = "h-[3.25rem] w-full rounded-2xl font-display text-base font-bold";
 
 function BotaoParada() {
   return (
-    <Button variant="outline" className="w-full rounded-2xl font-bold" onClick={() => void fazer(() => atualizarViagem(fazerParada))}>
+    <Button variant="outline" className="w-full rounded-2xl font-bold" onClick={() => void fazer(() => atualizarViagemNoBanco(fazerParada))}>
       <Coffee className="h-5 w-5" /> Fazer parada
     </Button>
   );
@@ -62,19 +62,19 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
         <div className="mt-auto grid gap-2">
           {id ? (
             <>
-              <Button variant="success" size="xl" className={botaoGrande} onClick={() => void fazer(() => marcarEmbarcou(id))}>
+              <Button variant="success" size="xl" className={botaoGrande} onClick={() => void fazer(() => marcarEmbarcouNoBanco(id))}>
                 <UserCheck className="h-6 w-6" /> Embarcou
               </Button>
               <Button
                 size="xl"
                 className={cn(botaoGrande, "border-2 border-destructive bg-destructive-soft text-destructive hover:bg-destructive-soft/80")}
-                onClick={() => void fazer(() => marcarNaoEstava(id))}
+                onClick={() => void fazer(() => marcarNaoEstavaNoBanco(id))}
               >
                 <UserX className="h-6 w-6" /> Não estava no ponto
               </Button>
             </>
           ) : (
-            <Button variant="cta" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagem(chegarAoDestino))}>
+            <Button variant="cta" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagemNoBanco(chegarAoDestino))}>
               <Flag className="h-5 w-5" /> Cheguei ao destino
             </Button>
           )}
@@ -93,7 +93,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
         {id && <PassageiroDaVez rotulo="Próxima descida" p={achar(id)} posicao={`${v.desceram.length + 1}º de ${total}`} />}
         <div className="mt-auto grid gap-2">
           {id && (
-            <Button variant="success" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagem((x) => desceu(x, id)))}>
+            <Button variant="success" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagemNoBanco((x) => desceu(x, id)))}>
               <Home className="h-6 w-6" /> Desceu
             </Button>
           )}
@@ -115,7 +115,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
             {aBordo(v).length > 0 ? "Antes de seguir, você confere quem está na van." : "Toque abaixo quando for seguir."}
           </p>
         </section>
-        <Button variant="cta" size="xl" className={cn(botaoGrande, "mt-auto")} onClick={() => void fazer(() => atualizarViagem(retomarViagem))}>
+        <Button variant="cta" size="xl" className={cn(botaoGrande, "mt-auto")} onClick={() => void fazer(() => atualizarViagemNoBanco(retomarViagem))}>
           <Play className="h-5 w-5" /> Retomar viagem
         </Button>
       </div>
@@ -172,7 +172,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
                     variant={estado === "na-van" ? "success" : "outline"}
                     className="rounded-xl font-bold"
                     aria-pressed={estado === "na-van"}
-                    onClick={() => void fazer(() => atualizarViagem((x) => conferir(x, id, "na-van")))}
+                    onClick={() => void fazer(() => atualizarViagemNoBanco((x) => conferir(x, id, "na-van")))}
                   >
                     <UserCheck className="h-5 w-5" /> Está na van
                   </Button>
@@ -180,7 +180,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
                     variant={estado === "ficou" ? "secondary" : "ghost"}
                     className="rounded-xl font-semibold"
                     aria-pressed={estado === "ficou"}
-                    onClick={() => void fazer(() => atualizarViagem((x) => conferir(x, id, "ficou")))}
+                    onClick={() => void fazer(() => atualizarViagemNoBanco((x) => conferir(x, id, "ficou")))}
                   >
                     Ficou aqui
                   </Button>
@@ -191,7 +191,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
         </ul>
         <div className="shrink-0 px-5 pb-3 pt-1">
           {!completa && <p className="mb-1.5 text-center text-sm font-semibold text-destructive">Confira todos para seguir.</p>}
-          <Button variant="cta" size="xl" className={botaoGrande} disabled={!completa} onClick={() => void fazer(() => atualizarViagem(seguirViagem))}>
+          <Button variant="cta" size="xl" className={botaoGrande} disabled={!completa} onClick={() => void fazer(() => atualizarViagemNoBanco(seguirViagem))}>
             <Play className="h-5 w-5" /> Seguir viagem
           </Button>
         </div>
@@ -210,11 +210,11 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
             <p className="mb-1.5 text-center text-sm font-semibold text-muted-foreground">Volta: {textoDaVolta(destino)}</p>
           )}
           {v.temVolta ? (
-            <Button variant="cta" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagem(iniciarVolta))}>
+            <Button variant="cta" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagemNoBanco(iniciarVolta))}>
               <Play className="h-5 w-5" /> Iniciar volta
             </Button>
           ) : (
-            <Button variant="cta" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagem(encerrarViagem))}>
+            <Button variant="cta" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagemNoBanco(encerrarViagem))}>
               <Flag className="h-5 w-5" /> Encerrar viagem
             </Button>
           )}

@@ -9,6 +9,7 @@ import { emailPadrao, nomeDePessoa } from "@/lib/formatos";
 import { carregarPerfisEDestinos } from "@/lib/banco/destinos";
 import { carregarPassageirosEPedidos } from "@/lib/banco/passageiros";
 import { carregarRespostas } from "@/lib/banco/respostas";
+import { carregarViagens } from "@/lib/banco/viagem";
 
 // W1 (docs/banco-de-dados.md, section 8.3): login and account for real, in the owner's Supabase.
 // E-mail and password, "Esqueci a senha", the Termos accepted at sign-up and the role of each account.
@@ -135,6 +136,8 @@ async function carregarConta(user: User) {
     await carregarPassageirosEPedidos();
     // W5: answers (Vou / Não vou, Vou sempre, Não vou de… até…).
     await carregarRespostas();
+    // W6: today's trips (it goes on from where it was) and the history.
+    await carregarViagens();
   }
   mudarSessao({ conta: { id: user.id, email: user.email ?? "", nome }, papel, contaPronta: true });
 }
