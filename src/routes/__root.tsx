@@ -19,6 +19,7 @@ import { useContaDoBanco } from "../lib/conta";
 import "../lib/instalar";
 import { useNovidadesDoBanco } from "../lib/banco/passageiros";
 import { useCelularNoBanco } from "../lib/banco/celular";
+import { AceiteDosTermos } from "../components/app/AceiteDosTermos";
 import { useAlertaComAppAberto } from "../lib/alerta";
 import { atualizarDoBanco } from "../lib/banco/passageiros";
 
@@ -160,6 +161,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      {/* E4: first time with Google, the box of the Termos (LGPD) on any screen. */}
+      <AceiteDosTermos />
     </QueryClientProvider>
   );
 }
