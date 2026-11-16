@@ -1173,3 +1173,9 @@ Conferência (15/11/2026):
   - Resultado: 306 testes (novo `acoes.test.tsx`: a peça única, a mensagem na tela e os motivos de respostas, cobranças, gastos e viagem; 9 arquivos de teste passaram a conferir "deu certo / motivo" no lugar de true/false, conferindo as mesmas regras), tipos (sem nada sobrando), build. 30 telas em 390×844 e 375×667 comparadas com a `main`: texto igual nas 60; dia completo igual linha por linha; T2 a T7 iguais; roteiros antigos de cadastro, endereço e exclusão com o mesmo resultado nas duas versões; perfil salva e fecha; marcar como pago funciona; a faixa vermelha aparece nos dois painéis, por cima de uma janela aberta (que continua aberta) e some em 6 s; sem erros.
 - Achado e corrigido durante a etapa: uma trava nova ("ninguém confirmou") tinha entrado sem querer em `comecarViagem`; os testes mostraram e ela foi tirada (a tela já não deixa iniciar sem ninguém).
 - Não pode quebrar: conferido — quando dá certo, nenhuma tela, texto, cor ou regra mudou.
+
+## Etapa V3 — Relógio de verdade (iniciada em 16/11/2026)
+**Situação:** em andamento. Seção 20 da fonte da verdade. Sem banco de dados.
+- [ ] V3.1 `src/lib/agora.ts`: o app usa o dia e a hora reais de Brasília; os testes continuam no momento fixo dos exemplos (sexta, 13/11/2026, 05:10), para conferirem sempre as mesmas contas.
+- [ ] V3.2 Os exemplos andam junto: todas as datas de `src/data/exemplo.ts` andam em semanas inteiras até a sexta mais recente (cada dia de exemplo continua no mesmo dia da semana); vencimentos de Mensal e Quinzenal ficam no mês certo; o histórico começa no mês certo.
+- [ ] V3.3 Conferência: testes, tipos, build; no navegador com o relógio de hoje e com outras datas (outro mês, virada de ano, fim de semana, noite): telas sem erro, viagens de hoje são de hoje, números batendo entre Início e Financeiro.

@@ -1,6 +1,16 @@
 import type { Gasto } from "@/lib/gastos";
+import { diasParaOsExemplos, MOMENTO_DOS_EXEMPLOS } from "@/lib/agora";
+import { somarDias } from "@/lib/datas";
 
 // Dados de exemplo da etapa visual. Substituir por dados reais nas próximas etapas.
+//
+// V3 (16/11/2026): o app usa o relógio de verdade, e os exemplos andam junto. Cada data abaixo foi escrita em volta de
+// sexta, 13/11/2026, e anda semanas inteiras até a sexta mais recente (`dia`), para continuar no mesmo dia da semana.
+// Vencimentos de Mensal e Quinzenal são do dia do mês (`diaDoMes`). Nos testes nada anda (13/11/2026, 05:10).
+
+const DESLOCAMENTO = diasParaOsExemplos();
+/** Uma data de exemplo, andada até perto de hoje (semanas inteiras). */
+const dia = (iso: string) => (DESLOCAMENTO === 0 ? iso : somarDias(iso, DESLOCAMENTO));
 
 export const vanzeiroExemplo = {
   id: "vanzeiro-carlos",
@@ -100,7 +110,7 @@ export const destinosExemplo: Destino[] = [
     destino: "Beto Carrero World",
     tipo: "avulsa",
     dias: [],
-    data: "2026-11-28",
+    data: dia("2026-11-28"),
     saida: "04:30",
     volta: "19:00",
     voltaData: null,
@@ -194,59 +204,68 @@ export const pedidosExemplo: PedidoEntrada[] = [
   { id: "pedido-joao", vanzeiroId: "vanzeiro-carlos", destinoId: "jacarezinho-londrina", nome: "João Vitor Santos", telefone: "43998456721", cidade: "Santo Antônio da Platina", endereco: "Rua Rui Barbosa, 120", ponto: { lat: -23.2961, lng: -50.0792 } },
 ];
 
-/** "Hoje" da etapa visual, para os exemplos de cobrança ficarem coerentes (sexta, 13 de nov). */
-export const DATA_DE_HOJE = "2026-11-13";
+/** "Hoje" dos exemplos: a sexta mais recente (nos testes, sexta, 13 de nov de 2026). */
+export const DATA_DE_HOJE = dia(MOMENTO_DOS_EXEMPLOS.data);
+/** O mesmo dia do mês, no mês do "hoje" dos exemplos (vencimentos de Mensal e Quinzenal). */
+const diaDoMes = (iso: string) => `${DATA_DE_HOJE.slice(0, 7)}-${iso.slice(8, 10)}`;
 
-/** Horário de "agora" na etapa visual: o prazo da viagem das 06:40 (05:40) ainda está aberto, o das 06:00 (05:00) já fechou. */
-export const HORA_DE_AGORA = "05:10";
+/** Horário de "agora" nos testes: o prazo da viagem das 06:40 (05:40) ainda está aberto, o das 06:00 (05:00) já fechou. */
+export const HORA_DE_AGORA = MOMENTO_DOS_EXEMPLOS.hora;
 
-/** Primeiro dia do histórico de exemplo: as cobranças começam a ser criadas a partir daqui. */
-export const INICIO_DO_HISTORICO = "2026-10-01";
+/** Primeiro dia do histórico de exemplo (o 1º do mês anterior ao "hoje" dos exemplos): as cobranças começam daqui. */
+export const INICIO_DO_HISTORICO = `${somarDias(DATA_DE_HOJE, -43).slice(0, 7)}-01`;
 
 export type FormaPagamento = "dinheiro" | "pix";
 
 /** Dias em que passageiros de "Por viagem" e "Diário" embarcaram (geram cobranças). As viagens de hoje são feitas na aba Viagem. */
 export const embarquesExemplo: { passageiroId: string; data: string }[] = [
-  { passageiroId: "p-ana", data: "2026-11-06" },
-  { passageiroId: "p-ana", data: "2026-11-08" },
-  { passageiroId: "p-lucas", data: "2026-11-01" },
-  { passageiroId: "p-lucas", data: "2026-11-06" },
-  { passageiroId: "p-lucas", data: "2026-11-07" },
-  { passageiroId: "p-rafael", data: "2026-11-09" },
-  { passageiroId: "p-rafael", data: "2026-11-10" },
-  { passageiroId: "p-rafael", data: "2026-11-11" },
-  { passageiroId: "p-rafael", data: "2026-11-12" },
-  { passageiroId: "p-camila", data: "2026-11-09" },
-  { passageiroId: "p-camila", data: "2026-11-11" },
-  { passageiroId: "p-camila", data: "2026-11-12" },
+  { passageiroId: "p-ana", data: dia("2026-11-06") },
+  { passageiroId: "p-ana", data: dia("2026-11-08") },
+  { passageiroId: "p-lucas", data: dia("2026-11-01") },
+  { passageiroId: "p-lucas", data: dia("2026-11-06") },
+  { passageiroId: "p-lucas", data: dia("2026-11-07") },
+  { passageiroId: "p-rafael", data: dia("2026-11-09") },
+  { passageiroId: "p-rafael", data: dia("2026-11-10") },
+  { passageiroId: "p-rafael", data: dia("2026-11-11") },
+  { passageiroId: "p-rafael", data: dia("2026-11-12") },
+  { passageiroId: "p-camila", data: dia("2026-11-09") },
+  { passageiroId: "p-camila", data: dia("2026-11-11") },
+  { passageiroId: "p-camila", data: dia("2026-11-12") },
 ];
 
 /** Dias de ausência; só avisos Não vou dentro do prazo dão desconto. */
 export const faltasExemplo: { passageiroId: string; data: string; avisouNoPrazo: boolean }[] = [
-  { passageiroId: "p-mariana", avisouNoPrazo: true, data: "2026-10-17" },
-  { passageiroId: "p-mariana", avisouNoPrazo: true, data: "2026-10-24" },
-  { passageiroId: "p-fernanda", avisouNoPrazo: true, data: "2026-10-28" },
-  { passageiroId: "p-juliana", avisouNoPrazo: true, data: "2026-11-05" },
+  { passageiroId: "p-mariana", avisouNoPrazo: true, data: dia("2026-10-17") },
+  { passageiroId: "p-mariana", avisouNoPrazo: true, data: dia("2026-10-24") },
+  { passageiroId: "p-fernanda", avisouNoPrazo: true, data: dia("2026-10-28") },
+  { passageiroId: "p-juliana", avisouNoPrazo: true, data: dia("2026-11-05") },
 ];
 
 /** Cobranças com vencimento até esta data foram pagas por Pix no próprio vencimento. */
-export const PAGAS_ATE_EXEMPLO = "2026-10-31";
+/** Tudo o que venceu até o fim do mês anterior ao "hoje" dos exemplos está pago. */
+export const PAGAS_ATE_EXEMPLO = somarDias(`${DATA_DE_HOJE.slice(0, 7)}-01`, -1);
 
 /** Outras cobranças pagas, pela chave "passageiro_vencimento". */
 export const pagamentosExemplo: Record<string, { data: string; forma: FormaPagamento }> = {
-  "p-ana_2026-11-06": { data: "2026-11-06", forma: "dinheiro" },
-  "p-lucas_2026-11-01": { data: "2026-11-01", forma: "dinheiro" },
-  "p-lucas_2026-11-06": { data: "2026-11-06", forma: "pix" },
-  "p-gabriel_2026-11-10": { data: "2026-11-10", forma: "pix" },
-  "p-fernanda_2026-11-05": { data: "2026-11-04", forma: "dinheiro" },
-  "p-rafael_2026-11-09": { data: "2026-11-09", forma: "pix" },
-  "p-rafael_2026-11-10": { data: "2026-11-10", forma: "pix" },
-  "p-camila_2026-11-09": { data: "2026-11-09", forma: "pix" },
-  "p-camila_2026-11-11": { data: "2026-11-11", forma: "dinheiro" },
+  [`p-ana_${dia("2026-11-06")}`]: { data: dia("2026-11-06"), forma: "dinheiro" },
+  [`p-lucas_${dia("2026-11-01")}`]: { data: dia("2026-11-01"), forma: "dinheiro" },
+  [`p-lucas_${dia("2026-11-06")}`]: { data: dia("2026-11-06"), forma: "pix" },
+  [`p-rafael_${dia("2026-11-09")}`]: { data: dia("2026-11-09"), forma: "pix" },
+  [`p-rafael_${dia("2026-11-10")}`]: { data: dia("2026-11-10"), forma: "pix" },
+  [`p-camila_${dia("2026-11-09")}`]: { data: dia("2026-11-09"), forma: "pix" },
+  [`p-camila_${dia("2026-11-11")}`]: { data: dia("2026-11-11"), forma: "dinheiro" },
 };
 
+// Mensal e Quinzenal: pagas no dia do mês certo (só se esse dia já chegou no "hoje" dos exemplos).
+for (const [quem, vence, pago, forma] of [
+  ["p-gabriel", "2026-11-10", "2026-11-10", "pix"],
+  ["p-fernanda", "2026-11-05", "2026-11-04", "dinheiro"],
+] as const) {
+  if (diaDoMes(vence) <= DATA_DE_HOJE) pagamentosExemplo[`${quem}_${diaDoMes(vence)}`] = { data: diaDoMes(pago), forma };
+}
+
 export const cancelamentosExemplo: Record<string, { data: string; motivo: string }> = {
-  "p-lucas_2026-11-07": { data: "2026-11-08", motivo: "Dia de cortesia" },
+  [`p-lucas_${dia("2026-11-07")}`]: { data: dia("2026-11-08"), motivo: "Dia de cortesia" },
 };
 
 /** Notification types for both vanzeiro and passageiro. */
@@ -304,7 +323,7 @@ export const viagensEncerradasExemplo: ViagemEncerrada[] = [
   {
     vanzeiroId: "vanzeiro-carlos",
     destinoId: "centro-unisul",
-    data: "2026-11-12",
+    data: dia("2026-11-12"),
     temVolta: true,
     foto: { nome: "Cambará → UENP Jacarezinho", saida: "06:40", volta: "17:50" },
     embarcaram: ["p-gabriel", "p-fernanda", "p-thiago", "p-juliana", "p-rafael", "p-camila"],
@@ -314,7 +333,7 @@ export const viagensEncerradasExemplo: ViagemEncerrada[] = [
   {
     vanzeiroId: "vanzeiro-carlos",
     destinoId: "jacarezinho-londrina",
-    data: "2026-11-08",
+    data: dia("2026-11-08"),
     temVolta: true,
     foto: { nome: "Jacarezinho → Londrina", saida: "06:00", volta: "18:30" },
     embarcaram: ["p-mariana", "p-pedro", "p-ana", "p-beatriz", "p-juliana-londrina"],
@@ -340,9 +359,9 @@ export const coordenadasExemplo: Record<string, { lat: number; lng: number }> = 
 
 /** Van expenses of the sample vanzeiro (T6, "Seu mês na van"), money in centavos. */
 export const gastosExemplo: Gasto[] = [
-  { id: "gasto-1", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 42000, data: "2026-11-03" },
-  { id: "gasto-2", vanzeiroId: "vanzeiro-carlos", tipo: "pedagio", descricao: "", valor: 1860, data: "2026-11-08" },
-  { id: "gasto-3", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 38000, data: "2026-11-11" },
-  { id: "gasto-4", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 79000, data: "2026-10-15" },
-  { id: "gasto-5", vanzeiroId: "vanzeiro-carlos", tipo: "manutencao", descricao: "", valor: 35000, data: "2026-10-22" },
+  { id: "gasto-1", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 42000, data: dia("2026-11-03") },
+  { id: "gasto-2", vanzeiroId: "vanzeiro-carlos", tipo: "pedagio", descricao: "", valor: 1860, data: dia("2026-11-08") },
+  { id: "gasto-3", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 38000, data: dia("2026-11-11") },
+  { id: "gasto-4", vanzeiroId: "vanzeiro-carlos", tipo: "combustivel", descricao: "", valor: 79000, data: dia("2026-10-15") },
+  { id: "gasto-5", vanzeiroId: "vanzeiro-carlos", tipo: "manutencao", descricao: "", valor: 35000, data: dia("2026-10-22") },
 ];
