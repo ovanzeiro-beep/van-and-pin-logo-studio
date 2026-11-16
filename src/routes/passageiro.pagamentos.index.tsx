@@ -46,7 +46,7 @@ function MeusPagamentos() {
           <p className={cn("font-display text-3xl font-bold leading-tight", devido > 0 ? "text-foreground" : "text-success")}>
             {formatarReais(devido)}
           </p>
-          <p className="text-sm text-muted-foreground">{devido > 0 ? "Soma das cobranças ainda não pagas." : "Tudo pago. Obrigado!"}</p>
+          <p className="text-sm text-muted-foreground">{devido > 0 ? "Soma das cobranças ainda não pagas." : lista.length === 0 ? "Nenhuma cobrança ainda." : "Tudo pago. Obrigado!"}</p>
         </section>
       </div>
       {lista.length === 0 ? (
