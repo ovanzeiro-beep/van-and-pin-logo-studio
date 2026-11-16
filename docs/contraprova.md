@@ -1319,3 +1319,11 @@ Conferência (15/11/2026):
 - [x] Corrigido: o passageiro sem van digitava o código e a tela voltava sozinha a cada 30 s (o app pegava o pedido antigo, aceito no destino excluído). Agora só um pedido "aguardando" muda a tela; um pedido aceito de destino que não existe mais volta para a tela do código.
 - [x] Aviso novo "Destino excluído" no sininho (e no celular) para cada passageiro quando o vanzeiro exclui o destino, feito pelo banco (`20261116220000_destino_excluido.sql`, testado numa cópia do banco).
 - Pendente: o dono cola `supabase/SO-SQL-7-DESTINO-EXCLUIDO.sql` (o Supabase pediu licença e não teve resposta).
+
+## E1 — Lugares da van no destino (feita em 16/11/2026)
+Decisão do dono (16/11): os lugares da van (Perfil) limitam quem está no destino. Quem entra primeiro com o código entra; com a van cheia ninguém mais entra; quem sai libera a vaga. (Substitui o aviso antigo "Nem todos vão poder ir na mesma viagem".)
+- [x] Banco (`20261116230000_lugares_no_destino.sql`, aplicado direto no Supabase): pedir para entrar com a van cheia é recusado ("A van está cheia. Fale com o vanzeiro."); aceitar pedido, cadastrar direto e voltar para o destino também ("A van está cheia: não tem mais lugar neste destino."); uma vaga de cada vez (sem duas pessoas pegarem a última). Testado numa cópia do banco (8 checagens).
+- [x] Início: "Passageiros confirmados 1 de 15 lugares", com a barra enchendo até os lugares (sem lugares no Perfil, continua "1 de 4").
+- [x] Destino: "3 de 15 lugares ocupados"; cadastro de passageiro com a van cheia mostra o aviso vermelho e não salva.
+- [x] O "Vou" de cada viagem continua limitado aos lugares (já era assim; agora o "Vou sempre" também conta).
+- [x] Conferência: 359 testes (novo `e1-lugares-no-destino.test.ts`), tipos, build.

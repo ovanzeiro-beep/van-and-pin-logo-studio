@@ -39,7 +39,10 @@ function InicioVanzeiro() {
   const passageiros = usePassageiros();
   const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, destino?.id ?? "", useRespostasDoDia(dataDeHoje()));
   const perfil = usePerfilVanzeiro();
-  const pct = total > 0 ? Math.round((confirmados / total) * 100) : 0;
+  // E1: with the van's seats in the Perfil, "1 de 15 lugares" (the bar fills up to the seats); without them, "1 de 4".
+  const lugares = perfil.van.lugares;
+  const base = lugares ?? total;
+  const pct = base > 0 ? Math.min(100, Math.round((confirmados / base) * 100)) : 0;
   const saida = destino?.saida ?? "--:--";
   const financeiro = resumoDoMes(useCobrancas(), dataDeHoje());
   const semDestinos = destinos.length === 0;
@@ -119,7 +122,11 @@ function InicioVanzeiro() {
           value={
             <>
               {confirmados}
-              <span className="text-base font-semibold text-muted-foreground"> de {total}</span>
+              <span className="text-base font-semibold text-muted-foreground">
+                {" "}
+                de {base}
+                {lugares !== null && ` ${lugares === 1 ? "lugar" : "lugares"}`}
+              </span>
             </>
           }
         >

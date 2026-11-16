@@ -30,9 +30,26 @@ export function situacaoDosLugares(vao: number, lugares: number | null): "livre"
   return vao === lugares ? "lotada" : "passou";
 }
 
-/** New passenger: the destino gets more passengers than seats (not everyone can go on the same day). */
+/** New passenger: the destino would get more passengers than seats (refused since 16/11/2026, E1). */
 export function destinoPassaDosLugares(passageirosNoDestino: number, lugares: number | null) {
   return lugares !== null && passageirosNoDestino > lugares;
+}
+
+// E1 (decision of the owner, 16/11/2026): the van's seats also limit who is IN the destino. Whoever enters first with
+// the code gets in; with every seat taken nobody else enters (asking, accepted or added by the vanzeiro); whoever
+// leaves frees the seat. The database checks the same (supabase/migrations/20261116230000_lugares_no_destino.sql).
+
+export const VAN_CHEIA = "A van está cheia: não tem mais lugar neste destino.";
+
+/** Every seat of the destino is taken. */
+export function destinoCheio(ocupados: number, lugares: number | null) {
+  return lugares !== null && ocupados >= lugares;
+}
+
+/** "3 de 15 lugares ocupados", or "3 passageiros" without a number of seats. */
+export function textoDaOcupacao(ocupados: number, lugares: number | null) {
+  if (lugares === null) return `${ocupados} ${ocupados === 1 ? "passageiro" : "passageiros"}`;
+  return `${ocupados} de ${lugares} ${lugares === 1 ? "lugar ocupado" : "lugares ocupados"}`;
 }
 
 /** "15" → 15; blank → null (não informado); anything else invalid. */

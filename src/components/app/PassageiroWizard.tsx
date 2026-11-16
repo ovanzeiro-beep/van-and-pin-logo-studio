@@ -313,8 +313,8 @@ function Resumo({ r, destino, novo }: { r: RascunhoPassageiro; destino: Destino;
   return (
     <>
       {novo && destinoPassaDosLugares(noDestino, lugares) && (
-        <p className="rounded-2xl bg-warning-soft px-3.5 py-2 text-sm font-semibold text-warning" role="status">
-          Este destino fica com {noDestino} passageiros e a van tem {lugares} lugares. Nem todos vão poder ir na mesma viagem.
+        <p className="rounded-2xl bg-destructive-soft px-3.5 py-2 text-sm font-semibold text-destructive" role="status">
+          A van está cheia: os {lugares} lugares deste destino já estão ocupados. Para entrar alguém, outro passageiro precisa sair.
         </p>
       )}
       <div>
