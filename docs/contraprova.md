@@ -1028,3 +1028,10 @@ Conferência (15/11/2026):
 - [x] R3.3 Formatação (1.204 avisos de espaços e quebras de linha): **não mexida de propósito** (reescreveria 134 arquivos e atrapalharia o Lovable).
 - [x] R3.4 Conferência completa depois da atualização: 262 testes, tipos, build; servidor de edição: 30 telas sem erro, sem erro de montagem da página, dia completo, A3 (Beatriz), endereço, P1, arrastar e lugares iguais a antes; produção: 30 telas sem erro, sem erro de montagem e o teste sem internet completo.
 - **Seção 17.1 completa (R1, R2, R3).** O que falta antes do banco é a seção 17.2 (decisões, Política/Termos com o advogado, teste no celular).
+
+---
+
+## Decisões do dono de 16/11/2026 (seção 17.1.1 da fonte da verdade)
+- [x] Feriado: sim, cancelar a viagem de um dia, sem desconto para o mensalista. → Etapa S1 (a fazer).
+- [x] Uma conta pode ser vanzeiro e passageiro: sim (como hoje). Registrado em `docs/banco-de-dados.md`.
+- [x] iPhone SE (decisão C): sim, diminuir o cabeçalho das 3 telas de entrada. → Etapa S2 (a fazer).

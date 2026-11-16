@@ -585,7 +585,17 @@ Nada quebrado no código. O que falta:
 - **R2. Fonte da verdade e contraprova iguais ao app de hoje (feito em 16/11/2026: aviso "Como ler" no topo, trechos antigos marcados com "Atualizado em 16/11:", caixinhas velhas anotadas):** as seções do começo (13/11) ainda dizem, por exemplo, que o sininho do passageiro "não faz nada", que recusar pedido "não avisa" e que "não existe histórico de viagens"; a contraprova tem caixinhas velhas sem marcar de coisas já feitas.
 - **R3. Limpeza e bibliotecas (feito em 16/11/2026: saíram a função das setas `moverPassageiro`/`moverNaCidade` e o dado `viagemHoje`; a "seroval" e a "seroval-plugins" foram fixadas na 1.6.12 em `package.json` (overrides), o que tira o único alerta de segurança que ia para o app; os alertas que sobraram são de ferramentas de trabalho que não vão para o celular; a formatação não foi mexida de propósito):** tirar o que sobrou sem uso (função das setas ↑ ↓, dado de exemplo `viagemHoje`); atualizar com cuidado as bibliotecas com alerta de segurança (das 28, só a que monta as páginas — "seroval", moderado — vai para o app de verdade; as outras, inclusive a crítica, são ferramentas de trabalho). Os 1.204 avisos de formatação **não** serão arrumados de uma vez (reescreveria 134 arquivos e atrapalharia o Lovable).
 
+### 17.1.1 Decisões do dono (16/11/2026)
+- **Feriado: SIM, sem desconto.** O vanzeiro pode cancelar a viagem de um dia só (feriado, faculdade sem aula); os passageiros recebem aviso; o mensalista **não** ganha desconto (o feriado já está dentro do valor do mês). Quem paga por viagem ou diário não paga, porque não embarca.
+- **Uma conta com dois papéis: SIM.** A mesma conta pode ser vanzeiro e passageiro e troca de painel no Perfil (como hoje).
+- **iPhone SE (decisão C): SIM, diminuir** o cabeçalho azul de Entrar, Criar conta e "Como você vai usar o app?" só em celulares pequenos, para não rolar.
+
+**Plano (uma etapa por vez, depois do "pode seguir" do dono):**
+- **Etapa S1 — Cancelar a viagem de um dia** (sem banco): botão na aba Viagem e no destino para "Não vai ter viagem neste dia", com confirmação e motivo; a viagem some do Início, da aba Viagem e das Viagens do passageiro naquele dia; os passageiros recebem aviso; nada de desconto; dá para desfazer antes do dia.
+- **Etapa S2 — Cabeçalho menor no iPhone SE** nas 3 telas de entrada.
+- Depois: banco de dados, quando o dono mandar.
+
 ### 17.2 Depende do dono
-- **Decisões:** feriado (cancelar a viagem de um dia? o mensalista ganha desconto?); uma conta pode ser vanzeiro e passageiro?; iPhone SE (decisão C, cabeçalho das telas de entrada).
+- **Decisões:** feriado (cancelar a viagem de um dia? o mensalista ganha desconto?); uma conta pode ser vanzeiro e passageiro?; iPhone SE (decisão C, cabeçalho das telas de entrada). **Respondidas em 16/11 (ver 17.1.1).**
 - **Política e Termos:** contato do responsável e revisão do advogado (depois do R1).
 - **Testar no celular de verdade, de preferência com o vanzeiro do piloto:** app instalado em tela cheia (Android e iPhone), abrir sem sinal, notificações, mapa com ruas e busca de cidade nova, arrastar a ordem com o dedo.

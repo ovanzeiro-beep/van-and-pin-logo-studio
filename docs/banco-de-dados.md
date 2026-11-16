@@ -35,7 +35,7 @@ Para cada conjunto: os campos, quem pode ver e quem pode mudar. "Vanzeiro dono" 
 | senha | guardada protegida (nunca o texto da senha), ou entrada pelo Google |
 | nome | nome da pessoa |
 | aceite dos Termos e da Política | data e hora do aceite (LGPD) |
-| papel escolhido | vanzeiro ou passageiro (dá para trocar no Perfil) |
+| papéis | vanzeiro, passageiro ou os dois na mesma conta (decisão do dono, 16/11): troca de painel no Perfil; o último painel usado abre primeiro |
 | criada em | data |
 
 **Quem vê e muda:** só a própria pessoa.
@@ -146,6 +146,16 @@ Hoje: `ViagemDoDia` na memória (`viagem-store.ts`) e `ViagemEncerrada` (`viagen
 **Hoje a viagem em andamento some se o app fechar.** Com o banco, cada passo é salvo na hora e a viagem continua de onde parou.
 
 **Quem vê:** o vanzeiro dono; o passageiro vê a situação da viagem dele (aguardando, saiu, na van). **Quem muda:** só o vanzeiro (o passageiro só confirma "Estou na van").
+
+### 2.7.1 Dias sem viagem (feriado)
+Decisão do dono (16/11/2026): o vanzeiro pode cancelar a viagem de um dia só; o mensalista não ganha desconto.
+| Campo | O que é |
+| --- | --- |
+| destino, data | o dia que não vai ter viagem |
+| motivo | ex.: "Feriado", "Sem aula" |
+| cancelado em, por quem | data e o vanzeiro |
+
+**Quem vê:** o vanzeiro dono; os passageiros do destino (o dia some das viagens deles, com aviso). **Quem muda:** só o vanzeiro, até o dia.
 
 ### 2.8 Acontecimentos da viagem (embarques, faltas, conferências)
 Hoje não existem como registro: ao marcar "Embarcou" o app cria a cobrança e esquece (lista escondida `registrados`), e o histórico antigo vem dos exemplos (`embarquesExemplo`, `faltasExemplo`).
