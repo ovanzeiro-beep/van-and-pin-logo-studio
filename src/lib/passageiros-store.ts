@@ -11,6 +11,7 @@ import { idDoVanzeiro } from "@/lib/sessao";
 import { novoId } from "@/lib/ids";
 import { useSoDoMeuPainel } from "@/lib/painel";
 import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
+import { nomeProprio } from "@/lib/formatos";
 
 // In-memory records for the visual stage: changes last until the page is reloaded.
 // They are kept the way the database will keep them: every membership stays (with the day it ended),
@@ -201,7 +202,7 @@ export function useMudancasAguardando() {
 const embarqueDe = (p: Passageiro): Embarque => ({ cidade: p.cidade, endereco: p.endereco, ponto: p.ponto ?? null });
 
 function aplicarEmbarque(id: string, e: Embarque) {
-  matriculas = matriculas.map((p) => (p.id === id ? { ...p, cidade: e.cidade, endereco: e.endereco.trim(), ponto: e.ponto ?? undefined } : p));
+  matriculas = matriculas.map((p) => (p.id === id ? { ...p, cidade: e.cidade, endereco: nomeProprio(e.endereco), ponto: e.ponto ?? undefined } : p));
 }
 
 /**
@@ -228,7 +229,7 @@ export function mudarMeuEmbarque(matriculaId: string, novo: Embarque): ({ ok: tr
       matriculaId,
       nome: p.nome,
       de: embarqueDe(p),
-      para: { ...novo, endereco: novo.endereco.trim() },
+      para: { ...novo, endereco: nomeProprio(novo.endereco) },
       distanciaKm,
       pedidoEm: dataDeHoje(),
       situacao: "aguardando",

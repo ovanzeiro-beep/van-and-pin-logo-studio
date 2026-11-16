@@ -1,9 +1,10 @@
 import { useSyncExternalStore } from "react";
 import { primeiroNomeDe } from "@/lib/datas";
 import { vanzeiroExemplo } from "@/data/exemplo";
-import { telefoneValido } from "@/lib/passageiros";
+import { somenteDigitos, telefoneValido } from "@/lib/passageiros";
 import { idDoVanzeiro, useSessao } from "@/lib/sessao";
 import { deuCerto, type Resultado } from "@/lib/acoes";
+import { chavePixPadrao, nomeDePessoa, nomeProprio, placaPadrao } from "@/lib/formatos";
 
 export type PerfilVanzeiro = {
   nome: string;
@@ -49,14 +50,21 @@ export function usePerfilVanzeiro() {
 
 /** Saves the logged-in vanzeiro's own profile. */
 export function salvarPerfilVanzeiro(novo: PerfilVanzeiro): Resultado {
-  perfis = { ...perfis, [idDoVanzeiro()]: novo };
+  // Saved in the standard format (src/lib/formatos.ts).
+  const padrao: PerfilVanzeiro = {
+    nome: nomeDePessoa(novo.nome),
+    telefone: somenteDigitos(novo.telefone),
+    pix: chavePixPadrao(novo.pix),
+    van: { modelo: nomeProprio(novo.van.modelo), placa: placaPadrao(novo.van.placa), lugares: novo.van.lugares },
+  };
+  perfis = { ...perfis, [idDoVanzeiro()]: padrao };
   ouvintes.forEach((o) => o());
   return deuCerto;
 }
 
 /** New vanzeiro account: only the name typed in "Criar conta" is known. */
 export function perfilNovo(nome: string) {
-  salvarPerfilVanzeiro({ nome: nome.trim(), telefone: "", pix: "", van: { modelo: "", placa: "", lugares: null } });
+  salvarPerfilVanzeiro({ nome, telefone: "", pix: "", van: { modelo: "", placa: "", lugares: null } });
 }
 
 /** Editar do Perfil: only name and phone are required; Pix and van may stay blank ("Não informado"). */

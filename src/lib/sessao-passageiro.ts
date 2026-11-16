@@ -9,6 +9,7 @@ import { adicionarPedido, obterAceitos, obterPassageiros, obterPedidos, salvarDa
 import { matriculasDaPessoa, identidadePassageiro, somenteDigitos, type MeusDados } from "@/lib/passageiros";
 import { mudarSessaoPassageiro, obterSessao, useSessao, type SessaoPassageiro } from "@/lib/sessao";
 import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
+import { nomeDePessoa, nomeProprio } from "@/lib/formatos";
 
 // The passenger panel of whoever is using the app (saved in sessao.ts). Starts as the sample
 // passenger (Juliana); a new account starts with no van and joins one with an invite code.
@@ -25,16 +26,16 @@ export function pedirParaEntrar(destinoId: string, nome: string, telefone: strin
   const pedidoId = adicionarPedido({
     vanzeiroId: destino.vanzeiroId,
     destinoId,
-    nome: nome.trim(),
+    nome: nomeDePessoa(nome),
     telefone,
     pessoaId: eu ? identidadePassageiro(eu) : undefined,
     cidade: embarque?.cidade,
-    endereco: embarque?.endereco.trim(),
+    endereco: embarque ? nomeProprio(embarque.endereco) : undefined,
     ponto: embarque?.ponto ?? undefined,
   });
   // Someone already in a van keeps being who they are: the new pedido must not replace the accepted one that said so.
   const passageiroId = obterSessao().passageiro.passageiroId ?? eu?.id ?? null;
-  mudarSessaoPassageiro({ nome: nome.trim(), telefone, pedidoId, passageiroId });
+  mudarSessaoPassageiro({ nome: nomeDePessoa(nome), telefone, pedidoId, passageiroId });
   return deuCerto;
 }
 
@@ -42,7 +43,7 @@ export function pedirParaEntrar(destinoId: string, nome: string, telefone: strin
 export function salvarMeusDados(euId: string, dados: MeusDados): Resultado {
   const r = salvarDadosDoPassageiro(euId, dados);
   if (!r.ok) return r;
-  mudarSessaoPassageiro({ nome: dados.nome.trim(), telefone: somenteDigitos(dados.telefone) });
+  mudarSessaoPassageiro({ nome: nomeDePessoa(dados.nome), telefone: somenteDigitos(dados.telefone) });
   return deuCerto;
 }
 

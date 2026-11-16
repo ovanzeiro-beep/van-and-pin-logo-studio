@@ -4,6 +4,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { formatarData, somarDias } from "@/lib/datas";
 import { idDoVanzeiro } from "@/lib/sessao";
 import { novoId } from "@/lib/ids";
+import { nomeProprio } from "@/lib/formatos";
 
 export const DIAS_DA_SEMANA: { id: DiaSemana; curto: string }[] = [
   { id: "seg", curto: "Seg" },
@@ -157,15 +158,15 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
   return {
     id: anterior?.id ?? novoId("destino"),
     vanzeiroId: anterior?.vanzeiroId ?? idDoVanzeiro(),
-    origem: r.origem.trim(),
-    destino: r.destino.trim(),
+    origem: nomeProprio(r.origem),
+    destino: nomeProprio(r.destino),
     tipo,
     dias: tipo === "fixa" ? DIAS_DA_SEMANA.map((d) => d.id).filter((d) => r.dias.includes(d)) : [],
     data: tipo === "avulsa" ? r.data : null,
     saida: r.saida,
     volta: r.temVolta ? r.volta : null,
     voltaData: tipo === "avulsa" && r.temVolta && r.voltaOutroDia ? r.dataVolta : null,
-    paradas: r.paradas.map((p) => p.trim()).filter(Boolean),
+    paradas: r.paradas.map((p) => nomeProprio(p)).filter(Boolean),
     convite: anterior?.convite ?? gerarConvite(),
     prazo: r.prazo,
     ativo: anterior?.ativo ?? true,

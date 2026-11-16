@@ -9,6 +9,7 @@ import {
 import { formatarReais } from "@/lib/dinheiro";
 import { caminhoCompleto } from "@/lib/destinos";
 import { novoId } from "@/lib/ids";
+import { nomeDePessoa, nomeProprio } from "@/lib/formatos";
 
 export const PLANOS: { id: PlanoPagamento; rotulo: string; texto: string; rotuloValor: string }[] = [
   { id: "viagem", rotulo: "Por viagem", texto: "Ida e volta contam como 1 cobrança, mesmo em dias diferentes.", rotuloValor: "Valor por viagem" },
@@ -186,10 +187,10 @@ export function passageiroDeRascunho(r: RascunhoPassageiro, destino: Pick<Destin
     vanzeiroId: destino.vanzeiroId,
     destinoId: destino.id,
     pessoaId: anterior?.pessoaId ?? anterior?.id ?? r.pessoaId,
-    nome: r.nome.trim(),
+    nome: nomeDePessoa(r.nome),
     telefone: somenteDigitos(r.telefone),
     cidade: r.cidade,
-    endereco: r.endereco.trim(),
+    endereco: nomeProprio(r.endereco),
     // The point on the map belongs to the city: changing the city drops it (the passenger marks it again).
     ...(r.ponto && (!anterior || anterior.cidade === r.cidade) ? { ponto: r.ponto } : {}),
     plano,
@@ -244,7 +245,7 @@ export function atualizarMeusDados(lista: Passageiro[], eu: Passageiro, d: MeusD
   const minhas = new Set(matriculasDaPessoa(lista, eu).map((p) => p.id));
   return lista.map((p) =>
     minhas.has(p.id)
-      ? { ...p, nome: d.nome.trim(), telefone: somenteDigitos(d.telefone), endereco: d.enderecos[p.id]?.trim() || p.endereco }
+      ? { ...p, nome: nomeDePessoa(d.nome), telefone: somenteDigitos(d.telefone), endereco: nomeProprio(d.enderecos[p.id] ?? "") || p.endereco }
       : p,
   );
 }

@@ -15,6 +15,7 @@ import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proxi
 import { somarDias } from "@/lib/datas";
 import { useSoDoMeuPainel } from "@/lib/painel";
 import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
+import { frase } from "@/lib/formatos";
 
 /** Sample history: charges the app created from each plan since the start of the history. */
 function cobrancasDeExemplo(): Cobranca[] {
@@ -80,7 +81,7 @@ export function cancelarCobranca(id: string, motivo: string, data = dataDeHoje()
   const problema = problemaDaCobranca(id);
   if (problema) return naoDeu(problema);
   cobrancas = cobrancas.map((c) =>
-    c.id === id && !c.pagamento && !c.cancelamento ? { ...c, cancelamento: { data, motivo: motivo.trim() } } : c,
+    c.id === id && !c.pagamento && !c.cancelamento ? { ...c, cancelamento: { data, motivo: frase(motivo) } } : c,
   );
   avisar();
   return deuCerto;

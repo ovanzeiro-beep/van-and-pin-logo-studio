@@ -5,6 +5,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { idDoVanzeiro, useSessao } from "@/lib/sessao";
 import { novoId } from "@/lib/ids";
 import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
+import { frase } from "@/lib/formatos";
 
 // The vanzeiro's expenses, in memory (no database): reloading brings the samples back.
 const inicial: Gasto[] = [...gastosExemplo];
@@ -33,7 +34,7 @@ export const obterGastos = () => gastos.filter((g) => g.vanzeiroId === idDoVanze
 export function anotarGasto(g: { tipo: TipoDeGasto; descricao: string; valor: number; data: string }): Resultado {
   const problema = problemaDoGasto(g, dataDeHoje());
   if (problema) return naoDeu(problema);
-  mudar([...gastos, { id: novoId("gasto"), vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? g.descricao.trim() : "", valor: g.valor, data: g.data }]);
+  mudar([...gastos, { id: novoId("gasto"), vanzeiroId: idDoVanzeiro(), tipo: g.tipo, descricao: g.tipo === "outros" ? frase(g.descricao) : "", valor: g.valor, data: g.data }]);
   return deuCerto;
 }
 

@@ -5,6 +5,7 @@ import { instanteDeAgora } from "@/lib/agora";
 import { comecarContaDeVerdade, escolherPapel, sair } from "@/lib/acesso";
 import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
 import { SUPABASE_CHAVE_PUBLICA, SUPABASE_URL, supabase, USA_BANCO } from "@/lib/supabase";
+import { emailPadrao, nomeDePessoa } from "@/lib/formatos";
 
 // W1 (docs/banco-de-dados.md, section 8.3): login and account for real, in the owner's Supabase.
 // E-mail and password, "Esqueci a senha", the Termos accepted at sign-up and the role of each account.
@@ -35,7 +36,7 @@ const semBanco = () => naoDeu(SEM_CONEXAO);
 export async function entrarComEmail(email: string, senha: string): Promise<Resultado> {
   const sb = supabase();
   if (!sb) return semBanco();
-  const { data, error } = await sb.auth.signInWithPassword({ email: email.trim(), password: senha });
+  const { data, error } = await sb.auth.signInWithPassword({ email: emailPadrao(email), password: senha });
   if (error || !data.user) return naoDeu(motivo(error));
   await carregarConta(data.user);
   return deuCerto;
@@ -46,9 +47,9 @@ export async function criarContaComEmail(d: { nome: string; email: string; senha
   const sb = supabase();
   if (!sb) return semBanco();
   const { data, error } = await sb.auth.signUp({
-    email: d.email.trim(),
+    email: emailPadrao(d.email),
     password: d.senha,
-    options: { data: { nome: d.nome.trim(), aceite_termos_em: instanteDeAgora() }, emailRedirectTo: `${origem()}/como-vai-usar` },
+    options: { data: { nome: nomeDePessoa(d.nome), aceite_termos_em: instanteDeAgora() }, emailRedirectTo: `${origem()}/como-vai-usar` },
   });
   if (error) return naoDeu(motivo(error));
   if (!data.session || !data.user) return { ok: true, confirmarEmail: true };
@@ -76,7 +77,7 @@ export async function entrarComGoogle(): Promise<Resultado> {
 export async function pedirSenhaNova(email: string): Promise<Resultado> {
   const sb = supabase();
   if (!sb) return semBanco();
-  const { error } = await sb.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${origem()}/nova-senha` });
+  const { error } = await sb.auth.resetPasswordForEmail(emailPadrao(email), { redirectTo: `${origem()}/nova-senha` });
   return error ? naoDeu(motivo(error)) : deuCerto;
 }
 

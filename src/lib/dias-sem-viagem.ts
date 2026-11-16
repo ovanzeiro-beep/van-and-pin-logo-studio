@@ -9,6 +9,7 @@ import { obterPassageiros } from "@/lib/passageiros-store";
 import { teriaViagemEm } from "@/lib/viagem";
 import { obterViagensDoDia } from "@/lib/viagem-store";
 import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
+import { frase } from "@/lib/formatos";
 
 // Cancelling the trip of one day (owner's decision, 16/11/2026): feriado, no class. Passengers are warned;
 // the mensalista gets NO discount (the day is already inside the month); por viagem and diário pay nothing
@@ -62,7 +63,7 @@ function avisarPassageiros(d: Destino, data: string, texto: (nome: string) => st
 export function cancelarViagemDoDia(destinoId: string, data: string, motivo: string): Resultado {
   const d = obterDestinos().find((x) => x.id === destinoId);
   const hoje = dataDeHoje();
-  const m = motivo.trim();
+  const m = frase(motivo);
   if (!d) return naoDeu(SEM_DESTINO);
   if (!m) return naoDeu("Escreva o motivo (ex.: Feriado).");
   if (m.length > MOTIVO_MAX) return naoDeu(`O motivo pode ter até ${MOTIVO_MAX} letras.`);

@@ -1203,3 +1203,10 @@ Conferência (15/11/2026):
 - [x] Conferência num Postgres 16 que imita o Supabase (auth.users, auth.uid(), papéis): o arquivo roda duas vezes seguidas sem erro; 51 testes de regras com 3 pessoas (vanzeira Rosa, passageiro Beto, outra vanzeira Carla, mais Dani para juntar pelo telefone): tudo o que devia passar passou e tudo o que devia ser recusado foi recusado (ex.: Carla não vê nada da Rosa; Beto não muda o próprio valor nem responde pela Dani; van lotada; prazo passou; cobrança paga não muda; gasto no futuro); excluir a conta da vanzeira apaga os dados dela sem erro.
 - [ ] Dono: colar `supabase/COLAR-NO-SUPABASE.sql` no SQL Editor e clicar em Run; em Authentication → URL Configuration, Site URL = https://van-and-pin-logo-studio.lovable.app.
 - Pendente (segundo arquivo, depois): tarefas automáticas no servidor (W9) e notificações com o app fechado (W10).
+
+
+## Formatação do que é digitado (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Decisão do dono: "Mariana Souza"; textos do app como estão.
+- [x] `src/lib/formatos.ts`: `nomeDePessoa`, `nomeProprio` (lugares, com siglas), `emailPadrao`, `placaPadrao`, `frase`, `chavePixPadrao`.
+- [x] Aplicada ao salvar: destino (origem, destino, paradas), passageiro (nome, endereço), meus dados, pedir para entrar, mudar onde embarco, perfil do vanzeiro (nome, telefone, Pix, modelo, placa), criar conta e entrar (nome, e-mail), esqueci a senha (e-mail), motivo do dia sem viagem e do cancelamento, descrição do gasto.
+- [x] Conferência: 316 testes (novo `formatos.test.ts`), tipos, build.

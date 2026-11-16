@@ -8,6 +8,7 @@ import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
 import { perfilNovo } from "@/lib/vanzeiro-store";
 import { limparViagens } from "@/lib/viagem-store";
 import { limparViagensEncerradas } from "@/lib/viagens-encerradas-store";
+import { nomeDePessoa } from "@/lib/formatos";
 
 // Entrar, Criar conta, "Como você vai usar o app?" and Sair. Everything is saved in sessao.ts.
 // "Criar conta" makes a new person. When their first choice is "Sou vanzeiro", the vanzeiro panel
@@ -22,7 +23,7 @@ export function entrar() {
 
 /** "Criar conta": a new person, not in any van yet. */
 export function criarConta(nome: string) {
-  mudarSessao({ contaNova: { nome: nome.trim() }, passageiro: { nome: nome.trim(), telefone: "", passageiroId: null, pedidoId: null } });
+  mudarSessao({ contaNova: { nome: nomeDePessoa(nome) }, passageiro: { nome: nomeDePessoa(nome), telefone: "", passageiroId: null, pedidoId: null } });
 }
 
 /** "Sou vanzeiro" / "Sou passageiro", first time or switching on the Perfil. */
