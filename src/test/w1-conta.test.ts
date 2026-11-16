@@ -27,10 +27,10 @@ const falso = vi.hoisted(() => {
   return { estado, cliente };
 });
 
-vi.mock("@/lib/supabase", () => ({ USA_BANCO: { conta: true }, supabase: () => falso.cliente }));
+vi.mock("@/lib/supabase", () => ({ USA_BANCO: { conta: true }, supabase: () => falso.cliente, SUPABASE_URL: "https://teste.supabase.co", SUPABASE_CHAVE_PUBLICA: "chave" }));
 
 import { obterDestinos } from "@/lib/destinos-store";
-import { criarContaComEmail, entrarComEmail, escolherPapelDaConta, excluirContaDoBanco, sairDaConta } from "@/lib/conta";
+import { criarContaComEmail, entrarComEmail, entrarComGoogle, escolherPapelDaConta, excluirContaDoBanco, sairDaConta } from "@/lib/conta";
 import { obterSessao } from "@/lib/sessao";
 import { validarSenhaNova } from "@/lib/cadastro";
 
@@ -72,6 +72,12 @@ describe("W1: login e conta de verdade (Supabase simulado)", () => {
     await entrarComEmail("rosa@email.com", "12345678");
     await sairDaConta();
     expect(obterSessao().conta).toBeNull();
+  });
+
+  it("Google desligado no Supabase: a faixa explica, sem sair para a página de erro", async () => {
+    vi.stubGlobal("fetch", async () => ({ json: async () => ({ external: { google: false, email: true } }) }));
+    expect(await entrarComGoogle()).toEqual({ ok: false, motivo: "O login com Google ainda não foi ligado. Use e-mail e senha." });
+    vi.unstubAllGlobals();
   });
 
   it("senha nova: as mesmas regras do cadastro", () => {

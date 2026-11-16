@@ -4,7 +4,7 @@ import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
 import { instanteDeAgora } from "@/lib/agora";
 import { comecarContaDeVerdade, escolherPapel, sair } from "@/lib/acesso";
 import { mudarSessao, obterSessao, type Papel } from "@/lib/sessao";
-import { supabase, USA_BANCO } from "@/lib/supabase";
+import { SUPABASE_CHAVE_PUBLICA, SUPABASE_URL, supabase, USA_BANCO } from "@/lib/supabase";
 
 // W1 (docs/banco-de-dados.md, section 8.3): login and account for real, in the owner's Supabase.
 // E-mail and password, "Esqueci a senha", the Termos accepted at sign-up and the role of each account.
@@ -60,6 +60,14 @@ export async function criarContaComEmail(d: { nome: string; email: string; senha
 export async function entrarComGoogle(): Promise<Resultado> {
   const sb = supabase();
   if (!sb) return semBanco();
+  // Before leaving for Google, asks Supabase whether Google is turned on (otherwise the person would see an error page in English).
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_CHAVE_PUBLICA } });
+    const config = (await r.json()) as { external?: { google?: boolean } };
+    if (!config.external?.google) return naoDeu("O login com Google ainda não foi ligado. Use e-mail e senha.");
+  } catch {
+    return naoDeu(SEM_CONEXAO);
+  }
   const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${origem()}/como-vai-usar` } });
   return error ? naoDeu(motivo(error)) : deuCerto;
 }
