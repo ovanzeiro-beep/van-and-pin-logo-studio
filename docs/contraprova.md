@@ -1032,6 +1032,17 @@ Conferência (15/11/2026):
 ---
 
 ## Decisões do dono de 16/11/2026 (seção 17.1.1 da fonte da verdade)
-- [x] Feriado: sim, cancelar a viagem de um dia, sem desconto para o mensalista. → Etapa S1 (a fazer).
+- [x] Feriado: sim, cancelar a viagem de um dia, sem desconto para o mensalista. → Etapa S1 (feita em 16/11/2026).
 - [x] Uma conta pode ser vanzeiro e passageiro: sim (como hoje). Registrado em `docs/banco-de-dados.md`.
 - [x] iPhone SE (decisão C): sim, diminuir o cabeçalho das 3 telas de entrada. → Etapa S2 (a fazer).
+
+---
+
+## Etapa S1 — Cancelar a viagem de um dia (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Decisão do dono: sim, sem desconto. Sem banco de dados.
+- [x] S1.1 Regra num lugar só: `aconteceEm` deixa de valer nos dias cancelados (`diasCancelados` no destino); por isso Início, aba Viagem, viagens do passageiro, avisos de prazo, faltas e cobranças obedecem sozinhos.
+- [x] S1.2 Destino: cartão "Dias sem viagem" (cancelar um dia com dia e motivo; lista com Desfazer). Aba Viagem: "Não vai ter viagem hoje".
+- [x] S1.3 Passageiros recebem "Sem viagem" ao cancelar e "Vai ter viagem" ao desfazer ("Viagem de volta" foi evitado para não confundir com a volta da viagem).
+- [x] S1.4 Proteções: só dia com viagem, de hoje em diante; motivo obrigatório (até 60 letras); viagem já começada não pode ser cancelada; editar o destino não perde os dias cancelados; sem desconto (quem disse "Não vou" no dia cancelado não ganha falta).
+- [x] S1.5 Conferência: 267 testes (novo `src/test/dias-sem-viagem.test.ts`), tipos, build; no navegador: cancelar hoje em Cambará → some da Viagem e do Início, Juliana vê a próxima viagem e recebe o aviso; Desfazer devolve a viagem; atalho da Viagem sem escolha de dia; 30 telas sem erro; dia completo igual.
+- Próxima: Etapa S2 (cabeçalho menor no iPhone SE), com o "pode seguir" do dono.

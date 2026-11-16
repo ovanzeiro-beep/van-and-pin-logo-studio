@@ -6,6 +6,7 @@ import { CaminhoParadas } from "@/components/app/CaminhoParadas";
 import { DestinoNaoEncontrado } from "@/components/app/DestinoNaoEncontrado";
 import { ExcluirDestino } from "@/components/app/ExcluirDestino";
 import { PausarDestino } from "@/components/app/PausarDestino";
+import { DiasSemViagem } from "@/components/app/DiasSemViagem";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
 import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece, textoDaVolta } from "@/lib/destinos";
@@ -71,6 +72,8 @@ function DetalheDestino() {
         <CodigoConvite destino={d} />
         <PedidosParaEntrar destinoId={d.id} />
         <PassageirosDoDestino destinoId={d.id} />
+
+        <DiasSemViagem d={d} />
 
         <div className="grid grid-cols-2 gap-3 pt-1">
           <Button asChild size="lg" variant="outline">

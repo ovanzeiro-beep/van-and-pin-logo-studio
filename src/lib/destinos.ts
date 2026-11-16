@@ -179,6 +179,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
     convite: anterior?.convite ?? gerarConvite(),
     prazo: r.prazo,
     ativo: anterior?.ativo ?? true,
+    ...(anterior?.diasCancelados ? { diasCancelados: anterior.diasCancelados } : {}),
   };
 }
 

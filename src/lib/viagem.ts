@@ -13,9 +13,15 @@ export function diaDaSemana(iso: string): DiaSemana {
   return DIAS[new Date(Date.UTC(a, m - 1, d)).getUTCDay()] ?? "dom";
 }
 
-export function aconteceEm(d: Pick<Destino, "ativo" | "tipo" | "dias" | "data">, iso: string) {
+/** Whether the destino's calendar has a trip on that day (active, right weekday or date), not counting cancelled days. */
+export function teriaViagemEm(d: Pick<Destino, "ativo" | "tipo" | "dias" | "data">, iso: string) {
   if (!d.ativo) return false;
   return d.tipo === "fixa" ? d.dias.includes(diaDaSemana(iso)) : d.data === iso;
+}
+
+/** Whether there is a trip on that day: the calendar says so and the vanzeiro did not cancel that day (feriado). */
+export function aconteceEm(d: Pick<Destino, "ativo" | "tipo" | "dias" | "data" | "diasCancelados">, iso: string) {
+  return teriaViagemEm(d, iso) && !d.diasCancelados?.some((c) => c.data === iso);
 }
 
 /** Active trips on a day, earliest departure first. */

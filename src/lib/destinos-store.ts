@@ -40,6 +40,12 @@ export function salvarDestino(d: Destino) {
   void procurarCidades(caminhoCompleto(d));
 }
 
+/** Days without a trip (feriado): replaces the list of cancelled days of this destino. */
+export function mudarDiasCancelados(id: string, dias: Destino["diasCancelados"]) {
+  destinos = destinos.map((d) => (d.id === id ? { ...d, diasCancelados: dias } : d));
+  avisar();
+}
+
 export function alternarAtivo(id: string) {
   destinos = destinos.map((d) => (d.id === id ? { ...d, ativo: !d.ativo } : d));
   avisar();

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarClock, History, Home, MapPin, UserPlus } from "lucide-react";
+import { CalendarClock, CalendarX2, History, Home, MapPin, UserPlus } from "lucide-react";
 import { AntesDeSair } from "@/components/app/viagem/AntesDeSair";
 import { EscolhaDaViagem } from "@/components/app/viagem/partes";
 import { PrimeiroDestino } from "@/components/app/PrimeiroDestino";
@@ -7,7 +7,7 @@ import { TelaVazia } from "@/components/app/TelaVazia";
 import { ResumoDaViagem } from "@/components/app/viagem/ResumoDaViagem";
 import { ViagemEmCurso } from "@/components/app/viagem/ViagemEmCurso";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { agora, dataDeHoje } from "@/lib/agora";
 import { useRespostasDoDia } from "@/lib/respostas-store";
 import { formatarData, nomeDestino, textoDoPrazo } from "@/lib/destinos";
@@ -15,6 +15,7 @@ import { useDestinos } from "@/lib/destinos-store";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
 import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDaAba, viagensDoDia, type FaseViagem } from "@/lib/viagem";
+import { CancelarViagemDoDia } from "@/components/app/DiasSemViagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
@@ -147,6 +148,17 @@ function AbaViagem() {
             faltamResponder={faltamResponderAoIniciar(destino, dataDeHoje(), agora(), lista.semResposta.length)}
             prazo={textoDoPrazo(destino, dataDeHoje())}
             aoIniciar={() => comecarViagem(destino, lista.vao.map((p) => p.id))}
+            cancelarHoje={
+              <CancelarViagemDoDia
+                d={destino}
+                dataFixa={dataDeHoje()}
+                gatilho={
+                  <Button variant="ghost" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-destructive">
+                    <CalendarX2 className="!h-4 !w-4" /> Não vai ter viagem hoje
+                  </Button>
+                }
+              />
+            }
           />
         )}
       </div>

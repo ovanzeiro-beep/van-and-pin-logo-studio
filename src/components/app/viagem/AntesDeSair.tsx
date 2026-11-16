@@ -29,6 +29,7 @@ export function AntesDeSair({
   faltamResponder,
   prazo,
   aoIniciar,
+  cancelarHoje,
 }: {
   destino: Destino;
   vao: Passageiro[];
@@ -38,6 +39,8 @@ export function AntesDeSair({
   faltamResponder: number;
   prazo: string;
   aoIniciar: () => void;
+  /** "Não vai ter viagem hoje" (feriado), at the end of the list. */
+  cancelarHoje?: React.ReactNode;
 }) {
   const lugares = usePerfilVanzeiro().van.lugares;
   const propsDoBotao = { variant: "cta" as const, size: "xl" as const, className: "w-full rounded-2xl font-display font-bold", disabled: vao.length === 0 };
@@ -91,6 +94,7 @@ export function AntesDeSair({
             ))}
           </Secao>
         )}
+        {cancelarHoje}
       </div>
 
       <div className="shrink-0 px-5 pb-3 pt-1">

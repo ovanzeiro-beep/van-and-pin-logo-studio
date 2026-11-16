@@ -51,7 +51,12 @@ export type Destino = {
   /** Quem não confirmar "Vou" até este prazo não entra na busca. */
   prazo: PrazoConfirmacao;
   ativo: boolean;
+  /** Dias em que o vanzeiro cancelou a viagem (feriado, sem aula). Nesses dias a viagem não acontece; sem desconto. */
+  diasCancelados?: DiaSemViagem[] | undefined;
 };
+
+/** Um dia cancelado pelo vanzeiro: a data (AAAA-MM-DD), o motivo e quando foi cancelado. */
+export type DiaSemViagem = { data: string; motivo: string; canceladoEm: string };
 
 export const destinosExemplo: Destino[] = [
   {
@@ -244,6 +249,8 @@ export const cancelamentosExemplo: Record<string, { data: string; motivo: string
 
 /** Notification types for both vanzeiro and passageiro. */
 export type TipoAviso =
+  | "viagem_cancelada"
+  | "viagem_de_volta"
   | "endereco_aceito"
   | "endereco_recusado"
   | "pedido_novo"

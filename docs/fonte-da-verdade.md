@@ -591,7 +591,7 @@ Nada quebrado no código. O que falta:
 - **iPhone SE (decisão C): SIM, diminuir** o cabeçalho azul de Entrar, Criar conta e "Como você vai usar o app?" só em celulares pequenos, para não rolar.
 
 **Plano (uma etapa por vez, depois do "pode seguir" do dono):**
-- **Etapa S1 — Cancelar a viagem de um dia** (sem banco): botão na aba Viagem e no destino para "Não vai ter viagem neste dia", com confirmação e motivo; a viagem some do Início, da aba Viagem e das Viagens do passageiro naquele dia; os passageiros recebem aviso; nada de desconto; dá para desfazer antes do dia.
+- **Etapa S1 — Cancelar a viagem de um dia** (sem banco; **feita em 16/11/2026**: no destino, o cartão "Dias sem viagem" com **Cancelar a viagem de um dia** (escolhe o dia entre os próximos com viagem e o motivo, até 60 letras; a janela avisa "Os passageiros recebem um aviso. Quem paga por mês ou quinzena não ganha desconto.") e a lista dos dias cancelados com **Desfazer**; na aba Viagem, antes de sair, o atalho **Não vai ter viagem hoje**; o dia cancelado some do Início, da aba Viagem, das viagens do passageiro e dos avisos de prazo, e não gera falta nem cobrança; os passageiros recebem o aviso "Sem viagem — Não vai ter viagem hoje, em <destino>. Motivo: <motivo>" e, ao desfazer, "Vai ter viagem"; viagem já começada não pode ser cancelada; editar o destino mantém os dias cancelados). Plano original: botão na aba Viagem e no destino para "Não vai ter viagem neste dia", com confirmação e motivo; a viagem some do Início, da aba Viagem e das Viagens do passageiro naquele dia; os passageiros recebem aviso; nada de desconto; dá para desfazer antes do dia.
 - **Etapa S2 — Cabeçalho menor no iPhone SE** nas 3 telas de entrada.
 - Depois: banco de dados, quando o dono mandar.
 
