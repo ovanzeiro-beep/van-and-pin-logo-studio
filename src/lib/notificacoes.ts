@@ -8,6 +8,7 @@ import { obterMudancasDeEndereco, obterTodosOsPedidos, ouvirPassageiros, type Mu
 import { textoDaDistancia } from "@/lib/endereco";
 import { idDoVanzeiro, obterSessao, type Papel } from "@/lib/sessao";
 import { obterMinhasMatriculas } from "@/lib/sessao-passageiro";
+import { guardarEsteCelular } from "@/lib/banco/celular";
 
 // Notifications on the phone (decision A2 of the owner, 15/11/2026).
 // Now (no server): while the app is open in the background, new notices show up as phone notifications.
@@ -95,6 +96,8 @@ export function useNotificacoesNoCelular() {
     if (permissaoAtual() !== "nao-pedida") return;
     await Notification.requestPermission();
     setPermissao(permissaoAtual());
+    // W10: from now on the notices also arrive with the app closed.
+    void guardarEsteCelular();
   };
   return { permissao, ativar };
 }
