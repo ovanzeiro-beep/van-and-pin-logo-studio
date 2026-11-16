@@ -1115,3 +1115,10 @@ Conferência (15/11/2026):
 - [x] T6.5 Conferência: 295 testes (novo `gastos.test.tsx`), tipos, build; no navegador em 390×844, 360×740 e 375×667: a página não rola (só a lista); novembro "Faltou R$ 155,60" (R$ 663,00 − R$ 818,60); anotar "Lavagem" R$ 30,00 → "Faltou R$ 185,60"; apagar com confirmação volta; outubro "Sobrou R$ 1.000,00"; a janela de anotar cabe na tela, mesmo com "O que foi?"; sem erros.
 - Não pode quebrar: conferido — números de cobranças e "Pagaram em dia" iguais à T5; Financeiro igual.
 - Pendência: anotar gastos reais com o vanzeiro do piloto.
+
+## Etapa T7 — Aviso do "Não vou de… até…" no sininho (feita em 16/11/2026)
+**Situação:** feita (merge na `main`). Seção 18.3 da fonte da verdade. Sem banco de dados. Decisão do dono de 16/11: avisa ao marcar e ao tirar. Era a sugestão anotada na T3.
+- [x] T7.1 `avisoDePeriodoDeNaoVou` em `src/lib/avisos.ts` (tipo "Resposta de passageiro", um aviso por período).
+- [x] T7.2 `marcarNaoVouNoPeriodo` e `tirarNaoVouDoPeriodo` (`respostas-store.ts`) criam / trocam o aviso; tirar duas vezes não cria outro.
+- [x] T7.3 Conferência: 297 testes (novo `aviso-nao-vou.test.ts`), tipos, build; no navegador (390×844): passageiro marca 16/11–17/11 → no sininho do vanzeiro "Juliana marcou "Não vou" de 16/11 até 17/11, em Cambará → UENP Jacarezinho"; passageiro tira → o aviso vira "tirou"; sem erros.
+- Não pode quebrar: conferido — os outros avisos e as respostas iguais.
