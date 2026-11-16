@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { CalendarDays, Home, User, Wallet } from "lucide-react";
 import { BottomNav, type NavItem } from "@/components/app/BottomNav";
+import { MensagemDasAcoes } from "@/components/app/MensagemDasAcoes";
 import { MobileScreen } from "@/components/app/MobileScreen";
 import { EntrarNaVan } from "@/components/app/passageiro/EntrarNaVan";
 import { useEmAbertoDeQuemSaiu, useMinhaSituacao } from "@/lib/sessao-passageiro";
@@ -33,6 +34,7 @@ function PainelPassageiro() {
         {membro || emPagamentos ? <Outlet /> : <EntrarNaVan />}
       </main>
       {membro ? <BottomNav items={itens} /> : emAberto && <BottomNav items={itensDeQuemSaiu} />}
+      <MensagemDasAcoes />
     </MobileScreen>
   );
 }

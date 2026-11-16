@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Home, MapPin, Route as RouteIcon, User, Wallet } from "lucide-react";
 import { BottomNav, type NavItem } from "@/components/app/BottomNav";
+import { MensagemDasAcoes } from "@/components/app/MensagemDasAcoes";
 import { MobileScreen } from "@/components/app/MobileScreen";
 import { PainelDoVanzeiro } from "@/lib/painel";
 import { useSessao } from "@/lib/sessao";
@@ -28,6 +29,7 @@ function PainelVanzeiro() {
           <Outlet />
         </main>
         <BottomNav items={itens} />
+        <MensagemDasAcoes />
       </MobileScreen>
     </PainelDoVanzeiro.Provider>
   );

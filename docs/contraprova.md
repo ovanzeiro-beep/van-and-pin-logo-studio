@@ -1163,3 +1163,10 @@ Conferência (15/11/2026):
 - [x] V1.5 Comentário antigo das setas ↑ ↓ em `src/data/exemplo.ts` corrigido.
 - [x] V1.6 Conferência: as regras da seção 7 batem com as seções 4, 5 e 6 do `CLAUDE.md` e com o código (`src/lib`); testes, tipos e build sem mudança (só documento e comentário).
 - Achado na leitura: o tipo de aviso "pedido novo" não vira aviso na lista (só notificação no celular); anotado no documento, sem mudar o app.
+
+## Etapa V2 — Ações com resposta (iniciada em 16/11/2026)
+**Situação:** em andamento. Seção 20 da fonte da verdade. Sem banco de dados (o dono vai conectar o Supabase depois).
+- [ ] V2.1 `src/lib/acoes.ts`: `Resultado` ("deu certo" ou "não deu, porque…") e `fazer(...)`, que mostra "Salvando…" (só se demorar) e a mensagem quando não dá certo, iguais no app inteiro.
+- [ ] V2.2 Cada ação que a pessoa faz nas telas devolve `Resultado`, com o motivo em português simples, onde hoje só para em silêncio: respostas, Vou sempre, Não vou de… até…, gastos, pago/cancelar cobrança, destinos, dias sem viagem, pausar/excluir destino, sair/remover, excluir conta, passageiros, pedidos, endereço, meus dados, perfil, viagem (iniciar, embarcou, não estava, conferência, Estou na van).
+- [ ] V2.3 As telas chamam as ações por `fazer(...)`; a mensagem aparece no alto da tela nos dois painéis.
+- [ ] V2.4 Conferência: testes (os que conferiam "true/false" passam a conferir "deu certo / motivo"), tipos, build, as telas iguais a antes quando dá certo, a mensagem aparece quando não dá, sem erros.
