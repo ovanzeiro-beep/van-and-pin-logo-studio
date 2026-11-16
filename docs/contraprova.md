@@ -1287,3 +1287,4 @@ Conferência (15/11/2026):
 - [x] App: ao entrar na conta (com notificações ativadas) e ao tocar em "Ativar", o celular guarda o endereço; a mesma notificação nunca aparece duas vezes (mesma marca).
 - [x] Regras conferidas numa cópia do banco (8 checagens). Conferência: 348 testes (novo `w10-celular.test.ts`), tipos, build.
 - Pendente: teste real no celular do dono (Android: Chrome; iPhone: só com o app na tela inicial).
+- [x] (16/11, pedido do dono) Cada notificação vibra e toca o som de notificação do celular, também quando troca um aviso antigo.
