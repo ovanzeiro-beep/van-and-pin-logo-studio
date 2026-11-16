@@ -1342,3 +1342,9 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [x] App: "Continuar com Google" em Criar conta (só com o aceite marcado) grava o aceite dos Termos na volta do Google (`aceitar_termos`); conta do Google sem aceite (ex.: tocou direto em "Entrar com Google" sem ter conta) não entra e vê: "Para criar sua conta com o Google, toque em Criar conta, marque o aceite dos Termos e toque em Continuar com Google." (LGPD).
 - [x] Conferência: 361 testes (novo `e4-google.test.ts`), tipos, build.
 - Pendente (dono): criar a chave no Google Cloud e ligar o Google no Supabase (passo a passo enviado no chat).
+
+## E5 — Entrega (16/11/2026)
+- [x] Guia rápido para o vanzeiro: `docs/guia-do-vanzeiro.md`.
+- [x] Checklist final (tudo conferido nas etapas W1–W10, E1–E4 e na E3 com 28 de 28 no banco de verdade): conta (e-mail e Google com aceite LGPD), perfil, destinos, convite, pedidos, lugares da van, Vou/Não vou/Vou sempre/Não vou de… até…, viagem (com e sem sinal), cobranças/pagos/cancelados/descontos, gastos, avisos no sininho e na tela do celular, tarefas do relógio (a cada 5 min), excluir destino/sair/excluir conta.
+- [ ] Limpeza dos dados de teste (decisão do dono: as 2 contas ficam): `supabase/SO-SQL-9-LIMPEZA.sql` — aguardando a licença do Supabase ou o dono colar.
+- Pendências do dono (CLAUDE.md, seção 8): contato do responsável na Política de Privacidade; revisão dos Termos e da Política por um advogado antes de lançar ao público.
