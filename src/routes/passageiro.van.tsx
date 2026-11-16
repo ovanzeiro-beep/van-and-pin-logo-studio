@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, createFileRoute, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Clock, MapPin, Navigation } from "lucide-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Clock, MapPin, Navigation } from "lucide-react";
 import { MapaDaVan } from "@/components/app/MapaDaVan";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { useCoordenadas, useProcurarCidades } from "@/lib/coordenadas-store";
 import { useSituacaoDaVan } from "@/lib/minha-viagem";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { cn } from "@/lib/utils";
+import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/passageiro/van")({
   head: () => ({
@@ -35,10 +36,6 @@ function OndeEstaAVan() {
   const { eu, destino, viagemDeHoje, van } = useSituacaoDaVan();
   const passageiros = usePassageiros();
   const progresso = useProgresso();
-  const router = useRouter();
-  const podeVoltar = useCanGoBack();
-  const navigate = useNavigate();
-  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/passageiro" }));
 
   useCoordenadas();
   useProcurarCidades(destino ? caminhoCompleto(destino) : []);
@@ -52,13 +49,7 @@ function OndeEstaAVan() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <PassageiroHeader compacto titulo="Onde está a van" subtitulo={destino ? nomeDestino(destino) : "Sua viagem."}>
-        <button
-          type="button"
-          onClick={voltar}
-          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar
-        </button>
+        <BotaoVoltar senao="/passageiro" />
       </PassageiroHeader>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 px-5 pb-4 pt-4">

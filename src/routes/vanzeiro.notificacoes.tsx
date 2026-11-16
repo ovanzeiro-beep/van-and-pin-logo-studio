@@ -1,9 +1,9 @@
-import { Link, createFileRoute, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { PedidoCard } from "@/components/app/PassageirosDoDestino";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { ListaDeAvisos } from "@/components/app/ListaDeAvisos";
 import { TelaVazia } from "@/components/app/TelaVazia";
-import { ArrowLeft, Bell, Check, MapPin } from "lucide-react";
+import { Bell, Check, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAvisosAoAbrir } from "@/lib/avisos-store";
@@ -14,6 +14,7 @@ import { RecusarMudanca } from "@/components/app/RecusarMudanca";
 import { aceitarMudancaDeEndereco, useMudancasAguardando, usePedidos, type MudancaDeEndereco } from "@/lib/passageiros-store";
 import { textoDaDistancia } from "@/lib/endereco";
 import { Button } from "@/components/ui/button";
+import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 const tipoAviso: Record<string, { label: string; cor: string }> = {
   pedido_novo: { label: "Pedido novo", cor: "text-primary" },
@@ -40,10 +41,6 @@ function PaginaNotificacoes() {
   const pedidos = usePedidos();
   const mudancas = useMudancasAguardando();
   const destinos = useDestinos();
-  const router = useRouter();
-  const podeVoltar = useCanGoBack();
-  const navigate = useNavigate();
-  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/vanzeiro" }));
   const nomeDoDestino = (id: string) => {
     const d = destinos.find((x) => x.id === id);
     return d ? nomeDestino(d) : undefined;
@@ -53,13 +50,7 @@ function PaginaNotificacoes() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo="Notificações" subtitulo="Seus pedidos e avisos.">
-        <button
-          type="button"
-          onClick={voltar}
-          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar
-        </button>
+        <BotaoVoltar senao="/vanzeiro" />
       </VanzeiroHeader>
       {vazio ? (
         <TelaVazia

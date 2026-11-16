@@ -15,6 +15,7 @@ import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
 import { cn } from "@/lib/utils";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
+import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 
 const FILTROS: { id: Filtro; rotulo: string }[] = [
   { id: "todas", rotulo: "Todas" },
@@ -75,12 +76,11 @@ function Financeiro() {
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo="Financeiro" subtitulo={`Resumo de ${mes}.`}>
         {/* T5: "Seu mês na van", the month in numbers (this one and the ones before). */}
-        <Link
-          to="/vanzeiro/financeiro/mes"
-          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-        >
-          <CalendarDays className="h-4 w-4" /> Seu mês na van
-        </Link>
+        <PilulaDoCabecalho asChild>
+          <Link to="/vanzeiro/financeiro/mes">
+            <CalendarDays className="h-4 w-4" /> Seu mês na van
+          </Link>
+        </PilulaDoCabecalho>
       </VanzeiroHeader>
 
       <div className="relative z-10 -mt-4 shrink-0 px-5">

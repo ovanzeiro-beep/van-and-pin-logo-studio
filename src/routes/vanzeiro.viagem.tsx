@@ -19,6 +19,7 @@ import { faltamResponderAoIniciar, listaDaViagem, proximaViagem, viagemDaAba, vi
 import { CancelarViagemDoDia } from "@/components/app/DiasSemViagem";
 import { comecarViagem, emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
 import { alternarVoz, fraseDaViagem, useVozDaViagem, useVozLigada, vozDisponivel } from "@/lib/voz";
+import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
   head: () => ({
@@ -175,12 +176,11 @@ function AbaViagem() {
 /** Discreet way to the history of finished trips, in the header, when no trip is in progress. */
 function LinkViagensFeitas() {
   return (
-    <Link
-      to="/vanzeiro/historico"
-      className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-    >
-      <History className="h-4 w-4" /> Viagens feitas
-    </Link>
+    <PilulaDoCabecalho asChild>
+      <Link to="/vanzeiro/historico">
+        <History className="h-4 w-4" /> Viagens feitas
+      </Link>
+    </PilulaDoCabecalho>
   );
 }
 
@@ -191,15 +191,14 @@ function BotaoVoz() {
   useEffect(() => setPode(vozDisponivel()), []);
   if (!pode) return null;
   return (
-    <button
-      type="button"
+    <PilulaDoCabecalho
       onClick={alternarVoz}
       aria-pressed={ligada}
       // Short screens (iPhone SE): only the speaker icon, in the corner of the header, so the pickup screen still fits.
-      className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20 [@media(max-height:700px)]:absolute [@media(max-height:700px)]:bottom-4 [@media(max-height:700px)]:right-5 [@media(max-height:700px)]:mt-0 [@media(max-height:700px)]:w-9 [@media(max-height:700px)]:justify-center [@media(max-height:700px)]:px-0"
+      className="[@media(max-height:700px)]:absolute [@media(max-height:700px)]:bottom-4 [@media(max-height:700px)]:right-5 [@media(max-height:700px)]:mt-0 [@media(max-height:700px)]:w-9 [@media(max-height:700px)]:justify-center [@media(max-height:700px)]:px-0"
     >
       {ligada ? <Volume2 className="h-4 w-4 shrink-0" /> : <VolumeX className="h-4 w-4 shrink-0" />}
       <span className="[@media(max-height:700px)]:sr-only">{ligada ? "Voz ligada" : "Ligar a voz"}</span>
-    </button>
+    </PilulaDoCabecalho>
   );
 }

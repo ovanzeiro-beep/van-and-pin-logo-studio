@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ArrowLeft,
   Banknote,
   CalendarDays,
   CircleCheck,
@@ -45,6 +44,7 @@ import { nomeDestino } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
+import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/vanzeiro/financeiro/$cid")({
   head: () => ({
@@ -64,19 +64,9 @@ function DetalheCobranca() {
   const { cid } = Route.useParams();
   const c = useCobranca(cid);
   const destino = useDestino(c?.destinoId ?? "");
-  const router = useRouter();
-  const podeVoltar = useCanGoBack();
-  const navigate = useNavigate();
-  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/vanzeiro/financeiro" }));
 
   const botaoVoltar = (
-    <button
-      type="button"
-      onClick={voltar}
-      className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-    >
-      <ArrowLeft className="h-4 w-4" /> Voltar
-    </button>
+    <BotaoVoltar senao="/vanzeiro/financeiro" />
   );
 
   if (!c) {

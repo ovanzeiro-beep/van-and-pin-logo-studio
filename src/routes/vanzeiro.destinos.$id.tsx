@@ -11,6 +11,7 @@ import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { Button } from "@/components/ui/button";
 import { PRAZO_TEXTO, TIPO_ROTULO, caminhoCompleto, nomeDestino, quandoAcontece, textoDaVolta } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
+import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id")({
   head: () => ({
@@ -34,12 +35,11 @@ function DetalheDestino() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo={nomeDestino(d)}>
-        <Link
-          to="/vanzeiro/destinos"
-          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-        >
-          <ArrowLeft className="h-4 w-4" /> Todos os destinos
-        </Link>
+        <PilulaDoCabecalho asChild>
+          <Link to="/vanzeiro/destinos">
+            <ArrowLeft className="h-4 w-4" /> Todos os destinos
+          </Link>
+        </PilulaDoCabecalho>
       </VanzeiroHeader>
 
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">

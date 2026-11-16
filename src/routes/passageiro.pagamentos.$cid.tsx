@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, Check, CircleCheck, Copy, Info, MapPin, MessageCircle, QrCode, ReceiptText, type LucideIcon } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CalendarDays, Check, CircleCheck, Copy, Info, MapPin, MessageCircle, QrCode, ReceiptText, type LucideIcon } from "lucide-react";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { ContaDasFaltas } from "@/components/app/ContaDasFaltas";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
@@ -26,6 +26,7 @@ import { pixCopiaECola } from "@/lib/pix";
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { cn } from "@/lib/utils";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
+import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/passageiro/pagamentos/$cid")({
   head: () => ({
@@ -50,19 +51,9 @@ function MinhaCobranca() {
   const destino = useDestino(c?.destinoId ?? "");
   // The vanzeiro of THIS charge (the passenger may ride with more than one).
   const vanzeiro = usePerfilDoVanzeiro(c?.vanzeiroId ?? "");
-  const router = useRouter();
-  const podeVoltar = useCanGoBack();
-  const navigate = useNavigate();
-  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/passageiro/pagamentos" }));
 
   const botaoVoltar = (
-    <button
-      type="button"
-      onClick={voltar}
-      className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-    >
-      <ArrowLeft className="h-4 w-4" /> Voltar
-    </button>
+    <BotaoVoltar senao="/passageiro/pagamentos" />
   );
 
   if (!c) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Check, Clock } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import { OndeEmbarco } from "@/components/app/passageiro/OndeEmbarco";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { useDestinos } from "@/lib/destinos-store";
 import { LIMITE_MUDANCA_KM, avaliarMudanca, embarqueCompleto, textoDaDistancia, type Embarque } from "@/lib/endereco";
 import { mudarMeuEmbarque, useMudancasAguardando } from "@/lib/passageiros-store";
 import { useMinhasMatriculas } from "@/lib/sessao-passageiro";
+import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/passageiro/embarque/$pid")({
   head: () => ({
@@ -34,13 +35,7 @@ function OndeVoceEmbarca() {
 
   const cabecalho = (
     <PassageiroHeader compacto titulo="Onde você embarca" subtitulo={destino ? nomeDestino(destino) : "Sua van."}>
-      <button
-        type="button"
-        onClick={voltar}
-        className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-      >
-        <ArrowLeft className="h-4 w-4" /> Voltar
-      </button>
+      <BotaoVoltar senao="/passageiro/perfil" />
     </PassageiroHeader>
   );
 

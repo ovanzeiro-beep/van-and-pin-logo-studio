@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, CircleCheck, Route as RouteIcon, Wallet } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight, CircleCheck, Route as RouteIcon, Wallet } from "lucide-react";
 import { GastosDoMes, Sobrou } from "@/components/app/Gastos";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
@@ -14,6 +14,7 @@ import { nomeDoMes } from "@/lib/datas";
 import { mesesDisponiveis, seuMes, type PessoaNoMes } from "@/lib/seu-mes";
 import { cn } from "@/lib/utils";
 import { useViagensEncerradasComDetalhes } from "@/lib/viagens-encerradas-store";
+import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/vanzeiro/financeiro/mes")({
   validateSearch: (search: Record<string, unknown>): { mes?: string } => {
@@ -50,21 +51,11 @@ function SeuMesNaVan() {
     return d ? nomeDestino(d) : "";
   };
 
-  const router = useRouter();
-  const podeVoltar = useCanGoBack();
-  const navigate = useNavigate();
-  const voltar = () => (podeVoltar ? router.history.back() : navigate({ to: "/vanzeiro/financeiro" }));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo="Seu mês na van" subtitulo="Quanto entrou, quanto gastou e quem paga em dia.">
-        <button
-          type="button"
-          onClick={voltar}
-          className="relative mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar
-        </button>
+        <BotaoVoltar senao="/vanzeiro/financeiro" />
       </VanzeiroHeader>
 
       <div className="relative z-10 -mt-4 shrink-0 px-5">

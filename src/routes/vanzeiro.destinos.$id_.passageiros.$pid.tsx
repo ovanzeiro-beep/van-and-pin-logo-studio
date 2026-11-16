@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { removerPassageiroDoDestino } from "@/lib/exclusoes";
 import { usePassageiro, usePassageiros } from "@/lib/passageiros-store";
 import { emAndamento, useViagensDoDia } from "@/lib/viagem-store";
+import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/vanzeiro/destinos/$id_/passageiros/$pid")({
   head: () => ({
@@ -66,14 +67,12 @@ function DetalhePassageiro() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo={p.nome}>
-        <Link
-          to="/vanzeiro/destinos/$id"
-          params={{ id: d.id }}
-          className="relative mt-3 inline-flex h-9 max-w-full items-center gap-1.5 rounded-full bg-header-foreground/10 px-3.5 text-sm font-semibold transition-colors hover:bg-header-foreground/20"
-        >
-          <ArrowLeft className="h-4 w-4 shrink-0" />
-          <span className="truncate">{nomeDestino(d)}</span>
-        </Link>
+        <PilulaDoCabecalho asChild className="max-w-full">
+          <Link to="/vanzeiro/destinos/$id" params={{ id: d.id }}>
+            <ArrowLeft className="h-4 w-4 shrink-0" />
+            <span className="truncate">{nomeDestino(d)}</span>
+          </Link>
+        </PilulaDoCabecalho>
       </VanzeiroHeader>
 
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
