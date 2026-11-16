@@ -281,13 +281,13 @@ export async function salvarPassageiroNoBanco(p: Passageiro, pedidoId?: string):
     const { data, error } = await sb.rpc("aceitar_pedido", { pedido: pedidoId, matricula: linhaDoPassageiro(p) });
     if (error) return naoDeu(motivo(error));
     const pessoaId = obterPedidos().find((x) => x.id === pedidoId)?.pessoaId;
-    return salvarPassageiro({ ...p, id: (data as string) ?? p.id, ...(pessoaId ? { pessoaId } : {}) }, pedidoId);
+    return salvarPassageiro({ ...p, id: (data as string) ?? p.id, ...(pessoaId ? { pessoaId } : {}) }, pedidoId, false);
   }
   const existe = obterMatriculas().some((x) => x.id === p.id);
   const linha = linhaDoPassageiro(p);
   const { error } = existe ? await sb.from("matriculas").update(linha).eq("id", p.id) : await sb.from("matriculas").insert(linha);
   if (error) return naoDeu(motivo(error));
-  return salvarPassageiro(p);
+  return salvarPassageiro(p, undefined, false);
 }
 
 export async function recusarPedidoNoBanco(pedidoId: string): Promise<Resultado> {

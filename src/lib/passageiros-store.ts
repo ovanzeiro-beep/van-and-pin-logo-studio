@@ -3,6 +3,8 @@ import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada
 import { avaliarMudanca, type Embarque } from "@/lib/endereco";
 import { atualizarMeusDados, identidadePassageiro, moverParaNaCidade, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
+import { destinoCheio, VAN_CHEIA } from "@/lib/lugares";
+import { obterPerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { criarAviso, useAvisosNaoLidos } from "@/lib/avisos-store";
 import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
@@ -136,9 +138,14 @@ export function reordenarPassageiro(id: string, alvoId: string): Resultado {
   return deuCerto;
 }
 
-export function salvarPassageiro(p: Passageiro, pedidoId?: string): Resultado {
+/** conferirLugares: false when the database already accepted it (the database is what counts). */
+export function salvarPassageiro(p: Passageiro, pedidoId?: string, conferirLugares = true): Resultado {
   const existente = passageiros.find((x) => x.destinoId === p.destinoId && identidadePassageiro(x) === identidadePassageiro(p));
   if (existente && existente.id !== p.id) return naoDeu("Esta pessoa já está neste destino.");
+  // E1: a new person in the destino needs a free seat in the van.
+  const entrando = !passageiros.some((x) => x.id === p.id && x.destinoId === p.destinoId);
+  const ocupados = passageiros.filter((x) => x.destinoId === p.destinoId).length;
+  if (conferirLugares && entrando && destinoCheio(ocupados, obterPerfilDoVanzeiro(p.vanzeiroId).van.lugares)) return naoDeu(VAN_CHEIA);
   if (telefoneJaNoDestino(passageiros, p.destinoId, p.telefone, p)) return naoDeu("Já tem outro passageiro com este telefone neste destino.");
   matriculas = matriculas.some((x) => x.id === p.id)
     ? matriculas.map((x) => (x.id === p.id ? p : x))

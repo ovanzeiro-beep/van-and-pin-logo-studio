@@ -14,6 +14,8 @@ import { descricaoPlano, formatarTelefone, numerosDaBusca, porCidade } from "@/l
 import { usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 import { fazer } from "@/lib/acoes";
 import { reordenarNoBanco } from "@/lib/banco/passageiros";
+import { textoDaOcupacao } from "@/lib/lugares";
+import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 function TituloSecao({ icon: Icon, children }: { icon: typeof Users; children: string }) {
   return (
@@ -117,6 +119,7 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
   const passageiros = usePassageirosDoDestino(destinoId);
   const destino = useDestino(destinoId);
   const numeros = destino ? numerosDaBusca(passageiros, destino) : new Map<string, number>();
+  const lugares = usePerfilVanzeiro().van.lugares;
 
   return (
     <section className="rounded-3xl bg-card p-4 shadow-card">
@@ -127,9 +130,7 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
         <div className="min-w-0 flex-1">
           <p className="font-display text-base font-bold text-foreground">Passageiros deste destino</p>
           <p className="text-sm text-muted-foreground">
-            {passageiros.length === 0
-              ? "Nenhum passageiro ainda."
-              : `${passageiros.length} ${passageiros.length === 1 ? "passageiro" : "passageiros"}`}
+            {passageiros.length === 0 && lugares === null ? "Nenhum passageiro ainda." : textoDaOcupacao(passageiros.length, lugares)}
           </p>
         </div>
       </div>
