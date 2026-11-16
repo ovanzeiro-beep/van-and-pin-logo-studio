@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function rotuloDoPonto(i: number, total: number) {
+function rotuloDoPonto(i: number, total: number) {
   return i === 0 ? "Saída" : i === total - 1 ? "Chegada" : "Parada";
 }
 

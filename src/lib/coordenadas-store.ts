@@ -27,7 +27,7 @@ export function useCoordenadas() {
 }
 
 /** The free search: a city in Brazil, preferring the one near `perto` (cities with the same name exist in other states). */
-export async function buscarNoMapa(nome: string, perto?: Ponto): Promise<Ponto | null> {
+async function buscarNoMapa(nome: string, perto?: Ponto): Promise<Ponto | null> {
   const caixa = perto ? `&viewbox=${perto.lng - 3},${perto.lat + 3},${perto.lng + 3},${perto.lat - 3}` : "";
   const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=br&accept-language=pt-BR&q=${encodeURIComponent(nome)}${caixa}`;
   const resposta = await fetch(url, { headers: { Accept: "application/json" } });

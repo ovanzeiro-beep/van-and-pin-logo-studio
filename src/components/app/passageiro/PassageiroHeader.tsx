@@ -5,7 +5,7 @@ import { useMinhaSituacao, useSessaoPassageiro } from "@/lib/sessao-passageiro";
 import { useAvisosNaoLidos } from "@/lib/avisos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
 
-export function useAbrirNotificacoes() {
+function useAbrirNotificacoes() {
   const navigate = useNavigate();
   return () => navigate({ to: "/passageiro/notificacoes" });
 }

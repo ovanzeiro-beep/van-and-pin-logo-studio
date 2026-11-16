@@ -70,7 +70,7 @@ export function lerValor(texto: string): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-export function lerVencimento(texto: string): number | null {
+function lerVencimento(texto: string): number | null {
   const n = Number(texto);
   return Number.isInteger(n) && n >= 1 && n <= 31 ? n : null;
 }

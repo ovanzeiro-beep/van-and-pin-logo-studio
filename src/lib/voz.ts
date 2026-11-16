@@ -52,7 +52,7 @@ export function alternarVoz() {
 }
 
 /** Speaks now, in Brazilian Portuguese, cutting whatever was still being said. */
-export function falar(texto: string) {
+function falar(texto: string) {
   if (!vozDisponivel()) return;
   window.speechSynthesis.cancel();
   const fala = new SpeechSynthesisUtterance(texto);

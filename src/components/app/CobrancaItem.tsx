@@ -6,7 +6,7 @@ import { formatarReais } from "@/lib/dinheiro";
 import { FORMA_ROTULO, SITUACAO_ROTULO, contaDoDesconto, diaMes, situacao, textoDoVencimento, valorFinal, type Cobranca, type Situacao } from "@/lib/cobrancas";
 import { cn } from "@/lib/utils";
 
-export const BADGE_DA_SITUACAO = {
+const BADGE_DA_SITUACAO = {
   pendente: "pendente",
   devendo: "deve",
   pago: "pago",
@@ -18,7 +18,7 @@ export function BadgeSituacao({ s }: { s: Situacao }) {
 }
 
 /** "Vence em 20/11", "Venceu em 05/11", "Vencimento 10/11 · Pago em 10/11 · Pix". */
-export function linhaDaData(c: Cobranca, hoje = dataDeHoje()) {
+function linhaDaData(c: Cobranca, hoje = dataDeHoje()) {
   const s = situacao(c, hoje);
   if (s === "pago" && c.pagamento)
     return `Vencimento ${diaMes(c.vencimento)} · Pago em ${diaMes(c.pagamento.data)} · ${FORMA_ROTULO[c.pagamento.forma]}`;

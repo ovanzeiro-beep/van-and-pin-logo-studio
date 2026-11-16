@@ -1,6 +1,6 @@
 // Rules of the "Criar conta" and "Esqueci minha senha" forms. Pure, so they can be tested.
 
-export const SENHA_MINIMA = 8;
+const SENHA_MINIMA = 8;
 export const podeContinuarComGoogle = (aceitouTermos: boolean) => aceitouTermos;
 
 export type DadosCadastro = {
@@ -13,7 +13,7 @@ export type DadosCadastro = {
 
 export type ErrosCadastro = Partial<Record<"nome" | "email" | "senha" | "confirmar" | "termos", string>>;
 
-export function emailValido(email: string) {
+function emailValido(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 

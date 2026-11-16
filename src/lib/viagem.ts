@@ -8,7 +8,7 @@ import { formatarData, nomeDestino, prazoPassou, textoDaVolta } from "@/lib/dest
 
 const DIAS: DiaSemana[] = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
 
-export function diaDaSemana(iso: string): DiaSemana {
+function diaDaSemana(iso: string): DiaSemana {
   const [a = 0, m = 1, d = 1] = iso.split("-").map(Number);
   return DIAS[new Date(Date.UTC(a, m - 1, d)).getUTCDay()] ?? "dom";
 }
@@ -85,7 +85,7 @@ export type Conferido = "na-van" | "ficou";
 /** How the destino was on the day of the trip (name and times), so later edits or a deletion don't change the history. */
 export type FotoDoDestino = { nome: string; saida: string; volta: string };
 
-export function fotoDoDestino(d: Pick<Destino, "origem" | "destino" | "tipo" | "saida" | "volta" | "voltaData">): FotoDoDestino {
+function fotoDoDestino(d: Pick<Destino, "origem" | "destino" | "tipo" | "saida" | "volta" | "voltaData">): FotoDoDestino {
   return { nome: nomeDestino(d), saida: d.saida, volta: textoDaVolta(d) };
 }
 

@@ -175,7 +175,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
 
 /** Short invite code, e.g. "VAN-4821". */
 /** Gera um convite único (usar gerarConviteUnico de convite.ts para novos destinos). */
-export function gerarConvite() {
+function gerarConvite() {
   return gerarConviteUnico();
 }
 

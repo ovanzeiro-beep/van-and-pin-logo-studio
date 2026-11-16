@@ -70,7 +70,7 @@ export function ouvirAvisos(o: () => void) {
   };
 }
 
-export function useAvisos() {
+function useAvisos() {
   return useSyncExternalStore(
     (listener) => {
       listeners.add(listener);

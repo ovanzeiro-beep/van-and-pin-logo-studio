@@ -4,7 +4,7 @@ import { useAvisosVanzeiro } from "@/lib/passageiros-store";
 import { primeiroNome, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
 /** Tapping the bell opens Notificações: join requests and the vanzeiro's notices. */
-export function useAbrirNotificacoes() {
+function useAbrirNotificacoes() {
   const navigate = useNavigate();
   return () => navigate({ to: "/vanzeiro/notificacoes" });
 }

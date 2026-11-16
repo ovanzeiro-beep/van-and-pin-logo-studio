@@ -20,7 +20,7 @@ export function limparViagensEncerradas() {
   notificar();
 }
 
-export function useViagensEncerradas() {
+function useViagensEncerradas() {
   return useSyncExternalStore(
     (listener) => {
       listeners.add(listener);

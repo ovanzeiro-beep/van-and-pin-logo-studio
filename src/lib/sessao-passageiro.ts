@@ -82,7 +82,7 @@ export function useMinhasMatriculas() {
 }
 
 /** The destinos this person left, found by the person (or, with no destino left, by the session). */
-export function minhasSaidasDe(saidas: Passageiro[], euIdentidade: string | null, sessaoPassageiroId: string | null) {
+function minhasSaidasDe(saidas: Passageiro[], euIdentidade: string | null, sessaoPassageiroId: string | null) {
   const quem = euIdentidade ?? saidas.find((p) => p.id === sessaoPassageiroId || identidadePassageiro(p) === sessaoPassageiroId);
   if (!quem) return [];
   const identidade = typeof quem === "string" ? quem : identidadePassageiro(quem);

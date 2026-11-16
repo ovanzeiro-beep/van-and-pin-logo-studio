@@ -104,7 +104,7 @@ export function contaDoDesconto(c: Pick<Cobranca, "tipo" | "valorBase" | "faltas
 }
 
 /** The month of Financeiro and Início: charges due this month, plus older ones still unpaid ("A receber" includes them). */
-export function doMes(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string) {
+function doMes(c: Pick<Cobranca, "pagamento" | "cancelamento" | "vencimento">, hoje: string) {
   return mesmoMes(c.vencimento, hoje) || situacao(c, hoje) === "devendo";
 }
 
@@ -176,14 +176,14 @@ type Historico = {
 };
 
 /** Due dates of a mensal plan between two dates. */
-export function vencimentosMensais(dia: number, desde: string, ate: string) {
+function vencimentosMensais(dia: number, desde: string, ate: string) {
   const datas: string[] = [];
   for (let v = somarMeses(desde, 0, dia); v <= ate; v = somarMeses(v, 1, dia)) if (v >= desde) datas.push(v);
   return datas;
 }
 
 /** The two fixed days of a quinzenal plan: the due day and the one 15 days away (5 → 5 e 20; 20 → 5 e 20; 15 → 15 e 30). */
-export function diasDaQuinzena(dia: number): [number, number] {
+function diasDaQuinzena(dia: number): [number, number] {
   return dia <= 15 ? [dia, dia + 15] : [dia - 15, dia];
 }
 
@@ -198,7 +198,7 @@ export function vencimentosQuinzenais(dia: number, desde: string, ate: string) {
 }
 
 /** The quinzenal due date right before `vencimento`. */
-export function quinzenaAnterior(dia: number, vencimento: string) {
+function quinzenaAnterior(dia: number, vencimento: string) {
   const antes = vencimentosQuinzenais(dia, somarDias(vencimento, -40), somarDias(vencimento, -1));
   return antes[antes.length - 1] ?? somarDias(vencimento, -15);
 }
@@ -211,7 +211,7 @@ function referencia(tipo: PlanoPagamento, vencimento: string, dia = partes(venci
 }
 
 /** Por viagem and Diário are named and identified by the boarding day, and fall due some days later. */
-export const DIAS_PARA_PAGAR_EMBARQUE = 7;
+const DIAS_PARA_PAGAR_EMBARQUE = 7;
 function porEmbarque(p: Passageiro, data: string): Cobranca {
   return { ...nova(p, somarDias(data, DIAS_PARA_PAGAR_EMBARQUE)), id: `${p.id}_${data}`, referencia: referencia(p.plano, data) };
 }

@@ -12,7 +12,7 @@ export function acharPorCodigo<T extends Pick<Destino, "convite">>(destinos: T[]
 const codigosUsados = new Set<string>();
 
 /** Registra um código como já usado (ao carregar dados existentes). */
-export function registrarCodigoUsado(codigo: string) {
+function registrarCodigoUsado(codigo: string) {
   const digitos = codigo.replace(/[^0-9]/g, "");
   codigosUsados.add(digitos);
 }

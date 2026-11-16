@@ -60,7 +60,7 @@ function inscrever(o: () => void) {
   return () => ouvintes.delete(o);
 }
 
-export function useRespostas() {
+function useRespostas() {
   return useSyncExternalStore(inscrever, () => respostas, () => inicial);
 }
 

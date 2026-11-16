@@ -12,9 +12,9 @@ import { viagensDoDia } from "@/lib/viagem";
 export type NovoAviso = Omit<Aviso, "id">;
 
 /** "Prazo chegando" is sent this many minutes before the deadline, to whoever has not answered. */
-export const MINUTOS_ANTES_DO_PRAZO = 30;
+const MINUTOS_ANTES_DO_PRAZO = 30;
 /** "Cobrança vencendo" is sent this many days before the due date. */
-export const DIAS_ANTES_DO_VENCIMENTO = 3;
+const DIAS_ANTES_DO_VENCIMENTO = 3;
 
 
 function minutos(data: string, hora: string) {

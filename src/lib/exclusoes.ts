@@ -14,7 +14,7 @@ export const MOTIVO_SAIU_DO_DESTINO = "Saiu do destino";
 export const MOTIVO_REMOVIDO_DO_DESTINO = "Removido do destino";
 
 /** Neither works while that destino's trip of today is in progress. */
-export function viagemEmAndamentoNoDestino(destinoId: string) {
+function viagemEmAndamentoNoDestino(destinoId: string) {
   return emAndamento(obterViagensDoDia())?.destinoId === destinoId;
 }
 

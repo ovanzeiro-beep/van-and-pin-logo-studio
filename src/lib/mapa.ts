@@ -9,9 +9,9 @@ import { proximoDaBusca, type ViagemDoDia } from "@/lib/viagem";
 export type Ponto = { lat: number; lng: number };
 
 /** Average speed used to estimate "chega em uns N min" (city and road mixed). */
-export const VELOCIDADE_MEDIA_KMH = 40;
+const VELOCIDADE_MEDIA_KMH = 40;
 
-export function coordenadaDaCidade(nome: string): Ponto | null {
+function coordenadaDaCidade(nome: string): Ponto | null {
   return obterCoordenadas()[nome] ?? null;
 }
 
