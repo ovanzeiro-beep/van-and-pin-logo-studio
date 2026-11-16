@@ -105,6 +105,8 @@ export async function escolherPapelDaConta(papel: Papel): Promise<Resultado> {
 
 export async function sairDaConta(): Promise<Resultado> {
   sair();
+  // The copy of the data kept for opening without signal belongs to this account (public/sw.js).
+  if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados").catch(() => false);
   const sb = supabase();
   if (USA_BANCO.conta && sb) await sb.auth.signOut();
   mudarSessao({ conta: null });
@@ -118,6 +120,7 @@ export async function excluirContaDoBanco(): Promise<Resultado> {
   const { error } = await sb.rpc("excluir_minha_conta");
   if (error) return naoDeu(motivo(error));
   await sb.auth.signOut();
+  if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados").catch(() => false);
   mudarSessao({ conta: null, papel: null });
   return deuCerto;
 }

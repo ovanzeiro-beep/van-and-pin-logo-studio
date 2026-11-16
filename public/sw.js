@@ -2,6 +2,8 @@
 // Always tries the internet first, so a new version is never held back; the copy is used only when there is no signal.
 
 const CACHE = "vanzeiro-v1";
+/** The last data read from the database, for opening without signal (same name as in src/lib/conta.ts). */
+const DADOS = "vanzeiro-dados";
 const PAGINAS = ["/", "/entrar", "/criar-conta", "/como-vai-usar", "/vanzeiro", "/passageiro", "/manifest.webmanifest", "/favicon.svg"];
 const FONTES = ["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 
@@ -43,7 +45,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((nomes) => Promise.all(nomes.filter((n) => n !== CACHE).map((n) => caches.delete(n))))
+      .then((nomes) => Promise.all(nomes.filter((n) => n !== CACHE && n !== DADOS).map((n) => caches.delete(n))))
       .then(() => self.clients.claim()),
   );
 });
@@ -97,6 +99,24 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
+
+  // The data read from the database (destinos, passageiros, cobranças…): internet first; without signal, the last copy
+  // read on this phone, so the app opens with the data inside the van. The copy is erased when the person logs out.
+  if (url.hostname.endsWith(".supabase.co") && url.pathname.startsWith("/rest/v1/")) {
+    event.respondWith(
+      fetch(request)
+        .then((r) => {
+          if (r.ok) {
+            const copia = r.clone();
+            caches.open(DADOS).then((cache) => cache.put(request.url, copia));
+          }
+          return r;
+        })
+        .catch(() => caches.match(request.url, { cacheName: DADOS }).then((r) => r || Response.error())),
+    );
+    return;
+  }
+
   const mesmoSite = url.origin === self.location.origin;
   if (!mesmoSite && !FONTES.includes(url.origin)) return;
 
