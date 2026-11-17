@@ -1426,3 +1426,13 @@ Navegador / celular: nada muda na tela.
 Como desfazer: `grant execute` das quatro funções para `authenticated` (não recomendado); a tabela `cidades` estava vazia e sem uso.
 Próximo passo: o dono cola o SQL; depois REV-02 (e-mails).
 - [x] (17/11) O dono colou `SO-SQL-12-G6-CIDADES.sql` (resultado `cidades_que_sobraram = 0`); conferido no banco real: tabela `cidades` não existe mais e 0 funções chamáveis sem login. **REV-01 concluída.**
+
+## REV-02 — E-mails do login em português (17/11/2026)
+
+Etapa / data / situação: REV-02 / 17/11/2026 / concluída.
+Pedido e regra esperada: e-mails do cadastro e do "Esqueci minha senha" em português, sem o limite baixo do e-mail padrão do Supabase.
+- [x] Dono criou a senha de app do Gmail `ovanzeiro@gmail.com` e ligou o SMTP próprio no Supabase (Authentication → Emails → SMTP Settings: `smtp.gmail.com`, porta 465, remetente "O Vanzeiro"). A senha não passou pelo chat nem pelo repositório.
+- [x] Modelos "Confirm sign up" e "Reset password" trocados para os textos em português (`docs/emails/`), assunto "O Vanzeiro"; salvos ("Successfully updated email template").
+- [x] Teste real: "Esqueci minha senha" com `ovanzeiro@gmail.com` → e-mail "Criar uma senha nova" chegou na caixa de entrada, remetente "O Vanzeiro", em português.
+Código e banco: sem mudança. Pendência: o limite passou a 30 e-mails por hora (Authentication → Rate Limits), suficiente para o piloto.
+Próximo passo: REV-03 (teste real com 2 celulares).
