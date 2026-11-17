@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { inicioDaConta, useSessao } from "@/lib/sessao";
 import { Lock, Mail } from "lucide-react";
 import { AuthLayout, OuDivisor } from "@/components/app/AuthLayout";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
@@ -27,6 +28,11 @@ export const Route = createFileRoute("/entrar")({
 
 function Entrar() {
   const navigate = useNavigate();
+  const sessao = useSessao();
+  // Already logged in on this phone (opened the app again): straight to the panel.
+  useEffect(() => {
+    if (USA_BANCO.conta && sessao.contaPronta && sessao.conta) void navigate({ to: inicioDaConta(sessao.papel), replace: true });
+  }, [sessao.contaPronta, sessao.conta, sessao.papel, navigate]);
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   // W1: with the database, the e-mail and password are checked for real; the last panel used opens first.

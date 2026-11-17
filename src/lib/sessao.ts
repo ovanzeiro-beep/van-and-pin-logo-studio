@@ -61,3 +61,8 @@ export function mudarSessaoPassageiro(parcial: Partial<SessaoPassageiro>) {
 /** Who owns what the vanzeiro creates. */
 export const idDoVanzeiro = () => sessao.vanzeiroId;
 
+
+/** Where a logged-in account starts: its last panel, or the choice of panel when it never chose one. */
+export function inicioDaConta(papel: "vanzeiro" | "passageiro" | null | undefined) {
+  return papel === "vanzeiro" ? "/vanzeiro" : papel === "passageiro" ? "/passageiro" : "/como-vai-usar";
+}

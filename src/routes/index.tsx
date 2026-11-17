@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { inicioDaConta, useSessao } from "@/lib/sessao";
 import { AppIcon } from "@/components/brand/Logo";
 import { MobileScreen } from "@/components/app/MobileScreen";
 
@@ -20,16 +21,23 @@ export const Route = createFileRoute("/")({
 function Abertura() {
   const navigate = useNavigate();
 
+  const sessao = useSessao();
+  const [esperou, setEsperou] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => navigate({ to: "/entrar" }), 2600);
+    const t = setTimeout(() => setEsperou(true), 2600);
     return () => clearTimeout(t);
-  }, [navigate]);
+  }, []);
+  // The account stays logged in on the phone: after the opening, it goes straight to its panel (login only when needed).
+  useEffect(() => {
+    if (!esperou || !sessao.contaPronta) return;
+    void navigate({ to: sessao.conta ? inicioDaConta(sessao.papel) : "/entrar", replace: true });
+  }, [esperou, sessao.contaPronta, sessao.conta, sessao.papel, navigate]);
 
   return (
     <MobileScreen className="bg-header">
       <button
         type="button"
-        onClick={() => navigate({ to: "/entrar" })}
+        onClick={() => setEsperou(true)}
         className="flex flex-1 flex-col items-center justify-center px-8 text-center"
         aria-label="Entrar no O Vanzeiro"
       >

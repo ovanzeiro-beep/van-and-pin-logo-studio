@@ -1633,3 +1633,11 @@ Pedido do dono: além da cidade, o nome do comércio onde param.
 Conferido no banco: só 3 cobranças, todas pagas por Pix (150 + 250 + 150 = R$ 550,00 = "Recebido"); "A receber" e "Pendentes" vazios estavam certos pelas cobranças. O que não batia: o Início já contava quem confirmou "Vou" hoje e o Financeiro não.
 - [x] Financeiro: "A receber" soma quem confirmou "Vou" hoje (Por viagem e Diário); nos filtros Todas e Pendentes aparece um card por pessoa "Confirmou 'Vou' hoje · vira cobrança quando embarcar", com o valor. Mesma regra do Início (`confirmadosSemCobranca`).
 - [x] 416 testes, tsc e build passando.
+
+---
+
+## Continuar logado ao abrir o app (pedido do dono, 17/11/2026) — feita
+Causa: a tela de abertura sempre levava para "Entrar", mesmo com a conta guardada no celular (a sessão do Supabase já ficava salva).
+- [x] Abertura: espera a conta carregar; com conta, vai direto para o último painel (vanzeiro ou passageiro; sem papel, "Como vai usar"); sem conta, "Entrar".
+- [x] "Entrar" aberta com a conta já logada: vai direto para o painel.
+- [x] O login só é pedido de novo depois de "Sair". 416 testes, tsc e build passando.
