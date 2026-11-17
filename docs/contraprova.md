@@ -1456,3 +1456,9 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Banco: `supabase/migrations/20261117040000_rev08_lugares_da_viagem.sql` (`lugares_da_viagem`: só números, só para a própria matrícula; mesma conta da lotação), testado numa cópia (outra pessoa não consegue consultar) e aplicado no Supabase real.
 - [x] App: `src/lib/banco/lugares.ts` (lê do banco e de novo a cada mudança das respostas), `vagasDaViagem` em `src/lib/lugares.ts`, componente `VagasDaViagem` no card "Próxima viagem" do Início e em Viagens: "4 de 15 lugares ocupados · 11 livres" com barra; "Restam 2 lugares" (âmbar); "Van lotada" (vermelho); "Você está entre os 4 confirmados".
 - [x] Conferência: 370 testes (novo `rev08-vagas.test.ts`), tipos, build; Início sem rolar em 390×844 e 360×740.
+
+## REV-09 — Acompanhamento do embarque pelo passageiro (17/11/2026)
+- [x] Banco: `supabase/migrations/20261117050000_rev09_embarque_da_viagem.sql` (`embarque_da_viagem`: total, quantos embarcaram, iniciais, posição e quantos faltam antes; só a própria matrícula, só a viagem de hoje; `iniciais_do_nome` interna). Testado numa cópia ("Não estava no ponto" conta como tratado; outra pessoa não consulta) e aplicado no Supabase real.
+- [x] App: `src/lib/embarque.ts`, `src/lib/banco/embarque.ts` (lê de novo a cada mudança da viagem pelo tempo real), componente `EmbarqueDaViagem` no card "Situação da van" durante a busca: "3 de 8 já embarcaram", bolinhas com as iniciais (até 6 e "+n"), "Faltam 2 antes de você" / "Falta 1 antes de você" / "Você é o próximo — aguarde no ponto" / "Você embarcou".
+- [x] Privacidade: só números e iniciais. Pendência: citar na Política de Privacidade (REV-06).
+- [x] Conferência: 373 testes (novo `rev09-embarque.test.ts`), tipos, build.

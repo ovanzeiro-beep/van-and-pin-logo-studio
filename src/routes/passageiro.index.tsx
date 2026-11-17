@@ -16,6 +16,7 @@ import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
+import { EmbarqueDaViagem } from "@/components/app/passageiro/EmbarqueDaViagem";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
@@ -134,6 +135,7 @@ function InicioPassageiro() {
               </div>
             ))}
           </div>
+          {destino && <EmbarqueDaViagem matriculaId={eu.id} destinoId={destino.id} />}
         </InfoCard>
         </Link>
 
