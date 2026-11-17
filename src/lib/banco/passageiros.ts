@@ -8,6 +8,7 @@ import { nomeDePessoa, nomeProprio } from "@/lib/formatos";
 import {
   aceitarMudancaDeEndereco,
   carregarPassageirosDoBanco,
+  ligarPedidoAoCadastro,
   obterMatriculas,
   obterPassageiros,
   obterPedidos,
@@ -328,6 +329,16 @@ export async function salvarPassageiroNoBanco(p: Passageiro, pedidoId?: string):
   const { error } = existe ? await sb.from("matriculas").update(linha).eq("id", p.id) : await sb.from("matriculas").insert(linha);
   if (error) return naoDeu(motivo(error));
   return salvarPassageiro(p, undefined, false);
+}
+
+/** G1 "Ligar ao cadastro": the account of whoever asked becomes the one of the record the vanzeiro made by hand. */
+export async function ligarPedidoAoCadastroNoBanco(pedidoId: string): Promise<Resultado> {
+  if (!usaBanco()) return ligarPedidoAoCadastro(pedidoId);
+  const { error } = await supabase()!.rpc("ligar_pedido_ao_cadastro", { pedido: pedidoId });
+  if (error) return naoDeu(motivo(error));
+  // The database is what counts; the screen follows (and the person hears about it on the bell).
+  ligarPedidoAoCadastro(pedidoId);
+  return deuCerto;
 }
 
 export async function recusarPedidoNoBanco(pedidoId: string): Promise<Resultado> {

@@ -1356,3 +1356,9 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [x] Continua a leitura a cada 30 s e ao voltar para o app, caso o tempo real caia. 361 testes, tipos, build.
 
 - [x] (17/11) Limpeza feita pelo dono e conferida: 0 destinos, passageiros, pedidos, viagens, cobranças e avisos; contas e perfis mantidos (8 contas: as de teste do Google também ficaram); tarefa do relógio rodando sem erro.
+
+## G1 — Passageiro cadastrado direto entra no app (17/11/2026)
+- [x] Antes: quem o vanzeiro cadastrava na mão (sem conta) não conseguia entrar pelo código ("Já tem outro passageiro com este telefone").
+- [x] Agora: a pessoa pede para entrar normalmente (mesmo com a van cheia, porque já ocupa o lugar dela); o vanzeiro vê no pedido "Já está cadastrado neste destino como …" e toca em **Ligar**: a conta passa a ser a desse cadastro, com o plano, o valor e as cobranças que já tinha; nada duplica; a pessoa recebe "pedido aceito".
+- [x] Banco (`20261117010000_ligar_ao_cadastro.sql`, aplicado direto no Supabase): `ligar_pedido_ao_cadastro` (só o vanzeiro do destino; mesmo telefone; cadastro sem conta). Testado numa cópia (9 checagens).
+- [x] Conferência: 363 testes (novo `g1-ligar-ao-cadastro.test.ts`), tipos, build.
