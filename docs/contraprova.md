@@ -1648,3 +1648,8 @@ Causa: a tela de abertura sempre levava para "Entrar", mesmo com a conta guardad
 - [x] Tocar em "Não vou" (Início e Viagens do passageiro) abre "Avisar que não vai": dia, destino, saída e "Pode mudar de ideia no app até as HH:MM"; botões "Voltar" e "Confirmar que não vou" (vermelho).
 - [x] Quem tinha dito "Vou" vê também: "Seu lugar na van fica livre para outra pessoa. Se mudar de ideia, pode não ter mais lugar."
 - [x] Já está em "Não vou": tocar de novo não abre nada. 3 testes novos (419 no total), tsc e build passando.
+
+### N1 — ajuste 3 (17/11/2026): o GPS sempre preenche o endereço (como os apps de corrida)
+- [x] "Estou no ponto agora" preenche sempre o campo do endereço (mesmo se já tinha texto): "Rua, número - Bairro" quando o mapa tem; a pessoa corrige depois. Sem nome de rua no mapa: "Perto de …" ou o bairro; sem nada, mantém o texto e pede para escrever.
+- [x] A cidade continua marcada sozinha entre as cidades do vanzeiro (sem mudança).
+- [x] 419 testes, tsc e build passando.

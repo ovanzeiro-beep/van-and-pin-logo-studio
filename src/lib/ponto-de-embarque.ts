@@ -65,7 +65,9 @@ const bairroDe = (e: Endereco | undefined) =>
 /** "Rua Paraná, 455" from the map's answer; the neighborhood when the street has no name; "" when nothing useful. */
 export function textoDoEndereco(e: Endereco | undefined) {
   const rua = ruaDe(e);
-  if (rua) return e?.house_number ? `${rua}, ${e.house_number}` : rua;
+  const bairro = e?.neighbourhood ?? e?.suburb ?? e?.quarter;
+  // Like the ride apps: "Rua Paraná, 455 - Vila Setti" (number and neighborhood when the map has them).
+  if (rua) return `${e?.house_number ? `${rua}, ${e.house_number}` : rua}${bairro ? ` - ${bairro}` : ""}`;
   return bairroDe(e) ?? "";
 }
 

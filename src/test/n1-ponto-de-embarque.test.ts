@@ -47,6 +47,7 @@ describe("N1: capturar o ponto de embarque", () => {
 
   it("monta o endereço com rua e número; sem rua, usa o bairro", () => {
     expect(textoDoEndereco({ road: "Rua Paraná", house_number: "455" })).toBe("Rua Paraná, 455");
+    expect(textoDoEndereco({ road: "Rua Paraná", house_number: "455", suburb: "Vila Setti" })).toBe("Rua Paraná, 455 - Vila Setti");
     expect(textoDoEndereco({ road: "Rua Paraná" })).toBe("Rua Paraná");
     expect(textoDoEndereco({ suburb: "Vila Setti" })).toBe("Vila Setti");
     expect(textoDoEndereco(undefined)).toBe("");

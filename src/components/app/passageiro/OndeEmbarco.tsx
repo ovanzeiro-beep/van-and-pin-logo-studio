@@ -65,7 +65,8 @@ export function OndeEmbarco({
       return;
     }
     // The address is filled when the field is empty or still has what the map filled before (never what the person wrote).
-    const podePreencher = valor.endereco.trim() === "" || valor.endereco === preenchidoPeloMapa.current;
+    // Owner (17/11): like the ride apps, the GPS always fills the address; the person edits it if it is wrong.
+    const podePreencher = true;
     const lugar = await lugarDoPonto(r.ponto);
     const rua = podePreencher ? lugar.endereco : "";
     setOcupado(null);
