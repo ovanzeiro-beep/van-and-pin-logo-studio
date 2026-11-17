@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { registrarErro } from "../lib/erros";
 import { useRelogioDoApp } from "../lib/viagem-store";
 import { useFuncionarSemSinal } from "../lib/sem-sinal";
 import { useNotificarAvisosNovos } from "../lib/notificacoes";
@@ -50,6 +51,8 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    // REV-05: kept in the database too, so it can be fixed.
+    void registrarErro(error);
   }, [error]);
 
   return (
