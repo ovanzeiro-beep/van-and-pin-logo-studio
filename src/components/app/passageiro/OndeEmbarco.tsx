@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { registrarErro } from "@/lib/erros";
 import { LoaderCircle, LocateFixed, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
@@ -62,6 +63,7 @@ export function OndeEmbarco({
     if (!r.ok) {
       setOcupado(null);
       setMensagem({ texto: r.erro, tom: "aviso" });
+      void registrarErro(new Error(`GPS do passageiro: ${r.erro}`));
       return;
     }
     // The address is filled when the field is empty or still has what the map filled before (never what the person wrote).

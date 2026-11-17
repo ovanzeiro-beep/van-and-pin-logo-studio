@@ -119,6 +119,7 @@ export async function lugarDoPonto(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=${zoom}&accept-language=pt-BR&lat=${p.lat}&lon=${p.lng}`,
       )) as { address?: Endereco; error?: string } | null;
       if (!r?.address) falhas.push(`nominatim ${zoom}: ${r?.error ?? "sem endereço"}`);
+      else if (!ruaDe(r.address)) falhas.push(`nominatim ${zoom}: sem rua (${Object.keys(r.address).join(",")})`);
       return r?.address;
     } catch (e) {
       falhas.push(`nominatim ${zoom}: ${e instanceof Error ? e.message : "erro"}`);
@@ -127,11 +128,11 @@ export async function lugarDoPonto(
   };
   const photon = async () => {
     try {
-      return enderecoDoPhoton(
-        (await buscar(
-          `https://photon.komoot.io/reverse?lat=${p.lat}&lon=${p.lng}&limit=1`,
-        )) as Photon,
+      const e = enderecoDoPhoton(
+        (await buscar(`https://photon.komoot.io/reverse?lat=${p.lat}&lon=${p.lng}&limit=1`)) as Photon,
       );
+      if (!ruaDe(e)) falhas.push(`photon: sem rua (${Object.keys(e ?? {}).join(",")})`);
+      return e;
     } catch (e) {
       falhas.push(`photon: ${e instanceof Error ? e.message : "erro"}`);
       return undefined;
@@ -159,7 +160,7 @@ export async function lugarDoPonto(
       endereco: `Perto de ${rua}${bairro && bairro !== cidade ? ` (${bairro})` : ""}`,
       cidade,
     };
-  if (falhas.length) aoFalhar(`Endereço pelo GPS não achado: ${falhas.join("; ")}`);
+  aoFalhar(`Endereço pelo GPS não achado: ${falhas.join("; ") || "sem detalhe"}`);
   return { endereco: bairro && bairro !== cidade ? bairro : "", cidade };
 }
 
