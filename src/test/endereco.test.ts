@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { destinosExemplo } from "@/data/exemplo";
 import { obterAvisos } from "@/lib/avisos-store";
-import { avaliarMudanca, embarqueCompleto, pontoObrigatorio, textoDaDistancia } from "@/lib/endereco";
+import { avaliarMudanca, embarqueCompleto, foraDaRota, pontoObrigatorio, textoDaDistancia } from "@/lib/endereco";
 import { passageiroDeRascunho, rascunhoPassageiroVazio } from "@/lib/passageiros";
 import {
   aceitarMudancaDeEndereco,
@@ -74,5 +74,17 @@ describe("Mudar onde embarca: até 1 km salva; mais longe, o vanzeiro aprova", (
     const p = obterPassageiros().find((x) => x.id === "p-mariana")!;
     expect([p.cidade, p.endereco]).toEqual(["Jacarezinho", "Sítio Longe"]);
     expect(obterAvisos().at(-1)?.tipo).toBe("endereco_recusado");
+  });
+});
+
+describe("Ponto fora da cidade da rota não entra", () => {
+  it("ponto a mais de 30 km da cidade escolhida: fora da rota e o pedido não sai", () => {
+    const londrinaD = destinosExemplo.find((d) => d.id === "jacarezinho-londrina")!;
+    const curitiba = { lat: -25.43, lng: -49.27 };
+    expect(foraDaRota({ cidade: "Jacarezinho", endereco: "Rua 1", ponto: curitiba })).toBe(true);
+    expect(embarqueCompleto(londrinaD, { cidade: "Jacarezinho", endereco: "Rua 1", ponto: curitiba })).toBe(false);
+    expect(foraDaRota({ cidade: "Jacarezinho", endereco: "Rua 1", ponto: { lat: -23.17, lng: -49.97 } })).toBe(false);
+    // City the map does not know: nothing to compare.
+    expect(foraDaRota({ cidade: "Cidade X", endereco: "Rua 1", ponto: curitiba })).toBe(false);
   });
 });

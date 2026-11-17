@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   acharEndereco,
-  avisoDeLonge,
+  cidadeDaRota,
+  lugarDoPonto,
+  nomeDaCidade,
+  textoForaDaRota,
   enderecoDoPonto,
   erroDoGps,
   minhaLocalizacao,
@@ -109,11 +112,41 @@ describe("N1: capturar o ponto de embarque", () => {
     expect((await minhaLocalizacao(undefined)).ok).toBe(false);
   });
 
-  it("avisa quando o ponto fica longe da cidade escolhida (mais de 30 km)", () => {
-    expect(avisoDeLonge({ lat: -23.17, lng: -49.97 }, "Jacarezinho", jacarezinho)).toBeNull();
-    expect(avisoDeLonge({ lat: -23.31, lng: -51.16 }, "Jacarezinho", jacarezinho)).toBe(
-      "Esse ponto fica longe de Jacarezinho. Confira a cidade escolhida e o pino no mapa.",
+  it("mesma cidade com ou sem o estado e os acentos", () => {
+    expect(nomeDaCidade("Jacarezinho PR")).toBe("jacarezinho");
+    expect(nomeDaCidade("Cambará - PR")).toBe("cambara");
+    expect(nomeDaCidade("Santo Antônio da Platina")).toBe("santo antonio da platina");
+  });
+
+  it("GPS: marca sozinho a cidade da rota que o mapa diz; fora da rota, nenhuma", () => {
+    const rota = [
+      { nome: "Jacarezinho PR", ponto: jacarezinho },
+      { nome: "Londrina PR", ponto: { lat: -23.3045, lng: -51.1696 } },
+    ];
+    const emJacarezinho = { lat: -23.17, lng: -49.97 };
+    expect(cidadeDaRota(emJacarezinho, "Jacarezinho", rota, "")).toBe("Jacarezinho PR");
+    // Chose Londrina but is in Jacarezinho: the city changes to Jacarezinho.
+    expect(cidadeDaRota(emJacarezinho, "Jacarezinho", rota, "Londrina PR")).toBe("Jacarezinho PR");
+    // Without the name from the map (tap on the map): the chosen city if the point is in it, else the closest.
+    expect(cidadeDaRota(emJacarezinho, undefined, rota, "Jacarezinho PR")).toBe("Jacarezinho PR");
+    expect(cidadeDaRota(emJacarezinho, undefined, rota, "Londrina PR")).toBe("Jacarezinho PR");
+    // In Curitiba: no city of the route.
+    expect(
+      cidadeDaRota({ lat: -25.43, lng: -49.27 }, "Curitiba", rota, "Jacarezinho PR"),
+    ).toBeNull();
+    // The map does not know the cities yet: keeps the choice.
+    expect(cidadeDaRota(emJacarezinho, undefined, [{ nome: "X" }], "X")).toBe("X");
+    expect(textoForaDaRota(["Jacarezinho PR", "Londrina PR"])).toBe(
+      "Esse ponto não fica em nenhuma cidade por onde a van passa (Jacarezinho PR, Londrina PR). Marque onde você espera a van.",
     );
-    expect(avisoDeLonge({ lat: -23.31, lng: -51.16 }, "Jacarezinho", undefined)).toBeNull();
+  });
+
+  it("o GPS também traz a cidade do mapa", async () => {
+    const r = await lugarDoPonto(
+      jacarezinho,
+      async () => ({ address: { road: "Rua Paraná", city: "Jacarezinho" } }),
+      async () => {},
+    );
+    expect(r).toEqual({ endereco: "Rua Paraná", cidade: "Jacarezinho" });
   });
 });

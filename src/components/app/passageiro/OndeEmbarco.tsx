@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { MapaDaVan } from "@/components/app/MapaDaVan";
 import type { Destino } from "@/data/exemplo";
-import { pontoObrigatorio, type Embarque } from "@/lib/endereco";
+import { foraDaRota, pontoObrigatorio, type Embarque } from "@/lib/endereco";
 import { cidadesNoMapa, type Ponto } from "@/lib/mapa";
 import { useCoordenadas, useProcurarCidades } from "@/lib/coordenadas-store";
-import { acharEndereco, avisoDeLonge, enderecoDoPonto, minhaLocalizacao } from "@/lib/ponto-de-embarque";
+import { acharEndereco, cidadeDaRota, lugarDoPonto, minhaLocalizacao, textoForaDaRota } from "@/lib/ponto-de-embarque";
 import { caminhoCompleto } from "@/lib/destinos";
 import { pontosDeEmbarque } from "@/lib/passageiros";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,17 @@ export function OndeEmbarco({
   /** The address the map filled last time: pressing the GPS again may replace it (never what the person wrote). */
   const preenchidoPeloMapa = useRef<string | null>(null);
 
-  const marcar = (ponto: Ponto, extra: Partial<Embarque> = {}, okTexto = "Pronto! Confira o pino. Se precisar, toque no lugar certo.") => {
+  const daRota = pontosDeEmbarque(destino);
+  const cidadesDaRota = daRota.map((nome) => ({ nome, ponto: coordenadas[nome] }));
+  const fora = foraDaRota(valor, coordenadas);
+
+  /** Puts the pin and marks, by itself, the city of the route where it is (the one the map says, from the GPS). */
+  const marcar = (ponto: Ponto, extra: Partial<Embarque> = {}, okTexto = "Pronto! Confira o pino. Se precisar, toque no lugar certo.", nomeDoMapa?: string) => {
     setAlvo(ponto);
-    mudar({ ponto, ...extra });
-    const longe = avisoDeLonge(ponto, valor.cidade, centro);
-    setMensagem(longe ? { texto: longe, tom: "aviso" } : { texto: okTexto, tom: "ok" });
+    const cidade = cidadeDaRota(ponto, nomeDoMapa, cidadesDaRota, valor.cidade);
+    mudar({ ponto, ...extra, ...(cidade ? { cidade } : {}) });
+    if (!cidade) setMensagem(null);
+    else setMensagem({ texto: cidade !== valor.cidade ? `Cidade marcada: ${cidade}. ${okTexto}` : okTexto, tom: "ok" });
   };
 
   const usarGps = async () => {
@@ -60,14 +66,15 @@ export function OndeEmbarco({
     }
     // The address is filled when the field is empty or still has what the map filled before (never what the person wrote).
     const podePreencher = valor.endereco.trim() === "" || valor.endereco === preenchidoPeloMapa.current;
-    const rua = podePreencher ? await enderecoDoPonto(r.ponto) : "";
+    const lugar = await lugarDoPonto(r.ponto);
+    const rua = podePreencher ? lugar.endereco : "";
     setOcupado(null);
     if (rua) {
       preenchidoPeloMapa.current = rua;
-      marcar(r.ponto, { endereco: rua }, "Endereço preenchido pelo mapa. Confira e corrija se precisar.");
+      marcar(r.ponto, { endereco: rua }, "Endereço preenchido pelo mapa. Confira e corrija se precisar.", lugar.cidade);
     } else if (podePreencher) {
-      marcar(r.ponto, {}, "Pino marcado. Não achamos o nome da rua: escreva o endereço ou uma referência.");
-    } else marcar(r.ponto);
+      marcar(r.ponto, {}, "Pino marcado. Não achamos o nome da rua: escreva o endereço ou uma referência.", lugar.cidade);
+    } else marcar(r.ponto, {}, undefined, lugar.cidade);
   };
 
   const procurar = async () => {
@@ -84,14 +91,16 @@ export function OndeEmbarco({
     }
   };
 
-  const titulo = avisoDoMapa ?? mensagem?.texto ?? (valor.ponto ? "Seu ponto no mapa" : "Toque no mapa onde você espera a van");
-  const tituloEhAviso = !!avisoDoMapa || mensagem?.tom === "aviso";
+  const titulo = fora
+    ? textoForaDaRota(daRota)
+    : (avisoDoMapa ?? mensagem?.texto ?? (valor.ponto ? "Seu ponto no mapa" : "Toque no mapa onde você espera a van"));
+  const tituloEhAviso = fora || !!avisoDoMapa || mensagem?.tom === "aviso";
   return (
     <>
       <div>
         <p className="mb-1.5 text-sm font-semibold text-foreground">Em qual cidade você embarca?</p>
         <div className="grid grid-cols-2 gap-2">
-          {pontosDeEmbarque(destino).map((p) => {
+          {daRota.map((p) => {
             const ativo = valor.cidade === p;
             return (
               <button
@@ -167,7 +176,8 @@ export function OndeEmbarco({
               foco={foco}
               aoMarcar={(ponto) => {
                 setMensagem(null);
-                mudar({ ponto });
+                const cidade = cidadeDaRota(ponto, undefined, cidadesDaRota, valor.cidade);
+                mudar({ ponto, ...(cidade ? { cidade } : {}) });
               }}
             />
           </div>

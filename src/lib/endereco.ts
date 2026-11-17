@@ -1,6 +1,8 @@
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { cidadesNoMapa, distanciaKm, pontoDoPassageiro, type Ponto } from "@/lib/mapa";
 import { pontosDeEmbarque } from "@/lib/passageiros";
+import { obterCoordenadas } from "@/lib/coordenadas-store";
+import { pertoDaCidade } from "@/lib/ponto-de-embarque";
 
 // Where the passenger boards (owner's decisions, 15/11/2026): the passenger fills it in (city, address and
 // the point on the map, required when the map knows the destino); changing it later up to 1 km from the agreed
@@ -15,8 +17,13 @@ export function pontoObrigatorio(d: Pick<Destino, "origem" | "destino" | "parada
   return cidadesNoMapa(d).length > 0;
 }
 
+/** The marked point is not in the chosen city of the route (more than 30 km from it): the van does not go there. */
+export function foraDaRota(e: Embarque, coordenadas: Record<string, Ponto> = obterCoordenadas()) {
+  return !!e.ponto && !!e.cidade && !pertoDaCidade(e.ponto, { nome: e.cidade, ponto: coordenadas[e.cidade] });
+}
+
 export function embarqueCompleto(d: Pick<Destino, "origem" | "destino" | "paradas">, e: Embarque) {
-  return pontosDeEmbarque(d).includes(e.cidade) && e.endereco.trim() !== "" && (!pontoObrigatorio(d) || e.ponto !== null);
+  return pontosDeEmbarque(d).includes(e.cidade) && e.endereco.trim() !== "" && (!pontoObrigatorio(d) || e.ponto !== null) && !foraDaRota(e);
 }
 
 /** How far the new point is from the agreed one (marked point, else the city center), and whether the vanzeiro must approve. */

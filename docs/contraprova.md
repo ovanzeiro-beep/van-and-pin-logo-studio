@@ -1560,3 +1560,12 @@ Pedido do dono (foto: pino marcado, campo do endereço vazio; as ruas do lugar n
 - [x] Preenche quando o campo está vazio ou ainda tem o que o mapa preencheu antes; nunca apaga o que a pessoa escreveu (conferido na tela).
 - [x] Mensagem "Endereço preenchido pelo mapa. Confira e corrija se precisar."; a pessoa edita no próprio campo.
 - [x] Espera 1 s entre as duas buscas (regra do mapa gratuito). 3 testes novos (397 no total), tsc e build passando.
+
+### N1 — ajuste 2 (17/11/2026): cidade pelo GPS e ponto fora da rota não entra
+Pedido do dono: o GPS marca a cidade sozinho; quem não está numa cidade por onde a van passa não entra.
+- [x] "Estou no ponto agora": a cidade que o mapa diz vira a cidade marcada, se for da rota ("Jacarezinho" = "Jacarezinho PR", sem acento e sem estado). Tocar no mapa ou "Achar no mapa": mantém a escolhida se o ponto está nela; senão, a cidade da rota mais perto.
+- [x] Ponto a mais de 30 km da cidade escolhida (e de todas as da rota): aviso "Esse ponto não fica em nenhuma cidade por onde a van passa (…)" e "Pedir para entrar" / "Salvar" / "Enviar ao vanzeiro" ficam desligados (`foraDaRota` em `embarqueCompleto`).
+- [x] Cidade que o mapa ainda não conhece: não bloqueia (não dá para comparar).
+- [x] Conferido na tela: GPS em Cambará trocou Jacarezinho → Cambará e preencheu o endereço; GPS em Curitiba bloqueou.
+- [x] 4 testes novos (400 no total), tsc e build passando.
+- Limite: a conferência é feita no app (o banco não confere a distância). Cadastro feito pelo próprio vanzeiro não tem esse bloqueio.

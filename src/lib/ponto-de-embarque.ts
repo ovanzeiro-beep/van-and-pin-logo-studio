@@ -53,6 +53,9 @@ type Endereco = {
   hamlet?: string;
   village?: string;
   isolated_dwelling?: string;
+  city?: string;
+  town?: string;
+  municipality?: string;
 };
 
 const ruaDe = (e: Endereco | undefined) => e?.road ?? e?.pedestrian ?? e?.footway;
@@ -73,11 +76,11 @@ const esperarDeVerdade = (ms: number) => new Promise<void>((r) => setTimeout(r, 
  * new neighborhoods), the nearest named big street: "Perto de Estrada X (Vila Y)"; else the neighborhood; else "".
  * Never breaks the screen: offline gives "".
  */
-export async function enderecoDoPonto(
+export async function lugarDoPonto(
   p: Ponto,
   buscar: BuscarNoMapa = buscarDeVerdade,
   esperar: (ms: number) => Promise<void> = esperarDeVerdade,
-): Promise<string> {
+): Promise<{ endereco: string; cidade: string | undefined }> {
   const reverso = async (zoom: number) => {
     try {
       const r = (await buscar(
@@ -89,14 +92,28 @@ export async function enderecoDoPonto(
     }
   };
   const perto = await reverso(18);
-  if (ruaDe(perto)) return textoDoEndereco(perto);
+  const cidade = perto?.city ?? perto?.town ?? perto?.municipality ?? perto?.village;
+  if (ruaDe(perto)) return { endereco: textoDoEndereco(perto), cidade };
   // The free map asks for at most one search per second.
   await esperar(1100);
   const grande = await reverso(16);
   const bairro = bairroDe(perto) ?? bairroDe(grande);
   const rua = ruaDe(grande);
-  if (rua) return `Perto de ${rua}${bairro ? ` (${bairro})` : ""}`;
-  return bairro ?? "";
+  if (rua)
+    return {
+      endereco: `Perto de ${rua}${bairro && bairro !== cidade ? ` (${bairro})` : ""}`,
+      cidade,
+    };
+  return { endereco: bairro && bairro !== cidade ? bairro : "", cidade };
+}
+
+/** Only the address text of a GPS point (see lugarDoPonto). */
+export async function enderecoDoPonto(
+  p: Ponto,
+  buscar: BuscarNoMapa = buscarDeVerdade,
+  esperar: (ms: number) => Promise<void> = esperarDeVerdade,
+) {
+  return (await lugarDoPonto(p, buscar, esperar)).endereco;
 }
 
 export type ResultadoDoGps = { ok: true; ponto: Ponto } | { ok: false; erro: string };
@@ -131,10 +148,56 @@ export function minhaLocalizacao(
   });
 }
 
-/** Warning when the marked point is far from the chosen city (wrong city chosen, or the person is not at the point). */
-export function avisoDeLonge(ponto: Ponto, cidade: string, centro: Ponto | undefined) {
-  if (!centro || !cidade) return null;
-  return distanciaKm(ponto, centro) > LONGE_DA_CIDADE_KM
-    ? `Esse ponto fica longe de ${cidade}. Confira a cidade escolhida e o pino no mapa.`
-    : null;
+/** "Jacarezinho PR", "Jacarezinho - PR" and "jacarezinho" are the same city. */
+export function nomeDaCidade(nome: string) {
+  return nome
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(
+      /[\s,/-]+(ac|al|ap|am|ba|ce|df|es|go|ma|mt|ms|mg|pa|pb|pr|pe|pi|rj|rn|rs|ro|rr|sc|sp|se|to)$/,
+      "",
+    )
+    .trim();
+}
+
+type CidadeDaRota = { nome: string; ponto?: Ponto | undefined };
+
+/** The point is inside a city of the route: up to 30 km from its center (the map does not know city borders). */
+export function pertoDaCidade(ponto: Ponto, c: CidadeDaRota) {
+  return !c.ponto || distanciaKm(ponto, c.ponto) <= LONGE_DA_CIDADE_KM;
+}
+
+/**
+ * Which city of the route a marked point belongs to: the city the map says (GPS), when it is on the route; else the
+ * chosen one, when the point is in it; else the closest city of the route. null: the point is in no city of the route.
+ */
+export function cidadeDaRota(
+  ponto: Ponto,
+  nomeDoMapa: string | undefined,
+  cidades: CidadeDaRota[],
+  escolhida: string,
+): string | null {
+  const porNome = nomeDoMapa
+    ? cidades.find((c) => nomeDaCidade(c.nome) === nomeDaCidade(nomeDoMapa))
+    : undefined;
+  if (porNome && pertoDaCidade(ponto, porNome)) return porNome.nome;
+  const atual = cidades.find((c) => c.nome === escolhida);
+  if (atual?.ponto && pertoDaCidade(ponto, atual)) return atual.nome;
+  const comMapa = cidades.filter(
+    (c): c is { nome: string; ponto: Ponto } => !!c.ponto && pertoDaCidade(ponto, c),
+  );
+  if (comMapa.length)
+    return comMapa.reduce((a, b) =>
+      distanciaKm(ponto, b.ponto) < distanciaKm(ponto, a.ponto) ? b : a,
+    ).nome;
+  // The map does not know the cities yet: nothing to compare, keep the choice.
+  if (cidades.every((c) => !c.ponto)) return escolhida || null;
+  return null;
+}
+
+/** Text when the point is in no city of the route (the person cannot ask to join with it). */
+export function textoForaDaRota(cidades: string[]) {
+  return `Esse ponto não fica em nenhuma cidade por onde a van passa (${cidades.join(", ")}). Marque onde você espera a van.`;
 }
