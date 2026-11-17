@@ -24,6 +24,7 @@ const TITULO: Record<string, string> = {
   viagem_cancelada: "Sem viagem",
   viagem_de_volta: "Vai ter viagem",
   destino_excluido: "Destino excluído",
+  presenca_confirmada: "Presença confirmada",
 };
 
 /** The keys are made once, here, and never leave the database. */

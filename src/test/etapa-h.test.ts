@@ -52,10 +52,10 @@ describe("Etapa H: avisos que nascem das ações", () => {
   it("resposta do passageiro avisa o vanzeiro; mudar a resposta troca o aviso", () => {
     responder("p-juliana", hoje, "nao-vai");
     let dela = obterAvisos().filter((a) => a.chave === `resposta_p-juliana_${hoje}`);
-    expect(dela.map((a) => a.textoResumido)).toEqual(['Juliana respondeu "Não vou" para hoje, em Cambará → UENP Jacarezinho']);
+    expect(dela.map((a) => a.textoResumido)).toEqual(['Juliana avisou que hoje não vai de Cambará a UENP Jacarezinho.']);
     responder("p-juliana", hoje, "vai");
     dela = obterAvisos().filter((a) => a.chave === `resposta_p-juliana_${hoje}`);
-    expect(dela.map((a) => a.textoResumido)).toEqual(['Juliana respondeu "Vou" para hoje, em Cambará → UENP Jacarezinho']);
+    expect(dela.map((a) => a.textoResumido)).toEqual(['Juliana confirmou que hoje vai de Cambará a UENP Jacarezinho.']);
     expect(dela[0]?.paraVanzeiroOuPassageiroId).toBe("vanzeiro-carlos");
     expect(dela[0]?.lido).toBe(false);
   });

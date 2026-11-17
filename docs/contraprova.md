@@ -1436,3 +1436,8 @@ Pedido e regra esperada: e-mails do cadastro e do "Esqueci minha senha" em portu
 - [x] Teste real: "Esqueci minha senha" com `ovanzeiro@gmail.com` → e-mail "Criar uma senha nova" chegou na caixa de entrada, remetente "O Vanzeiro", em português.
 Código e banco: sem mudança. Pendência: o limite passou a 30 e-mails por hora (Authentication → Rate Limits), suficiente para o piloto.
 Próximo passo: REV-03 (teste real com 2 celulares).
+
+## Textos dos avisos de resposta (17/11/2026, pedido do dono durante a REV-03)
+- [x] Vanzeiro recebe: "Monica confirmou que hoje vai de Jacarezinho PR a Londrina PR." / "Monica avisou que hoje não vai de Jacarezinho PR a Londrina PR." (outro dia: "no sáb, 28 de nov").
+- [x] Novo: o passageiro que diz "Vou" recebe "Presença confirmada — Você confirmou que hoje vai de Jacarezinho PR a Londrina PR. Se desistir, avise no app até as 10:30." (o horário é o prazo do destino; também chega no celular).
+- [x] Programa de notificações do Supabase atualizado (título "Presença confirmada"). 365 testes, tipos, build.

@@ -7,7 +7,7 @@ import { obterPassageiros, usePassageiros } from "@/lib/passageiros-store";
 import { prazoDaViagem, prazoPassou } from "@/lib/destinos";
 import { contarVou, podeDizerVou } from "@/lib/lugares";
 import { obterPerfilDoVanzeiro, usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
-import { avisoDePeriodoDeNaoVou, avisoDeResposta } from "@/lib/avisos";
+import { avisoDePeriodoDeNaoVou, avisoDePresencaConfirmada, avisoDeResposta } from "@/lib/avisos";
 import { trocarAviso } from "@/lib/avisos-store";
 import { problemaDoPeriodo, respostaFixa, respostasComFixas, SEM_RESPOSTAS_FIXAS, textoDoPrazoIso, type RespostasFixas } from "@/lib/respostas-fixas";
 import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
@@ -121,6 +121,7 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
   momentos = { ...momentos, [data]: { ...(momentos[data] ?? {}), [passageiroId]: { em: `${agoraMesmo.data} ${agoraMesmo.hora}`, prazo: `${prazo.data} ${prazo.hora}` } } };
   ouvintes.forEach((o) => o());
   trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje()));
+  if (resposta === "vai") trocarAviso(avisoDePresencaConfirmada(p, d, data, dataDeHoje()));
   return deuCerto;
 }
 
