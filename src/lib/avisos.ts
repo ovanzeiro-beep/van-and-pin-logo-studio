@@ -23,6 +23,29 @@ function minutos(data: string, hora: string) {
   return Date.UTC(a, m - 1, d, h, min) / 60_000;
 }
 
+/** "hoje" or "no sáb, 28 de nov". */
+const quandoVai = (data: string, hoje: string) => (data === hoje ? "hoje" : `no ${quando(data, hoje)}`);
+
+/**
+ * Passenger (owner, 17/11/2026): after "Vou", a confirmation with the deadline to give up in the app.
+ * One per trip day; saying "Vou" again replaces it.
+ */
+export function avisoDePresencaConfirmada(p: Passageiro, d: Destino, data: string, hoje: string): NovoAviso {
+  const prazo = prazoDaViagem(d, data);
+  const ate = prazo.data === data ? `até as ${prazo.hora}` : `até ${quando(prazo.data, hoje)}, às ${prazo.hora}`;
+  return {
+    chave: `presenca_${p.id}_${data}`,
+    vanzeiroId: d.vanzeiroId,
+    tipo: "presenca_confirmada",
+    paraVanzeiroOuPassageiroId: identidadePassageiro(p),
+    passageiroId: p.id,
+    destinoId: d.id,
+    dataCriacao: hoje,
+    lido: false,
+    textoResumido: `Você confirmou que ${quandoVai(data, hoje)} vai de ${d.origem} a ${d.destino}. Se desistir, avise no app ${ate}.`,
+  };
+}
+
 /** Vanzeiro: a passenger answered (or changed the answer). The newest answer replaces the notice. */
 export function avisoDeResposta(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string): NovoAviso {
   return {
@@ -34,7 +57,11 @@ export function avisoDeResposta(p: Passageiro, d: Destino, data: string, respost
     destinoId: d.id,
     dataCriacao: hoje,
     lido: false,
-    textoResumido: `${primeiroNome(p.nome)} respondeu "${resposta === "vai" ? "Vou" : "Não vou"}" para ${quando(data, hoje)}, em ${nomeDestino(d)}`,
+    // Owner (17/11/2026): "Monica confirmou que hoje vai de Jacarezinho PR a Londrina PR."
+    textoResumido:
+      resposta === "vai"
+        ? `${primeiroNome(p.nome)} confirmou que ${quandoVai(data, hoje)} vai de ${d.origem} a ${d.destino}.`
+        : `${primeiroNome(p.nome)} avisou que ${quandoVai(data, hoje)} não vai de ${d.origem} a ${d.destino}.`,
   };
 }
 
