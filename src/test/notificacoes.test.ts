@@ -28,7 +28,7 @@ describe("A2: notificações no celular", () => {
       tag: "a1",
     });
     expect(notificacaoDoAviso(aviso("a2", "vanzeiro-carlos", "cobranca_vencida"), "vanzeiro").url).toBe("/vanzeiro/notificacoes");
-    expect(Object.keys(ROTULO_DO_AVISO).length).toBe(15);
+    expect(Object.keys(ROTULO_DO_AVISO).length).toBe(16);
   });
 
   it("pedido novo vira notificação para o vanzeiro, com o destino", () => {
