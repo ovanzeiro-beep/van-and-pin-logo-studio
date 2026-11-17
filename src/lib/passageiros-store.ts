@@ -125,7 +125,7 @@ export function usePedido(id: string | undefined) {
 /** Number shown on the bell: join requests + address changes to approve + unread notifications for the vanzeiro. */
 export function useAvisosVanzeiro() {
   const pedidosCount = usePedidos().length + useMudancasAguardando().length;
-  const avisosNaoLidos = useAvisosNaoLidos(idDoVanzeiro());
+  const avisosNaoLidos = useAvisosNaoLidos(idDoVanzeiro(), "vanzeiro");
   return pedidosCount + avisosNaoLidos.length;
 }
 

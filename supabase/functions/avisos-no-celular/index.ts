@@ -61,7 +61,8 @@ async function entregar(): Promise<number> {
     .is("enviado_em", null)
     .select("id, vanzeiro_id, para, tipo, texto");
   for (const a of avisos ?? []) {
-    const doVanzeiro = a.para === a.vanzeiro_id;
+    // By the kind of notice (one account can be vanzeiro and passenger): it opens the right panel.
+    const doVanzeiro = ["pedido_novo", "resposta_passageiro", "cobranca_vencida"].includes(a.tipo);
     entregas.push({
       para: a.para,
       tag: a.id,

@@ -16,7 +16,7 @@ export function PassageiroHeader(props: Omit<ScreenHeaderProps, "nome">) {
   const s = useMinhaSituacao();
   const nome = s.tipo === "membro" ? s.passageiro.nome : sessao.nome;
   const meuId = s.tipo === "membro" ? identidadePassageiro(s.passageiro) : "";
-  const avisosNaoLidos = useAvisosNaoLidos(meuId);
+  const avisosNaoLidos = useAvisosNaoLidos(meuId, "passageiro");
   const abrirNotificacoes = useAbrirNotificacoes();
   return (
     <ScreenHeader

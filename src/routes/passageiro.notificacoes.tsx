@@ -42,7 +42,7 @@ export const Route = createFileRoute("/passageiro/notificacoes")({
 function PaginaNotificacoes() {
   const s = useMinhaSituacao();
   const meuId = s.tipo === "membro" ? identidadePassageiro(s.passageiro) : "";
-  const { avisos, novos } = useAvisosAoAbrir(meuId);
+  const { avisos, novos } = useAvisosAoAbrir(meuId, "passageiro");
   const noAvisos = avisos.length === 0;
 
   return (
@@ -61,7 +61,7 @@ function PaginaNotificacoes() {
             }
           />
         ) : (
-          <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} onLimpar={() => limparAvisosDaPessoa(meuId)} />
+          <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} onLimpar={() => limparAvisosDaPessoa(meuId, "passageiro")} />
         )}
       </div>
     </>

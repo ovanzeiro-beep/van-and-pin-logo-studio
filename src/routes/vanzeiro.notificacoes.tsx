@@ -39,7 +39,7 @@ export const Route = createFileRoute("/vanzeiro/notificacoes")({
 });
 
 function PaginaNotificacoes() {
-  const { avisos, novos } = useAvisosAoAbrir(idDoVanzeiro());
+  const { avisos, novos } = useAvisosAoAbrir(idDoVanzeiro(), "vanzeiro");
   const pedidos = usePedidos();
   const mudancas = useMudancasAguardando();
   const destinos = useDestinos();
@@ -87,7 +87,7 @@ function PaginaNotificacoes() {
               </ul>
             </section>
           )}
-          {avisos.length > 0 && <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} onLimpar={() => limparAvisosDaPessoa(idDoVanzeiro())} />}
+          {avisos.length > 0 && <ListaDeAvisos avisos={avisos} novos={novos} tipos={tipoAviso} onLimpar={() => limparAvisosDaPessoa(idDoVanzeiro(), "vanzeiro")} />}
         </div>
       )}
     </div>

@@ -10,35 +10,50 @@ function notificar() {
   listeners.forEach((listener) => listener());
 }
 
+/** Notices for the vanzeiro's panel; every other kind is for the passenger's panel. */
+const TIPOS_DO_VANZEIRO = new Set<string>(["pedido_novo", "resposta_passageiro", "cobranca_vencida"]);
+export type Painel = "vanzeiro" | "passageiro";
+
+/**
+ * Owner (17/11/2026): one account can be vanzeiro and passenger ("Trocar para passageiro"); each panel shows only its
+ * own notices. Without a panel, all of the person's.
+ */
+export function doPainel(a: Pick<Aviso, "tipo">, painel?: Painel) {
+  if (!painel) return true;
+  return painel === "vanzeiro" ? TIPOS_DO_VANZEIRO.has(a.tipo) : !TIPOS_DO_VANZEIRO.has(a.tipo);
+}
+
 export function obterAvisos() {
   return avisos;
 }
 
-export function obterAvisosNaoLidos(paraId: string) {
-  return avisos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido && !a.apagado);
+export function obterAvisosNaoLidos(paraId: string, painel?: Painel) {
+  return avisos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido && !a.apagado && doPainel(a, painel));
 }
 
 /** "Limpar" on the bell: every notice of this person leaves the list (they stay kept, hidden). */
-export function limparAvisosDaPessoa(paraId: string) {
-  if (!avisos.some((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.apagado)) return;
-  avisos = avisos.map((a) => (a.paraVanzeiroOuPassageiroId === paraId ? { ...a, apagado: true, lido: true } : a));
+export function limparAvisosDaPessoa(paraId: string, painel?: Painel) {
+  const meu = (a: Aviso) => a.paraVanzeiroOuPassageiroId === paraId && doPainel(a, painel);
+  if (!avisos.some((a) => meu(a) && !a.apagado)) return;
+  avisos = avisos.map((a) => (meu(a) ? { ...a, apagado: true, lido: true } : a));
   notificar();
 }
 
 // Changes always make a new list (never edit a notice in place), so the screens see them.
 /** Opening Notificações: every notice of this person counts as read. */
-export function marcarTodosComoLido(paraId: string) {
-  if (!avisos.some((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido)) return;
-  avisos = avisos.map((a) => (a.paraVanzeiroOuPassageiroId === paraId ? { ...a, lido: true } : a));
+export function marcarTodosComoLido(paraId: string, painel?: Painel) {
+  const meu = (a: Aviso) => a.paraVanzeiroOuPassageiroId === paraId && doPainel(a, painel);
+  if (!avisos.some((a) => meu(a) && !a.lido)) return;
+  avisos = avisos.map((a) => (meu(a) ? { ...a, lido: true } : a));
   notificar();
 }
 
 /** Every notice of this person, newest first. */
-export function avisosDaPessoa(lista: Aviso[], paraId: string) {
+export function avisosDaPessoa(lista: Aviso[], paraId: string, painel?: Painel) {
   // Same day: the one created last comes first.
   return [...lista]
     .reverse()
-    .filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.apagado)
+    .filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.apagado && doPainel(a, painel))
     .sort((a, b) => b.dataCriacao.localeCompare(a.dataCriacao));
 }
 
@@ -99,15 +114,15 @@ function useAvisos() {
   );
 }
 
-export function useAvisosNaoLidos(paraId: string) {
+export function useAvisosNaoLidos(paraId: string, painel?: Painel) {
   const todos = useAvisos();
-  return todos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido && !a.apagado);
+  return todos.filter((a) => a.paraVanzeiroOuPassageiroId === paraId && !a.lido && !a.apagado && doPainel(a, painel));
 }
 
 /** Notificações screen: every notice of the person; the ones not seen before opening are "novos", and now count as read. */
-export function useAvisosAoAbrir(paraId: string) {
-  const avisos = avisosDaPessoa(useAvisos(), paraId);
-  const [novos] = useState(() => new Set(obterAvisosNaoLidos(paraId).map((a) => a.id)));
-  useEffect(() => marcarTodosComoLido(paraId), [paraId]);
+export function useAvisosAoAbrir(paraId: string, painel?: Painel) {
+  const avisos = avisosDaPessoa(useAvisos(), paraId, painel);
+  const [novos] = useState(() => new Set(obterAvisosNaoLidos(paraId, painel).map((a) => a.id)));
+  useEffect(() => marcarTodosComoLido(paraId, painel), [paraId, painel]);
   return { avisos, novos };
 }
