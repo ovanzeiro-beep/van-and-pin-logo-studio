@@ -1441,3 +1441,4 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Vanzeiro recebe: "Monica confirmou que hoje vai de Jacarezinho PR a Londrina PR." / "Monica avisou que hoje não vai de Jacarezinho PR a Londrina PR." (outro dia: "no sáb, 28 de nov").
 - [x] Novo: o passageiro que diz "Vou" recebe "Presença confirmada — Você confirmou que hoje vai de Jacarezinho PR a Londrina PR. Se desistir, avise no app até as 10:30." (o horário é o prazo do destino; também chega no celular).
 - [x] Programa de notificações do Supabase atualizado (título "Presença confirmada"). 365 testes, tipos, build.
+- [x] (17/11, pedido do dono) "Não vou": o aviso do passageiro vira "Ausência registrada — Você avisou que hoje não vai de Jacarezinho PR a Londrina PR. Se mudar de ideia, toque em Vou até as 10:30." É o mesmo aviso da presença, trocado (nunca os dois juntos). Programa de notificações atualizado. 365 testes, tipos, build.

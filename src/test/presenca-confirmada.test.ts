@@ -15,5 +15,13 @@ describe("Aviso de presença confirmada (dono, 17/11)", () => {
         "Você confirmou que hoje vai de Cambará a UENP Jacarezinho. Se desistir, avise no app até as 05:40.",
       ],
     ]);
+    expect(responder("p-juliana", hoje, "nao-vai")).toEqual({ ok: true });
+    const depois = obterAvisos().filter((a) => a.chave === `presenca_p-juliana_${hoje}`);
+    expect(depois.map((a) => [a.tipo, a.textoResumido])).toEqual([
+      [
+        "ausencia_registrada",
+        "Você avisou que hoje não vai de Cambará a UENP Jacarezinho. Se mudar de ideia, toque em Vou até as 05:40.",
+      ],
+    ]);
   });
 });

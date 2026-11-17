@@ -274,6 +274,7 @@ export type TipoAviso =
   | "viagem_de_volta"
   | "destino_excluido"
   | "presenca_confirmada"
+  | "ausencia_registrada"
   | "endereco_aceito"
   | "endereco_recusado"
   | "pedido_novo"
