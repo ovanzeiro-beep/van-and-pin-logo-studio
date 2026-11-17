@@ -1,8 +1,10 @@
 # Fonte da verdade — O Vanzeiro
 
-**O que é este arquivo:** a descrição de como o app está hoje e de como ele deve ser. Tela por tela, regra por regra, número por número. Escrito em 13/11/2026, depois de ler todo o código e abrir todas as telas, sem corrigir nada.
+> **Comece aqui:** [controle atual, evidências e plano por etapas — seção 22](#controle-atual). Revisão iniciada em 17/11/2026, a pedido do dono. O app já tem integração com banco; os textos sobre protótipo sem banco são históricos.
 
-**Como ler (atualizado em 16/11/2026):** as seções 0 a 9 foram escritas em 13/11 e descrevem o app daquele dia; as mudanças feitas depois foram registradas nas seções 10 a 17. Nas seções 0 a 9, cada trecho que mudou ganhou a marca **"Atualizado em 16/11:"** com o que vale hoje. Se algo ainda parecer contraditório, vale a seção de número maior.
+**O que é este arquivo:** reúne a descrição das telas, as regras aprovadas e o acompanhamento do trabalho. O levantamento original foi registrado em 13/11/2026; as verificações daquela data não foram todas repetidas na revisão atual.
+
+**Como ler (atualizado em 17/11/2026):** as seções 0 a 9 descrevem o app de 13/11; as seções 10 a 21 registram sua evolução. A seção 22 reúne a situação observada nesta revisão e o plano vigente. Uma regra aprovada não muda só porque o código está diferente; registre a divergência. Para a situação de uma entrega, use a evidência mais recente com data e versão, sem transformar uma marcação histórica em validação atual.
 
 **Como ele convive com os outros dois arquivos:**
 
@@ -684,3 +686,185 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 - **W10. Avisos na tela do celular (push)** — **feito em 16/11/2026.** Quem toca em "Ativar" as notificações (Perfil) passa a receber os avisos na tela do celular mesmo com o app fechado. O celular guarda no banco o endereço de entrega dele (`guardar_celular`; um celular é de uma conta só: quem entra por último recebe). Quando nasce um aviso no sininho, ou um pedido para entrar, o banco chama a função do Supabase `avisos-no-celular` (`supabase/functions/avisos-no-celular`), que entrega a notificação nos celulares da pessoa (cada aviso uma vez só; se a pessoa mudou a resposta, o aviso novo é entregue). Tocar na notificação abre a tela de Notificações. As chaves das notificações são criadas pela própria função e ficam numa tabela que ninguém lê pelo app (nenhuma senha passa por pessoas). Celular que desligou as notificações é esquecido sozinho. **iPhone:** só recebe com o app instalado na tela inicial (regra da Apple). SQL: `supabase/migrations/20261116190000_w10_celular.sql` (cópia para colar: `supabase/SO-SQL-5-CELULAR.sql`).
 
 - **Sem sinal na van (com o banco)** — **feito em 16/11/2026.** (1) A viagem continua sem internet: iniciar a viagem e cada toque (Embarcou, Não estava no ponto, paradas, conferência, chegada, volta, Desceu, encerrar) funcionam na tela e ficam guardados no celular, mesmo se o app for fechado; quando o sinal volta, vão para o banco sozinhos (só a versão mais nova da viagem, que já tem todos os toques). (2) O app abre sem sinal com os últimos dados lidos (destinos, passageiros, cobranças…): o celular guarda uma cópia do que leu do banco, apagada quando a pessoa sai da conta ou exclui a conta. (3) Cobranças, embarques, faltas e avisos criados sem sinal já esperavam e iam depois (W7 e W8). Ainda precisam de internet: responder Vou/Não vou, marcar como pago, pedidos e cadastros (aparece o aviso de sem resposta e nada muda).
+
+---
+
+<a id="controle-atual"></a>
+
+## 22. Controle atual — revisão funcional por etapas
+
+**Atualização:** 17/11/2026. **Etapa concluída:** REV-00, documentação organizada (preparada por outra IA e corrigida e publicada no GitHub pelo Claude Code, a pedido do dono). **Próxima:** REV-01, segurança rápida e limpeza G6 (22.6). Nenhuma correção funcional foi feita na REV-00.
+
+> **Para qualquer IA que for trabalhar aqui (Claude, GPT, Lovable ou outra):** leia esta seção 22 inteira, depois `CLAUDE.md` e o último registro de `docs/contraprova.md`. Trabalhe uma etapa de 22.6 por vez, registre a prova (22.8) e atualize 22.6 e a contraprova no fim. O que já está pronto está em 22.4a; como mexer no banco está em 22.1a.
+
+### 22.1 Projeto, objetivo e limites da revisão
+
+- **Único repositório deste trabalho:** `ovanzeiro-beep/van-and-pin-logo-studio`. Não usar diagnósticos de outro repositório como prova deste.
+- **Versão de referência do código:** `c97607c466fd7b7c1607a9b6e26cfde752e5efba`, branch `main`, consultada em 17/11/2026. Se a `main` avançar, registrar a nova versão antes da próxima etapa; o Lovable também faz alterações.
+- **App indicado pelo README:** <https://van-and-pin-logo-studio.lovable.app>. Esta revisão não confirmou que a versão publicada corresponde ao commit acima.
+- **Banco apontado pelo código e acessível pela integração:** Supabase `ovanzeiro`, referência `rnziztwicggdekmpwpgy`; ligação em `src/lib/supabase.ts`.
+- **Objetivo:** validar os fluxos essenciais já existentes de ponta a ponta e corrigir falhas comprovadas, preservando o visual e as regras aprovadas. Não reconstruir o app nem adicionar funções por suposição.
+- **O que significa pronto:** cumprir os critérios das etapas do escopo, com evidências atuais e sem falhas críticas conhecidas. Não significa garantia de ausência de erros futuros nem um percentual calculado pela quantidade de telas.
+
+### 22.1a Como mexer no banco (decisão do dono, vale para qualquer IA)
+
+- O banco é o **Supabase próprio do dono** (`ovanzeiro`, `rnziztwicggdekmpwpgy`), **não** o banco embutido do Lovable (Lovable Cloud). O Lovable não administra este banco.
+- **Não pedir mudanças ao agente do Lovable** (ele gasta créditos do dono; decisão de 16/11/2026). O Lovable só sincroniza o código com o GitHub e publica o app.
+- **Toda mudança de estrutura do banco** fica registrada como arquivo em `supabase/migrations/` (nome `AAAAMMDDhhmmss_nome.sql`, uma etapa por arquivo, escrito para poder rodar de novo sem quebrar) e é aplicada no Supabase de um destes jeitos: (1) pela ferramenta do Supabase da IA (`apply_migration`), quando o dono autoriza; ou (2) pelo dono, colando o arquivo `supabase/SO-SQL-*.sql` correspondente no **SQL Editor** e clicando em **Run**. Depois de aplicar, conferir no banco (consulta de leitura) e registrar na contraprova.
+- **Antes de aplicar:** testar o SQL numa cópia (Postgres local com as migrations) ou dentro de uma transação desfeita no final; nunca rodar scripts de limpeza ou de teste que gravam dados no banco real sem pedido do dono.
+- **Nunca** colocar senha, chave secreta (service_role, `sb_secret_`, senha de app do Gmail) no código, nos documentos ou no chat. A chave pública (`sb_publishable_`) já está no app de propósito.
+- A regra do bloco do Lovable em `AGENTS.md` ("não editar `supabase/migrations/`") vale para projetos com o banco do Lovable; **neste projeto prevalece esta decisão do dono**, porque o banco é dele.
+- Publicar o app: depois do merge na `main`, publicar pelo Lovable (botão Publish, ou `deploy_project` pela integração, que não gasta créditos).
+
+### 22.2 Como registrar uma situação sem confundir o dono
+
+| Situação | Significado |
+| --- | --- |
+| A fazer | Ainda não começou nesta revisão; não significa que a função não existe. |
+| Em análise | Estamos conferindo código, regras e comportamento. |
+| Em correção | Há um problema reproduzido e uma mudança pequena em trabalho. |
+| Aguardando validação | Parte pronta, mas falta uma prova indicada: banco, navegador ou celular. |
+| Concluída | Todos os critérios aplicáveis foram verificados e a entrega foi registrada. |
+| Bloqueada | Uma dependência concreta impede continuar; registrar o motivo e o responsável. |
+| Adiada | Fora do escopo atual por decisão registrada do dono. |
+
+Para cada função, separar quatro provas: **código presente**, **teste automático**, **comportamento no banco real** e **uso no celular**. Uma não substitui as outras. Consultar tabelas como administrador não prova que o passageiro ou o vanzeiro têm as permissões certas.
+
+### 22.3 O que foi verificado agora
+
+Ambiente: Node.js `24.22.1`, npm `11.9.0`; instalação com Bun `1.3.13` e `bun.lock` congelado, sem alterar dependências. Execução local sobre a versão de referência; somente documentação mudou na branch de trabalho.
+
+| Evidência | Conferência de 17/11/2026 | Resultado e limite |
+| --- | --- | --- |
+| EV-01 | Repositório, `main` e instruções locais | Repositório e versão acima confirmados; `AGENTS.md` e `CLAUDE.md` lidos. |
+| EV-02 | `bun install --frozen-lockfile` com Bun 1.3.13 | Instalação concluída; `package.json` e `bun.lock` preservados. |
+| EV-03 | `npm test` | **364 testes em 70 arquivos passaram.** Os testes usam simulações; `src/test/setup.ts` bloqueia chamadas de rede e o modo `test` desliga o banco real. |
+| EV-04 | `./node_modules/.bin/tsc --noEmit` | Passou, sem erro de tipos. |
+| EV-05 | `npm run build` | Passou, gerou o build de produção. Não publicou o app. |
+| EV-06 | `npm run lint` | **Falhou na base, antes das mudanças:** 1.645 erros `prettier/prettier` e 2 avisos `react-refresh/only-export-components`. Não houve formatação geral nem alteração de código para ocultar o resultado. |
+| EV-07 | `list_tables`, esquema `public`, por integração Supabase | 21 tabelas informadas, todas com RLS habilitada. Habilitar RLS não prova que todas as políticas estão corretas. A listagem informou 2 contas e nenhum destino, matrícula, viagem ou cobrança; é uma fotografia da consulta, não uma regra do app. |
+| EV-08 | Consulta somente de leitura a metadados do banco | `tarefas-do-relogio` cadastrada e ativa com `*/5 * * * *`; 14 tabelas na publicação Realtime. Não foi conferido o resultado das execuções nem a entrega entre dois celulares. |
+| EV-09 | Mesma consulta de metadados | `cidades` ainda existe. `criar_conta_do_login` é `SECURITY DEFINER`, executável por `authenticated`, não por `anon`. A pendência histórica G6 continua aberta; não foi aplicado SQL. |
+| EV-10 | Consultores de segurança, desempenho e saúde do Supabase | Avisos registrados em 22.5; consulta de saúde não retornou alertas naquele momento. Isso não certifica todo o sistema. |
+| EV-11 | Tentativa de criar `docs/controle-funcional-2026-11-17` no GitHub (pela outra IA) | **Resolvido:** o Claude Code aplicou o pacote e publicou na `main` em 17/11/2026. Registro original: recusada com HTTP 403, `Resource not accessible by integration`. A listagem de contas com o aplicativo GitHub instalado retornou vazia. Acesso a metadados públicos e `permissions.push = true` da conta não comprovaram permissão de gravação da integração. Nenhuma branch, commit ou PR remoto foi criado nesta entrega. |
+
+As evidências de banco EV-08 a EV-10 foram consultadas por volta de `2026-11-17 01:33 UTC`. Não foram lidos conteúdos de chaves privadas, criadas contas de teste, enviados e-mails ou executados scripts que gravam ou apagam dados.
+
+**Histórico preservado, sem revalidação nesta entrega:** a contraprova relata 28 verificações E3 no banco de verdade e testes anteriores de várias etapas. Os 364 testes do app foram repetidos agora; as 28 verificações E3 não foram. Não executar `supabase/testes/e3-ponta-a-ponta.sql` ou arquivos de limpeza no banco real só para atualizar uma caixinha.
+
+### 22.4 Mapa dos fluxos para a revisão
+
+Esta tabela localiza o que já existe. Os nomes de testes indicam cobertura disponível, não uma garantia de que todo o fluxo foi coberto. As execuções com banco real e celular abaixo ainda precisam da revisão correspondente.
+
+| Fluxo | Onde está no código | Banco envolvido | Validação essencial que falta repetir |
+| --- | --- | --- | --- |
+| Conta e acesso | `src/routes/entrar.tsx`, `criar-conta.tsx`, `esqueci-senha.tsx`, `nova-senha.tsx`, `src/lib/conta.ts`, `ExigeConta.tsx`; testes `w1-conta`, `e4-google`, `g2-sair-celular` | Auth, `contas`, funções de papel e aceite | Cadastro, confirmação, recuperação e Google completos; sessão expirada, sair e trocar de conta sem trazer dados nem avisos da conta anterior. |
+| Perfil e destinos | Rotas `vanzeiro.perfil`, `vanzeiro.destinos.*`, `DestinoWizard.tsx`, `src/lib/banco/destinos.ts`; testes `w2-w3-destinos` | `perfis_vanzeiro`, `destinos`, `dias_sem_viagem` | Criar, editar, pausar, cancelar um dia e excluir com confirmação; reler depois de fechar e abrir o app. |
+| Convite e passageiros | `EntrarNaVan.tsx`, `PassageiroWizard.tsx`, `src/lib/banco/passageiros.ts`, `sessao-passageiro.ts`; testes `convite-real`, `w4-pedidos`, `g1-ligar-ao-cadastro` | `matriculas`, `pedidos`, `mudancas_endereco`, `juntar_conta`; funções de convite e aceite | Vanzeiro e passageiro em contas distintas; aceitar, recusar, ligar cadastro manual sem duplicar, segundo destino e saída mantendo débitos antigos. |
+| Confirmações e vagas | `BotaoVou.tsx`, `RespostasFixas.tsx`, `src/lib/respostas-store.ts`, `src/lib/banco/respostas.ts`; testes `w5-respostas`, `e1-lugares-no-destino`, `lugares` | `respostas`, `vou_sempre`, `nao_vou_periodos`, funções de capacidade | Antes e depois do prazo de Brasília, dias sem viagem, lotação, última vaga disputada por duas pessoas e liberação após saída. |
+| Viagem e histórico | `vanzeiro.viagem.tsx`, `components/app/viagem/`, `src/lib/viagem.ts`, `banco/viagem.ts`; testes `viagem`, `w6-viagem`, `chegada-volta` | `viagens`, `embarques`, `faltas`, `viagem_sinais` | Busca → paradas/conferência → chegada → volta → encerramento; repetir toques, recarregar e consultar apenas a própria situação como passageiro. |
+| Sem internet | `src/lib/banco/fila.ts`, `sem-sinal.ts`, `public/sw.js`; testes `sem-sinal-viagem`, `sem-sinal` | Fila no aparelho e sincronização com `viagens` e registros financeiros | Modo avião, fechar/reabrir, recuperar sinal, recusa do servidor e troca de conta com fila pendente; provar que nada se perde, duplica ou aparece para outra conta. |
+| Cobranças e gastos | Rotas `vanzeiro.financeiro.*`, `passageiro.pagamentos.*`, `src/lib/cobrancas.ts`, `banco/dinheiro.ts`, `pix.ts`; testes `dinheiro-ponta-a-ponta`, `w7-dinheiro`, `centavos` | `cobrancas`, `embarques`, `faltas`, `gastos` | Planos, descontos e vencimentos; totais iguais nos dois painéis; pagar/cancelar sem duplicar ou alterar valor congelado; passageiro não pode marcar pago. |
+| Avisos e atualização entre aparelhos | Rotas de notificações, `src/lib/banco/avisos.ts`, `banco/passageiros.ts`, `banco/celular.ts`, `notificacoes.ts`; testes `w8-avisos`, `w10-celular`, `g2-sair-celular` | `avisos`, `celulares`, `chaves_push`, Realtime, Edge Function `avisos-no-celular` | Dois celulares, aviso com app aberto/fechado, permissão recusada, limpar sem reaparecer, não duplicar e desligar aviso ao sair. |
+| Trabalho automático | SQL histórico W9 e referências em `docs/banco-de-dados.md` | `cron.job`, `tarefas_do_relogio`, cobranças e avisos | Execução bem-sucedida, horário correto e repetição segura sem duas cobranças, com os apps fechados. |
+| Mapa, instalação e privacidade | `passageiro.van.tsx`, `src/lib/mapa.ts`, `MapaDaVan.tsx`, `public/manifest.webmanifest`, rotas legais | Coordenadas e permissões do navegador | Instalação/atualização e tela pequena; mapa identifica corretamente sua limitação; preencher contato do responsável e testar direitos de exclusão com contas de teste. |
+
+### 22.4a O que já está pronto (resumo, com a prova que existe)
+
+Cada etapa abaixo tem registro detalhado na contraprova, com a data. "Banco real" = conferido no Supabase de verdade; "celular" = o dono testou no aparelho.
+
+| O quê | Etapa | Prova que existe |
+| --- | --- | --- |
+| Conta com e-mail e senha, papéis, sair, excluir conta | W1 | Testes; banco real; celular |
+| Login com Google com aceite dos Termos na hora (LGPD) | E4 | Testes; celular (dono, 17/11) |
+| Perfil do vanzeiro e destinos (criar, editar, pausar, dia sem viagem, excluir) | W2/W3 | Testes; banco real (E3) |
+| Convite, pedidos, aceitar/recusar, mudança de endereço | W4 | Testes; banco real (E3) |
+| Passageiro cadastrado direto pelo vanzeiro entra no app ("Ligar") | G1 | Testes; banco (cópia, 9 checagens) |
+| "Vou"/"Não vou", "Vou sempre", "Não vou de… até…", prazo | W5 | Testes; banco real (E3) |
+| Lugares da van limitam o destino e o "Vou" de cada viagem | E1 | Testes; banco (cópia, 8 checagens) |
+| Viagem completa (busca, paradas, conferência, volta) e sem sinal | W6, sem sinal | Testes; banco real (E3) |
+| Cobranças, pago/cancelado, descontos, gastos | W7, E2 | Testes; banco real (E3 e ponta a ponta) |
+| Sininho no banco, "Limpar", destino excluído avisa | W8 | Testes; banco (cópia); celular |
+| Tarefas automáticas a cada 5 min (faltas, próxima cobrança, avisos) | W9 | Banco real (rodando sem erro) |
+| Notificação no celular com o app fechado, vibração | W10 | Banco real (entregas com sucesso); celular |
+| Sair da conta desliga as notificações daquele celular | G2 | Testes |
+| Tempo real entre os celulares (1–2 s) | Tempo real | Banco real (14 tabelas) |
+| Teste ponta a ponta no banco real (vanzeiro + 2 passageiros) | E3 | 28 de 28 (16/11) |
+
+**Ainda não provado em conjunto:** o roteiro completo com dois celulares de verdade (etapa REV-03 em 22.6).
+
+**Limites já identificados no código:** a posição da van em `passageiro.van.tsx` vem de `vanSimulada`, em `src/lib/mapa.ts`; não é rastreamento GPS real. As consultas de histórico de viagens e avisos têm limite de 300 registros. O escopo offline é parcial: não prometer que qualquer ação funciona sem internet. Esses limites não devem ser escondidos nem tratados como funções novas aprovadas.
+
+### 22.5 Pendências e divergências com evidência
+
+As prioridades indicam a ordem da investigação. Um aviso automático não é, sozinho, prova de vazamento ou de erro funcional; não mudar permissões em massa para apagar avisos.
+
+| ID | O que foi observado | Próxima ação e etapa |
+| --- | --- | --- |
+| P-01 | `CLAUDE.md`, `AGENTS.md` e documentos de banco ainda tinham instruções da fase sem banco; fonte e contraprova trazem situações de datas diferentes. | REV-00 (concluída) contextualizou o histórico, criou este controle e o resumo 22.4a; as regras E1–E5, G1–G6 e tempo real estão em 22.4a. Original: REV-01 deveria reconciliar as regras atuais E1–E5, G1–G6 e Realtime sem apagar decisões anteriores. |
+| P-02 | G6 consta pendente e EV-09 confirma a tabela e a permissão de função ainda presentes. | REV-01. A limpeza já foi **aprovada pelo dono** (17/11): o app não usa `cidades` (conferido no código). Aplicar `supabase/migrations/20261117020000_limpeza_g6.sql` e conferir. |
+| P-03 | Segurança: 2 funções `SECURITY DEFINER` (`lugares_do_destino` e `ocupados_no_destino`) executáveis sem login; 32 executáveis com login. | REV-01 fecha as 2 sem login (P-13); as com login são as funções que o app chama de propósito (cada uma confere quem chama) — revisar em REV-04: autenticação, dono dos registros, argumentos e dados retornados. Funções legítimas podem precisar de privilégios; verificar proteção de cada uma. [Sem login](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable), [com login](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable). |
+| P-04 | Segurança: `pg_net` em `public` (aviso), proteção de senhas vazadas desligada (aviso), `chaves_push` sem política com RLS ligada (informativo). | REV-06 (senhas vazadas, plano Pro) e REV-07 (`pg_net`): avaliar correções e configuração disponível. Não criar uma política que libere as chaves para eliminar o informativo. [Extensão](https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public), [senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection), [RLS sem política](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy). |
+| P-05 | Desempenho: 19 relações sem índice, 18 ocorrências de cálculo de autenticação nas políticas e 13 ocorrências de políticas permissivas múltiplas. | REV-04: medir e priorizar; preservar o resultado das regras de acesso. Não são 50 funções quebradas. [Índices](https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys), [cálculo de autenticação](https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan), [políticas](https://supabase.com/docs/guides/database/database-linter?lint=0006_multiple_permissive_policies). |
+| P-06 | Testes automáticos repetidos com sucesso, porém sem novo teste completo entre navegadores, banco real e dois celulares. | REV-03: roteiro com dois celulares, acompanhado pelo banco; o teste E3 (28/28, 16/11) já cobre o banco real. Não executar testes que gravam em contas reais. |
+| P-07 | Conferência de estilo falhou na versão de referência (EV-06). | Só formatação (prettier), não é erro de funcionamento; corrigir apenas em tarefa própria, se o dono quiser. Documentação não justifica reformatar os arquivos do app. |
+| P-08 | E-mails, Google e capacidade de recuperação/backup foram relatados em documentos antigos, mas suas configurações e uso completo não foram verificados agora. | Google: funcionando (dono, 17/11). E-mails: REV-02. Cópia de segurança: REV-06. Conferir funcionamento antes de recomendar contratação ou pedir configuração. Não solicitar senhas no chat ou no repositório. |
+| P-09 | Política de Privacidade contém responsável, e-mail e telefone como "(a definir)" em `src/routes/privacidade.tsx`. | REV-06: dono informa contato publicável; revisão jurídica permanece uma pendência externa. Não inventar dados nem certificar conformidade apenas pelo código. |
+| P-10 | Observabilidade de erros nos celulares e paginação aparecem como pendências antigas; código mostra limites de leitura e captura de erros de infraestrutura. | REV-05 (registro de erros) e REV-07 (paginação): conferir o que já é registrado e quais dados faltam, medir uso e definir necessidade de alertas/paginação. Não afirmar que não há registro algum. |
+| P-11 | Mapa da van simulado; histórico descreve GPS real, loja Android e domínio próprio como futuros. | Manter fora da conclusão do núcleo atual; só transformar em implementação com escopo decidido pelo dono. |
+| P-12 | A integração da outra IA recusou criar uma branch (EV-11). | **Resolvido** em 17/11: publicado pelo Claude Code na `main`. |
+| P-13 | Banco: as funções `lugares_do_destino` e `ocupados_no_destino` (criadas na E1) podem ser chamadas sem login; revelam só o número de lugares e de passageiros de um destino, nunca nomes ou dados pessoais. | REV-01: tirar a permissão de quem não tem login e conferir que pedir para entrar e aceitar continuam funcionando. |
+
+### 22.6 Plano de trabalho vigente
+
+Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas antigas. **São etapas de validação e correção do que já existe**, não uma ordem para refazer funções aprovadas. Resolver o risco mais urgente encontrado na análise antes de continuar a sequência, registrando a mudança de prioridade.
+
+| Etapa | Objetivo | Situação atual | Condição de conclusão |
+| --- | --- | --- | --- |
+| REV-00 | Organizar documentação e ponto de partida | **Concluída (17/11)** — publicada na `main` | Fonte única (esta seção), histórico preservado, regras de banco corretas (22.1a). |
+| REV-01 | Segurança rápida e limpeza G6 | **A fazer — próxima** | P-13 resolvido (funções sem login fechadas); G6 aplicada (P-02); `criar_conta_do_login` fechada para o app; pedir/aceitar/cadastro continuam funcionando (teste no banco real em transação desfeita); 364+ testes e build passam. |
+| REV-02 | E-mails do login em português (G3) | A fazer — depende do dono (senha de app do Gmail) | SMTP próprio configurado no Supabase pelo dono; modelos `docs/emails/*.html` colados; cadastro novo recebe "Confirme seu e-mail" e "Esqueci a senha" recebe "Criar senha nova", em português; limite de e-mails por hora ajustado. Nunca pedir a senha no chat. |
+| REV-03 | Teste real com 2 celulares e correção do que aparecer | A fazer — depende do dono (aparelhos) | Roteiro de `docs/o-que-falta.md` (A6) feito pelo dono, com a IA acompanhando pelo banco; cada falha vira registro e correção pequena; repetir o passo que falhou até passar. Cobre os fluxos de 22.4: conta, destino, convite, "Vou", lotação, viagem com e sem sinal, pagamento, avisos e tempo real, sair do destino. |
+| REV-04 | Desempenho do banco | A fazer | Índices nas 19 ligações sem índice; políticas trocando `auth.uid()` por `(select auth.uid())`; políticas de leitura repetidas juntadas, **sem mudar quem vê o quê** (conferir com contas de teste em transação desfeita); avisos de desempenho do Supabase zerados ou explicados. |
+| REV-05 | Registro de erros dos celulares | A fazer | Erros de tela e de rede gravados no banco (só texto do erro, tela e versão; sem dados pessoais); a IA consegue consultar; nada muda para o usuário. |
+| REV-06 | Preparar a operação real | A fazer — depende do dono | Plano Pro do Supabase (sem pausa e com cópia de segurança diária); proteção de senhas vazadas ligada; contato do responsável na Política de Privacidade; revisão dos Termos e da Política por advogado; app publicado conferido com a última versão da `main`. |
+| REV-07 | Melhorias opcionais | Adiada — só com decisão do dono | "Marcar como pago" e "Anotar gasto" sem sinal; "ver mais" no histórico (limite de 300); extensão `pg_net` fora do esquema `public` (P-04). |
+
+Fora do núcleo (decisão do dono, ver 22.9): GPS real, app na Play Store, domínio próprio.
+
+### 22.7 Como executar cada etapa com cuidado
+
+1. **Retomar:** ler `AGENTS.md`, `CLAUDE.md`, esta seção e o último registro da contraprova; conferir a `main` mais recente e a entrega anterior. Não depender da memória do chat.
+2. **Delimitar:** escrever o resultado esperado, os caminhos afetados e o que deve permanecer igual. Consultar também quem usa os arquivos envolvidos; preservar alterações que vieram do Lovable.
+3. **Diagnosticar antes de corrigir:** reproduzir o problema, registrar esperado/observado e distinguir erro, limitação conhecida e decisão de negócio pendente. Se não houver falha comprovada, validar e preservar.
+4. **Isolar:** uma branch e uma mudança pequena por objetivo. Não alterar logo, cores, navegação ou regra aprovada sem necessidade do escopo e decisão registrada. Antes de mudança de banco, seguir 22.1a: arquivo em `supabase/migrations/`, teste numa cópia ou em transação desfeita, aplicação com autorização do dono e conferência depois.
+5. **Conferir:** testes relevantes e regressões, tipos e build para código; conferir o fluxo no navegador quando mudar comportamento ou tela. Comparar as telas aprovadas nos tamanhos 390 × 844, 360 × 740 e 375 × 667; testar erros, ausência de dados e retorno após fechar o app. Para banco/permissões/concorrência, usar contas e dados de teste isolados.
+6. **Revisar a diferença:** somente arquivos necessários, sem segredos nem dados pessoais; instrução concreta para desfazer a mudança se necessário. Mudança apenas documental exige revisão de texto, links e escopo; não exige alterar código para fazer a conferência de estilo herdada passar.
+7. **Registrar e entregar:** atualizar esta seção e a contraprova com commit/PR, testes e pendências; integrar apenas a etapa conferida, sem reescrever histórico. Confirmar a publicação separadamente quando houver mudança funcional. Explicar ao dono em português simples e respeitar a revisão por etapas do projeto.
+
+### 22.8 Registro obrigatório de cada entrega
+
+Copiar o modelo para o fim de `docs/contraprova.md`; manter aqui somente o resumo atual e as pendências. Não apagar registros antigos nem mudar uma situação para "concluída" sem preencher as provas aplicáveis.
+
+```text
+Etapa / data / situação:
+Versão de partida e versão entregue (commit/PR):
+Pedido e regra esperada:
+Problema reproduzido ou parte validada:
+Arquivos e fluxos afetados:
+O que mudou e o que foi preservado:
+Testes automáticos (comando, resultado e versão):
+Banco real (ambiente, papéis testados, resultado; ou não executado):
+Navegador / celular (cenários e evidências; ou pendente):
+Pendências, motivo e responsável:
+Como testar e como desfazer:
+Próximo passo:
+```
+
+### 22.9 O que depende do dono e o que posso conduzir
+
+Posso conduzir a leitura do código e dos metadados acessíveis, os testes, o diagnóstico, as correções de código autorizadas, a documentação e as entregas pequenas. Mudanças de estrutura do banco seguem 22.1a (Supabase do dono; nunca pelo agente do Lovable).
+
+O dono entra quando faltar uma **decisão do negócio**, um **contato publicável**, acesso/configuração externa que a integração realmente não alcance ou uma **validação em aparelho físico**. Pedir somente a informação necessária naquele momento, com explicação simples. A tarefa atual já autoriza organizar esta documentação; não pede criar regras novas nem apagar dados.
+
+**Fora do núcleo desta revisão:** GPS real, publicação na Play Store, domínio próprio e assinatura comercial de novos serviços. Não apresentar esses itens como requisito automático para as funções atuais, nem implementar sem definir seu escopo.

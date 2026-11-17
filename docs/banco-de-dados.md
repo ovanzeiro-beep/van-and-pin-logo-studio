@@ -1,5 +1,7 @@
 # O Vanzeiro — o que o banco de dados vai guardar
 
+> **Contexto atual (17/11/2026):** o banco já existe, e o app aponta para `rnziztwicggdekmpwpgy`. Este documento começou como projeto do banco; textos sobre "quando entrar" e aplicação manual de SQL são históricos. A estrutura observada, o que ainda precisa de teste e o fluxo de alterações estão na [fonte da verdade, seção 22](fonte-da-verdade.md#controle-atual). Não reaplique os scripts antigos com base apenas nas instruções históricas abaixo.
+
 **Este documento não cria o banco.** Ele descreve o que o banco vai guardar, quem pode ver cada coisa e o que muda no app quando o banco entrar. O banco só entra quando o dono do projeto mandar.
 
 Escrito em 15/11/2026, conferido com o código de hoje (os tipos em `src/data/exemplo.ts` e `src/lib/cobrancas.ts`, e as funções em `src/lib/`). Complementa a seção 8 e a seção 11 de `docs/fonte-da-verdade.md`.

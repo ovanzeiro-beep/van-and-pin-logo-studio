@@ -29,6 +29,16 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
+## Current project and progress tracking
+
+- Work only in `ovanzeiro-beep/van-and-pin-logo-studio` for this project.
+- Before a task, read `CLAUDE.md`, `docs/fonte-da-verdade.md` section 22 (`controle-atual`) and the latest entry in `docs/contraprova.md`. Keep one source of current status; do not create a competing checklist.
+- Production code already connects to the owner's Supabase `rnziztwicggdekmpwpgy`. Rules below that describe memory-only data, sample time or a future backend are historical descriptions of the prototype, not instructions to remove the backend. Tests still use samples and simulations.
+- Use the current approved business rules. Record a discrepancy between documentation, code and live database before proposing a change; do not silently make one match another.
+- Work in small, isolated stages. Preserve approved screens and behavior, record the base revision, and update section 22 and the contraprova with evidence and remaining work. Distinguish code present, automated tests, live database checks and real-device validation.
+- Do not mark a feature complete solely because its screen exists or a historical checkbox is checked. Never run old cleanup or write-based SQL test scripts against the live database as part of a read-only audit.
+- For functional changes, verify the affected flow and relevant regressions before merging. Do not rewrite unrelated code or apply project-wide formatting to hide inherited lint failures. Database changes follow the owner's decision below.
+
 ## Project rules
 - Real-account invite searches use the authenticated `destino_pelo_convite` RPC and its returned driver name; local lists and profiles are not authoritative for another driver's invite.
 - Screens are phone-first: every page renders inside `MobileScreen` (max ~430px, centered on desktop) so the app reads as native mobile.
@@ -45,3 +55,10 @@ use the editor.
 - Both panels share in-memory stores: answers per trip day (`src/lib/respostas-store.ts`), the vanzeiro profile with the Pix key (`src/lib/vanzeiro-store.ts`) and the passenger session (`src/lib/sessao-passageiro.ts`, which links an accepted pedido to its new passenger); the passageiro layout shows "Entrar na van" instead of `<Outlet />` until the session has a passenger.
 - Legal pages (`/termos`, `/privacidade`) share `LeituraLayout`, and both profiles share `OpcoesDaConta` (switch role, legal links, Sair confirmation) so the two panels stay identical.
 - Passenger IDs identify memberships; `pessoaId` (fallback to the original membership ID) identifies a person across destinations. Plans, answers and charges remain membership-scoped; passenger screens aggregate only that identity, never phone/name matches.
+
+## Database workflow for this project (owner decision, overrides the Lovable block above)
+
+- The database is the owner's own Supabase project `ovanzeiro` (`rnziztwicggdekmpwpgy`), not Lovable Cloud. Lovable does not manage it.
+- Do not send requests to the Lovable agent (it spends the owner's credits). Lovable only syncs code with GitHub and publishes the app (publishing via `deploy_project` is fine).
+- Every schema change is a new idempotent file in `supabase/migrations/` (`YYYYMMDDhhmmss_name.sql`), tested first on a local copy or inside a rolled-back transaction, then applied with the owner's authorization (Supabase `apply_migration`, or the owner pastes the matching `supabase/SO-SQL-*.sql` into the SQL Editor). Verify with a read-only query and record it in `docs/contraprova.md`.
+- Never put secrets in the repo or ask for them in chat. Details: `docs/fonte-da-verdade.md` section 22.1a.

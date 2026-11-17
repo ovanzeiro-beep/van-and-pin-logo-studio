@@ -1,4 +1,6 @@
-# O Vanzeiro — o que falta para ficar 100%
+# O Vanzeiro — pendências registradas antes da revisão REV-00
+
+> **Registro histórico preservado.** O acompanhamento vigente está na [fonte da verdade, seção 22](fonte-da-verdade.md#controle-atual). Os números, aprovações e instruções abaixo pertencem à varredura anterior; não são uma nova validação nem uma ordem para executar limpezas, contratar serviços ou conceder permissões amplas. As pendências entram no plano atual com uma prova e uma etapa responsável.
 
 Varredura de 17/11/2026: app, banco de dados (Supabase) e avisos do próprio Supabase.
 

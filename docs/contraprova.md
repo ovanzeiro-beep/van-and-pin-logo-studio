@@ -1,5 +1,7 @@
 # Contraprova — O Vanzeiro
 
+> Acompanhamento atual: [fonte da verdade, seção 22](fonte-da-verdade.md#controle-atual). As etapas antigas abaixo são histórico; uma marcação antiga não substitui uma verificação nova.
+
 Checklist que confirma que cada etapa foi feita certa. Consultar **no começo e no fim de cada etapa**.
 Este arquivo nunca é apagado nem reescrito do zero: só ganha marcações e anotações.
 
@@ -1371,3 +1373,41 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 ## G5 e G6 (17/11/2026)
 - [x] G5 conferido sem mudança: o celular e o banco contam o "Vou sempre" do mesmo jeito para lotar a van (os dois somam o "Vou" do dia e o "Vou sempre" válido no prazo; a van lota no mesmo número).
 - [ ] G6: apagar a tabela `cidades` (nunca usada) e fechar `criar_conta_do_login` para o app (`20261117020000_limpeza_g6.sql`; cópia `supabase/SO-SQL-11-LIMPEZA-G6.sql`) — aguardando a licença do Supabase ou o dono colar.
+
+## REV-00 — Organizar a fonte da verdade e o acompanhamento (17/11/2026)
+
+**Pedido do dono:** trabalhar apenas em `ovanzeiro-beep/van-and-pin-logo-studio`, preservar o que funciona e registrar, por etapas, o que foi feito, o que falta e a prova de cada conclusão.
+
+**Situação:** documentação conferida e pronta localmente; **publicação no GitHub bloqueada**. Escopo: documentação e diagnóstico inicial; sem alterar telas, regras, dependências ou banco.
+
+### Plano antes das alterações
+
+- [x] Preservar a fonte da verdade e a contraprova existentes, sem apagar o histórico.
+- [x] Confirmar a versão de referência e o projeto Supabase apontado pelo código.
+- [x] Consultar apenas a estrutura e os avisos do banco, sem executar scripts de limpeza ou testes que gravam dados.
+- [x] Executar os testes, a checagem de tipos, o build e a conferência de estilo atuais; distinguir falhas herdadas de alterações desta etapa.
+- [x] Registrar os fluxos, as pendências, a ordem de revisão e as condições para uma etapa ser considerada concluída.
+- [x] Apontar README e instruções de trabalho para a mesma fonte da verdade; contextualizar regras antigas de app sem banco.
+- [x] Conferir que a diferença contém somente documentação e links locais existentes.
+- [x] Publicar a etapa no GitHub: feito pelo Claude Code em 17/11/2026 (registro original: criação da branch recusada com HTTP 403, `Resource not accessible by integration`; nenhuma alteração remota foi feita naquela tentativa; a listagem de contas com a integração instalada retornou vazia).
+
+### Resultado e evidências da REV-00
+
+- **Base:** `c97607c466fd7b7c1607a9b6e26cfde752e5efba`; branch local `docs/controle-funcional-2026-11-17`. Versão preparada identificada pelo commit local desta entrega; ainda sem PR remoto.
+- **Documentos alterados:** `README.md`, `AGENTS.md` (somente fora do bloco do Lovable), `CLAUDE.md`, `docs/fonte-da-verdade.md`, `docs/contraprova.md`, `docs/banco-de-dados.md`, `docs/o-que-falta.md`.
+- **Testes repetidos:** `npm test` — 364 testes em 70 arquivos passaram; `tsc --noEmit` — passou; `npm run build` — passou. Instalação com Bun 1.3.13 e `--frozen-lockfile`, sem mudar o lockfile.
+- **Estilo:** `npm run lint` retornou falha herdada: 1.645 erros de formatação e 2 avisos de exportação de componentes. Todos estavam na base; não foram corrigidos nesta etapa documental.
+- **Banco:** consultas somente de leitura, a tabelas, catálogo, agendamento, Realtime e consultores do Supabase. Resultados em EV-07 a EV-10 e P-02 a P-05 da fonte da verdade. Nenhum script SQL do repositório foi aplicado.
+- **Revisão da entrega:** `git diff --check` passou; links locais dos documentos resolvidos; títulos da fonte e da contraprova preservados; bloco gerenciado pelo Lovable idêntico ao original. Somente sete arquivos Markdown alterados. Código, testes, dependências, arquivos gerados, imagens e banco preservados.
+- **Não foi verificado nesta etapa:** navegação completa em navegador/celular, Google e e-mails de ponta a ponta, permissões reais em múltiplas contas, entrega de notificações, execução bem-sucedida do agendamento e correspondência entre commit e app publicado. São itens das próximas etapas, não aprovações implícitas.
+- **Como conferir:** abrir a seção 22 da fonte; ler o quadro das etapas e os resultados EV-01 a EV-11. Conferir que a diferença não toca arquivos executáveis. Não há mudança visual para testar no celular nesta entrega.
+- **Como desfazer:** antes de integrar, descartar apenas esta branch documental; depois de uma futura integração, reverter somente o commit da documentação, preservando outros trabalhos e sem reescrever histórico. Não mexer no banco.
+- **Próximo passo:** resolver P-12, atualizar a branch contra a `main` vigente, publicar e conferir a integração. Depois iniciar REV-01, com diagnóstico detalhado e sem correções funcionais misturadas ao levantamento.
+
+### REV-00 — correção e publicação (17/11/2026, Claude Code)
+
+- Pacote da outra IA aplicado sobre a `main` (`c97607c`) sem conflito.
+- Corrigido: a regra "mudar o banco pelo fluxo do Lovable" não vale aqui (o banco é o Supabase do dono; o dono proibiu pedidos ao Lovable). Nova seção 22.1a na fonte e bloco próprio em `AGENTS.md` (fora do bloco do Lovable); `CLAUDE.md` aponta para 22.1a.
+- Acrescentado: 22.4a (o que já está pronto, com a prova), P-13 (funções da E1 abertas sem login), P-02 e P-12 atualizados, plano 22.6 enxugado de 12 para 8 etapas (REV-00 a REV-07), sem repetir verificações que já têm prova.
+- Somente documentos Markdown; código, banco e app sem mudança. Testes não precisam ser repetidos (nenhum código mudou).
+- **Próximo passo:** REV-01 (segurança rápida e G6), com o "pode seguir" do dono.
