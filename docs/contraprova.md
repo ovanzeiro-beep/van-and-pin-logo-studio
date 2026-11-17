@@ -1669,3 +1669,10 @@ Conferido no banco: o "Rafael passageiro" é a mesma conta do vanzeiro (entrou n
 - [x] Sininho, número no sino, "Limpar" e "lidos": o painel do vanzeiro mostra só pedido novo, resposta de passageiro e cobrança vencida; o do passageiro, o resto (`doPainel`). Some também o nome técnico do tipo ("RESPOSTA_PASSAGEIRO").
 - [x] Aviso no celular abre o painel certo pelo tipo do aviso (função `avisos-no-celular` versão 7).
 - [x] 1 teste novo (423 no total), tsc e build passando.
+
+---
+
+## "Boa viagem!" ao embarcar (pedido do dono, 17/11/2026) — feita
+- [x] Banco: gatilho `avisar_boa_viagem` em `viagens` cria, para cada passageiro que acabou de entrar em "embarcaram", o aviso "Você embarcou na van de X → Y. Boa viagem!" (um por pessoa por viagem). Testado na cópia local (nasce uma vez só) e aplicado no Supabase real direto (conferido).
+- [x] Sininho do passageiro: "Boa viagem!" em verde, com o ícone da van; aviso no celular com o título "Boa viagem!" (função `avisos-no-celular` versão 8).
+- [x] 423 testes, tsc e build passando.
