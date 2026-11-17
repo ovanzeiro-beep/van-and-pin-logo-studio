@@ -1472,3 +1472,8 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Antes de a viagem começar: nenhuma etapa verde ("Aguardando a saída"). Ao iniciar: "Saiu da garagem" verde para quem confirmou ("Viagem começou · Faltam N pessoas antes de você"). Só quando é a vez da pessoa: "A caminho" verde ("Você é o próximo · Aguarde no ponto: a van está chegando"). Ao "Embarcou": "Na van" verde.
 - [x] Corrigido: com o banco, o passageiro só tem o próprio lugar na viagem, e o app achava que ele era sempre o próximo (pulava para "A caminho" logo ao iniciar). Agora a vez vem de `embarque_da_viagem` (`situacaoComEmbarque` em `src/lib/embarque.ts`). 374 testes, tipos, build.
 - [x] (17/11, pedido do dono) Texto do aviso da vez do passageiro (o mesmo momento em que "A caminho" fica verde): "A van está a caminho do seu ponto (Rua …). Você é o próximo: aguarde no ponto." Título "A van está chegando". Chega com vibração: app fechado/minimizado pela notificação do celular; app aberto pelo alerta do próprio app (vibra e toca). Aplicado no Supabase real (`20261117070000_texto_a_caminho.sql`), testado numa cópia. Para receber, o passageiro precisa ter tocado em "Ativar" no Perfil.
+
+## REV-03 — Teste real com celulares (17/11/2026)
+- [x] Dono fez a viagem de hoje (Jacarezinho PR → Londrina PR, 15:00) e informou que passou.
+- [x] Conferido no banco real: viagem encerrada com 3 de 3 embarcados; 3 avisos "Van saiu" e 3 "A van está chegando" criados e entregues ao programa de notificações (respostas 200); 3 cobranças "Por viagem" (R$ 150, R$ 150, R$ 250) marcadas como pagas por Pix.
+- Observação: só 1 celular com notificações ligadas no banco; para os passageiros receberem na tela, cada um ativa no Perfil.
