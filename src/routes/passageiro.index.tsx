@@ -1,3 +1,14 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { textoDoCafe } from "@/lib/destinos";
 import { RelogioDoCafe } from "@/components/app/viagem/RelogioDoCafe";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -6,7 +17,7 @@ import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { type RespostaViagem } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
@@ -172,9 +183,30 @@ function AvisoConferencia({ onConfirmar }: { onConfirmar: () => void }) {
         </div>
         <p className="font-display text-lg font-bold leading-tight text-foreground">Conferência da van — você está na van?</p>
       </div>
-      <Button variant="success" size="xl" className="mt-3 h-[3.25rem] w-full rounded-2xl font-display text-base font-bold" onClick={onConfirmar}>
-        <UserCheck className="!h-6 !w-6" /> Estou na van
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="success" size="xl" className="mt-3 h-[3.25rem] w-full rounded-2xl font-display text-base font-bold">
+            <UserCheck className="!h-6 !w-6" /> Estou na van
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você está dentro da van?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Só confirme se você já está sentado na van. O vanzeiro conta com essa resposta para seguir viagem.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <p className="rounded-2xl bg-warning-soft px-3.5 py-2.5 text-sm font-semibold text-warning">
+            Ainda não está na van? Volte para a van agora: ela vai sair em breve.
+          </p>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Ainda não</AlertDialogCancel>
+            <AlertDialogAction className={buttonVariants({ variant: "success", size: "lg" })} onClick={onConfirmar}>
+              <UserCheck className="!h-5 !w-5" /> Sim, estou na van
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

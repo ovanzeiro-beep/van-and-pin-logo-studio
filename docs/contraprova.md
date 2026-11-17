@@ -1676,3 +1676,8 @@ Conferido no banco: o "Rafael passageiro" é a mesma conta do vanzeiro (entrou n
 - [x] Banco: gatilho `avisar_boa_viagem` em `viagens` cria, para cada passageiro que acabou de entrar em "embarcaram", o aviso "Você embarcou na van de X → Y. Boa viagem!" (um por pessoa por viagem). Testado na cópia local (nasce uma vez só) e aplicado no Supabase real direto (conferido).
 - [x] Sininho do passageiro: "Boa viagem!" em verde, com o ícone da van; aviso no celular com o título "Boa viagem!" (função `avisos-no-celular` versão 8).
 - [x] 423 testes, tsc e build passando.
+
+---
+
+## "Estou na van" pede confirmação (pedido do dono, 17/11/2026) — feita
+- [x] Tocar em "Estou na van" abre "Você está dentro da van?": "Só confirme se você já está sentado na van…" e o aviso "Ainda não está na van? Volte para a van agora: ela vai sair em breve."; botões "Ainda não" e "Sim, estou na van". 423 testes, tsc e build passando.
