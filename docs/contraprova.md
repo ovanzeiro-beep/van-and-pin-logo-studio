@@ -1487,4 +1487,4 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] App: `src/lib/erros.ts` grava erros não tratados e os da tela "Esta tela não carregou" na tabela `erros_do_app`: texto do erro sem e-mails nem números longos, a tela (sem endereço completo), o papel e o navegador; o mesmo erro uma vez por abertura, no máximo 20. Sem a tabela, não faz nada (nunca atrapalha o app).
 - [x] Banco: `supabase/migrations/20261117090000_rev05_erros_do_app.sql` — qualquer celular grava (até sem login), ninguém lê pelo app, uma conta não grava em nome de outra, textos limitados. Testado numa cópia (6 checagens).
 - [x] Conferência: 376 testes (novo `rev05-erros.test.ts`), tipos, build.
-- [ ] Aplicar no Supabase real: o Supabase pediu licença e não teve resposta; o dono cola `supabase/SO-SQL-13-ERROS.sql`.
+- [x] Aplicado no Supabase real pelo dono (SQL Editor, "Success") e conferido: tabela existe, celulares (com e sem login) podem gravar, ninguém lê pelo app. **REV-05 concluída.**
