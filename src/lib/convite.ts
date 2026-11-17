@@ -26,7 +26,7 @@ export async function procurarPorCodigo(texto: string, destinosLocais: Destino[]
     origem: destino.origem,
     destino: destino.destino,
     paradas: destino.paradas,
-    cafe: destino.cafe_parada && destino.cafe_minutos ? { parada: destino.cafe_parada, minutos: destino.cafe_minutos } : null,
+    cafe: destino.cafe_parada && destino.cafe_minutos ? { parada: destino.cafe_parada, minutos: destino.cafe_minutos, ...(destino.cafe_local ? { local: destino.cafe_local } : {}) } : null,
     saida: destino.saida,
     convite: `VAN-${digitos}`,
     vanzeiroNome: destino.vanzeiro_nome,

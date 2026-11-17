@@ -1,3 +1,4 @@
+import { textoDoCafe } from "@/lib/destinos";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
@@ -176,7 +177,7 @@ function CardDaVan({ destino }: { destino: DestinoDoConvite | Destino }) {
         </p>
         {destino.cafe && (
           <p className="text-sm text-muted-foreground">
-            Parada do café: {destino.cafe.parada} ({destino.cafe.minutos} min)
+            Parada do café: {textoDoCafe(destino.cafe)} ({destino.cafe.minutos} min)
           </p>
         )}
       </div>

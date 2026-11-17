@@ -1,3 +1,4 @@
+import { textoDoCafe } from "@/lib/destinos";
 import { CircleCheck, Coffee, Flag, Hand, Home, Play, Smartphone, UserCheck, UserX } from "lucide-react";
 import { horaDeAgora } from "@/lib/agora";
 import { RelogioDoCafe } from "./RelogioDoCafe";
@@ -127,7 +128,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
         {v.voltaAs ? (
-          <RelogioDoCafe onde={destino?.cafe?.parada} voltaAs={v.voltaAs} />
+          <RelogioDoCafe onde={destino?.cafe ? textoDoCafe(destino.cafe) : undefined} voltaAs={v.voltaAs} />
         ) : (
         <section className="flex flex-col items-center rounded-3xl bg-card p-6 text-center shadow-card">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-warning-soft text-warning">

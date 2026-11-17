@@ -116,11 +116,13 @@ export type Rascunho = {
   /** The parada marked as the coffee stop ("" = none) and its minutes. */
   cafe: string;
   cafeMinutos: number;
+  /** Name of the place where they stop for coffee (optional). */
+  cafeLocal: string;
   prazo: PrazoConfirmacao;
 };
 
 export function rascunhoVazio(): Rascunho {
-  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", voltaOutroDia: false, dataVolta: "", paradas: [], cafe: "", cafeMinutos: 20, prazo: "1h" };
+  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", voltaOutroDia: false, dataVolta: "", paradas: [], cafe: "", cafeMinutos: 20, cafeLocal: "", prazo: "1h" };
 }
 
 export function rascunhoDeDestino(d: Destino): Rascunho {
@@ -138,6 +140,7 @@ export function rascunhoDeDestino(d: Destino): Rascunho {
     paradas: d.paradas,
     cafe: d.cafe?.parada ?? "",
     cafeMinutos: d.cafe?.minutos ?? 20,
+    cafeLocal: d.cafe?.local ?? "",
     prazo: d.prazo,
   };
 }
@@ -172,7 +175,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
     volta: r.temVolta ? r.volta : null,
     voltaData: tipo === "avulsa" && r.temVolta && r.voltaOutroDia ? r.dataVolta : null,
     paradas: r.paradas.map((p) => nomeProprio(p)).filter(Boolean),
-    cafe: r.cafe && r.paradas.includes(r.cafe) ? { parada: nomeProprio(r.cafe), minutos: r.cafeMinutos } : null,
+    cafe: r.cafe && r.paradas.includes(r.cafe) ? { parada: nomeProprio(r.cafe), minutos: r.cafeMinutos, ...(r.cafeLocal.trim() ? { local: r.cafeLocal.trim() } : {}) } : null,
     convite: anterior?.convite ?? gerarConvite(),
     prazo: r.prazo,
     ativo: anterior?.ativo ?? true,
@@ -214,3 +217,8 @@ export function textoDaVolta(d: Pick<Destino, "tipo" | "saida" | "volta" | "volt
   return voltaNoDiaSeguinte(d) ? `${d.volta} do dia seguinte` : d.volta;
 }
 
+
+/** "Posto Tocuman, Jataizinho PR" (or only the city, without the name of the place). */
+export function textoDoCafe(c: { parada: string; local?: string | undefined }) {
+  return c.local ? `${c.local}, ${c.parada}` : c.parada;
+}

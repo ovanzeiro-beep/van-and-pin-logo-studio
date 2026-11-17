@@ -397,6 +397,13 @@ function Passo3({ r, mudar }: PassoProps) {
               </button>
             ))}
           </div>
+          <Input
+            aria-label="Nome do lugar do café"
+            placeholder="Nome do lugar (ex.: Posto Tocuman)"
+            value={r.cafeLocal}
+            onChange={(e) => mudar({ cafeLocal: e.target.value })}
+            className="mt-2 h-11 rounded-xl border-input bg-card text-base shadow-none md:text-base"
+          />
           <p className="mt-1.5 text-xs text-muted-foreground">O café não é ponto de embarque. O passageiro vê onde é e quanto tempo dura.</p>
         </div>
       )}

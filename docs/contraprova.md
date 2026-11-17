@@ -1604,3 +1604,10 @@ Pedido do dono: preencheu tudo, não mostra mais; apagou qualquer item, volta a 
 - [x] Passo 1, abaixo de "De onde sai?": botão que preenche só a cidade com o estado pelo GPS (ex.: "Jacarezinho PR"), nunca o endereço; dá para editar depois.
 - [x] Mensagens: localização negada, sem internet, cidade não achada.
 - [x] Conferido na tela (375×667; o cartão rola de leve no SE). 1 teste novo (411 no total), tsc e build passando.
+
+### Parada do café — ajuste (17/11/2026): nome do lugar
+Pedido do dono: além da cidade, o nome do comércio onde param.
+- [x] Passo 3: campo "Nome do lugar (ex.: Posto Tocuman)" dentro da caixa do café (opcional, até 80 letras).
+- [x] Aparece como "Posto Tocuman, Jataizinho PR" no caminho do destino, no convite, na tela "Sua van" e no relógio do café (vanzeiro e passageiro).
+- [x] Banco: coluna `cafe_local`; `destino_pelo_convite` devolve o lugar. Testado na cópia local. 1 teste novo (412 no total), tsc e build passando.
+- [ ] Aplicar no Supabase real (aprovação expirou): `supabase/SO-SQL-15-cafe-local.sql`. Só publicar o app depois.

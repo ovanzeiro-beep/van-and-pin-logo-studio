@@ -41,7 +41,7 @@ export type TipoDestino = "fixa" | "avulsa";
 /** Até quando o passageiro confirma "Vou": tempo antes da saída, ou a noite anterior às 20h. */
 export type PrazoConfirmacao = "30min" | "1h" | "2h" | "noite-anterior";
 
-export type Cafe = { parada: string; minutos: number };
+export type Cafe = { parada: string; minutos: number; /** Name of the place (posto, lanchonete). */ local?: string | undefined };
 
 export type Destino = {
   id: string;

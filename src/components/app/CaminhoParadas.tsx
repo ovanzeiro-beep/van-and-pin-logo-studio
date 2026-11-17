@@ -14,6 +14,7 @@ export function PontoDoCaminho({
   acoes,
   compacto = false,
   cafe,
+  local,
 }: {
   nome: string;
   indice: number;
@@ -23,6 +24,8 @@ export function PontoDoCaminho({
   compacto?: boolean;
   /** This parada is the coffee stop: minutes, shown with a cup. */
   cafe?: number | undefined;
+  /** Name of the coffee place, under the city. */
+  local?: string | undefined;
 }) {
   const primeiro = indice === 0;
   const ultimo = indice === total - 1;
@@ -47,13 +50,14 @@ export function PontoDoCaminho({
           {cafe ? `Parada do café · ${cafe} min` : rotuloDoPonto(indice, total)}
         </p>
         <p className={cn("break-words font-semibold text-foreground", compacto ? "text-sm leading-tight" : "leading-snug")}>{nome}</p>
+        {local && <p className="text-sm text-muted-foreground">{local}</p>}
       </div>
       {acoes && <div className="flex shrink-0 items-center gap-1">{acoes}</div>}
     </li>
   );
 }
 
-export function CaminhoParadas({ pontos, compacto = false, cafe }: { pontos: string[]; compacto?: boolean; cafe?: { parada: string; minutos: number } | null | undefined }) {
+export function CaminhoParadas({ pontos, compacto = false, cafe }: { pontos: string[]; compacto?: boolean; cafe?: { parada: string; minutos: number; local?: string | undefined } | null | undefined }) {
   return (
     <ol>
       {pontos.map((p, i) => (
@@ -64,6 +68,7 @@ export function CaminhoParadas({ pontos, compacto = false, cafe }: { pontos: str
           total={pontos.length}
           compacto={compacto}
           cafe={i > 0 && i < pontos.length - 1 && cafe?.parada === p ? cafe.minutos : undefined}
+          local={i > 0 && i < pontos.length - 1 && cafe?.parada === p ? cafe.local : undefined}
         />
       ))}
     </ol>

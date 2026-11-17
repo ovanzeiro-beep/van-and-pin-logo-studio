@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { destinoDeRascunho, rascunhoDeDestino, rascunhoVazio } from "@/lib/destinos";
+import { destinoDeRascunho, rascunhoDeDestino, rascunhoVazio, textoDoCafe } from "@/lib/destinos";
 import { pontosDeEmbarque } from "@/lib/passageiros";
 import {
   fazerParada,
@@ -69,5 +69,24 @@ describe("Parada do café", () => {
     expect(minutosAte("10:45", "10:30")).toBe(15);
     expect(minutosAte("10:45", "10:50")).toBe(0);
     expect(minutosAte("00:10", "23:55")).toBe(15);
+  });
+
+  it("o nome do lugar do café vai junto da cidade", () => {
+    const r = {
+      ...rascunhoVazio(),
+      ...rota,
+      tipo: "fixa" as const,
+      dias: ["seg" as const],
+      saida: "06:00",
+      temVolta: false,
+      cafe: "Assis posto tocuman",
+      cafeMinutos: 20,
+      cafeLocal: " Posto Tocuman ",
+    };
+    const d = destinoDeRascunho(r);
+    expect(d.cafe).toEqual({ parada: "Assis Posto Tocuman", minutos: 20, local: "Posto Tocuman" });
+    expect(textoDoCafe(d.cafe!)).toBe("Posto Tocuman, Assis Posto Tocuman");
+    expect(textoDoCafe({ parada: "Jataizinho PR" })).toBe("Jataizinho PR");
+    expect(rascunhoDeDestino(d).cafeLocal).toBe("Posto Tocuman");
   });
 });

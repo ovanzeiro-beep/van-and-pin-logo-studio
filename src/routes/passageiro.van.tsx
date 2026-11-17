@@ -1,3 +1,4 @@
+import { textoDoCafe } from "@/lib/destinos";
 import { useEffect, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Clock, Coffee, MapPin, Navigation } from "lucide-react";
@@ -79,7 +80,7 @@ function OndeEstaAVan() {
               )}
               {destino?.cafe && (
                 <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Coffee className="h-4 w-4 shrink-0 text-warning" /> Parada do café: {destino.cafe.parada} ({destino.cafe.minutos} min)
+                  <Coffee className="h-4 w-4 shrink-0 text-warning" /> Parada do café: {textoDoCafe(destino.cafe)} ({destino.cafe.minutos} min)
                 </p>
               )}
               {!eu.ponto && cidades.length > 0 && <p className="mt-2 text-sm font-semibold text-warning">Você ainda não marcou o seu ponto no mapa.</p>}
