@@ -833,6 +833,7 @@ Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas 
 | REV-08 | **Lugares da viagem visíveis ao passageiro** (pedido do dono, 17/11) | **Concluída (17/11)** — função `lugares_da_viagem` aplicada no Supabase real; card no Início e em Viagens | Ver 22.10, item A. |
 | REV-09 | **Acompanhamento do embarque pelo passageiro** (pedido do dono, 17/11) | **Concluída (17/11)** — função `embarque_da_viagem` aplicada no Supabase real; quadro no card "Situação da van" | Ver 22.10, item B. |
 | REV-10 | **Aviso "A próxima é você"** (pedido do dono, 17/11) | **Concluída (17/11)** — gatilho `avisar_proximo_da_busca` aplicado no Supabase real; título "A van está chegando" no celular | Ver 22.10, item C. |
+| N1 | **Capturar o ponto de embarque** (pedido do dono, 17/11) | **Concluída (17/11)** | Botões "Estou no ponto agora" (GPS) e "Achar no mapa" (busca do endereço na cidade escolhida) na tela "Onde você embarca"; mapa abre na cidade ou no pino. Próximas: N2 (navegar até cada passageiro: "Ir até lá", "Rota completa") e N3 ("Organizar pela distância"). |
 
 Fora do núcleo (decisão do dono, ver 22.9): GPS real, app na Play Store, domínio próprio.
 

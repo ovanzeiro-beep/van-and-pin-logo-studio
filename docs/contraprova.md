@@ -1502,3 +1502,25 @@ Pedido do dono: colocar o contato e refazer os Termos de Uso "como advogado", pa
 - [x] Selo "Versão provisória" mantido.
 - [x] 376 testes, tsc e build passando.
 - Pendências (dono): revisão por advogado; plano Pro do Supabase; proteção de senhas vazadas.
+
+---
+
+## N1: capturar o ponto de embarque certinho (pedido do dono, 17/11/2026) — plano (ver resultado abaixo)
+
+Plano (tela "Onde você embarca", usada ao entrar na van e ao mudar o endereço):
+- [ ] Botão "Estou no ponto agora": usa o GPS do celular e marca o pino; se o endereço estiver vazio, preenche com a rua e o número.
+- [ ] Botão "Achar no mapa": procura o endereço escrito dentro da cidade escolhida e coloca o pino.
+- [ ] O mapa abre na cidade escolhida (ou no pino já marcado), não na rota inteira; tocar no mapa continua ajustando o pino.
+- [ ] Mensagens simples: procurando, não achou, GPS negado, ponto longe da cidade escolhida.
+- [ ] Política de Privacidade: o OpenStreetMap recebe o endereço digitado e o ponto do GPS na busca.
+- [ ] Testes das regras novas; tela sem rolagem num celular comum.
+
+### N1 — resultado (17/11/2026): feita
+- [x] "Estou no ponto agora" (GPS preciso, até 20 s): marca o pino e, só se o endereço estiver vazio, preenche rua e número. Conferido no celular simulado: o endereço já escrito não foi apagado.
+- [x] "Achar no mapa": procura "endereço, cidade" só num quadrado de ~20 km em volta da cidade escolhida, no Brasil (`src/lib/ponto-de-embarque.ts`).
+- [x] Mapa abre na cidade escolhida (zoom de bairro) ou no pino (zoom de rua); trocar de cidade volta o mapa para ela; tocar no mapa move o pino sem mexer no mapa.
+- [x] Mensagens: procurando, pronto, não achou, sem internet, localização negada/demorou, ponto a mais de 30 km da cidade escolhida.
+- [x] Política: OpenStreetMap recebe o endereço digitado e o ponto do GPS só ao tocar nos botões; sem acompanhamento da localização.
+- [x] 7 testes novos (383 no total), tsc e build passando. Início, cores e palavras não mudaram.
+- [x] Tela sem rolagem em 390×844; no iPhone SE (375×667) o mapa fica baixo e o cartão rola de leve (aceito pela regra 4).
+- Limite: em cidade pequena a busca por rua pode não achar; o GPS é o caminho principal.

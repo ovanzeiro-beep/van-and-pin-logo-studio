@@ -14,12 +14,15 @@ export function MapaDaVan({
   van,
   marcando,
   aoMarcar,
+  foco,
 }: {
   cidades: { nome: string; ponto: Ponto }[];
   meuPonto: Ponto | null;
   van: Ponto | null;
   marcando: boolean;
   aoMarcar: (p: Ponto) => void;
+  /** Where to look instead of the whole route (marking the point: the chosen city, or the pin already marked). */
+  foco?: { ponto: Ponto; zoom: number } | null | undefined;
 }) {
   const caixa = useRef<HTMLDivElement>(null);
   const mapa = useRef<MapaLeaflet | null>(null);
@@ -29,6 +32,8 @@ export function MapaDaVan({
   const marcandoRef = useRef(marcando);
   aoMarcarRef.current = aoMarcar;
   marcandoRef.current = marcando;
+  const focoRef = useRef(foco);
+  focoRef.current = foco;
 
   // Creates the map once (Leaflet only works in the browser).
   useEffect(() => {
@@ -88,7 +93,10 @@ export function MapaDaVan({
         zIndexOffset: 1000,
       }).addTo(g);
     }
-    if (enquadrar) {
+    const f = focoRef.current;
+    if (f) {
+      if (enquadrar) m.setView([f.ponto.lat, f.ponto.lng], f.zoom);
+    } else if (enquadrar) {
       const todos = [...linha, ...(meuPonto ? [[meuPonto.lat, meuPonto.lng] as [number, number]] : []), ...(van ? [[van.lat, van.lng] as [number, number]] : [])];
       if (todos.length > 1) m.fitBounds(todos, { padding: [28, 28] });
       else if (todos.length === 1) m.setView(todos[0]!, 13);
@@ -104,6 +112,14 @@ export function MapaDaVan({
     desenhar(chegaramCidades);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [van?.lat, van?.lng, meuPonto?.lat, meuPonto?.lng, cidades]);
+
+  // A new focus (another city chosen, or the pin found by the GPS or the search): goes there, without zooming out.
+  useEffect(() => {
+    const m = mapa.current;
+    if (!m || !foco) return;
+    m.setView([foco.ponto.lat, foco.ponto.lng], Math.max(m.getZoom(), foco.zoom));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [foco?.ponto.lat, foco?.ponto.lng, foco?.zoom]);
 
   return (
     <div
