@@ -119,7 +119,8 @@ export async function lugarDoPonto(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=${zoom}&accept-language=pt-BR&lat=${p.lat}&lon=${p.lng}`,
       )) as { address?: Endereco; error?: string } | null;
       if (!r?.address) falhas.push(`nominatim ${zoom}: ${r?.error ?? "sem endereço"}`);
-      else if (!ruaDe(r.address)) falhas.push(`nominatim ${zoom}: sem rua (${Object.keys(r.address).join(",")})`);
+      else if (!ruaDe(r.address))
+        falhas.push(`nominatim ${zoom}: sem rua (${Object.keys(r.address).join(",")})`);
       return r?.address;
     } catch (e) {
       falhas.push(`nominatim ${zoom}: ${e instanceof Error ? e.message : "erro"}`);
@@ -129,12 +130,30 @@ export async function lugarDoPonto(
   const photon = async () => {
     try {
       const e = enderecoDoPhoton(
-        (await buscar(`https://photon.komoot.io/reverse?lat=${p.lat}&lon=${p.lng}&limit=1`)) as Photon,
+        (await buscar(
+          `https://photon.komoot.io/reverse?lat=${p.lat}&lon=${p.lng}&limit=1`,
+        )) as Photon,
       );
       if (!ruaDe(e)) falhas.push(`photon: sem rua (${Object.keys(e ?? {}).join(",")})`);
       return e;
     } catch (e) {
       falhas.push(`photon: ${e instanceof Error ? e.message : "erro"}`);
+      return undefined;
+    }
+  };
+  const ruaComNomeMaisPerto = async () => {
+    try {
+      const r = (await buscar(
+        `https://photon.komoot.io/reverse?lat=${p.lat}&lon=${p.lng}&limit=10&radius=0.5&osm_tag=highway`,
+      )) as { features?: { properties?: { name?: string; street?: string; osm_key?: string } }[] };
+      const nomes = (r?.features ?? [])
+        .map((f) => f.properties)
+        .map((x) => (x?.osm_key === "highway" ? x.name : undefined) ?? x?.street);
+      const nome = nomes.find((n) => !!n && n.trim() !== "");
+      if (!nome) falhas.push("photon ruas: nenhuma com nome perto");
+      return nome;
+    } catch (e) {
+      falhas.push(`photon ruas: ${e instanceof Error ? e.message : "erro"}`);
       return undefined;
     }
   };
@@ -154,7 +173,9 @@ export async function lugarDoPonto(
   await esperar(1100);
   const grande = await reverso(16);
   const bairro = bairroDe(perto) ?? bairroDe(grande);
-  const rua = ruaDe(grande);
+  // New neighborhoods: the street at the point often has no name on the free map. The nearest street WITH a name
+  // (Photon, streets only, up to ~500 m) gives "Perto de Rua X"; the person completes it.
+  const rua = ruaDe(grande) ?? (await ruaComNomeMaisPerto());
   if (rua)
     return {
       endereco: `Perto de ${rua}${bairro && bairro !== cidade ? ` (${bairro})` : ""}`,

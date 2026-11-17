@@ -47,7 +47,9 @@ describe("N1: capturar o ponto de embarque", () => {
 
   it("monta o endereço com rua e número; sem rua, usa o bairro", () => {
     expect(textoDoEndereco({ road: "Rua Paraná", house_number: "455" })).toBe("Rua Paraná, 455");
-    expect(textoDoEndereco({ road: "Rua Paraná", house_number: "455", suburb: "Vila Setti" })).toBe("Rua Paraná, 455 - Vila Setti");
+    expect(textoDoEndereco({ road: "Rua Paraná", house_number: "455", suburb: "Vila Setti" })).toBe(
+      "Rua Paraná, 455 - Vila Setti",
+    );
     expect(textoDoEndereco({ road: "Rua Paraná" })).toBe("Rua Paraná");
     expect(textoDoEndereco({ suburb: "Vila Setti" })).toBe("Vila Setti");
     expect(textoDoEndereco(undefined)).toBe("");
@@ -155,7 +157,9 @@ describe("N1: capturar o ponto de embarque", () => {
 describe("Destino: cidade de saída pelo GPS", () => {
   it("só a cidade, com o estado", async () => {
     const { textoDaCidade } = await import("@/lib/ponto-de-embarque");
-    expect(textoDaCidade({ city: "Jacarezinho", "ISO3166-2-lvl4": "BR-PR" })).toBe("Jacarezinho PR");
+    expect(textoDaCidade({ city: "Jacarezinho", "ISO3166-2-lvl4": "BR-PR" })).toBe(
+      "Jacarezinho PR",
+    );
     expect(textoDaCidade({ town: "Iepê", "ISO3166-2-lvl4": "BR-SP" })).toBe("Iepê SP");
     expect(textoDaCidade({ village: "Marques dos Reis" })).toBe("Marques dos Reis");
     expect(textoDaCidade({})).toBe("");
@@ -170,7 +174,18 @@ describe("GPS: segundo mapa quando o primeiro falha", () => {
       { lat: -23.16, lng: -49.97 },
       async (url) => {
         if (url.includes("nominatim")) throw new Error("Failed to fetch");
-        return { features: [{ properties: { street: "Rua São João", housenumber: "120", district: "Centro", city: "Jacarezinho" } }] };
+        return {
+          features: [
+            {
+              properties: {
+                street: "Rua São João",
+                housenumber: "120",
+                district: "Centro",
+                city: "Jacarezinho",
+              },
+            },
+          ],
+        };
       },
       async () => {},
       (m) => falhas.push(m),
@@ -182,9 +197,37 @@ describe("GPS: segundo mapa quando o primeiro falha", () => {
   it("os dois falham: registra o motivo (sem o ponto da pessoa) e não quebra", async () => {
     const { lugarDoPonto } = await import("@/lib/ponto-de-embarque");
     const falhas: string[] = [];
-    const r = await lugarDoPonto({ lat: -23.16, lng: -49.97 }, async () => Promise.reject(new Error("Failed to fetch")), async () => {}, (m) => falhas.push(m));
+    const r = await lugarDoPonto(
+      { lat: -23.16, lng: -49.97 },
+      async () => Promise.reject(new Error("Failed to fetch")),
+      async () => {},
+      (m) => falhas.push(m),
+    );
     expect(r.endereco).toBe("");
     expect(falhas[0]).toMatch(/nominatim 18: Failed to fetch; photon: Failed to fetch/);
     expect(falhas[0]).not.toMatch(/-23\.16/);
+  });
+});
+
+describe("GPS: rua sem nome no mapa (bairro novo)", () => {
+  it("usa a rua com nome mais perto: 'Perto de Rua Sebastião Filadelfo'", async () => {
+    const { lugarDoPonto } = await import("@/lib/ponto-de-embarque");
+    const r = await lugarDoPonto(
+      { lat: -23.16, lng: -49.97 },
+      async (url) => {
+        if (url.includes("nominatim")) return { address: { town: "Jacarezinho", state: "Paraná" } };
+        if (url.includes("osm_tag=highway"))
+          return {
+            features: [
+              { properties: { osm_key: "highway" } },
+              { properties: { osm_key: "highway", name: "Rua Sebastião Filadelfo" } },
+            ],
+          };
+        return { features: [{ properties: { city: "Jacarezinho" } }] };
+      },
+      async () => {},
+      () => {},
+    );
+    expect(r).toEqual({ endereco: "Perto de Rua Sebastião Filadelfo", cidade: "Jacarezinho" });
   });
 });

@@ -1660,3 +1660,4 @@ Sem erro registrado no banco; não dá para testar o mapa gratuito daqui (rede b
 - [x] Se os dois falharem, o motivo vai para `erros_do_app` (sem o ponto da pessoa), para conferir.
 - [x] Política: cita o Photon. 2 testes novos (421 no total), tsc e build passando.
 - [x] (17/11, diagnóstico) O dono testou no celular e o endereço não veio, sem erro registrado. Agora toda tentativa sem endereço registra em `erros_do_app` o que cada mapa devolveu (só os nomes dos campos, nunca o ponto) e a falha do GPS. Aguardando novo teste do dono.
+- [x] (17/11) Causa achada pelo registro: os dois mapas respondem, mas a rua no ponto do dono não tem nome no OpenStreetMap (bairro novo); só vinha a cidade. Correção: procura a rua COM nome mais perto (Photon, só ruas, até ~500 m) e preenche "Perto de Rua Sebastião Filadelfo"; a pessoa completa. 1 teste novo (422), tsc e build passando.
