@@ -1477,3 +1477,8 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Dono fez a viagem de hoje (Jacarezinho PR → Londrina PR, 15:00) e informou que passou.
 - [x] Conferido no banco real: viagem encerrada com 3 de 3 embarcados; 3 avisos "Van saiu" e 3 "A van está chegando" criados e entregues ao programa de notificações (respostas 200); 3 cobranças "Por viagem" (R$ 150, R$ 150, R$ 250) marcadas como pagas por Pix.
 - Observação: só 1 celular com notificações ligadas no banco; para os passageiros receberem na tela, cada um ativa no Perfil.
+
+## REV-04 — Desempenho do banco (17/11/2026)
+- [x] `supabase/migrations/20261117080000_rev04_desempenho.sql`: índices nas 19 ligações entre tabelas; 18 regras de acesso com `(select auth.uid())` (mesmas condições). Aplicado no Supabase real.
+- [x] Prova de que nada mudou em quem vê o quê: banco novo montado com todas as migrations, com e sem a REV-04; `teste-seguranca.sql` e `teste-regras.sql` (mais de 100 checagens) deram o mesmo resultado (só números de identificação sorteados diferem).
+- [x] Avisos do Supabase depois: 37 resolvidos (19 + 18). Restam, explicados: 13 "duas regras de leitura" (mantidas por clareza) e 18 "índice ainda não usado" (informativo, recém-criados). Nenhum código do app mudou.
