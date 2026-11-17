@@ -1354,3 +1354,5 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [x] O que um celular muda aparece no outro em 1 a 2 segundos, sem recarregar (Supabase Realtime, `20261117000000_tempo_real.sql`, aplicado direto no Supabase: 14 tabelas). Cada pessoa só recebe aviso do que já pode ler.
 - [x] A viagem: o passageiro não lê a viagem inteira; recebe só um "sinal" (`viagem_sinais`) de que a viagem do destino dele mudou e lê a própria situação.
 - [x] Continua a leitura a cada 30 s e ao voltar para o app, caso o tempo real caia. 361 testes, tipos, build.
+
+- [x] (17/11) Limpeza feita pelo dono e conferida: 0 destinos, passageiros, pedidos, viagens, cobranças e avisos; contas e perfis mantidos (8 contas: as de teste do Google também ficaram); tarefa do relógio rodando sem erro.
