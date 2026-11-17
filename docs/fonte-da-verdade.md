@@ -836,6 +836,7 @@ Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas 
 | N1 | **Capturar o ponto de embarque** (pedido do dono, 17/11) | **Concluída (17/11)** | Botões "Estou no ponto agora" (GPS) e "Achar no mapa" (busca do endereço na cidade escolhida) na tela "Onde você embarca"; mapa abre na cidade ou no pino. Próximas: N2 (navegar até cada passageiro: "Ir até lá", "Rota completa") e N3 ("Organizar pela distância"). |
 | N2 | **Navegar até cada passageiro** (pedido do dono, 17/11) | **Concluída (17/11)** | Na viagem (busca e volta): "Ir até lá" abre o Google Maps navegando até o ponto marcado; "Rota completa" abre os que faltam na ordem (até 10, limite do Google). Próxima: N3 ("Organizar pela distância"). |
 | N3 | **Organizar pela distância** (pedido do dono, 17/11) | **Concluída (17/11)** | Na tela do destino, por cidade: ordem da busca em que cada um fica perto do próximo (linha reta, pelos pontos do mapa), vindo da cidade anterior; sem ponto vai para o fim; o vanzeiro ainda arrasta. |
+| PD | **Completar o perfil antes do primeiro destino** (pedido do dono, 17/11) | **Concluída (17/11)** | Card com telefone, Pix e van (modelo, placa, lugares) em "Pronto"/"Falta"; "Completar meu perfil" abre o Perfil editando e, ao salvar, segue para criar o destino. |
 
 Fora do núcleo (decisão do dono, ver 22.9): GPS real, app na Play Store, domínio próprio.
 

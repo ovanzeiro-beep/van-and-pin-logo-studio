@@ -35,6 +35,17 @@ function inscrever(o: () => void) {
 
 export const obterPerfilDoVanzeiro = (vanzeiroId: string) => perfis[vanzeiroId] ?? PERFIL_VAZIO;
 
+/** Before the first destino: the profile data the app needs to work fully (phone, Pix and the van with its seats). */
+export function itensDoPerfil(p: PerfilVanzeiro) {
+  return {
+    telefone: telefoneValido(p.telefone),
+    pix: p.pix.trim() !== "",
+    van: p.van.modelo.trim() !== "" && p.van.placa.trim() !== "" && p.van.lugares !== null,
+  };
+}
+
+export const perfilCompleto = (p: PerfilVanzeiro) => Object.values(itensDoPerfil(p)).every(Boolean);
+
 /** Passenger screens: the vanzeiro of this destino or charge. */
 export function usePerfilDoVanzeiro(vanzeiroId: string) {
   const todos = useSyncExternalStore(inscrever, () => perfis, () => perfisIniciais);

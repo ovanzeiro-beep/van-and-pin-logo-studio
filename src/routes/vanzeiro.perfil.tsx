@@ -1,6 +1,6 @@
 import { NotificacoesNoCelular } from "@/components/app/NotificacoesNoCelular";
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Car, Check, Pencil, Phone, QrCode, RectangleHorizontal, User, X, Armchair } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { lerLugares } from "@/lib/lugares";
@@ -18,6 +18,11 @@ import { salvarPerfilNoBanco } from "@/lib/banco/destinos";
 import { useSessao } from "@/lib/sessao";
 
 export const Route = createFileRoute("/vanzeiro/perfil")({
+  // From the first destino: opens already editing and, after saving, goes on to create the destino.
+  validateSearch: (search: Record<string, unknown>): { editar?: boolean; depois?: "destino" } => ({
+    ...(search["editar"] === true || search["editar"] === "true" || search["editar"] === 1 ? { editar: true } : {}),
+    ...(search["depois"] === "destino" ? { depois: "destino" as const } : {}),
+  }),
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
@@ -37,14 +42,20 @@ const ou = (valor: string) => valor.trim() || "Não informado";
 function AbaPerfil() {
   const perfil = usePerfilVanzeiro();
   const destinos = useDestinos();
-  const [editando, setEditando] = useState(false);
+  const { editar, depois } = Route.useSearch();
+  const navigate = useNavigate();
+  const [editando, setEditando] = useState(!!editar);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <VanzeiroHeader compacto titulo="Perfil" subtitulo="Seus dados e a sua van." />
       <div className="relative z-10 -mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-4">
         {editando ? (
-          <Editar perfil={perfil} fechar={() => setEditando(false)} />
+          <Editar
+            perfil={perfil}
+            fechar={() => setEditando(false)}
+            aoSalvar={depois === "destino" ? () => void navigate({ to: "/vanzeiro/destinos/novo" }) : undefined}
+          />
         ) : (
           <>
             <section className="rounded-3xl bg-card p-4 shadow-card">
@@ -82,7 +93,7 @@ function AbaPerfil() {
   );
 }
 
-function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void }) {
+function Editar({ perfil, fechar, aoSalvar }: { perfil: PerfilVanzeiro; fechar: () => void; aoSalvar?: (() => void) | undefined }) {
   const perfilId = useSessao().vanzeiroId;
   const [nome, setNome] = useState(perfil.nome);
   const [telefone, setTelefone] = useState(formatarTelefone(perfil.telefone));
@@ -100,7 +111,7 @@ function Editar({ perfil, fechar }: { perfil: PerfilVanzeiro; fechar: () => void
       pix: pix.trim(),
       van: { modelo: modelo.trim(), placa: placa.trim().toUpperCase(), lugares: lugaresLidos === "invalido" ? null : lugaresLidos },
     }));
-    if (r.ok) fechar();
+    if (r.ok) (aoSalvar ?? fechar)();
   };
 
   return (

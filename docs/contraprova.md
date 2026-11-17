@@ -1569,3 +1569,13 @@ Pedido do dono: o GPS marca a cidade sozinho; quem não está numa cidade por on
 - [x] Conferido na tela: GPS em Cambará trocou Jacarezinho → Cambará e preencheu o endereço; GPS em Curitiba bloqueou.
 - [x] 4 testes novos (400 no total), tsc e build passando.
 - Limite: a conferência é feita no app (o banco não confere a distância). Cadastro feito pelo próprio vanzeiro não tem esse bloqueio.
+
+---
+
+## Primeiro destino: completar o perfil antes (pedido do dono, 17/11/2026) — feita
+
+- [x] "Crie seu primeiro destino" (Início, Destinos, Viagem e Financeiro sem destinos) abre um card "Antes, complete seu perfil" com 3 itens e "Pronto"/"Falta": telefone (WhatsApp), chave Pix, van (modelo, placa e lugares), cada um com o porquê em uma frase.
+- [x] Faltando algo: "Completar meu perfil" abre o Perfil já editando; ao salvar, vai direto para criar o destino. "Voltar" fecha.
+- [x] Perfil completo: o card mostra "Seu perfil está pronto!" e "Criar meu primeiro destino".
+- [x] Aparece sempre que o vanzeiro ainda não tem destinos (toda primeira viagem).
+- [x] Conferido no celular simulado (390×844 e 375×667; no SE o card rola de leve por dentro). 2 testes novos (402 no total), tsc e build passando.
