@@ -1626,3 +1626,10 @@ Pedido do dono: além da cidade, o nome do comércio onde param.
 - [x] Função `avisos-no-celular` publicada de novo no Supabase com o título novo (versão 6).
 - [x] Passageiro, aba Viagens (próximos 7 dias): o dia cancelado aparece riscado, com X, etiqueta "Cancelada" e o motivo, na ordem das datas.
 - [x] Testes atualizados (416), tsc e build passando.
+
+---
+
+## Financeiro igual ao Início (pedido do dono, 17/11/2026) — feita
+Conferido no banco: só 3 cobranças, todas pagas por Pix (150 + 250 + 150 = R$ 550,00 = "Recebido"); "A receber" e "Pendentes" vazios estavam certos pelas cobranças. O que não batia: o Início já contava quem confirmou "Vou" hoje e o Financeiro não.
+- [x] Financeiro: "A receber" soma quem confirmou "Vou" hoje (Por viagem e Diário); nos filtros Todas e Pendentes aparece um card por pessoa "Confirmou 'Vou' hoje · vira cobrança quando embarcar", com o valor. Mesma regra do Início (`confirmadosSemCobranca`).
+- [x] 416 testes, tsc e build passando.

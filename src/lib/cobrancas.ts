@@ -408,20 +408,21 @@ export function mensagemDosAtrasados(
  * today and have not boarded yet; "Não vou" takes them out. No charge is created here: the real one is still born at
  * "Embarcou" (then the person leaves this list, so nothing is counted twice).
  */
-export function previstoDoVou(
-  passageiros: Pick<Passageiro, "id" | "destinoId" | "plano" | "valor">[],
+export function confirmadosSemCobranca<T extends Pick<Passageiro, "id" | "destinoId" | "plano" | "valor">>(
+  passageiros: T[],
   destinosDeHoje: string[],
   respostas: Record<string, string>,
   viagens: Record<string, { fase: string; embarcaram: string[]; naoEstavam: string[] } | undefined>,
-) {
-  let qtd = 0;
-  let valor = 0;
-  for (const p of passageiros) {
-    if (!destinosDeHoje.includes(p.destinoId) || (p.plano !== "viagem" && p.plano !== "diario") || respostas[p.id] !== "vai") continue;
+): T[] {
+  return passageiros.filter((p) => {
+    if (!destinosDeHoje.includes(p.destinoId) || (p.plano !== "viagem" && p.plano !== "diario") || respostas[p.id] !== "vai") return false;
     const v = viagens[p.destinoId];
-    if (v && (v.fase === "encerrada" || v.embarcaram.includes(p.id) || v.naoEstavam.includes(p.id))) continue;
-    qtd += 1;
-    valor += p.valor ?? 0;
-  }
-  return { qtd, valor };
+    return !(v && (v.fase === "encerrada" || v.embarcaram.includes(p.id) || v.naoEstavam.includes(p.id)));
+  });
+}
+
+/** How many and how much (Início and Financeiro use the same numbers). */
+export function previstoDoVou(...args: Parameters<typeof confirmadosSemCobranca>) {
+  const quem = confirmadosSemCobranca(...args);
+  return { qtd: quem.length, valor: quem.reduce((s, p) => s + (p.valor ?? 0), 0) };
 }

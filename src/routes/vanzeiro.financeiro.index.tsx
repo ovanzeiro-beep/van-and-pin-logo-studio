@@ -9,7 +9,12 @@ import { VanzeiroHeader } from "@/components/app/VanzeiroHeader";
 import { dataDeHoje } from "@/lib/agora";
 import { nomeDoMesDe } from "@/lib/datas";
 import { formatarReais } from "@/lib/dinheiro";
-import { devedores, filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
+import { confirmadosSemCobranca, devedores, filtrarCobrancas, resumoDoMes, type Filtro } from "@/lib/cobrancas";
+import { usePassageiros } from "@/lib/passageiros-store";
+import { useRespostasDoDia } from "@/lib/respostas-store";
+import { useViagensDoDia } from "@/lib/viagem-store";
+import { aconteceEm } from "@/lib/viagem";
+import { CheckCircle2 } from "lucide-react";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { nomeDestino } from "@/lib/destinos";
 import { useDestinos } from "@/lib/destinos-store";
@@ -55,6 +60,15 @@ function Financeiro() {
   const destinos = useDestinos();
   const resumo = resumoDoMes(cobrancas, dataDeHoje());
   const lista = filtrarCobrancas(cobrancas, filtro, dataDeHoje());
+  // Who confirmed "Vou" today (Por viagem and Diário): pending already, until "Embarcou" creates the charge (as in Início).
+  const confirmados = confirmadosSemCobranca(
+    usePassageiros(),
+    destinos.filter((d) => aconteceEm(d, dataDeHoje())).map((d) => d.id),
+    useRespostasDoDia(dataDeHoje()),
+    useViagensDoDia().viagens,
+  );
+  const previstos = filtro === "todas" || filtro === "pendentes" ? confirmados : [];
+  const valorPrevisto = confirmados.reduce((s, p) => s + (p.valor ?? 0), 0);
   const mes = nomeDoMesDe(dataDeHoje());
   const nomeDoDestino = (id: string) => {
     const d = destinos.find((x) => x.id === id);
@@ -85,7 +99,7 @@ function Financeiro() {
 
       <div className="relative z-10 -mt-4 shrink-0 px-5">
         <div className="grid grid-cols-3 gap-2">
-          <CardResumo rotulo="A receber" valor={resumo.aReceber} className="text-foreground" />
+          <CardResumo rotulo="A receber" valor={resumo.aReceber + valorPrevisto} className="text-foreground" />
           <CardResumo rotulo="Recebido" valor={resumo.recebido} className="text-success" />
           <CardResumo rotulo="Devendo" valor={resumo.devendo} className="text-destructive" />
         </div>
@@ -118,7 +132,7 @@ function Financeiro() {
         />
       </div>
 
-      {lista.length === 0 ? (
+      {lista.length === 0 && previstos.length === 0 ? (
         <TelaVazia
           icon={ReceiptText}
           titulo={VAZIO[filtro]}
@@ -137,6 +151,19 @@ function Financeiro() {
         />
       ) : (
         <ul className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 pb-4 pt-3">
+          {previstos.map((p) => (
+            <li key={`vou-${p.id}`} className="flex items-center gap-3 rounded-3xl border-2 border-warning/40 bg-card p-3.5 shadow-card">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-warning-soft text-warning">
+                <CheckCircle2 className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-bold text-foreground">{p.nome}</p>
+                <p className="truncate text-sm text-muted-foreground">{nomeDoDestino(p.destinoId)}</p>
+                <p className="text-xs font-semibold text-warning">Confirmou "Vou" hoje · vira cobrança quando embarcar</p>
+              </div>
+              <p className="shrink-0 font-display text-lg font-bold text-foreground">{formatarReais(p.valor ?? 0)}</p>
+            </li>
+          ))}
           {lista.map((c) => (
             <li key={c.id}>
               <CobrancaItem c={c} destino={nomeDoDestino(c.destinoId)} />
