@@ -1,7 +1,7 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { avaliarMudanca, type Embarque } from "@/lib/endereco";
-import { atualizarMeusDados, identidadePassageiro, moverParaNaCidade, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
+import { atualizarMeusDados, identidadePassageiro, moverParaNaCidade, somenteDigitos, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { destinoCheio, VAN_CHEIA } from "@/lib/lugares";
 import { obterPerfilDoVanzeiro } from "@/lib/vanzeiro-store";
@@ -301,6 +301,37 @@ export function sairDaMatricula(id: string) {
   cancelarMudancasDe([id]);
   matriculas = matriculas.map((x) => (x.id === id ? { ...x, saiuEm: dataDeHoje() } : x));
   avisar();
+}
+
+/**
+ * G1: someone the vanzeiro added by hand (no account yet) asked to join the same destino with the same phone.
+ * Instead of a second passenger, the vanzeiro links the person's account to that record ("Ligar ao cadastro").
+ */
+export function cadastroDoPedido(lista: Passageiro[], pedido: Pick<PedidoEntrada, "destinoId" | "telefone">) {
+  return lista.find((x) => x.destinoId === pedido.destinoId && !x.pessoaId && somenteDigitos(x.telefone) === somenteDigitos(pedido.telefone));
+}
+
+export function ligarPedidoAoCadastro(pedidoId: string): Resultado {
+  const pedido = pedidos.find((p) => p.id === pedidoId);
+  if (!pedido) return naoDeu("Este pedido já foi respondido.");
+  const cadastro = cadastroDoPedido(passageiros, pedido);
+  if (!cadastro) return naoDeu("Não achamos um cadastro com este telefone neste destino.");
+  const ligado = { ...cadastro, ...(pedido.pessoaId ? { pessoaId: pedido.pessoaId } : {}) };
+  matriculas = matriculas.map((x) => (x.id === cadastro.id ? ligado : x));
+  mudarPedido(pedido.id, { situacao: "aceito", matriculaId: cadastro.id, respondidoEm: dataDeHoje() });
+  avisar();
+  const destino = obterDestinos().find((d) => d.id === cadastro.destinoId);
+  criarAviso({
+    vanzeiroId: cadastro.vanzeiroId,
+    tipo: "pedido_aceito",
+    paraVanzeiroOuPassageiroId: identidadePassageiro(ligado),
+    passageiroId: cadastro.id,
+    destinoId: cadastro.destinoId,
+    dataCriacao: dataDeHoje(),
+    lido: false,
+    textoResumido: `O vanzeiro aceitou seu pedido para ${destino ? nomeDestino(destino) : "o destino"}`,
+  });
+  return deuCerto;
 }
 
 export function recusarPedido(id: string): Resultado {

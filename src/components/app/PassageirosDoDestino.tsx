@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Check, ChevronRight, Copy, GripVertical, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users } from "lucide-react";
+import { Check, ChevronRight, Copy, GripVertical, Link2, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RecusarPedido } from "@/components/app/RecusarPedido";
 import type { Destino, Passageiro, PedidoEntrada } from "@/data/exemplo";
@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 import { mensagemConvite } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
 import { descricaoPlano, formatarTelefone, numerosDaBusca, porCidade } from "@/lib/passageiros";
-import { usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
+import { cadastroDoPedido, usePassageiros, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 import { fazer } from "@/lib/acoes";
-import { reordenarNoBanco } from "@/lib/banco/passageiros";
+import { ligarPedidoAoCadastroNoBanco, reordenarNoBanco } from "@/lib/banco/passageiros";
 import { textoDaOcupacao } from "@/lib/lugares";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -65,6 +65,8 @@ export function CodigoConvite({ destino }: { destino: Destino }) {
 
 /** One join request with Aceitar (opens the add-passenger steps prefilled) and Recusar. */
 export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; destino?: string | undefined }) {
+  // G1: the same phone as someone added by hand in this destino: link the account instead of a second passenger.
+  const cadastro = cadastroDoPedido(usePassageiros(), p);
   return (
     <li className={destino ? "rounded-3xl bg-card p-4 shadow-card" : "rounded-2xl bg-surface p-3"}>
       <p className="font-bold leading-snug text-foreground">{p.nome}</p>
@@ -79,12 +81,24 @@ export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; dest
           </span>
         </p>
       )}
+      {cadastro && (
+        <p className="mt-2 rounded-2xl bg-primary-soft px-3 py-2 text-sm text-foreground">
+          Já está cadastrado neste destino como <span className="font-bold">{cadastro.nome}</span>. Ligando, passa a usar o app com o
+          plano que já tem.
+        </p>
+      )}
       <div className="mt-2.5 grid grid-cols-2 gap-2">
-        <Button asChild size="lg" variant="success">
-          <Link to="/vanzeiro/destinos/$id/passageiros/novo" params={{ id: p.destinoId }} search={{ pedido: p.id }}>
-            <Check className="!h-5 !w-5" /> Aceitar
-          </Link>
-        </Button>
+        {cadastro ? (
+          <Button size="lg" variant="success" onClick={() => void fazer(() => ligarPedidoAoCadastroNoBanco(p.id))}>
+            <Link2 className="!h-5 !w-5" /> Ligar
+          </Button>
+        ) : (
+          <Button asChild size="lg" variant="success">
+            <Link to="/vanzeiro/destinos/$id/passageiros/novo" params={{ id: p.destinoId }} search={{ pedido: p.id }}>
+              <Check className="!h-5 !w-5" /> Aceitar
+            </Link>
+          </Button>
+        )}
         <RecusarPedido pedido={p} />
       </div>
     </li>
