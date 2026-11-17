@@ -1,4 +1,5 @@
 import { distanciaKm, type Ponto } from "@/lib/mapa";
+import { registrarErro } from "@/lib/erros";
 
 // N1: helps the passenger mark where they wait for the van: the phone's GPS ("Estou no ponto agora") or the written
 // address looked up in the free OpenStreetMap search ("Achar no mapa"). Tapping the map still adjusts the pin.
@@ -67,7 +68,8 @@ export function textoDoEndereco(e: Endereco | undefined) {
   const rua = ruaDe(e);
   const bairro = e?.neighbourhood ?? e?.suburb ?? e?.quarter;
   // Like the ride apps: "Rua Paraná, 455 - Vila Setti" (number and neighborhood when the map has them).
-  if (rua) return `${e?.house_number ? `${rua}, ${e.house_number}` : rua}${bairro ? ` - ${bairro}` : ""}`;
+  if (rua)
+    return `${e?.house_number ? `${rua}, ${e.house_number}` : rua}${bairro ? ` - ${bairro}` : ""}`;
   return bairroDe(e) ?? "";
 }
 
@@ -78,22 +80,73 @@ const esperarDeVerdade = (ms: number) => new Promise<void>((r) => setTimeout(r, 
  * new neighborhoods), the nearest named big street: "Perto de Estrada X (Vila Y)"; else the neighborhood; else "".
  * Never breaks the screen: offline gives "".
  */
+type Photon = {
+  features?: {
+    properties?: {
+      street?: string;
+      housenumber?: string;
+      name?: string;
+      district?: string;
+      locality?: string;
+      city?: string;
+      county?: string;
+    };
+  }[];
+};
+
+/** The second free map (Photon, same OpenStreetMap data on other servers), when Nominatim fails or knows nothing. */
+export function enderecoDoPhoton(r: Photon | null | undefined): Endereco | undefined {
+  const p = r?.features?.[0]?.properties;
+  if (!p) return undefined;
+  return {
+    ...(p.street ? { road: p.street } : {}),
+    ...(p.housenumber ? { house_number: p.housenumber } : {}),
+    ...((p.district ?? p.locality) ? { suburb: p.district ?? p.locality } : {}),
+    ...((p.city ?? p.county) ? { city: p.city ?? p.county } : {}),
+  };
+}
+
 export async function lugarDoPonto(
   p: Ponto,
   buscar: BuscarNoMapa = buscarDeVerdade,
   esperar: (ms: number) => Promise<void> = esperarDeVerdade,
+  aoFalhar: (motivo: string) => void = (m) => void registrarErro(new Error(m)),
 ): Promise<{ endereco: string; cidade: string | undefined }> {
+  const falhas: string[] = [];
   const reverso = async (zoom: number) => {
     try {
       const r = (await buscar(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=${zoom}&accept-language=pt-BR&lat=${p.lat}&lon=${p.lng}`,
-      )) as { address?: Endereco } | null;
+      )) as { address?: Endereco; error?: string } | null;
+      if (!r?.address) falhas.push(`nominatim ${zoom}: ${r?.error ?? "sem endereço"}`);
       return r?.address;
-    } catch {
+    } catch (e) {
+      falhas.push(`nominatim ${zoom}: ${e instanceof Error ? e.message : "erro"}`);
       return undefined;
     }
   };
-  const perto = await reverso(18);
+  const photon = async () => {
+    try {
+      return enderecoDoPhoton(
+        (await buscar(
+          `https://photon.komoot.io/reverse?lat=${p.lat}&lon=${p.lng}&limit=1`,
+        )) as Photon,
+      );
+    } catch (e) {
+      falhas.push(`photon: ${e instanceof Error ? e.message : "erro"}`);
+      return undefined;
+    }
+  };
+  let perto = await reverso(18);
+  if (!ruaDe(perto)) {
+    // Nominatim failed or has no street here: the second map.
+    const outro = await photon();
+    if (ruaDe(outro) || !perto)
+      perto = {
+        ...outro,
+        ...(perto?.city || perto?.town ? { city: perto.city ?? perto.town } : {}),
+      };
+  }
   const cidade = perto?.city ?? perto?.town ?? perto?.municipality ?? perto?.village;
   if (ruaDe(perto)) return { endereco: textoDoEndereco(perto), cidade };
   // The free map asks for at most one search per second.
@@ -106,6 +159,7 @@ export async function lugarDoPonto(
       endereco: `Perto de ${rua}${bairro && bairro !== cidade ? ` (${bairro})` : ""}`,
       cidade,
     };
+  if (falhas.length) aoFalhar(`Endereço pelo GPS não achado: ${falhas.join("; ")}`);
   return { endereco: bairro && bairro !== cidade ? bairro : "", cidade };
 }
 
@@ -204,10 +258,21 @@ export function textoForaDaRota(cidades: string[]) {
   return `Esse ponto não fica em nenhuma cidade por onde a van passa (${cidades.join(", ")}). Marque onde você espera a van.`;
 }
 
-const UFS = "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
+const UFS =
+  "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
 
 /** "Jacarezinho PR" from the map's answer (city and state); "" when it does not say. */
-export function textoDaCidade(e: { city?: string; town?: string; municipality?: string; village?: string; "ISO3166-2-lvl4"?: string } | undefined) {
+export function textoDaCidade(
+  e:
+    | {
+        city?: string;
+        town?: string;
+        municipality?: string;
+        village?: string;
+        "ISO3166-2-lvl4"?: string;
+      }
+    | undefined,
+) {
   const cidade = e?.city ?? e?.town ?? e?.municipality ?? e?.village;
   if (!cidade) return "";
   const uf = e?.["ISO3166-2-lvl4"]?.replace(/^BR-/, "");
@@ -215,7 +280,9 @@ export function textoDaCidade(e: { city?: string; town?: string; municipality?: 
 }
 
 /** The city where the phone is (GPS), for "De onde sai?". Only the city, never the address. */
-export async function minhaCidade(buscar: BuscarNoMapa = buscarDeVerdade): Promise<{ ok: true; cidade: string } | { ok: false; erro: string }> {
+export async function minhaCidade(
+  buscar: BuscarNoMapa = buscarDeVerdade,
+): Promise<{ ok: true; cidade: string } | { ok: false; erro: string }> {
   const gps = await minhaLocalizacao();
   if (!gps.ok) return gps;
   try {
@@ -223,7 +290,9 @@ export async function minhaCidade(buscar: BuscarNoMapa = buscarDeVerdade): Promi
       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=pt-BR&lat=${gps.ponto.lat}&lon=${gps.ponto.lng}`,
     )) as { address?: Parameters<typeof textoDaCidade>[0] };
     const cidade = textoDaCidade(r?.address);
-    return cidade ? { ok: true, cidade } : { ok: false, erro: "Não achamos o nome da cidade. Escreva no campo." };
+    return cidade
+      ? { ok: true, cidade }
+      : { ok: false, erro: "Não achamos o nome da cidade. Escreva no campo." };
   } catch {
     return { ok: false, erro: "Sem internet para achar a cidade. Escreva no campo." };
   }

@@ -161,3 +161,30 @@ describe("Destino: cidade de saída pelo GPS", () => {
     expect(textoDaCidade({})).toBe("");
   });
 });
+
+describe("GPS: segundo mapa quando o primeiro falha", () => {
+  it("Nominatim fora do ar: usa o Photon e preenche rua, número e bairro", async () => {
+    const { lugarDoPonto } = await import("@/lib/ponto-de-embarque");
+    const falhas: string[] = [];
+    const r = await lugarDoPonto(
+      { lat: -23.16, lng: -49.97 },
+      async (url) => {
+        if (url.includes("nominatim")) throw new Error("Failed to fetch");
+        return { features: [{ properties: { street: "Rua São João", housenumber: "120", district: "Centro", city: "Jacarezinho" } }] };
+      },
+      async () => {},
+      (m) => falhas.push(m),
+    );
+    expect(r).toEqual({ endereco: "Rua São João, 120 - Centro", cidade: "Jacarezinho" });
+    expect(falhas).toEqual([]);
+  });
+
+  it("os dois falham: registra o motivo (sem o ponto da pessoa) e não quebra", async () => {
+    const { lugarDoPonto } = await import("@/lib/ponto-de-embarque");
+    const falhas: string[] = [];
+    const r = await lugarDoPonto({ lat: -23.16, lng: -49.97 }, async () => Promise.reject(new Error("Failed to fetch")), async () => {}, (m) => falhas.push(m));
+    expect(r.endereco).toBe("");
+    expect(falhas[0]).toMatch(/nominatim 18: Failed to fetch; photon: Failed to fetch/);
+    expect(falhas[0]).not.toMatch(/-23\.16/);
+  });
+});

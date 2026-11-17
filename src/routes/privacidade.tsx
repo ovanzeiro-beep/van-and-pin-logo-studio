@@ -171,7 +171,8 @@ function Privacidade() {
           O mapa e a busca de cidades vêm dos servidores do OpenStreetMap. Ao abrir uma tela com mapa, ou quando o app
           procura uma cidade, o OpenStreetMap recebe o seu endereço IP, dados do navegador e o nome da cidade procurada.
           Quando você toca em "Achar no mapa", ele recebe o endereço que você escreveu; quando toca em "Estou no ponto
-          agora", recebe o ponto onde o celular está, para devolver o nome da rua. A localização do celular só é usada
+          agora", recebe o ponto onde o celular está, para devolver o nome da rua. Se ele não responder, o ponto vai para o
+          Photon (da empresa Komoot), que usa os mesmos dados do OpenStreetMap. A localização do celular só é usada
           nessa hora, quando você toca no botão, e não fica sendo acompanhada. A{" "}
           <a
             href="https://osmfoundation.org/wiki/Privacy_Policy"

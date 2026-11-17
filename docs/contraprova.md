@@ -1653,3 +1653,9 @@ Causa: a tela de abertura sempre levava para "Entrar", mesmo com a conta guardad
 - [x] "Estou no ponto agora" preenche sempre o campo do endereço (mesmo se já tinha texto): "Rua, número - Bairro" quando o mapa tem; a pessoa corrige depois. Sem nome de rua no mapa: "Perto de …" ou o bairro; sem nada, mantém o texto e pede para escrever.
 - [x] A cidade continua marcada sozinha entre as cidades do vanzeiro (sem mudança).
 - [x] 419 testes, tsc e build passando.
+
+### N1 — ajuste 4 (17/11/2026): "não está preenchendo sozinho"
+Sem erro registrado no banco; não dá para testar o mapa gratuito daqui (rede bloqueada). Teste do dono foi no computador (localização aproximada).
+- [x] Segundo mapa: se o Nominatim falhar ou não tiver a rua, o app pergunta ao Photon (Komoot, mesmos dados do OpenStreetMap) e preenche "Rua, número - Bairro".
+- [x] Se os dois falharem, o motivo vai para `erros_do_app` (sem o ponto da pessoa), para conferir.
+- [x] Política: cita o Photon. 2 testes novos (421 no total), tsc e build passando.
