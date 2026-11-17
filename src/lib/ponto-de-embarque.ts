@@ -47,31 +47,56 @@ type Endereco = {
   pedestrian?: string;
   footway?: string;
   house_number?: string;
-  suburb?: string;
   neighbourhood?: string;
+  suburb?: string;
+  quarter?: string;
+  hamlet?: string;
+  village?: string;
+  isolated_dwelling?: string;
 };
+
+const ruaDe = (e: Endereco | undefined) => e?.road ?? e?.pedestrian ?? e?.footway;
+const bairroDe = (e: Endereco | undefined) =>
+  e?.neighbourhood ?? e?.suburb ?? e?.quarter ?? e?.hamlet ?? e?.village ?? e?.isolated_dwelling;
 
 /** "Rua Paraná, 455" from the map's answer; the neighborhood when the street has no name; "" when nothing useful. */
 export function textoDoEndereco(e: Endereco | undefined) {
-  if (!e) return "";
-  const rua = e.road ?? e.pedestrian ?? e.footway;
-  if (rua) return e.house_number ? `${rua}, ${e.house_number}` : rua;
-  return e.neighbourhood ?? e.suburb ?? "";
+  const rua = ruaDe(e);
+  if (rua) return e?.house_number ? `${rua}, ${e.house_number}` : rua;
+  return bairroDe(e) ?? "";
 }
 
-/** The street and number of a GPS point (to fill the address when it is empty). "" when not found or offline. */
+const esperarDeVerdade = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/**
+ * The address of a GPS point, to fill the field: "Rua Paraná, 455"; when the street has no name on the map (common in
+ * new neighborhoods), the nearest named big street: "Perto de Estrada X (Vila Y)"; else the neighborhood; else "".
+ * Never breaks the screen: offline gives "".
+ */
 export async function enderecoDoPonto(
   p: Ponto,
   buscar: BuscarNoMapa = buscarDeVerdade,
+  esperar: (ms: number) => Promise<void> = esperarDeVerdade,
 ): Promise<string> {
-  try {
-    const r = (await buscar(
-      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=pt-BR&lat=${p.lat}&lon=${p.lng}`,
-    )) as { address?: Endereco };
-    return textoDoEndereco(r?.address);
-  } catch {
-    return "";
-  }
+  const reverso = async (zoom: number) => {
+    try {
+      const r = (await buscar(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=${zoom}&accept-language=pt-BR&lat=${p.lat}&lon=${p.lng}`,
+      )) as { address?: Endereco } | null;
+      return r?.address;
+    } catch {
+      return undefined;
+    }
+  };
+  const perto = await reverso(18);
+  if (ruaDe(perto)) return textoDoEndereco(perto);
+  // The free map asks for at most one search per second.
+  await esperar(1100);
+  const grande = await reverso(16);
+  const bairro = bairroDe(perto) ?? bairroDe(grande);
+  const rua = ruaDe(grande);
+  if (rua) return `Perto de ${rua}${bairro ? ` (${bairro})` : ""}`;
+  return bairro ?? "";
 }
 
 export type ResultadoDoGps = { ok: true; ponto: Ponto } | { ok: false; erro: string };

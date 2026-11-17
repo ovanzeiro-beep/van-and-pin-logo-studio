@@ -1553,3 +1553,10 @@ Plano e resultado:
 - [x] Conferido no celular simulado (375×667): Jacarezinho → Londrina ficou leste → oeste (Mariana, Beatriz, Pedro), terminando do lado de Londrina.
 - [x] 7 testes novos (395 no total), tsc e build passando.
 - Limite: a distância é em linha reta (sem as ruas de verdade); para ruas de mão única ou rio no meio, o vanzeiro ajusta arrastando.
+
+### N1 — ajuste (17/11/2026): preencher o endereço mesmo com rua sem nome
+Pedido do dono (foto: pino marcado, campo do endereço vazio; as ruas do lugar não têm nome no mapa gratuito).
+- [x] "Estou no ponto agora": rua com nome → "Rua X, nº"; rua sem nome → a rua grande com nome mais perto e o bairro ("Perto de Estrada X (Vila Y)"); sem isso → o bairro; sem nada → mensagem pedindo para escrever o endereço ou uma referência.
+- [x] Preenche quando o campo está vazio ou ainda tem o que o mapa preencheu antes; nunca apaga o que a pessoa escreveu (conferido na tela).
+- [x] Mensagem "Endereço preenchido pelo mapa. Confira e corrija se precisar."; a pessoa edita no próprio campo.
+- [x] Espera 1 s entre as duas buscas (regra do mapa gratuito). 3 testes novos (397 no total), tsc e build passando.

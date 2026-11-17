@@ -50,14 +50,49 @@ describe("N1: capturar o ponto de embarque", () => {
   });
 
   it("o nome da rua do GPS nunca quebra a tela: sem internet volta vazio", async () => {
+    const nada = async () => {};
     expect(
-      await enderecoDoPonto(jacarezinho, async () => ({
-        address: { road: "Rua Paraná", house_number: "455" },
-      })),
+      await enderecoDoPonto(
+        jacarezinho,
+        async () => ({ address: { road: "Rua Paraná", house_number: "455" } }),
+        nada,
+      ),
     ).toBe("Rua Paraná, 455");
     expect(
-      await enderecoDoPonto(jacarezinho, async () => Promise.reject(new Error("offline"))),
+      await enderecoDoPonto(jacarezinho, async () => Promise.reject(new Error("offline")), nada),
     ).toBe("");
+  });
+
+  it("rua sem nome no mapa: usa a rua grande mais perto e o bairro; sem nada disso, o bairro", async () => {
+    const nada = async () => {};
+    const respostas = (z18: object, z16: object) => async (url: string) =>
+      url.includes("zoom=18") ? { address: z18 } : { address: z16 };
+    expect(
+      await enderecoDoPonto(
+        jacarezinho,
+        respostas({ suburb: "Vila Setti" }, { road: "Estrada do Jacu" }),
+        nada,
+      ),
+    ).toBe("Perto de Estrada do Jacu (Vila Setti)");
+    expect(
+      await enderecoDoPonto(jacarezinho, respostas({}, { road: "Estrada do Jacu" }), nada),
+    ).toBe("Perto de Estrada do Jacu");
+    expect(
+      await enderecoDoPonto(jacarezinho, respostas({ neighbourhood: "Jardim Europa" }, {}), nada),
+    ).toBe("Jardim Europa");
+    expect(await enderecoDoPonto(jacarezinho, respostas({}, {}), nada)).toBe("");
+  });
+
+  it("espera 1 segundo entre as duas buscas (regra do mapa gratuito)", async () => {
+    const esperas: number[] = [];
+    await enderecoDoPonto(
+      jacarezinho,
+      async () => ({ address: {} }),
+      async (ms) => {
+        esperas.push(ms);
+      },
+    );
+    expect(esperas).toEqual([1100]);
   });
 
   it("GPS: devolve o ponto; recusado ou sem GPS vira mensagem simples", async () => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { LoaderCircle, LocateFixed, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
@@ -39,11 +39,14 @@ export function OndeEmbarco({
   const [ocupado, setOcupado] = useState<"gps" | "busca" | null>(null);
   const [mensagem, setMensagem] = useState<{ texto: string; tom: "aviso" | "ok" } | null>(null);
 
-  const marcar = (ponto: Ponto, extra: Partial<Embarque> = {}) => {
+  /** The address the map filled last time: pressing the GPS again may replace it (never what the person wrote). */
+  const preenchidoPeloMapa = useRef<string | null>(null);
+
+  const marcar = (ponto: Ponto, extra: Partial<Embarque> = {}, okTexto = "Pronto! Confira o pino. Se precisar, toque no lugar certo.") => {
     setAlvo(ponto);
     mudar({ ponto, ...extra });
     const longe = avisoDeLonge(ponto, valor.cidade, centro);
-    setMensagem(longe ? { texto: longe, tom: "aviso" } : { texto: "Pronto! Confira o pino. Se precisar, toque no lugar certo.", tom: "ok" });
+    setMensagem(longe ? { texto: longe, tom: "aviso" } : { texto: okTexto, tom: "ok" });
   };
 
   const usarGps = async () => {
@@ -55,10 +58,16 @@ export function OndeEmbarco({
       setMensagem({ texto: r.erro, tom: "aviso" });
       return;
     }
-    // The street and number fill the address only when it is empty (never erase what the person wrote).
-    const rua = valor.endereco.trim() === "" ? await enderecoDoPonto(r.ponto) : "";
+    // The address is filled when the field is empty or still has what the map filled before (never what the person wrote).
+    const podePreencher = valor.endereco.trim() === "" || valor.endereco === preenchidoPeloMapa.current;
+    const rua = podePreencher ? await enderecoDoPonto(r.ponto) : "";
     setOcupado(null);
-    marcar(r.ponto, rua ? { endereco: rua } : {});
+    if (rua) {
+      preenchidoPeloMapa.current = rua;
+      marcar(r.ponto, { endereco: rua }, "Endereço preenchido pelo mapa. Confira e corrija se precisar.");
+    } else if (podePreencher) {
+      marcar(r.ponto, {}, "Pino marcado. Não achamos o nome da rua: escreva o endereço ou uma referência.");
+    } else marcar(r.ponto);
   };
 
   const procurar = async () => {
