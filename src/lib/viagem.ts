@@ -249,10 +249,35 @@ export function encerrarViagem(v: ViagemDoDia): ViagemDoDia {
   return v.fase === "chegada" ? { ...v, fase: "encerrada" } : v;
 }
 
-/** Opens Google Maps (the app on the phone): on the point the passenger marked, else on the written address. */
-export function linkDoMapa(p: Pick<Passageiro, "endereco" | "cidade" | "ponto">) {
-  const busca = p.ponto ? `${p.ponto.lat},${p.ponto.lng}` : `${p.endereco}, ${p.cidade}`;
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busca)}`;
+type OndeFica = Pick<Passageiro, "endereco" | "cidade" | "ponto">;
+
+/** The place to drive to: the point the passenger marked, else the written address. */
+function lugar(p: OndeFica) {
+  return p.ponto ? `${p.ponto.lat},${p.ponto.lng}` : `${p.endereco}, ${p.cidade}`;
+}
+
+/** "Ir até lá": opens Google Maps (the app on the phone) already navigating by car to the passenger. */
+export function linkDoMapa(p: OndeFica) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lugar(p))}&travelmode=driving&dir_action=navigate`;
+}
+
+/** Google Maps takes at most 9 stops on the way plus the end. */
+export const MAXIMO_NA_ROTA = 10;
+
+/** "Rota completa": Google Maps with the next passengers in the order of the trip (at most 10). */
+export function linkDaRotaCompleta(lista: OndeFica[]) {
+  const pontos = lista.slice(0, MAXIMO_NA_ROTA).map(lugar);
+  const fim = pontos.pop();
+  if (fim === undefined) return null;
+  const meio = pontos.length ? `&waypoints=${encodeURIComponent(pontos.join("|"))}` : "";
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fim)}${meio}&travelmode=driving`;
+}
+
+/** Who is still to pick up (busca) or to drop off (volta), in the order of the trip; the first one is the next. */
+export function faltamNaRota(v: ViagemDoDia) {
+  if (v.fase === "busca") return v.ordem.filter((id) => !v.embarcaram.includes(id) && !v.naoEstavam.includes(id));
+  if (v.fase === "volta") return [...v.ordem].reverse().filter((id) => v.naVolta.includes(id) && !v.desceram.includes(id) && !v.ficaram.includes(id));
+  return [];
 }
 
 // ---------- the passenger's side ----------

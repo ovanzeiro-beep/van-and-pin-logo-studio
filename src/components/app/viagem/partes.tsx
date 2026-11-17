@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, Route } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import type { Passageiro } from "@/data/exemplo";
 import { nomeDestino } from "@/lib/destinos";
 import { cn } from "@/lib/utils";
-import { linkDoMapa } from "@/lib/viagem";
+import { linkDaRotaCompleta, linkDoMapa } from "@/lib/viagem";
 
-/** Who is next: name, address and city, with "Abrir no mapa". */
-export function PassageiroDaVez({ rotulo, p, posicao }: { rotulo: string; p: Passageiro | undefined; posicao: string }) {
+/** Who is next: name, address and city, with "Ir até lá" (navigation) and "Rota completa" (the ones still to go). */
+export function PassageiroDaVez({ rotulo, p, posicao, faltam = [] }: { rotulo: string; p: Passageiro | undefined; posicao: string; faltam?: Passageiro[] }) {
+  const rota = faltam.length > 1 ? linkDaRotaCompleta(faltam) : null;
   return (
     <section className="rounded-3xl bg-card p-3.5 shadow-card">
       <div className="flex items-center justify-between gap-2">
@@ -25,14 +26,16 @@ export function PassageiroDaVez({ rotulo, p, posicao }: { rotulo: string; p: Pas
         </div>
       )}
       {p && (
-        <a
-          href={linkDoMapa(p)}
-          target="_blank"
-          rel="noreferrer"
-          className={cn(buttonVariants({ variant: "outline" }), "mt-2.5 w-full rounded-2xl font-bold")}
-        >
-          <Navigation className="h-5 w-5" /> Abrir no mapa
-        </a>
+        <div className={cn("mt-2.5 grid gap-2", rota && "grid-cols-2")}>
+          <a href={linkDoMapa(p)} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "w-full rounded-2xl font-bold")}>
+            <Navigation className="h-5 w-5" /> Ir até lá
+          </a>
+          {rota && (
+            <a href={rota} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "w-full rounded-2xl font-bold")}>
+              <Route className="h-5 w-5" /> Rota completa
+            </a>
+          )}
+        </div>
       )}
     </section>
   );

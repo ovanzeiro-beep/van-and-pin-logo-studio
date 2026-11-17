@@ -10,6 +10,7 @@ import {
   conferir,
   desceu,
   encerrarViagem,
+  faltamNaRota,
   fazerParada,
   iniciarVolta,
   listaDaConferencia,
@@ -37,6 +38,7 @@ function BotaoParada() {
 /** Body of the Viagem tab while a trip is in progress, one screen per moment of the trip. */
 export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; passageiros: Passageiro[]; destino?: Destino | undefined }) {
   const achar = (id: string | undefined) => passageiros.find((p) => p.id === id);
+  const faltam = faltamNaRota(v).flatMap((id) => passageiros.filter((p) => p.id === id));
 
   if (v.fase === "busca") {
     const id = proximoDaBusca(v);
@@ -50,7 +52,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
           extra={v.naoEstavam.length > 0 && <span className="whitespace-nowrap text-sm font-bold text-destructive">{v.naoEstavam.length} {v.naoEstavam.length === 1 ? "não estava no ponto" : "não estavam no ponto"}</span>}
         />
         {id ? (
-          <PassageiroDaVez rotulo="Próximo passageiro" p={achar(id)} posicao={`${feitos + 1}º de ${v.ordem.length}`} />
+          <PassageiroDaVez rotulo="Próximo passageiro" p={achar(id)} posicao={`${feitos + 1}º de ${v.ordem.length}`} faltam={faltam} />
         ) : (
           <section className="flex flex-col items-center rounded-3xl bg-card p-5 text-center shadow-card">
             <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-success-soft text-success">
@@ -90,7 +92,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
         <Progresso feitos={v.desceram.length} total={total} texto="desceram" />
-        {id && <PassageiroDaVez rotulo="Próxima descida" p={achar(id)} posicao={`${v.desceram.length + 1}º de ${total}`} />}
+        {id && <PassageiroDaVez rotulo="Próxima descida" p={achar(id)} posicao={`${v.desceram.length + 1}º de ${total}`} faltam={faltam} />}
         <div className="mt-auto grid gap-2">
           {id && (
             <Button variant="success" size="xl" className={botaoGrande} onClick={() => void fazer(() => atualizarViagemNoBanco((x) => desceu(x, id)))}>

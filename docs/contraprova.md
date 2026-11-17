@@ -1524,3 +1524,19 @@ Plano (tela "Onde você embarca", usada ao entrar na van e ao mudar o endereço)
 - [x] 7 testes novos (383 no total), tsc e build passando. Início, cores e palavras não mudaram.
 - [x] Tela sem rolagem em 390×844; no iPhone SE (375×667) o mapa fica baixo e o cartão rola de leve (aceito pela regra 4).
 - Limite: em cidade pequena a busca por rua pode não achar; o GPS é o caminho principal.
+
+---
+
+## N2: navegar até cada passageiro (pedido do dono, 17/11/2026) — plano
+
+- [ ] No card do "Próximo passageiro" (busca) e da "Próxima descida" (volta), "Abrir no mapa" vira "Ir até lá": abre o Google Maps já navegando até o ponto marcado (ou o endereço escrito, se não houver ponto).
+- [ ] Botão "Rota completa" ao lado: abre o Google Maps com os que faltam, na ordem da viagem (até 10 pontos, limite do Google); só aparece quando falta mais de um.
+- [ ] Sem mudar a altura do card (os dois botões na mesma linha); Waze não entra (o dono não pediu).
+- [ ] Testes das regras; tsc e build.
+
+### N2 — resultado (17/11/2026): feita
+- [x] "Abrir no mapa" virou "Ir até lá": Google Maps já navegando de carro até o ponto marcado (sem ponto, pelo endereço escrito). Vale na busca e na volta.
+- [x] "Rota completa" ao lado: os que faltam, na ordem da viagem (busca: ordem das paradas; volta: ordem inversa), até 10 pontos; só aparece quando falta mais de um.
+- [x] Card com a mesma altura (botões lado a lado); conferido em 390×844 e 375×667 sem rolagem.
+- [x] 5 testes novos e o teste antigo do link atualizado (388 no total); tsc e build passando.
+- Waze não entrou (não foi pedido).
