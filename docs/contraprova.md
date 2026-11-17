@@ -1362,3 +1362,8 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [x] Agora: a pessoa pede para entrar normalmente (mesmo com a van cheia, porque já ocupa o lugar dela); o vanzeiro vê no pedido "Já está cadastrado neste destino como …" e toca em **Ligar**: a conta passa a ser a desse cadastro, com o plano, o valor e as cobranças que já tinha; nada duplica; a pessoa recebe "pedido aceito".
 - [x] Banco (`20261117010000_ligar_ao_cadastro.sql`, aplicado direto no Supabase): `ligar_pedido_ao_cadastro` (só o vanzeiro do destino; mesmo telefone; cadastro sem conta). Testado numa cópia (9 checagens).
 - [x] Conferência: 363 testes (novo `g1-ligar-ao-cadastro.test.ts`), tipos, build.
+
+## G2 — Sair da conta desliga as notificações deste celular (17/11/2026)
+- [x] Antes: depois de "Sair" (ou entrar com outra conta no mesmo celular), o aparelho continuava recebendo os avisos da conta antiga.
+- [x] Agora: ao sair e ao excluir a conta, o endereço de notificação deste celular é apagado do banco e desligado no navegador; a próxima conta que entrar ganha um novo (ao ativar ou ao entrar com as notificações já permitidas).
+- [x] Conferência: 364 testes (novo `g2-sair-celular.test.ts`), tipos, build. Sem mudança no banco (a regra "o dono apaga o próprio celular" já existia).

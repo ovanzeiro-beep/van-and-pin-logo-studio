@@ -48,6 +48,24 @@ export async function guardarEsteCelular(): Promise<boolean> {
   }
 }
 
+/**
+ * G2: leaving the account (or deleting it), this phone stops receiving its notices: the delivery address is
+ * removed from the database and turned off in the browser. The next account to come in gets a new one.
+ */
+export async function esquecerEsteCelular(): Promise<void> {
+  const sb = supabase();
+  if (!USA_BANCO.conta || !sb || typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+  try {
+    const registro = await navigator.serviceWorker.getRegistration();
+    const assinatura = await registro?.pushManager.getSubscription();
+    if (!assinatura) return;
+    if (obterSessao().conta) await sb.from("celulares").delete().eq("endereco->>endpoint", assinatura.endpoint);
+    await assinatura.unsubscribe();
+  } catch {
+    // Without signal the address stays; the server forgets it when the delivery fails.
+  }
+}
+
 /** In the root of the app: every time an account comes in on this phone, its address is saved again. */
 export function useCelularNoBanco() {
   const contaId = useSessao().conta?.id;
