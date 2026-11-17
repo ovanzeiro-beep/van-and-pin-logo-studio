@@ -16,7 +16,7 @@ import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useSituacaoDaVan, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
-import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
+import { BotaoNaoVou, BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
 import { EmbarqueDaViagem } from "@/components/app/passageiro/EmbarqueDaViagem";
 import { useEmbarqueDaViagem } from "@/lib/banco/embarque";
@@ -96,13 +96,7 @@ function InicioPassageiro() {
           {prox?.aberta && (
             <div className="mt-2 grid grid-cols-2 gap-3">
               <BotaoVou passageiroId={prox.eu.id} destinoId={prox.destino.id} data={prox.data} resposta={prox.resposta} />
-              <Button
-                variant={prox.resposta === "nao-vai" ? "destructive" : "outline"}
-                onClick={() => void fazer(() => responderNoBanco(prox.eu.id, prox.data, "nao-vai"))}
-                aria-pressed={prox.resposta === "nao-vai"}
-              >
-                <X className="!h-5 !w-5" /> Não vou
-              </Button>
+              <BotaoNaoVou passageiroId={prox.eu.id} destinoId={prox.destino.id} data={prox.data} resposta={prox.resposta} />
             </div>
           )}
           {prox && !prox.aberta && !prox.resposta && (

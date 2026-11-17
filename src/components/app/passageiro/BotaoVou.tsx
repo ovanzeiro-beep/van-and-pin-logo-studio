@@ -7,6 +7,7 @@ import {
   Check,
   Clock,
   MapPin,
+  X,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -145,6 +146,86 @@ export function BotaoVou({
               </AlertDialogCancel>
               <Button size="lg" variant="cta" onClick={() => void confirmar()}>
                 <Check className="!h-5 !w-5" /> Confirmar que vou
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </>
+  );
+}
+
+/** The deadline line of "Não vou": the same deadline, said the other way round. */
+export function prazoDoNaoVou(prazo: string) {
+  return prazo.replace("Pode desistir no app", "Pode mudar de ideia no app");
+}
+
+/**
+ * Owner (17/11/2026): "Não vou" also asks first (a tap by accident must not give away the seat). It shows the trip and,
+ * for whoever had said "Vou", that the seat becomes free for someone else.
+ */
+export function BotaoNaoVou({
+  passageiroId,
+  destinoId,
+  data,
+  resposta,
+}: {
+  passageiroId: string;
+  destinoId: string;
+  data: string;
+  resposta: RespostaViagem | undefined;
+}) {
+  const destino = useDestinos().find((d) => d.id === destinoId);
+  const [aberto, setAberto] = useState(false);
+  const avisar = async () => {
+    const r = await fazer(() => responderNoBanco(passageiroId, data, "nao-vai"));
+    if (r.ok) setAberto(false);
+  };
+  const t = destino ? textoDaConfirmacao(destino, data, agora()) : null;
+  return (
+    <>
+      <Button
+        variant={resposta === "nao-vai" ? "destructive" : "outline"}
+        onClick={() => (resposta === "nao-vai" || !t ? void avisar() : setAberto(true))}
+        aria-pressed={resposta === "nao-vai"}
+      >
+        <X className="!h-5 !w-5" /> Não vou
+      </Button>
+      {t && destino && (
+        <AlertDialog open={aberto} onOpenChange={setAberto}>
+          <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Avisar que não vai</AlertDialogTitle>
+              <AlertDialogDescription>Confira a viagem antes de avisar.</AlertDialogDescription>
+            </AlertDialogHeader>
+            {resposta === "vai" && (
+              <p className="flex gap-2 rounded-2xl bg-warning-soft px-3.5 py-2.5 text-sm font-semibold text-warning" role="status">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> Seu lugar na van fica livre para outra pessoa. Se mudar de ideia, pode não ter
+                mais lugar.
+              </p>
+            )}
+            <dl className="space-y-2 rounded-2xl bg-surface p-3.5 text-sm">
+              <div className="flex items-center gap-2.5">
+                <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <dd className="font-display text-base font-bold text-foreground">{t.dia}</dd>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <dd className="font-semibold text-foreground">{nomeDestino(destino)}</dd>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <dd className="font-semibold text-foreground">{t.saida}</dd>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <AlarmClock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <dd className="text-muted-foreground">{prazoDoNaoVou(t.prazo)}</dd>
+              </div>
+            </dl>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Voltar</AlertDialogCancel>
+              <Button size="lg" variant="destructive" onClick={() => void avisar()}>
+                <X className="!h-5 !w-5" /> Confirmar que não vou
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

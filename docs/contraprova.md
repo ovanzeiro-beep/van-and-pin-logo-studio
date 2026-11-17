@@ -1641,3 +1641,10 @@ Causa: a tela de abertura sempre levava para "Entrar", mesmo com a conta guardad
 - [x] Abertura: espera a conta carregar; com conta, vai direto para o último painel (vanzeiro ou passageiro; sem papel, "Como vai usar"); sem conta, "Entrar".
 - [x] "Entrar" aberta com a conta já logada: vai direto para o painel.
 - [x] O login só é pedido de novo depois de "Sair". 416 testes, tsc e build passando.
+
+---
+
+## "Não vou" pede confirmação (pedido do dono, 17/11/2026) — feita
+- [x] Tocar em "Não vou" (Início e Viagens do passageiro) abre "Avisar que não vai": dia, destino, saída e "Pode mudar de ideia no app até as HH:MM"; botões "Voltar" e "Confirmar que não vou" (vermelho).
+- [x] Quem tinha dito "Vou" vê também: "Seu lugar na van fica livre para outra pessoa. Se mudar de ideia, pode não ter mais lugar."
+- [x] Já está em "Não vou": tocar de novo não abre nada. 3 testes novos (419 no total), tsc e build passando.

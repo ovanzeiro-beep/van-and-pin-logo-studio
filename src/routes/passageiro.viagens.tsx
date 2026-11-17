@@ -10,7 +10,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
 import { somarDias } from "@/lib/datas";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
-import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
+import { BotaoNaoVou, BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
 import { RespostasFixas } from "@/components/app/passageiro/RespostasFixas";
 import { cn } from "@/lib/utils";
@@ -169,13 +169,7 @@ function ProximaViagem({ v, saida, passageiroId }: { v: MinhaProximaViagem; said
       {v.aberta && (
         <div className="mt-2 grid grid-cols-2 gap-2.5">
           <BotaoVou passageiroId={passageiroId} destinoId={v.destino.id} data={v.data} resposta={v.resposta} />
-          <Button
-            variant={v.resposta === "nao-vai" ? "destructive" : "outline"}
-            onClick={() => void fazer(() => responderNoBanco(passageiroId, v.data, "nao-vai"))}
-            aria-pressed={v.resposta === "nao-vai"}
-          >
-            <X className="!h-5 !w-5" /> Não vou
-          </Button>
+          <BotaoNaoVou passageiroId={passageiroId} destinoId={v.destino.id} data={v.data} resposta={v.resposta} />
         </div>
       )}
     </article>
