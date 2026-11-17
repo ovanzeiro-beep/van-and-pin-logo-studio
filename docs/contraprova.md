@@ -1451,3 +1451,8 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 
 ## Pedidos de 17/11/2026 registrados para as próximas etapas
 - [ ] REV-08 Lugares da viagem visíveis ao passageiro; REV-09 acompanhamento do embarque (quantos e iniciais); REV-10 aviso "A próxima é você". Especificação completa na fonte da verdade, seção 22.10. Situação: a fazer.
+
+## REV-08 — Lugares da viagem para o passageiro (17/11/2026)
+- [x] Banco: `supabase/migrations/20261117040000_rev08_lugares_da_viagem.sql` (`lugares_da_viagem`: só números, só para a própria matrícula; mesma conta da lotação), testado numa cópia (outra pessoa não consegue consultar) e aplicado no Supabase real.
+- [x] App: `src/lib/banco/lugares.ts` (lê do banco e de novo a cada mudança das respostas), `vagasDaViagem` em `src/lib/lugares.ts`, componente `VagasDaViagem` no card "Próxima viagem" do Início e em Viagens: "4 de 15 lugares ocupados · 11 livres" com barra; "Restam 2 lugares" (âmbar); "Van lotada" (vermelho); "Você está entre os 4 confirmados".
+- [x] Conferência: 370 testes (novo `rev08-vagas.test.ts`), tipos, build; Início sem rolar em 390×844 e 360×740.

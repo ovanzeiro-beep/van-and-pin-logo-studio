@@ -15,6 +15,7 @@ import { rotuloDoDia, useSituacaoDaVan, type MinhaProximaViagem } from "@/lib/mi
 import { useIdsDasMinhasCobrancas } from "@/lib/sessao-passageiro";
 import { linkWhatsApp } from "@/lib/passageiros";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
+import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
@@ -79,6 +80,9 @@ function InicioPassageiro() {
           aside={<BadgeResposta resposta={prox?.resposta} aberta={prox?.aberta ?? false} />}
         >
           {prox && <Prazo v={prox} />}
+          {prox && (prox.aberta || prox.resposta === "vai") && (
+            <VagasDaViagem matriculaId={prox.eu.id} destinoId={prox.destino.id} vanzeiroId={prox.destino.vanzeiroId} data={prox.data} />
+          )}
           {prox?.aberta && (
             <div className="mt-2 grid grid-cols-2 gap-3">
               <BotaoVou passageiroId={prox.eu.id} destinoId={prox.destino.id} data={prox.data} resposta={prox.resposta} />
