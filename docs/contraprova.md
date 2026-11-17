@@ -1447,3 +1447,4 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Tocar em "Vou" abre o cartão "Confirmar presença": dia por extenso ("Quarta, 18 de nov"), destino, "Saída às 11:00" e "Pode desistir no app até as 10:30"; botões "Confirmar que vou" e "Voltar".
 - [x] Se o prazo de hoje já encerrou e o "Vou" é para a próxima viagem: aviso âmbar "O prazo da viagem de hoje encerrou às 10:30. Esta confirmação é para quarta, 18 de nov."
 - [x] Quem já disse "Vou" não vê o cartão de novo. Vale no Início e em Viagens. Conferido em tela de celular. 367 testes, tipos, build.
+- [x] (17/11, pedido do dono) Dia nos avisos: "na quarta, 18 de nov" (segunda a sexta) e "no sábado/domingo"; dia da semana por extenso. Vale para o vanzeiro ("Monica confirmou que na quarta, 18 de nov vai…") e para o passageiro ("Você confirmou que na quarta…"). 368 testes.
