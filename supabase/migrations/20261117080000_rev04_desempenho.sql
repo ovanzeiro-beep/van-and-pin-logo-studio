@@ -1,0 +1,40 @@
+-- REV-04: desempenho do banco (avisos do Supabase). Nada muda em quem vê o quê:
+-- (1) índices nas 19 ligações entre tabelas; (2) as regras de acesso calculam "quem é a pessoa" uma vez por consulta,
+-- não uma vez por linha (auth.uid() → (select auth.uid())), com as mesmas condições de antes.
+create index if not exists avisos_vanzeiro_id_idx on public.avisos (vanzeiro_id);
+create index if not exists celulares_conta_id_idx on public.celulares (conta_id);
+create index if not exists cobrancas_matricula_id_idx on public.cobrancas (matricula_id);
+create index if not exists cobrancas_vanzeiro_id_idx on public.cobrancas (vanzeiro_id);
+create index if not exists destinos_vanzeiro_id_idx on public.destinos (vanzeiro_id);
+create index if not exists embarques_viagem_id_idx on public.embarques (viagem_id);
+create index if not exists gastos_vanzeiro_id_idx on public.gastos (vanzeiro_id);
+create index if not exists juntar_conta_conta_id_idx on public.juntar_conta (conta_id);
+create index if not exists matriculas_pessoa_id_idx on public.matriculas (pessoa_id);
+create index if not exists matriculas_vanzeiro_id_idx on public.matriculas (vanzeiro_id);
+create index if not exists mudancas_endereco_destino_id_idx on public.mudancas_endereco (destino_id);
+create index if not exists mudancas_endereco_matricula_id_idx on public.mudancas_endereco (matricula_id);
+create index if not exists mudancas_endereco_vanzeiro_id_idx on public.mudancas_endereco (vanzeiro_id);
+create index if not exists nao_vou_periodos_matricula_id_idx on public.nao_vou_periodos (matricula_id);
+create index if not exists pedidos_destino_id_idx on public.pedidos (destino_id);
+create index if not exists pedidos_matricula_id_idx on public.pedidos (matricula_id);
+create index if not exists pedidos_pessoa_id_idx on public.pedidos (pessoa_id);
+create index if not exists pedidos_vanzeiro_id_idx on public.pedidos (vanzeiro_id);
+create index if not exists vou_sempre_matricula_id_idx on public.vou_sempre (matricula_id);
+alter policy "avisos: o destinatário" on public.avisos using (para = (select auth.uid())::text);
+alter policy "celulares: o dono" on public.celulares using (conta_id = (select auth.uid())) with check (conta_id = (select auth.uid()));
+alter policy "cobranças: o dono cria" on public.cobrancas with check ((vanzeiro_id = (select auth.uid())) and public.sou_vanzeiro_da_matricula(matricula_id));
+alter policy "cobranças: o dono paga ou cancela" on public.cobrancas using (vanzeiro_id = (select auth.uid())) with check (vanzeiro_id = (select auth.uid()));
+alter policy "cobranças: o dono vê" on public.cobrancas using (vanzeiro_id = (select auth.uid()));
+alter policy "conta: ver a minha" on public.contas using (id = (select auth.uid()));
+alter policy "destinos: o dono" on public.destinos using (vanzeiro_id = (select auth.uid())) with check (vanzeiro_id = (select auth.uid()));
+alter policy "gastos: o dono anota" on public.gastos with check (vanzeiro_id = (select auth.uid()));
+alter policy "gastos: o dono apaga" on public.gastos using (vanzeiro_id = (select auth.uid()));
+alter policy "gastos: o dono vê" on public.gastos using (vanzeiro_id = (select auth.uid()));
+alter policy "juntar: a própria pessoa" on public.juntar_conta using (conta_id = (select auth.uid()));
+alter policy "matrículas: a própria pessoa" on public.matriculas using (pessoa_id = (select auth.uid()));
+alter policy "matrículas: o dono" on public.matriculas using (vanzeiro_id = (select auth.uid())) with check ((vanzeiro_id = (select auth.uid())) and public.sou_vanzeiro_do_destino(destino_id));
+alter policy "mudanças: o dono" on public.mudancas_endereco using (vanzeiro_id = (select auth.uid()));
+alter policy "pedidos: a própria pessoa" on public.pedidos using (pessoa_id = (select auth.uid()));
+alter policy "pedidos: o dono" on public.pedidos using (vanzeiro_id = (select auth.uid()));
+alter policy "perfil: o dono" on public.perfis_vanzeiro using (id = (select auth.uid())) with check (id = (select auth.uid()));
+alter policy "viagens: o dono" on public.viagens using (vanzeiro_id = (select auth.uid())) with check ((vanzeiro_id = (select auth.uid())) and public.sou_vanzeiro_do_destino(destino_id));
