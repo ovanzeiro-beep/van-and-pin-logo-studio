@@ -830,6 +830,10 @@ Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas 
 | REV-06 | Preparar a operação real | A fazer — depende do dono | Plano Pro do Supabase (sem pausa e com cópia de segurança diária); proteção de senhas vazadas ligada; contato do responsável na Política de Privacidade; revisão dos Termos e da Política por advogado; app publicado conferido com a última versão da `main`. |
 | REV-07 | Melhorias opcionais | Adiada — só com decisão do dono | "Marcar como pago" e "Anotar gasto" sem sinal; "ver mais" no histórico (limite de 300); extensão `pg_net` fora do esquema `public` (P-04). |
 
+| REV-08 | **Lugares da viagem visíveis ao passageiro** (pedido do dono, 17/11) | **A fazer — próxima** | Ver 22.10, item A. |
+| REV-09 | **Acompanhamento do embarque pelo passageiro** (pedido do dono, 17/11) | A fazer | Ver 22.10, item B. |
+| REV-10 | **Aviso "A próxima é você"** (pedido do dono, 17/11) | A fazer | Ver 22.10, item C. |
+
 Fora do núcleo (decisão do dono, ver 22.9): GPS real, app na Play Store, domínio próprio.
 
 ### 22.7 Como executar cada etapa com cuidado
@@ -868,3 +872,28 @@ Posso conduzir a leitura do código e dos metadados acessíveis, os testes, o di
 O dono entra quando faltar uma **decisão do negócio**, um **contato publicável**, acesso/configuração externa que a integração realmente não alcance ou uma **validação em aparelho físico**. Pedir somente a informação necessária naquele momento, com explicação simples. A tarefa atual já autoriza organizar esta documentação; não pede criar regras novas nem apagar dados.
 
 **Fora do núcleo desta revisão:** GPS real, publicação na Play Store, domínio próprio e assinatura comercial de novos serviços. Não apresentar esses itens como requisito automático para as funções atuais, nem implementar sem definir seu escopo.
+
+### 22.10 Especificação dos pedidos de 17/11/2026 (REV-08 a REV-10)
+
+Pedido do dono, em resumo: o passageiro precisa ver **quantas vagas restam** na viagem (para saber que, se não confirmar, outro pega), **acompanhar o embarque** (quantos já entraram, com as iniciais) e receber **"A próxima é você"** quando a van estiver chegando nele. Tudo coerente com as regras já aprovadas (lugares da van, prazo, privacidade). Trabalhar uma etapa por vez (22.7), sem mudar o visual aprovado além do card novo.
+
+**Privacidade (vale para A, B e C):** o passageiro **nunca** lê a viagem inteira nem os dados dos outros (regra já existente: só `minha_viagem_de_hoje`). As novas informações vêm de **funções do banco** (`security definer`, só para quem está no destino) que devolvem **apenas números e iniciais** (ex.: "M. H."), nunca nome completo, telefone ou endereço. Registrar na Política de Privacidade que as iniciais de quem embarcou são mostradas aos outros passageiros da mesma viagem (REV-06).
+
+**A. Lugares da viagem (REV-08)**
+- Banco: função `lugares_da_viagem(matricula text, dia date)` → `lugares int` (do Perfil do vanzeiro; null = sem limite), `vao int` (mesma conta da lotação: `r_resposta(...) = 'vai'` de quem está no destino, igual a `responder`), `eu_vou boolean`. Só responde se a matrícula é da pessoa logada (`pessoa_id = auth.uid()`, `saiu_em is null`).
+- App: `src/lib/banco/` chama a função (em memória/testes, usar `contarVou` e `obterPerfilDoVanzeiro`); atualizar junto com o tempo real (tabela `respostas` já está na publicação).
+- Tela (Início do passageiro, no card "Próxima viagem", e em Viagens): linha "**4 de 15 lugares ocupados · 11 livres**" com uma barra (verde com vaga; âmbar quando faltarem 3 ou menos: "**Restam 2 lugares**"; "Van lotada" já existe). Quem disse "Vou" vê "**Você está entre os 4 confirmados**". Sem lugares no Perfil: "4 confirmados". Não rolar o Início (regra 4 do CLAUDE.md).
+- Testes: contagem igual à do banco; "Vou sempre" conta; quem saiu não conta; o texto de cada situação.
+
+**B. Acompanhamento do embarque (REV-09)**
+- Banco: estender `minha_viagem_de_hoje(matricula)` (ou nova `embarque_da_viagem(matricula)`) para devolver também: `total int` (quantos estão na ordem da busca), `embarcaram int`, `iniciais text[]` (de quem embarcou, na ordem; iniciais do nome e do último sobrenome), `minha_posicao int` (posição da pessoa na ordem) e `faltam_antes int` (quantos ainda não foram tratados antes dela: nem "Embarcou" nem "Não estava no ponto").
+- App: o card da viagem em andamento do passageiro mostra "**3 de 8 já embarcaram**" com as bolinhas das iniciais e "**Faltam 2 antes de você**" / "**Você é o próximo**" / "**Você embarcou**". Atualiza em tempo real pelo sinal `viagem_sinais` (já existe).
+- Testes: contas de posição com "Não estava no ponto" e com quem ficou; o passageiro nunca recebe nomes completos.
+
+**C. Aviso "A próxima é você" (REV-10)**
+- Banco: gatilho na tabela `viagens` (depois de cada atualização do estado na fase `busca`): achar o próximo da ordem ainda não tratado e criar o aviso `proxima_parada` para ele (chave `proxima_<viagem>_<matricula>`, uma vez só): "**Você é o próximo. Aguarde no ponto: a van está chegando.**" Feito pelo banco para funcionar mesmo com a fila sem sinal do vanzeiro. Chega no sininho e no celular (o programa `avisos-no-celular` precisa do título "A van está chegando"; acrescentar o tipo em `TipoAviso`, `ListaDeAvisos`, `notificacoes.ts`, `passageiro.notificacoes.tsx` e no teste de contagem).
+- Também ao iniciar a viagem (o primeiro da ordem recebe o aviso na hora).
+- Testes: o primeiro recebe ao iniciar; ao marcar "Embarcou" ou "Não estava no ponto", o seguinte recebe; ninguém recebe duas vezes; quem disse "Não vou" nunca recebe.
+
+**Como aplicar o banco:** seguir 22.1a (arquivo em `supabase/migrations/`, testar numa cópia, aplicar com autorização do dono, conferir). Ao terminar cada etapa, registrar na contraprova (22.8) e atualizar a tabela de 22.6.
+

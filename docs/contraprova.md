@@ -1448,3 +1448,6 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Se o prazo de hoje já encerrou e o "Vou" é para a próxima viagem: aviso âmbar "O prazo da viagem de hoje encerrou às 10:30. Esta confirmação é para quarta, 18 de nov."
 - [x] Quem já disse "Vou" não vê o cartão de novo. Vale no Início e em Viagens. Conferido em tela de celular. 367 testes, tipos, build.
 - [x] (17/11, pedido do dono) Dia nos avisos: "na quarta, 18 de nov" (segunda a sexta) e "no sábado/domingo"; dia da semana por extenso. Vale para o vanzeiro ("Monica confirmou que na quarta, 18 de nov vai…") e para o passageiro ("Você confirmou que na quarta…"). 368 testes.
+
+## Pedidos de 17/11/2026 registrados para as próximas etapas
+- [ ] REV-08 Lugares da viagem visíveis ao passageiro; REV-09 acompanhamento do embarque (quantos e iniciais); REV-10 aviso "A próxima é você". Especificação completa na fonte da verdade, seção 22.10. Situação: a fazer.
