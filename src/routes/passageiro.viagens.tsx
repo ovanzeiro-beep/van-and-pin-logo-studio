@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AlarmClock, Clock, MessageCircle, X } from "lucide-react";
+import { AlarmClock, CalendarX2, Clock, MessageCircle, X } from "lucide-react";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { useMeuVanzeiroId } from "@/lib/sessao-passageiro";
 import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
+import { somarDias } from "@/lib/datas";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
@@ -45,6 +46,12 @@ function MinhasViagens() {
     return destino ? [{ eu, destino }] : [];
   });
 
+  // Cancelled days of the next 7 days (feriado, luto…): shown in the list, crossed out, with the reason.
+  const hoje = dataDeHoje();
+  const canceladas = meusDestinos
+    .flatMap(({ destino }) => (destino.diasCancelados ?? []).filter((c) => c.data >= hoje && c.data <= somarDias(hoje, 6)).map((c) => ({ ...c, destino })))
+    .sort((a, b) => a.data.localeCompare(b.data));
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <PassageiroHeader compacto titulo="Viagens" subtitulo="Suas viagens." />
@@ -52,7 +59,22 @@ function MinhasViagens() {
         <section>
           <h2 className="px-1 pt-5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Próximos 7 dias</h2>
           <div className="mt-1.5 space-y-2.5">
-            {proximas.length === 0 ? (
+            {canceladas.map((c) => (
+              <article key={`${c.destino.id}_${c.data}`} className="flex items-start gap-3 rounded-3xl border-2 border-destructive/30 bg-destructive-soft/60 p-3.5 shadow-card">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-destructive-soft text-destructive">
+                  <CalendarX2 className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-display font-bold text-foreground line-through decoration-destructive/60">{rotuloDoDia(c.data)}</p>
+                    <StatusBadge status="deve">Cancelada</StatusBadge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{nomeDestino(c.destino)}</p>
+                  <p className="mt-0.5 text-sm font-semibold text-destructive">Motivo: {c.motivo}</p>
+                </div>
+              </article>
+            ))}
+            {proximas.length === 0 && canceladas.length > 0 ? null : proximas.length === 0 ? (
               <p className="rounded-3xl bg-card p-4 text-sm text-muted-foreground shadow-card">
                 Nenhuma viagem nos próximos 7 dias.
                 {proximaDistante && ` A próxima é ${rotuloDoDia(proximaDistante).toLowerCase()}.`}

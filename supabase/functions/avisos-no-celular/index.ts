@@ -21,7 +21,7 @@ const TITULO: Record<string, string> = {
   pedido_aceito: "Pedido aceito",
   endereco_aceito: "Endereço aceito",
   endereco_recusado: "Endereço não aceito",
-  viagem_cancelada: "Sem viagem",
+  viagem_cancelada: "Viagem cancelada",
   viagem_de_volta: "Vai ter viagem",
   destino_excluido: "Destino excluído",
   presenca_confirmada: "Presença confirmada",

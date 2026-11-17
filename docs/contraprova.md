@@ -1618,3 +1618,11 @@ Pedido do dono: além da cidade, o nome do comércio onde param.
 - [x] Início do vanzeiro, card "A receber": quem confirmou "Vou" (Por viagem e Diário) numa viagem de hoje já soma no valor e em "Pendentes"; "Não vou" tira na hora.
 - [x] Nenhuma cobrança é criada nem editada por isso: a cobrança de verdade continua nascendo no "Embarcou" (aí a pessoa sai da conta prevista; nunca conta duas vezes). "Não estava no ponto" e viagem encerrada saem da conta. Mensal e Quinzenal não mudam (já têm a própria cobrança).
 - [x] 4 testes novos (416 no total), tsc e build passando.
+
+---
+
+## Dia cancelado mais profissional (pedido do dono, 17/11/2026) — feita
+- [x] Aviso (sininho e celular com app fechado/minimizado/tela apagada, pelo mesmo caminho dos outros avisos): título "Viagem cancelada" (antes "Sem viagem"); texto "Viagem cancelada na quarta, 18 de nov: Jacarezinho PR → Londrina PR. Motivo: Luto. Não precisa confirmar presença. A próxima viagem é na quinta, 19 de nov, às 18:00."
+- [x] Função `avisos-no-celular` publicada de novo no Supabase com o título novo (versão 6).
+- [x] Passageiro, aba Viagens (próximos 7 dias): o dia cancelado aparece riscado, com X, etiqueta "Cancelada" e o motivo, na ordem das datas.
+- [x] Testes atualizados (416), tsc e build passando.

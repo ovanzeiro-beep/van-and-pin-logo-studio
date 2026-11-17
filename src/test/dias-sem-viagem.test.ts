@@ -27,8 +27,8 @@ describe("S1: cancelar a viagem de um dia (feriado)", () => {
     const novos = obterAvisos().slice(antes);
     expect(novos.every((a) => a.tipo === "viagem_cancelada")).toBe(true);
     expect(new Set(novos.map((a) => a.paraVanzeiroOuPassageiroId)).size).toBe(novos.length);
-    expect(novos.find((a) => a.paraVanzeiroOuPassageiroId === "p-juliana")?.textoResumido).toBe(
-      "Não vai ter viagem hoje, em Cambará → UENP Jacarezinho. Motivo: Feriado",
+    expect(novos.find((a) => a.paraVanzeiroOuPassageiroId === "p-juliana")?.textoResumido).toMatch(
+      (/^Viagem cancelada hoje: Cambará → UENP Jacarezinho\. Motivo: Feriado\. Não precisa confirmar presença\. A próxima viagem é .+, às \d\d:\d\d\.$/),
     );
     // O prazo passa (05:40): a Camila (mensal, "Não vou") não ganha falta, porque não teve viagem.
     registrarFaltasDoPrazo({ data: hoje, hora: "06:00" });

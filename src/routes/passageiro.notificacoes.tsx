@@ -17,7 +17,7 @@ const tipoAviso: Record<string, { label: string; cor: string }> = {
   pedido_aceito: { label: "Pedido aceito", cor: "text-success" },
   endereco_aceito: { label: "Endereço aceito", cor: "text-success" },
   endereco_recusado: { label: "Endereço não aceito", cor: "text-destructive" },
-  viagem_cancelada: { label: "Sem viagem", cor: "text-destructive" },
+  viagem_cancelada: { label: "Viagem cancelada", cor: "text-destructive" },
   viagem_de_volta: { label: "Vai ter viagem", cor: "text-success" },
   destino_excluido: { label: "Destino excluído", cor: "text-destructive" },
   presenca_confirmada: { label: "Presença confirmada", cor: "text-success" },

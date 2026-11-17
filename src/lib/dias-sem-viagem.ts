@@ -6,7 +6,7 @@ import { nomeDestino } from "@/lib/destinos";
 import { mudarDiasCancelados, obterDestinos } from "@/lib/destinos-store";
 import { identidadePassageiro } from "@/lib/passageiros";
 import { obterPassageiros } from "@/lib/passageiros-store";
-import { teriaViagemEm } from "@/lib/viagem";
+import { aconteceEm, teriaViagemEm } from "@/lib/viagem";
 import { obterViagensDoDia } from "@/lib/viagem-store";
 import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
 import { frase } from "@/lib/formatos";
@@ -68,8 +68,9 @@ export function cancelarViagemDoDia(destinoId: string, data: string, motivo: str
   if (!m) return naoDeu("Escreva o motivo (ex.: Feriado).");
   if (m.length > MOTIVO_MAX) return naoDeu(`O motivo pode ter até ${MOTIVO_MAX} letras.`);
   if (!diasQuePodemSerCancelados(d, hoje, 1000).includes(data)) return naoDeu("Este dia não pode ser cancelado: não tem viagem nele, já passou ou a viagem já começou.");
-  mudarDiasCancelados(d.id, [...(d.diasCancelados ?? []), { data, motivo: m, canceladoEm: hoje }]);
-  avisarPassageiros(d, data, (nome) => `Não vai ter viagem ${quando(data, hoje)}, em ${nome}. Motivo: ${m}`, "viagem_cancelada");
+  const novo = { ...d, diasCancelados: [...(d.diasCancelados ?? []), { data, motivo: m, canceladoEm: hoje }] };
+  mudarDiasCancelados(d.id, novo.diasCancelados);
+  avisarPassageiros(d, data, (nome) => textoDoCancelamento(novo, nome, data, m, hoje), "viagem_cancelada");
   return deuCerto;
 }
 
@@ -83,4 +84,19 @@ export function desfazerCancelamento(destinoId: string, data: string): Resultado
   mudarDiasCancelados(d.id, d.diasCancelados.filter((c) => c.data !== data));
   avisarPassageiros(d, data, (nome) => `A viagem de ${quando(data, hoje)} vai acontecer, em ${nome}.`, "viagem_de_volta");
   return deuCerto;
+}
+
+/** The next day with a trip after `data` (within ~4 months), to tell the passenger when the van runs again. */
+export function proximaViagemDepois(d: Destino, data: string) {
+  for (let i = 1; i <= 120; i++) {
+    const dia = somarDias(data, i);
+    if (aconteceEm(d, dia)) return dia;
+  }
+  return null;
+}
+
+/** The notice of a cancelled day: when, which trip, why, and when the van runs again. */
+export function textoDoCancelamento(d: Destino, nome: string, data: string, motivo: string, hoje: string) {
+  const prox = proximaViagemDepois(d, data);
+  return `Viagem cancelada ${quando(data, hoje)}: ${nome}. Motivo: ${motivo}. Não precisa confirmar presença.${prox ? ` A próxima viagem é ${quando(prox, hoje)}, às ${d.saida}.` : ""}`;
 }
