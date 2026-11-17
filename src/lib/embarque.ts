@@ -53,3 +53,28 @@ export function textoDoEmbarque(e: EmbarqueDaViagem) {
           : `Faltam ${e.faltamAntes} antes de você`;
   return { titulo, minha };
 }
+
+/**
+ * Owner (17/11/2026): the 3 steps of "Situação da van" follow the pickup. "Saiu da garagem" turns green when the trip
+ * starts; "A caminho" only when it is the person's turn; "Na van" when the vanzeiro marks "Embarcou". With the
+ * database the passenger's phone only has its own place in the trip, so the turn comes from `embarque_da_viagem`.
+ */
+export function situacaoComEmbarque<
+  T extends { situacao: string; detalhe: string; etapa: number; alerta: boolean },
+>(van: T, e: EmbarqueDaViagem | null): T {
+  if (!e || e.posicao === null || e.euEmbarquei || van.alerta || van.etapa === 2) return van;
+  if (e.faltamAntes === 0)
+    return {
+      ...van,
+      situacao: "Você é o próximo",
+      detalhe: "Aguarde no ponto: a van está chegando",
+      etapa: 1,
+    };
+  const n = e.faltamAntes ?? 0;
+  return {
+    ...van,
+    situacao: "Viagem começou",
+    detalhe: n === 1 ? "Falta 1 pessoa antes de você" : `Faltam ${n} pessoas antes de você`,
+    etapa: 0,
+  };
+}

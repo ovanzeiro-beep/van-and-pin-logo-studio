@@ -17,6 +17,8 @@ import { linkWhatsApp } from "@/lib/passageiros";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
 import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
 import { EmbarqueDaViagem } from "@/components/app/passageiro/EmbarqueDaViagem";
+import { useEmbarqueDaViagem } from "@/lib/banco/embarque";
+import { situacaoComEmbarque } from "@/lib/embarque";
 import { cn } from "@/lib/utils";
 import { conferenciaDoPassageiro } from "@/lib/viagem";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
@@ -41,7 +43,10 @@ export const Route = createFileRoute("/passageiro/")({
 const etapas = ["Saiu da garagem", "A caminho", "Na van"];
 
 function InicioPassageiro() {
-  const { eu, destino, destaque, proximaDistante, viagemDeHoje, van } = useSituacaoDaVan();
+  const { eu, destino, destaque, proximaDistante, viagemDeHoje, van: situacaoDaVan } = useSituacaoDaVan();
+  // The 3 steps follow the pickup: the turn comes from the boarding (REV-09).
+  const embarque = useEmbarqueDaViagem(eu.id, destino?.id ?? "");
+  const van = situacaoComEmbarque(situacaoDaVan, embarque);
   const vanzeiro = usePerfilDoVanzeiro(eu.vanzeiroId);
   const idsDasCobrancas = useIdsDasMinhasCobrancas();
   const cobrancas = useCobrancasDasMatriculas(idsDasCobrancas);
@@ -135,7 +140,7 @@ function InicioPassageiro() {
               </div>
             ))}
           </div>
-          {destino && <EmbarqueDaViagem matriculaId={eu.id} destinoId={destino.id} />}
+          <EmbarqueDaViagem e={embarque} />
         </InfoCard>
         </Link>
 
