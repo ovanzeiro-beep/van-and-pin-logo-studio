@@ -1442,3 +1442,8 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Novo: o passageiro que diz "Vou" recebe "Presença confirmada — Você confirmou que hoje vai de Jacarezinho PR a Londrina PR. Se desistir, avise no app até as 10:30." (o horário é o prazo do destino; também chega no celular).
 - [x] Programa de notificações do Supabase atualizado (título "Presença confirmada"). 365 testes, tipos, build.
 - [x] (17/11, pedido do dono) "Não vou": o aviso do passageiro vira "Ausência registrada — Você avisou que hoje não vai de Jacarezinho PR a Londrina PR. Se mudar de ideia, toque em Vou até as 10:30." É o mesmo aviso da presença, trocado (nunca os dois juntos). Programa de notificações atualizado. 365 testes, tipos, build.
+
+## Confirmar presença antes do "Vou" (17/11/2026, pedido do dono)
+- [x] Tocar em "Vou" abre o cartão "Confirmar presença": dia por extenso ("Quarta, 18 de nov"), destino, "Saída às 11:00" e "Pode desistir no app até as 10:30"; botões "Confirmar que vou" e "Voltar".
+- [x] Se o prazo de hoje já encerrou e o "Vou" é para a próxima viagem: aviso âmbar "O prazo da viagem de hoje encerrou às 10:30. Esta confirmação é para quarta, 18 de nov."
+- [x] Quem já disse "Vou" não vê o cartão de novo. Vale no Início e em Viagens. Conferido em tela de celular. 367 testes, tipos, build.
