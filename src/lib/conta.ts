@@ -11,6 +11,7 @@ import { carregarPassageirosEPedidos } from "@/lib/banco/passageiros";
 import { carregarRespostas } from "@/lib/banco/respostas";
 import { carregarViagens } from "@/lib/banco/viagem";
 import { carregarDinheiro } from "@/lib/banco/dinheiro";
+import { esquecerEsteCelular } from "@/lib/banco/celular";
 import { carregarAvisos } from "@/lib/banco/avisos";
 
 // W1 (docs/banco-de-dados.md, section 8.3): login and account for real, in the owner's Supabase.
@@ -112,6 +113,8 @@ export async function escolherPapelDaConta(papel: Papel): Promise<Resultado> {
 }
 
 export async function sairDaConta(): Promise<Resultado> {
+  // G2: this phone stops receiving the notices of this account (before leaving it).
+  await esquecerEsteCelular();
   sair();
   // The copy of the data kept for opening without signal belongs to this account (public/sw.js).
   if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados").catch(() => false);
@@ -125,6 +128,7 @@ export async function sairDaConta(): Promise<Resultado> {
 export async function excluirContaDoBanco(): Promise<Resultado> {
   const sb = supabase();
   if (!USA_BANCO.conta || !sb || !obterSessao().conta) return deuCerto;
+  await esquecerEsteCelular();
   const { error } = await sb.rpc("excluir_minha_conta");
   if (error) return naoDeu(motivo(error));
   await sb.auth.signOut();
