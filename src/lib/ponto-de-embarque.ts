@@ -201,3 +201,28 @@ export function cidadeDaRota(
 export function textoForaDaRota(cidades: string[]) {
   return `Esse ponto não fica em nenhuma cidade por onde a van passa (${cidades.join(", ")}). Marque onde você espera a van.`;
 }
+
+const UFS = "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
+
+/** "Jacarezinho PR" from the map's answer (city and state); "" when it does not say. */
+export function textoDaCidade(e: { city?: string; town?: string; municipality?: string; village?: string; "ISO3166-2-lvl4"?: string } | undefined) {
+  const cidade = e?.city ?? e?.town ?? e?.municipality ?? e?.village;
+  if (!cidade) return "";
+  const uf = e?.["ISO3166-2-lvl4"]?.replace(/^BR-/, "");
+  return uf && UFS.includes(uf) ? `${cidade} ${uf}` : cidade;
+}
+
+/** The city where the phone is (GPS), for "De onde sai?". Only the city, never the address. */
+export async function minhaCidade(buscar: BuscarNoMapa = buscarDeVerdade): Promise<{ ok: true; cidade: string } | { ok: false; erro: string }> {
+  const gps = await minhaLocalizacao();
+  if (!gps.ok) return gps;
+  try {
+    const r = (await buscar(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=pt-BR&lat=${gps.ponto.lat}&lon=${gps.ponto.lng}`,
+    )) as { address?: Parameters<typeof textoDaCidade>[0] };
+    const cidade = textoDaCidade(r?.address);
+    return cidade ? { ok: true, cidade } : { ok: false, erro: "Não achamos o nome da cidade. Escreva no campo." };
+  } catch {
+    return { ok: false, erro: "Sem internet para achar a cidade. Escreva no campo." };
+  }
+}

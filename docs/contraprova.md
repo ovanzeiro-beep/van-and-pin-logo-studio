@@ -1597,3 +1597,10 @@ Pedido do dono: preencheu tudo, não mostra mais; apagou qualquer item, volta a 
 - [x] Banco: colunas `cafe_parada`, `cafe_minutos` (com regra: o café é uma das paradas, 5 a 180 min); `destino_pelo_convite` e `minha_viagem_de_hoje` devolvem o café e o `voltaAs`. Testado na cópia local.
 - [x] 10 testes novos (410 no total), tsc e build passando; passo 3 sem rolagem em 390×844.
 - [x] Aplicado no Supabase real pelo dono (SO-SQL-14) e conferido: 2 colunas, funções novas, sem acesso sem login.
+
+---
+
+## Destino: "Usar a cidade onde estou" (pedido do dono, 17/11/2026) — feita
+- [x] Passo 1, abaixo de "De onde sai?": botão que preenche só a cidade com o estado pelo GPS (ex.: "Jacarezinho PR"), nunca o endereço; dá para editar depois.
+- [x] Mensagens: localização negada, sem internet, cidade não achada.
+- [x] Conferido na tela (375×667; o cartão rola de leve no SE). 1 teste novo (411 no total), tsc e build passando.

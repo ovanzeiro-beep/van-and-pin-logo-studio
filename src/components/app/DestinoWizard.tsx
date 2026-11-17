@@ -12,7 +12,10 @@ import {
   Trash2,
   type LucideIcon,
   Coffee,
+  LoaderCircle,
+  LocateFixed,
 } from "lucide-react";
+import { minhaCidade } from "@/lib/ponto-de-embarque";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { CaminhoParadas, PontoDoCaminho } from "@/components/app/CaminhoParadas";
 import { PassosLayout } from "@/components/app/PassosLayout";
@@ -97,14 +100,17 @@ function Rotulo({ children }: { children: ReactNode }) {
 function Passo1({ r, mudar }: PassoProps) {
   return (
     <>
-      <CampoComIcone
-        id="origem"
-        label="De onde sai?"
-        icon={MapPin}
-        placeholder="Ex.: Jacarezinho"
-        value={r.origem}
-        onChange={(e) => mudar({ origem: e.target.value })}
-      />
+      <div className="space-y-1.5">
+        <CampoComIcone
+          id="origem"
+          label="De onde sai?"
+          icon={MapPin}
+          placeholder="Ex.: Jacarezinho"
+          value={r.origem}
+          onChange={(e) => mudar({ origem: e.target.value })}
+        />
+        <BotaoMinhaCidade aoAchar={(cidade) => mudar({ origem: cidade })} />
+      </div>
       <CampoComIcone
         id="destino"
         label="Para onde vai?"
@@ -413,6 +419,34 @@ function Passo3({ r, mudar }: PassoProps) {
         </Button>
       </form>
     </>
+  );
+}
+
+/** "Usar a cidade onde estou": fills only the city (with the state) from the phone's GPS. */
+function BotaoMinhaCidade({ aoAchar }: { aoAchar: (cidade: string) => void }) {
+  const [procurando, setProcurando] = useState(false);
+  const [erro, setErro] = useState("");
+  const usar = async () => {
+    setProcurando(true);
+    setErro("");
+    const r = await minhaCidade();
+    setProcurando(false);
+    if (r.ok) aoAchar(r.cidade);
+    else setErro(r.erro);
+  };
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => void usar()}
+        disabled={procurando}
+        className="flex min-h-9 items-center gap-1.5 rounded-xl px-1 text-sm font-semibold text-primary disabled:opacity-60"
+      >
+        {procurando ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
+        {procurando ? "Procurando a sua cidade…" : "Usar a cidade onde estou"}
+      </button>
+      {erro && <p className="px-1 text-sm font-semibold text-warning" role="status">{erro}</p>}
+    </div>
   );
 }
 

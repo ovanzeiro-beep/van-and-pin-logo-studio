@@ -150,3 +150,13 @@ describe("N1: capturar o ponto de embarque", () => {
     expect(r).toEqual({ endereco: "Rua Paraná", cidade: "Jacarezinho" });
   });
 });
+
+describe("Destino: cidade de saída pelo GPS", () => {
+  it("só a cidade, com o estado", async () => {
+    const { textoDaCidade } = await import("@/lib/ponto-de-embarque");
+    expect(textoDaCidade({ city: "Jacarezinho", "ISO3166-2-lvl4": "BR-PR" })).toBe("Jacarezinho PR");
+    expect(textoDaCidade({ town: "Iepê", "ISO3166-2-lvl4": "BR-SP" })).toBe("Iepê SP");
+    expect(textoDaCidade({ village: "Marques dos Reis" })).toBe("Marques dos Reis");
+    expect(textoDaCidade({})).toBe("");
+  });
+});
