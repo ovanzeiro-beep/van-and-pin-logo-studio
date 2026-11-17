@@ -43,6 +43,7 @@ export const ROTULO_DO_AVISO: Record<TipoAviso, string> = {
   viagem_de_volta: "Vai ter viagem",
   destino_excluido: "Destino excluído",
   presenca_confirmada: "Presença confirmada",
+  ausencia_registrada: "Ausência registrada",
 };
 
 export type Notificacao = { titulo: string; corpo: string; url: string; tag: string };

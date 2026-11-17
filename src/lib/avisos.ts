@@ -27,22 +27,26 @@ function minutos(data: string, hora: string) {
 const quandoVai = (data: string, hoje: string) => (data === hoje ? "hoje" : `no ${quando(data, hoje)}`);
 
 /**
- * Passenger (owner, 17/11/2026): after "Vou", a confirmation with the deadline to give up in the app.
- * One per trip day; saying "Vou" again replaces it.
+ * Passenger (owner, 17/11/2026): after "Vou", a confirmation with the deadline to give up in the app; after
+ * "Não vou", "Ausência registrada" with the deadline to change their mind. One per trip day: the newest answer
+ * replaces it, so the two never contradict each other.
  */
-export function avisoDePresencaConfirmada(p: Passageiro, d: Destino, data: string, hoje: string): NovoAviso {
+export function avisoDePresenca(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string): NovoAviso {
   const prazo = prazoDaViagem(d, data);
   const ate = prazo.data === data ? `até as ${prazo.hora}` : `até ${quando(prazo.data, hoje)}, às ${prazo.hora}`;
   return {
     chave: `presenca_${p.id}_${data}`,
     vanzeiroId: d.vanzeiroId,
-    tipo: "presenca_confirmada",
+    tipo: resposta === "vai" ? "presenca_confirmada" : "ausencia_registrada",
     paraVanzeiroOuPassageiroId: identidadePassageiro(p),
     passageiroId: p.id,
     destinoId: d.id,
     dataCriacao: hoje,
     lido: false,
-    textoResumido: `Você confirmou que ${quandoVai(data, hoje)} vai de ${d.origem} a ${d.destino}. Se desistir, avise no app ${ate}.`,
+    textoResumido:
+      resposta === "vai"
+        ? `Você confirmou que ${quandoVai(data, hoje)} vai de ${d.origem} a ${d.destino}. Se desistir, avise no app ${ate}.`
+        : `Você avisou que ${quandoVai(data, hoje)} não vai de ${d.origem} a ${d.destino}. Se mudar de ideia, toque em Vou ${ate}.`,
   };
 }
 
