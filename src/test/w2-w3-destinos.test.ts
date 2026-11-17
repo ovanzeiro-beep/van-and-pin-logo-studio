@@ -89,6 +89,7 @@ describe("W2/W3: perfil e destinos no banco (Supabase simulado)", () => {
     expect(linha).toMatchObject({ id: "d-novo", vanzeiro_id: "u-rosa", convite: "VAN-7001", volta_data: null });
     expect(destinoDaLinha(linha, [{ destino_id: "d-novo", data: "2026-11-20", motivo: "Feriado", cancelado_em: "2026-11-13" }])).toEqual({
       ...base,
+      cafe: null,
       diasCancelados: [{ data: "2026-11-20", motivo: "Feriado", canceladoEm: "2026-11-13" }],
     });
   });

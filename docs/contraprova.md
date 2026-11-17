@@ -1585,3 +1585,15 @@ Pedido do dono: preencheu tudo, não mostra mais; apagou qualquer item, volta a 
 - [x] Perfil completo (telefone, Pix, modelo, placa e lugares): "Crie seu primeiro destino" vai direto para criar o destino, sem card.
 - [x] Faltando qualquer item: o card abre antes. Conferido na tela: completo → foi direto; Pix apagado → card voltou.
 - [x] 402 testes, tsc e build passando.
+
+---
+
+## Parada do café (pedido do dono, 17/11/2026) — feita no código; banco aguardando o dono colar o SQL
+
+- [x] Passo 3 do destino: xícara em cada parada marca a parada do café (só uma); escolha 15/20/30/45 min; remover a parada tira o café.
+- [x] O café não é cidade de embarque (`pontosDeEmbarque` sem ele): não aparece para o passageiro escolher, nem no cadastro do vanzeiro.
+- [x] O passageiro vê onde é o café (convite e tela "Sua van") e, durante a parada, o relógio "Volte para a van até as HH:MM · faltam N min" no Início.
+- [x] Viagem do vanzeiro: botões "Café · N min" e "Parada"; no café, relógio com quanto falta; "Retomar viagem" leva à conferência de quem está na van (Está na van / Ficou aqui, e "Estou na van" pelo celular), como já era.
+- [x] Banco: colunas `cafe_parada`, `cafe_minutos` (com regra: o café é uma das paradas, 5 a 180 min); `destino_pelo_convite` e `minha_viagem_de_hoje` devolvem o café e o `voltaAs`. Testado na cópia local.
+- [x] 10 testes novos (410 no total), tsc e build passando; passo 3 sem rolagem em 390×844.
+- [ ] Aplicar no Supabase real (aprovação expirou): `supabase/SO-SQL-*-parada-do-cafe.sql`. Só publicar o app depois.

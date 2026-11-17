@@ -26,6 +26,8 @@ type LinhaDestino = {
   volta: string | null;
   volta_data: string | null;
   paradas: string[];
+  cafe_parada: string | null;
+  cafe_minutos: number | null;
   convite: string;
   prazo: Destino["prazo"];
   ativo: boolean;
@@ -58,6 +60,7 @@ export function destinoDaLinha(l: LinhaDestino, dias: LinhaDiaSemViagem[]): Dest
     volta: l.volta,
     voltaData: l.volta_data,
     paradas: l.paradas ?? [],
+    cafe: l.cafe_parada && l.cafe_minutos ? { parada: l.cafe_parada, minutos: l.cafe_minutos } : null,
     convite: l.convite,
     prazo: l.prazo,
     ativo: l.ativo,
@@ -78,6 +81,8 @@ export function linhaDoDestino(d: Destino): LinhaDestino {
     volta: d.volta,
     volta_data: d.voltaData,
     paradas: d.paradas,
+    cafe_parada: d.cafe?.parada ?? null,
+    cafe_minutos: d.cafe?.minutos ?? null,
     convite: d.convite,
     prazo: d.prazo,
     ativo: d.ativo,
@@ -97,7 +102,7 @@ export async function carregarPerfisEDestinos(): Promise<void> {
   if (!USA_BANCO.destinos || !sb) return;
   const [perfis, destinos, dias] = await Promise.all([
     sb.from("perfis_vanzeiro").select("id, nome, telefone, pix, van_modelo, van_placa, van_lugares"),
-    sb.from("destinos").select("id, vanzeiro_id, origem, destino, tipo, dias, data, saida, volta, volta_data, paradas, convite, prazo, ativo, criado_em").is("excluido_em", null).order("criado_em", { ascending: false }),
+    sb.from("destinos").select("id, vanzeiro_id, origem, destino, tipo, dias, data, saida, volta, volta_data, paradas, cafe_parada, cafe_minutos, convite, prazo, ativo, criado_em").is("excluido_em", null).order("criado_em", { ascending: false }),
     sb.from("dias_sem_viagem").select("destino_id, data, motivo, cancelado_em"),
   ]);
   if (perfis.data) carregarPerfis(Object.fromEntries((perfis.data as LinhaPerfil[]).map((l) => [l.id, perfilDaLinha(l)])));

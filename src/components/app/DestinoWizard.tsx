@@ -11,6 +11,7 @@ import {
   Repeat,
   Trash2,
   type LucideIcon,
+  Coffee,
 } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { CaminhoParadas, PontoDoCaminho } from "@/components/app/CaminhoParadas";
@@ -331,8 +332,15 @@ function Passo3({ r, mudar }: PassoProps) {
             indice={i + 1}
             total={total}
             compacto
+            cafe={r.cafe === p ? r.cafeMinutos : undefined}
             acoes={
               <>
+                <BotaoIcone
+                  rotulo={r.cafe === p ? `Tirar o café de ${p}` : `Marcar ${p} como parada do café`}
+                  icon={Coffee}
+                  ativo={r.cafe === p}
+                  onClick={() => mudar({ cafe: r.cafe === p ? "" : p })}
+                />
                 <BotaoIcone
                   rotulo={`Subir ${p}`}
                   icon={ArrowUp}
@@ -349,7 +357,7 @@ function Passo3({ r, mudar }: PassoProps) {
                   rotulo={`Remover ${p}`}
                   icon={Trash2}
                   perigo
-                  onClick={() => mudar({ paradas: r.paradas.filter((_, j) => j !== i) })}
+                  onClick={() => mudar({ paradas: r.paradas.filter((_, j) => j !== i), ...(r.cafe === p ? { cafe: "" } : {}) })}
                 />
               </>
             }
@@ -357,6 +365,35 @@ function Passo3({ r, mudar }: PassoProps) {
         ))}
         <PontoDoCaminho nome={r.destino} indice={total - 1} total={total} compacto />
       </ol>
+      {r.paradas.length > 0 && !r.cafe && (
+        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Coffee className="h-4 w-4 shrink-0" /> Tem parada para o café? Toque na xícara da parada.
+        </p>
+      )}
+      {r.cafe && (
+        <div className="rounded-2xl bg-warning-soft/60 p-3">
+          <p className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+            <Coffee className="h-4 w-4 shrink-0 text-warning" /> Quanto tempo de café em {r.cafe}?
+          </p>
+          <div className="mt-2 grid grid-cols-4 gap-2">
+            {[15, 20, 30, 45].map((m) => (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={r.cafeMinutos === m}
+                onClick={() => mudar({ cafeMinutos: m })}
+                className={cn(
+                  "h-10 rounded-xl text-sm font-bold",
+                  r.cafeMinutos === m ? "bg-primary text-primary-foreground" : "border border-border bg-card text-foreground",
+                )}
+              >
+                {m} min
+              </button>
+            ))}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">O café não é ponto de embarque. O passageiro vê onde é e quanto tempo dura.</p>
+        </div>
+      )}
       <form
         className="flex gap-2"
         onSubmit={(e) => {
@@ -385,12 +422,14 @@ function BotaoIcone({
   onClick,
   disabled,
   perigo,
+  ativo,
 }: {
   rotulo: string;
   icon: LucideIcon;
   onClick: () => void;
   disabled?: boolean;
   perigo?: boolean;
+  ativo?: boolean;
 }) {
   return (
     <button
@@ -400,7 +439,7 @@ function BotaoIcone({
       disabled={disabled}
       className={cn(
         "flex h-9 w-9 items-center justify-center rounded-xl transition-colors disabled:opacity-30",
-        perigo ? "bg-destructive-soft text-destructive" : "bg-surface text-foreground",
+        perigo ? "bg-destructive-soft text-destructive" : ativo ? "bg-warning text-white" : "bg-surface text-foreground",
       )}
     >
       <Icon className="h-4 w-4" />
@@ -425,7 +464,7 @@ function Resumo({ r }: { r: Rascunho }) {
         <span className="text-muted-foreground">Confirmar até: </span>
         <span className="font-bold">{PRAZO_TEXTO[d.prazo]}</span>
       </p>
-      <CaminhoParadas pontos={caminhoCompleto(d)} compacto />
+      <CaminhoParadas pontos={caminhoCompleto(d)} compacto cafe={d.cafe} />
     </>
   );
 }

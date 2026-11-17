@@ -1,4 +1,6 @@
-import { CircleCheck, Coffee, Flag, Home, Play, Smartphone, UserCheck, UserX } from "lucide-react";
+import { CircleCheck, Coffee, Flag, Hand, Home, Play, Smartphone, UserCheck, UserX } from "lucide-react";
+import { horaDeAgora } from "@/lib/agora";
+import { RelogioDoCafe } from "./RelogioDoCafe";
 import { Button } from "@/components/ui/button";
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { dataDaVolta, textoDaVolta } from "@/lib/destinos";
@@ -18,6 +20,7 @@ import {
   proximoDaVolta,
   retomarViagem,
   seguirViagem,
+  somarMinutos,
   type ViagemDoDia,
 } from "@/lib/viagem";
 import { PassageiroDaVez, Progresso } from "./partes";
@@ -27,11 +30,26 @@ import { atualizarViagemNoBanco, marcarEmbarcouNoBanco, marcarNaoEstavaNoBanco }
 
 const botaoGrande = "h-[3.25rem] w-full rounded-2xl font-display text-base font-bold";
 
-function BotaoParada() {
-  return (
-    <Button variant="outline" className="w-full rounded-2xl font-bold" onClick={() => void fazer(() => atualizarViagemNoBanco(fazerParada))}>
-      <Coffee className="h-5 w-5" /> Fazer parada
+/** "Fazer parada"; with a coffee stop in the destino, "Café" starts the clock (back in the van at now + minutes). */
+function BotaoParada({ destino }: { destino?: Destino | undefined }) {
+  const cafe = destino?.cafe;
+  const parada = (
+    <Button variant="outline" className="w-full rounded-2xl font-bold" onClick={() => void fazer(() => atualizarViagemNoBanco((x) => fazerParada(x)))}>
+      <Hand className="h-5 w-5" /> {cafe ? "Parada" : "Fazer parada"}
     </Button>
+  );
+  if (!cafe) return parada;
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <Button
+        variant="outline"
+        className="w-full rounded-2xl border-warning font-bold text-foreground"
+        onClick={() => void fazer(() => atualizarViagemNoBanco((x) => fazerParada(x, somarMinutos(horaDeAgora(), cafe.minutos))))}
+      >
+        <Coffee className="h-5 w-5 text-warning" /> Café · {cafe.minutos} min
+      </Button>
+      {parada}
+    </div>
   );
 }
 
@@ -80,7 +98,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
               <Flag className="h-5 w-5" /> Cheguei ao destino
             </Button>
           )}
-          <BotaoParada />
+          <BotaoParada destino={destino} />
         </div>
       </div>
     );
@@ -99,7 +117,7 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
               <Home className="h-6 w-6" /> Desceu
             </Button>
           )}
-          <BotaoParada />
+          <BotaoParada destino={destino} />
         </div>
       </div>
     );
@@ -108,6 +126,9 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
   if (v.fase === "parada") {
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
+        {v.voltaAs ? (
+          <RelogioDoCafe onde={destino?.cafe?.parada} voltaAs={v.voltaAs} />
+        ) : (
         <section className="flex flex-col items-center rounded-3xl bg-card p-6 text-center shadow-card">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-warning-soft text-warning">
             <Coffee className="h-8 w-8" />
@@ -117,6 +138,10 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
             {aBordo(v).length > 0 ? "Antes de seguir, você confere quem está na van." : "Toque abaixo quando for seguir."}
           </p>
         </section>
+        )}
+        {v.voltaAs && aBordo(v).length > 0 && (
+          <p className="text-center text-sm text-muted-foreground">Ao retomar, você confere quem está na van. Os passageiros também confirmam pelo celular.</p>
+        )}
         <Button variant="cta" size="xl" className={cn(botaoGrande, "mt-auto")} onClick={() => void fazer(() => atualizarViagemNoBanco(retomarViagem))}>
           <Play className="h-5 w-5" /> Retomar viagem
         </Button>

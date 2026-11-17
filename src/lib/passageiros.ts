@@ -77,8 +77,9 @@ function lerVencimento(texto: string): number | null {
 }
 
 /** Cities and stops where a passenger can board, in path order. */
-export function pontosDeEmbarque(d: Pick<Destino, "origem" | "destino" | "paradas">) {
-  return [...new Set(caminhoCompleto(d))];
+/** Where passengers can board: the route, without the coffee stop. */
+export function pontosDeEmbarque(d: Pick<Destino, "origem" | "destino" | "paradas"> & { cafe?: Destino["cafe"] }) {
+  return [...new Set(caminhoCompleto(d))].filter((c) => c !== d.cafe?.parada);
 }
 
 /** Passengers of a destino by boarding city, in stop order; inside a city, the pickup order. */

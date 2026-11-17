@@ -116,6 +116,8 @@ export type ViagemDoDia = {
   /** Who boarded at the destino for the return. */
   naVolta: string[];
   desceram: string[];
+  /** Coffee stop in progress: back in the van at this time (HH:MM). */
+  voltaAs?: string | undefined;
 };
 
 export function iniciarViagem(destino: Destino, ordem: string[], data: string): ViagemDoDia {
@@ -178,18 +180,33 @@ export function naoEstava(v: ViagemDoDia, id: string): ViagemDoDia {
   return { ...v, naoEstavam: [...v.naoEstavam, id] };
 }
 
-export function fazerParada(v: ViagemDoDia): ViagemDoDia {
+/** A stop; the coffee stop says until when (voltaAs, HH:MM). */
+export function fazerParada(v: ViagemDoDia, voltaAs?: string): ViagemDoDia {
   if (v.fase !== "busca" && v.fase !== "volta") return v;
-  return v.fase === "busca"
-    ? { ...v, fase: "parada", paradasIda: v.paradasIda + 1 }
-    : { ...v, fase: "parada", paradasVolta: v.paradasVolta + 1 };
+  const base = { ...v, fase: "parada" as const, voltaAs };
+  return v.fase === "busca" ? { ...base, paradasIda: v.paradasIda + 1 } : { ...base, paradasVolta: v.paradasVolta + 1 };
+}
+
+/** "10:40" plus 20 minutes = "11:00" (wraps at midnight). */
+export function somarMinutos(hora: string, minutos: number) {
+  const [h, m] = hora.split(":").map(Number);
+  const t = (((h! * 60 + m! + minutos) % 1440) + 1440) % 1440;
+  return `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
+}
+
+/** Minutes from now until the time (0 when it passed; the coffee stop never crosses many hours). */
+export function minutosAte(hora: string, agora: string) {
+  const em = (x: string) => Number(x.slice(0, 2)) * 60 + Number(x.slice(3, 5));
+  let d = em(hora) - em(agora);
+  if (d < -720) d += 1440;
+  return Math.max(0, d);
 }
 
 /** Back from a stop: check who is in the van (nobody aboard → straight back on the road). */
 export function retomarViagem(v: ViagemDoDia): ViagemDoDia {
   if (v.fase !== "parada") return v;
-  if (aBordo(v).length === 0) return { ...v, fase: emTrecho(v) === "volta" ? "volta" : "busca" };
-  return { ...v, fase: "conferencia", conferencia: {}, peloCelular: [] };
+  if (aBordo(v).length === 0) return { ...v, fase: emTrecho(v) === "volta" ? "volta" : "busca", voltaAs: undefined };
+  return { ...v, fase: "conferencia", conferencia: {}, peloCelular: [], voltaAs: undefined };
 }
 
 export function conferir(v: ViagemDoDia, id: string, estado: Conferido): ViagemDoDia {

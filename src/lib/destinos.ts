@@ -113,11 +113,14 @@ export type Rascunho = {
   voltaOutroDia: boolean;
   dataVolta: string;
   paradas: string[];
+  /** The parada marked as the coffee stop ("" = none) and its minutes. */
+  cafe: string;
+  cafeMinutos: number;
   prazo: PrazoConfirmacao;
 };
 
 export function rascunhoVazio(): Rascunho {
-  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", voltaOutroDia: false, dataVolta: "", paradas: [], prazo: "1h" };
+  return { origem: "", destino: "", tipo: null, dias: [], data: "", saida: "", temVolta: null, volta: "", voltaOutroDia: false, dataVolta: "", paradas: [], cafe: "", cafeMinutos: 20, prazo: "1h" };
 }
 
 export function rascunhoDeDestino(d: Destino): Rascunho {
@@ -133,6 +136,8 @@ export function rascunhoDeDestino(d: Destino): Rascunho {
     voltaOutroDia: d.voltaData !== null,
     dataVolta: d.voltaData ?? "",
     paradas: d.paradas,
+    cafe: d.cafe?.parada ?? "",
+    cafeMinutos: d.cafe?.minutos ?? 20,
     prazo: d.prazo,
   };
 }
@@ -167,6 +172,7 @@ export function destinoDeRascunho(r: Rascunho, anterior?: Destino): Destino {
     volta: r.temVolta ? r.volta : null,
     voltaData: tipo === "avulsa" && r.temVolta && r.voltaOutroDia ? r.dataVolta : null,
     paradas: r.paradas.map((p) => nomeProprio(p)).filter(Boolean),
+    cafe: r.cafe && r.paradas.includes(r.cafe) ? { parada: nomeProprio(r.cafe), minutos: r.cafeMinutos } : null,
     convite: anterior?.convite ?? gerarConvite(),
     prazo: r.prazo,
     ativo: anterior?.ativo ?? true,

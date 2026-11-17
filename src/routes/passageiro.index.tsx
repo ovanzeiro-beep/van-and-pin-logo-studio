@@ -1,3 +1,4 @@
+import { RelogioDoCafe } from "@/components/app/viagem/RelogioDoCafe";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { AlarmClock, CalendarClock, CircleCheck, MessageCircle, UserCheck, Wallet, X } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
@@ -63,7 +64,9 @@ function InicioPassageiro() {
     <>
       <PassageiroHeader compacto titulo="Início" subtitulo="Tudo sobre a sua próxima viagem." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-2">
-        {conferencia === "perguntar" ? (
+        {viagemDeHoje?.fase === "parada" && viagemDeHoje.voltaAs ? (
+          <RelogioDoCafe onde={destino?.cafe?.parada} voltaAs={viagemDeHoje.voltaAs} passageiro />
+        ) : conferencia === "perguntar" ? (
           <AvisoConferencia onConfirmar={() => void fazer(() => confirmarNaVanNoBanco(eu.id))} />
         ) : conferencia === "confirmado" ? (
           <section className="flex items-center gap-3 rounded-3xl border-2 border-success bg-success-soft p-4 shadow-card" role="status">

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { MapPin } from "lucide-react";
+import { Coffee, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function rotuloDoPonto(i: number, total: number) {
@@ -13,6 +13,7 @@ export function PontoDoCaminho({
   total,
   acoes,
   compacto = false,
+  cafe,
 }: {
   nome: string;
   indice: number;
@@ -20,6 +21,8 @@ export function PontoDoCaminho({
   acoes?: ReactNode;
   /** Same drawing with less space between points, for forms that must fit without scrolling. */
   compacto?: boolean;
+  /** This parada is the coffee stop: minutes, shown with a cup. */
+  cafe?: number | undefined;
 }) {
   const primeiro = indice === 0;
   const ultimo = indice === total - 1;
@@ -31,15 +34,17 @@ export function PontoDoCaminho({
           "relative mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
           primeiro && "bg-primary text-primary-foreground",
           ultimo && "bg-accent text-accent-foreground",
-          !primeiro && !ultimo && "border-2 border-primary bg-card",
+          !primeiro && !ultimo && !cafe && "border-2 border-primary bg-card",
+          cafe && "bg-warning-soft text-warning",
         )}
       >
+        {cafe && <Coffee className="h-4 w-4" />}
         {primeiro && <span className="h-2.5 w-2.5 rounded-full bg-current" />}
         {ultimo && <MapPin className="h-4 w-4" />}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-          {rotuloDoPonto(indice, total)}
+          {cafe ? `Parada do café · ${cafe} min` : rotuloDoPonto(indice, total)}
         </p>
         <p className={cn("break-words font-semibold text-foreground", compacto ? "text-sm leading-tight" : "leading-snug")}>{nome}</p>
       </div>
@@ -48,11 +53,18 @@ export function PontoDoCaminho({
   );
 }
 
-export function CaminhoParadas({ pontos, compacto = false }: { pontos: string[]; compacto?: boolean }) {
+export function CaminhoParadas({ pontos, compacto = false, cafe }: { pontos: string[]; compacto?: boolean; cafe?: { parada: string; minutos: number } | null | undefined }) {
   return (
     <ol>
       {pontos.map((p, i) => (
-        <PontoDoCaminho key={`${i}-${p}`} nome={p} indice={i} total={pontos.length} compacto={compacto} />
+        <PontoDoCaminho
+          key={`${i}-${p}`}
+          nome={p}
+          indice={i}
+          total={pontos.length}
+          compacto={compacto}
+          cafe={i > 0 && i < pontos.length - 1 && cafe?.parada === p ? cafe.minutos : undefined}
+        />
       ))}
     </ol>
   );

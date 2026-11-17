@@ -66,7 +66,7 @@ function DetalheDestino() {
             <RouteIcon className="h-4 w-4 text-muted-foreground" />
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Caminho</p>
           </div>
-          <CaminhoParadas pontos={caminhoCompleto(d)} />
+          <CaminhoParadas pontos={caminhoCompleto(d)} cafe={d.cafe} />
         </section>
 
         <CodigoConvite destino={d} />

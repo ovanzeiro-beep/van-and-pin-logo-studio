@@ -41,6 +41,8 @@ export type TipoDestino = "fixa" | "avulsa";
 /** Até quando o passageiro confirma "Vou": tempo antes da saída, ou a noite anterior às 20h. */
 export type PrazoConfirmacao = "30min" | "1h" | "2h" | "noite-anterior";
 
+export type Cafe = { parada: string; minutos: number };
+
 export type Destino = {
   id: string;
   vanzeiroId: string;
@@ -58,6 +60,8 @@ export type Destino = {
   voltaData: string | null;
   /** Cidades ou paradas no caminho, em ordem (sem a origem e o destino). */
   paradas: string[];
+  /** Parada do café: one of the paradas, with how many minutes (not a boarding city). */
+  cafe?: Cafe | null | undefined;
   /** Código curto que o vanzeiro envia para quem quer entrar (ex.: VAN-4821). */
   convite: string;
   /** Quem não confirmar "Vou" até este prazo não entra na busca. */

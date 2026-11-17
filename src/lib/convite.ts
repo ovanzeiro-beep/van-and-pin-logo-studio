@@ -1,7 +1,7 @@
 import type { Destino } from "@/data/exemplo";
 import { supabase, USA_BANCO } from "@/lib/supabase";
 
-export type DestinoDoConvite = Pick<Destino, "id" | "origem" | "destino" | "paradas" | "saida" | "convite"> & {
+export type DestinoDoConvite = Pick<Destino, "id" | "origem" | "destino" | "paradas" | "saida" | "convite" | "cafe"> & {
   agenda?: Destino;
   vanzeiroNome?: string;
 };
@@ -26,6 +26,7 @@ export async function procurarPorCodigo(texto: string, destinosLocais: Destino[]
     origem: destino.origem,
     destino: destino.destino,
     paradas: destino.paradas,
+    cafe: destino.cafe_parada && destino.cafe_minutos ? { parada: destino.cafe_parada, minutos: destino.cafe_minutos } : null,
     saida: destino.saida,
     convite: `VAN-${digitos}`,
     vanzeiroNome: destino.vanzeiro_nome,

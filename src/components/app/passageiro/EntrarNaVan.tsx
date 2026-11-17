@@ -174,6 +174,11 @@ function CardDaVan({ destino }: { destino: DestinoDoConvite | Destino }) {
         <p className="text-sm text-muted-foreground">
           {agenda ? `${quandoAcontece(agenda)} · ` : ""}saída {destino.saida}
         </p>
+        {destino.cafe && (
+          <p className="text-sm text-muted-foreground">
+            Parada do café: {destino.cafe.parada} ({destino.cafe.minutos} min)
+          </p>
+        )}
       </div>
     </div>
   );
