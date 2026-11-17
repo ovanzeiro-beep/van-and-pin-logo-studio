@@ -1367,3 +1367,7 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - [x] Antes: depois de "Sair" (ou entrar com outra conta no mesmo celular), o aparelho continuava recebendo os avisos da conta antiga.
 - [x] Agora: ao sair e ao excluir a conta, o endereço de notificação deste celular é apagado do banco e desligado no navegador; a próxima conta que entrar ganha um novo (ao ativar ou ao entrar com as notificações já permitidas).
 - [x] Conferência: 364 testes (novo `g2-sair-celular.test.ts`), tipos, build. Sem mudança no banco (a regra "o dono apaga o próprio celular" já existia).
+
+## G5 e G6 (17/11/2026)
+- [x] G5 conferido sem mudança: o celular e o banco contam o "Vou sempre" do mesmo jeito para lotar a van (os dois somam o "Vou" do dia e o "Vou sempre" válido no prazo; a van lota no mesmo número).
+- [ ] G6: apagar a tabela `cidades` (nunca usada) e fechar `criar_conta_do_login` para o app (`20261117020000_limpeza_g6.sql`; cópia `supabase/SO-SQL-11-LIMPEZA-G6.sql`) — aguardando a licença do Supabase ou o dono colar.
