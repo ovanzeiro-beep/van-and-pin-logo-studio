@@ -1,6 +1,7 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { passageirosExemplo, pedidosExemplo, type Passageiro, type PedidoEntrada } from "@/data/exemplo";
 import { avaliarMudanca, type Embarque } from "@/lib/endereco";
+import { aplicarOrdemNaCidade } from "@/lib/organizar";
 import { atualizarMeusDados, identidadePassageiro, moverParaNaCidade, somenteDigitos, telefoneJaNoDestino, type MeusDados } from "@/lib/passageiros";
 import { garantirProximaCobranca } from "@/lib/cobrancas-store";
 import { destinoCheio, VAN_CHEIA } from "@/lib/lugares";
@@ -132,6 +133,15 @@ export function useAvisosVanzeiro() {
 export function reordenarPassageiro(id: string, alvoId: string): Resultado {
   if (!passageiros.some((p) => p.id === id)) return naoDeu("Não achamos este passageiro. Ele pode já ter saído do destino.");
   const nova = moverParaNaCidade(passageiros, id, alvoId);
+  if (nova === passageiros) return deuCerto;
+  matriculas = [...nova, ...saidas];
+  avisar();
+  return deuCerto;
+}
+
+/** N3: "Organizar pela distância" in one city: the new pickup order (the ids of that city, in order). */
+export function organizarCidade(destinoId: string, cidade: string, ids: string[]): Resultado {
+  const nova = aplicarOrdemNaCidade(passageiros, destinoId, cidade, ids);
   if (nova === passageiros) return deuCerto;
   matriculas = [...nova, ...saidas];
   avisar();

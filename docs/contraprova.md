@@ -1540,3 +1540,16 @@ Plano (tela "Onde você embarca", usada ao entrar na van e ao mudar o endereço)
 - [x] Card com a mesma altura (botões lado a lado); conferido em 390×844 e 375×667 sem rolagem.
 - [x] 5 testes novos e o teste antigo do link atualizado (388 no total); tsc e build passando.
 - Waze não entrou (não foi pedido).
+
+---
+
+## N3: organizar pela distância (pedido do dono, 17/11/2026) — feita
+
+Plano e resultado:
+- [x] Na tela do destino, em cada cidade com 2 ou mais passageiros com ponto no mapa: "Organizar pela distância", com confirmação (Voltar / Organizar).
+- [x] A ordem começa pelo passageiro mais perto da cidade anterior da rota (na origem: o mais longe da próxima cidade), segue sempre para o mais perto e depois desfaz cruzamentos (2-opt) (`src/lib/organizar.ts`).
+- [x] Quem não tem ponto no mapa fica no fim, na ordem em que estava; a confirmação diz quantos.
+- [x] Muda só aquela cidade daquele destino; o número da busca acompanha; no banco salva a coluna `ordem` como o arrastar (sem mudança no banco). Arrastar continua funcionando depois.
+- [x] Conferido no celular simulado (375×667): Jacarezinho → Londrina ficou leste → oeste (Mariana, Beatriz, Pedro), terminando do lado de Londrina.
+- [x] 7 testes novos (395 no total), tsc e build passando.
+- Limite: a distância é em linha reta (sem as ruas de verdade); para ruas de mão única ou rio no meio, o vanzeiro ajusta arrastando.

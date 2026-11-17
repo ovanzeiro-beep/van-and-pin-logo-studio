@@ -3,8 +3,21 @@ import { Link } from "@tanstack/react-router";
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Check, ChevronRight, Copy, GripVertical, Link2, MapPin, MessageCircle, Phone, Ticket, UserPlus, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, ChevronRight, Copy, GripVertical, Link2, MapPin, MessageCircle, Phone, Route, Ticket, UserPlus, Users } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useCoordenadas } from "@/lib/coordenadas-store";
+import { ordemPelaDistancia, vizinhasNaRota } from "@/lib/organizar";
 import { RecusarPedido } from "@/components/app/RecusarPedido";
 import type { Destino, Passageiro, PedidoEntrada } from "@/data/exemplo";
 import { cn } from "@/lib/utils";
@@ -13,7 +26,7 @@ import { useDestino } from "@/lib/destinos-store";
 import { descricaoPlano, formatarTelefone, numerosDaBusca, porCidade } from "@/lib/passageiros";
 import { cadastroDoPedido, usePassageiros, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 import { fazer } from "@/lib/acoes";
-import { ligarPedidoAoCadastroNoBanco, reordenarNoBanco } from "@/lib/banco/passageiros";
+import { ligarPedidoAoCadastroNoBanco, organizarCidadeNoBanco, reordenarNoBanco } from "@/lib/banco/passageiros";
 import { textoDaOcupacao } from "@/lib/lugares";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -158,7 +171,10 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
           )}
           {porCidade(passageiros, destino).map((grupo) => (
             <div key={grupo.cidade}>
-              <p className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{grupo.cidade}</p>
+              <div className="flex min-h-9 items-center justify-between gap-2 px-1 pb-1">
+                <p className="truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">{grupo.cidade}</p>
+                <OrganizarPelaDistancia destino={destino} cidade={grupo.cidade} passageiros={grupo.passageiros} />
+              </div>
               <ListaArrastavel destinoId={destinoId} cidade={grupo.cidade} passageiros={grupo.passageiros} numeros={numeros} />
             </div>
           ))}
@@ -171,6 +187,44 @@ export function PassageirosDoDestino({ destinoId }: { destinoId: string }) {
         </Link>
       </Button>
     </section>
+  );
+}
+
+/** N3: puts the pickups of one city in an order where each one is close to the next (asks first). */
+function OrganizarPelaDistancia({ destino, cidade, passageiros }: { destino: Destino; cidade: string; passageiros: Passageiro[] }) {
+  const coordenadas = useCoordenadas();
+  const comPonto = passageiros.filter((p) => p.ponto).length;
+  if (comPonto < 2) return null;
+  const semPonto = passageiros.length - comPonto;
+  const organizar = () => {
+    const { entrada, saida } = vizinhasNaRota(destino, cidade, coordenadas);
+    const ids = ordemPelaDistancia(passageiros, entrada, saida);
+    void fazer(() => organizarCidadeNoBanco(destino.id, cidade, ids));
+  };
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="h-9 shrink-0 gap-1.5 px-2 text-sm font-semibold text-primary">
+          <Route className="!h-4 !w-4" /> Organizar pela distância
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Organizar {cidade} pela distância?</AlertDialogTitle>
+          <AlertDialogDescription>
+            A ordem da busca em {cidade} muda para cada passageiro ficar perto do próximo, pelo ponto marcado no mapa.
+            {semPonto > 0 && ` ${semPonto === 1 ? "1 passageiro sem ponto no mapa fica" : `${semPonto} passageiros sem ponto no mapa ficam`} no fim.`} Depois,
+            você ainda pode arrastar para ajustar.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="gap-2">
+          <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Voltar</AlertDialogCancel>
+          <AlertDialogAction className={buttonVariants({ variant: "cta", size: "lg" })} onClick={organizar}>
+            <Route className="!h-5 !w-5" /> Organizar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

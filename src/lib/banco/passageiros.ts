@@ -15,6 +15,7 @@ import {
   recusarMudancaDeEndereco,
   recusarPedido,
   reordenarPassageiro,
+  organizarCidade,
   salvarPassageiro,
   type MudancaDeEndereco,
 } from "@/lib/passageiros-store";
@@ -385,3 +386,17 @@ export async function reordenarNoBanco(id: string, alvoId: string): Promise<Resu
   return deuCerto;
 }
 
+
+/** N3: "Organizar pela distância": the new pickup order of that city is saved for each passenger. */
+export async function organizarCidadeNoBanco(destinoId: string, cidade: string, ids: string[]): Promise<Resultado> {
+  const r = organizarCidade(destinoId, cidade, ids);
+  if (!r.ok || !usaBanco()) return r;
+  const daCidade = obterPassageiros().filter((x) => x.destinoId === destinoId && x.cidade === cidade);
+  const resultados = await Promise.all(daCidade.map((x) => supabase()!.from("matriculas").update({ ordem: x.ordem ?? null }).eq("id", x.id)));
+  const erro = resultados.find((x) => x.error)?.error ?? null;
+  if (erro) {
+    await carregarPassageirosEPedidos();
+    return naoDeu(motivo(erro));
+  }
+  return deuCerto;
+}
