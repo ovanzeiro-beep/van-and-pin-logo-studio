@@ -23,8 +23,15 @@ function minutos(data: string, hora: string) {
   return Date.UTC(a, m - 1, d, h, min) / 60_000;
 }
 
-/** "hoje" or "no sáb, 28 de nov". */
-const quandoVai = (data: string, hoje: string) => (data === hoje ? "hoje" : `no ${quando(data, hoje)}`);
+/** "hoje", "na quarta, 18 de nov" or "no sábado, 21 de nov" (owner, 17/11: "na" on weekdays, "no" on weekends). */
+const DIAS_DA_SEMANA = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+export function quandoVai(data: string, hoje: string) {
+  if (data === hoje) return "hoje";
+  const [a = 0, m = 1, d = 1] = data.split("-").map(Number);
+  const semana = new Date(Date.UTC(a, m - 1, d)).getUTCDay();
+  const resto = quando(data, hoje).split(", ")[1] ?? "";
+  return `${semana === 0 || semana === 6 ? "no" : "na"} ${DIAS_DA_SEMANA[semana]}, ${resto}`;
+}
 
 /**
  * Passenger (owner, 17/11/2026): after "Vou", a confirmation with the deadline to give up in the app; after
