@@ -1467,3 +1467,7 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Banco: `supabase/migrations/20261117060000_rev10_proxima_e_voce.sql` — a cada mudança da viagem na busca, o primeiro da ordem ainda não tratado recebe "Você é o próximo. Aguarde no ponto: a van está chegando." (uma vez só; ao iniciar, o primeiro; "Não estava no ponto" passa para o seguinte; nada depois da busca). Testado numa cópia e aplicado no Supabase real. Feito pelo banco: funciona também com a fila sem sinal do vanzeiro.
 - [x] App: tipo `proxima_parada` ("A van está chegando", ícone da van em âmbar) no sininho; programa de notificações do Supabase atualizado. 373 testes, tipos, build.
 - Limite: só com o banco (nos dados de exemplo, sem banco, o aviso não nasce).
+
+## Etapas da "Situação da van" seguem a busca (17/11/2026, pedido do dono)
+- [x] Antes de a viagem começar: nenhuma etapa verde ("Aguardando a saída"). Ao iniciar: "Saiu da garagem" verde para quem confirmou ("Viagem começou · Faltam N pessoas antes de você"). Só quando é a vez da pessoa: "A caminho" verde ("Você é o próximo · Aguarde no ponto: a van está chegando"). Ao "Embarcou": "Na van" verde.
+- [x] Corrigido: com o banco, o passageiro só tem o próprio lugar na viagem, e o app achava que ele era sempre o próximo (pulava para "A caminho" logo ao iniciar). Agora a vez vem de `embarque_da_viagem` (`situacaoComEmbarque` em `src/lib/embarque.ts`). 374 testes, tipos, build.

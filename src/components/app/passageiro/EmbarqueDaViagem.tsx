@@ -1,16 +1,8 @@
-import { textoDoEmbarque } from "@/lib/embarque";
-import { useEmbarqueDaViagem } from "@/lib/banco/embarque";
+import { textoDoEmbarque, type EmbarqueDaViagem as Embarque } from "@/lib/embarque";
 import { cn } from "@/lib/utils";
 
 /** REV-09: "3 de 8 já embarcaram", the initials of who boarded and "Faltam 2 antes de você". */
-export function EmbarqueDaViagem({
-  matriculaId,
-  destinoId,
-}: {
-  matriculaId: string;
-  destinoId: string;
-}) {
-  const e = useEmbarqueDaViagem(matriculaId, destinoId);
+export function EmbarqueDaViagem({ e }: { e: Embarque | null }) {
   if (!e || e.total === 0) return null;
   const t = textoDoEmbarque(e);
   const mostrar = e.iniciais.slice(0, 6);
