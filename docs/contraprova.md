@@ -1610,4 +1610,4 @@ Pedido do dono: além da cidade, o nome do comércio onde param.
 - [x] Passo 3: campo "Nome do lugar (ex.: Posto Tocuman)" dentro da caixa do café (opcional, até 80 letras).
 - [x] Aparece como "Posto Tocuman, Jataizinho PR" no caminho do destino, no convite, na tela "Sua van" e no relógio do café (vanzeiro e passageiro).
 - [x] Banco: coluna `cafe_local`; `destino_pelo_convite` devolve o lugar. Testado na cópia local. 1 teste novo (412 no total), tsc e build passando.
-- [ ] Aplicar no Supabase real (aprovação expirou): `supabase/SO-SQL-15-cafe-local.sql`. Só publicar o app depois.
+- [x] Aplicado no Supabase real pelo dono (SO-SQL-15) e conferido: coluna `cafe_local`, convite devolve o lugar, sem acesso sem login.
