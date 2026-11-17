@@ -60,3 +60,20 @@ export function lerLugares(texto: string): number | null | "invalido" {
   const n = Number(t);
   return n >= 1 && n <= 60 ? n : "invalido";
 }
+
+// REV-08 (owner, 17/11/2026): the passenger sees how many seats of the trip are taken (only numbers, never who).
+
+export type VagasDaViagem = { titulo: string; detalhe: string | null; tom: "livre" | "poucas" | "lotada"; ocupacao: number };
+
+/** "4 de 15 lugares ocupados · 11 livres", "Restam 2 lugares", "Você está entre os 4 confirmados". */
+export function vagasDaViagem(vao: number, lugares: number | null, euVou: boolean): VagasDaViagem {
+  const confirmados = `${vao} ${vao === 1 ? "confirmado" : "confirmados"}`;
+  const voce = euVou ? (vao === 1 ? "Você é o único confirmado até agora" : `Você está entre os ${vao} confirmados`) : null;
+  if (lugares === null) return { titulo: confirmados, detalhe: voce, tom: "livre", ocupacao: 0 };
+  const livres = Math.max(0, lugares - vao);
+  const ocupacao = Math.min(1, vao / lugares);
+  if (livres === 0) return { titulo: `${lugares} de ${lugares} lugares ocupados`, detalhe: voce ?? "Van lotada", tom: "lotada", ocupacao };
+  const titulo = `${vao} de ${lugares} lugares ocupados · ${livres} ${livres === 1 ? "livre" : "livres"}`;
+  if (livres <= 3) return { titulo, detalhe: voce ?? `Restam ${livres} ${livres === 1 ? "lugar" : "lugares"}`, tom: "poucas", ocupacao };
+  return { titulo, detalhe: voce, tom: "livre", ocupacao };
+}

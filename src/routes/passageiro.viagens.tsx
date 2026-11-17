@@ -10,6 +10,7 @@ import { dataDeHoje } from "@/lib/agora";
 import { nomeDestino } from "@/lib/destinos";
 import { rotuloDoDia, useMinhasViagens, type MinhaProximaViagem } from "@/lib/minha-viagem";
 import { BotaoVou } from "@/components/app/passageiro/BotaoVou";
+import { VagasDaViagem } from "@/components/app/passageiro/VagasDaViagem";
 import { RespostasFixas } from "@/components/app/passageiro/RespostasFixas";
 import { cn } from "@/lib/utils";
 import { historicoDoPassageiro } from "@/lib/viagem";
@@ -140,6 +141,9 @@ function ProximaViagem({ v, saida, passageiroId }: { v: MinhaProximaViagem; said
               ? "Prazo encerrado."
               : "Prazo encerrado — a van não vai passar"}
       </p>
+      {(v.aberta || (v.resposta === "vai" && !v.emAndamento)) && (
+        <VagasDaViagem matriculaId={passageiroId} destinoId={v.destino.id} vanzeiroId={v.destino.vanzeiroId} data={v.data} />
+      )}
       {v.aberta && (
         <div className="mt-2 grid grid-cols-2 gap-2.5">
           <BotaoVou passageiroId={passageiroId} destinoId={v.destino.id} data={v.data} resposta={v.resposta} />
