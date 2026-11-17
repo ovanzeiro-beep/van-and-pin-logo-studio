@@ -13,6 +13,7 @@ delete from public.mudancas_endereco;
 delete from public.juntar_conta;
 delete from public.pedidos;
 delete from public.viagens;
+delete from public.viagem_sinais;
 delete from public.matriculas;
 delete from public.dias_sem_viagem;
 delete from public.destinos where excluido_em is not null;
