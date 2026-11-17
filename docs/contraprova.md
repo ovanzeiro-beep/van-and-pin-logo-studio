@@ -1411,3 +1411,17 @@ Decisão do dono (16/11): Diário e Por viagem continuam como estão: a cobranç
 - Acrescentado: 22.4a (o que já está pronto, com a prova), P-13 (funções da E1 abertas sem login), P-02 e P-12 atualizados, plano 22.6 enxugado de 12 para 8 etapas (REV-00 a REV-07), sem repetir verificações que já têm prova.
 - Somente documentos Markdown; código, banco e app sem mudança. Testes não precisam ser repetidos (nenhum código mudou).
 - **Próximo passo:** REV-01 (segurança rápida e G6), com o "pode seguir" do dono.
+
+## REV-01 — Segurança rápida e limpeza G6 (17/11/2026)
+
+Etapa / data / situação: REV-01 / 17/11/2026 / aguardando o dono (só a parte de apagar `cidades`).
+Versão de partida: `f719932`.
+Pedido e regra esperada: nenhuma função interna do banco pode ser chamada sem login (P-13); limpeza G6 aprovada pelo dono.
+Parte validada:
+- [x] `supabase/migrations/20261117030000_rev01_seguranca.sql` aplicado no Supabase real: `lugares_do_destino`, `ocupados_no_destino`, `aviso_trocado_de_novo` e `criar_conta_do_login` fechadas para o app. Conferido no banco real: **0 funções** do esquema `public` executáveis sem login.
+- [x] Testado antes numa cópia do banco: sem login e logado não chamam mais as funções; pedir para entrar, cadastrar direto, aceitar pedido e criar conta no cadastro continuam funcionando (6 checagens).
+- [ ] Apagar a tabela `cidades` (`20261117020000_limpeza_g6.sql`): o Supabase pediu licença e não teve resposta; o dono cola `supabase/SO-SQL-12-G6-CIDADES.sql` (resultado esperado: `cidades_que_sobraram = 0`).
+Testes automáticos: não se aplica (nenhum código do app mudou).
+Navegador / celular: nada muda na tela.
+Como desfazer: `grant execute` das quatro funções para `authenticated` (não recomendado); a tabela `cidades` estava vazia e sem uso.
+Próximo passo: o dono cola o SQL; depois REV-02 (e-mails).

@@ -693,7 +693,7 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 
 ## 22. Controle atual — revisão funcional por etapas
 
-**Atualização:** 17/11/2026. **Etapa concluída:** REV-00, documentação organizada (preparada por outra IA e corrigida e publicada no GitHub pelo Claude Code, a pedido do dono). **Próxima:** REV-01, segurança rápida e limpeza G6 (22.6). Nenhuma correção funcional foi feita na REV-00.
+**Atualização:** 17/11/2026. **Etapas:** REV-00 concluída (documentação organizada, preparada por outra IA e corrigida e publicada no GitHub pelo Claude Code, a pedido do dono); REV-01 quase concluída (falta o dono colar o SQL que apaga `cidades`). **Próxima:** REV-02, e-mails em português (22.6). Nenhuma correção funcional foi feita na REV-00.
 
 > **Para qualquer IA que for trabalhar aqui (Claude, GPT, Lovable ou outra):** leia esta seção 22 inteira, depois `CLAUDE.md` e o último registro de `docs/contraprova.md`. Trabalhe uma etapa de 22.6 por vez, registre a prova (22.8) e atualize 22.6 e a contraprova no fim. O que já está pronto está em 22.4a; como mexer no banco está em 22.1a.
 
@@ -822,7 +822,7 @@ Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas 
 | Etapa | Objetivo | Situação atual | Condição de conclusão |
 | --- | --- | --- | --- |
 | REV-00 | Organizar documentação e ponto de partida | **Concluída (17/11)** — publicada na `main` | Fonte única (esta seção), histórico preservado, regras de banco corretas (22.1a). |
-| REV-01 | Segurança rápida e limpeza G6 | **A fazer — próxima** | P-13 resolvido (funções sem login fechadas); G6 aplicada (P-02); `criar_conta_do_login` fechada para o app; pedir/aceitar/cadastro continuam funcionando (teste no banco real em transação desfeita); 364+ testes e build passam. |
+| REV-01 | Segurança rápida e limpeza G6 | **Aguardando o dono** (17/11): segurança aplicada e conferida no banco real (nenhuma função pode ser chamada sem login); falta só apagar a tabela `cidades` — o dono cola `supabase/SO-SQL-12-G6-CIDADES.sql` | P-13 resolvido (funções sem login fechadas); G6 aplicada (P-02); `criar_conta_do_login` fechada para o app; pedir/aceitar/cadastro continuam funcionando (teste no banco real em transação desfeita); 364+ testes e build passam. |
 | REV-02 | E-mails do login em português (G3) | A fazer — depende do dono (senha de app do Gmail) | SMTP próprio configurado no Supabase pelo dono; modelos `docs/emails/*.html` colados; cadastro novo recebe "Confirme seu e-mail" e "Esqueci a senha" recebe "Criar senha nova", em português; limite de e-mails por hora ajustado. Nunca pedir a senha no chat. |
 | REV-03 | Teste real com 2 celulares e correção do que aparecer | A fazer — depende do dono (aparelhos) | Roteiro de `docs/o-que-falta.md` (A6) feito pelo dono, com a IA acompanhando pelo banco; cada falha vira registro e correção pequena; repetir o passo que falhou até passar. Cobre os fluxos de 22.4: conta, destino, convite, "Vou", lotação, viagem com e sem sinal, pagamento, avisos e tempo real, sair do destino. |
 | REV-04 | Desempenho do banco | A fazer | Índices nas 19 ligações sem índice; políticas trocando `auth.uid()` por `(select auth.uid())`; políticas de leitura repetidas juntadas, **sem mudar quem vê o quê** (conferir com contas de teste em transação desfeita); avisos de desempenho do Supabase zerados ou explicados. |
