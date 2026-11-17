@@ -1,6 +1,17 @@
-# Van And Pin Logo Studio
+# O Vanzeiro
 
-Implement exactly the screenshot and nothing else
+Aplicativo para o vanzeiro organizar destinos, passageiros, viagens e cobranças, com um painel próprio para o passageiro. Repositório ativo: `ovanzeiro-beep/van-and-pin-logo-studio`.
+
+## Acompanhar o trabalho
+
+- [Fonte da verdade e plano atual](docs/fonte-da-verdade.md#controle-atual): funcionamento esperado, situação verificada, pendências e próximas etapas.
+- [Contraprova](docs/contraprova.md): registro das verificações e entregas de cada etapa.
+- [Descrição do banco](docs/banco-de-dados.md): dados, relações e regras de acesso.
+- [Guia do vanzeiro](docs/guia-do-vanzeiro.md): orientação para usar o app.
+
+O app já aponta para o Supabase `ovanzeiro`. Os testes automáticos usam simulações; sua aprovação não substitui a validação com contas reais e no celular. Consulte o controle atual antes de tratar uma etapa antiga como concluída hoje.
+
+## Projeto e publicação
 
 This project was built with [Lovable](https://lovable.dev).
 

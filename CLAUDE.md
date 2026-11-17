@@ -2,6 +2,8 @@
 
 Leia este arquivo inteiro antes de qualquer mudança. Ele é a regra do projeto.
 
+> **Estado vigente — revisão de 17/11/2026:** o banco já foi autorizado na etapa W1 e está integrado ao código, no projeto Supabase `ovanzeiro` (`rnziztwicggdekmpwpgy`). As referências abaixo a "sem banco", "sem login real", relógio fixo e dados que somem descrevem a fase anterior à W1; não orientam remover o banco atual. Consulte [a fonte da verdade, seção 22](docs/fonte-da-verdade.md#controle-atual), e o último registro da [contraprova](docs/contraprova.md), antes de cada etapa. O ciclo de mudanças pequenas, testes e preservação do aprovado continua valendo. Para estrutura do banco, siga a seção 22.1a da fonte da verdade (Supabase próprio do dono; nunca pedir mudanças ao agente do Lovable).
+
 ## 1. O que é o app
 
 O Vanzeiro é um app de celular para **donos de van** (o "vanzeiro") organizarem passageiros, rotas e cobranças, e para o **passageiro** confirmar se vai, acompanhar a van e ver o que deve.
