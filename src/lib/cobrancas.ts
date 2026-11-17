@@ -402,3 +402,26 @@ export function mensagemDosAtrasados(
     "Se já pagou, pode desconsiderar. Obrigado!",
   ].join("\n");
 }
+
+/**
+ * "Vou" already counts as pending (owner's decision, 17/11): Por viagem and Diário passengers who confirmed for a trip of
+ * today and have not boarded yet; "Não vou" takes them out. No charge is created here: the real one is still born at
+ * "Embarcou" (then the person leaves this list, so nothing is counted twice).
+ */
+export function previstoDoVou(
+  passageiros: Pick<Passageiro, "id" | "destinoId" | "plano" | "valor">[],
+  destinosDeHoje: string[],
+  respostas: Record<string, string>,
+  viagens: Record<string, { fase: string; embarcaram: string[]; naoEstavam: string[] } | undefined>,
+) {
+  let qtd = 0;
+  let valor = 0;
+  for (const p of passageiros) {
+    if (!destinosDeHoje.includes(p.destinoId) || (p.plano !== "viagem" && p.plano !== "diario") || respostas[p.id] !== "vai") continue;
+    const v = viagens[p.destinoId];
+    if (v && (v.fase === "encerrada" || v.embarcaram.includes(p.id) || v.naoEstavam.includes(p.id))) continue;
+    qtd += 1;
+    valor += p.valor ?? 0;
+  }
+  return { qtd, valor };
+}

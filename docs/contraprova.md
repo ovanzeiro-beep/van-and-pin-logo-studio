@@ -1611,3 +1611,10 @@ Pedido do dono: além da cidade, o nome do comércio onde param.
 - [x] Aparece como "Posto Tocuman, Jataizinho PR" no caminho do destino, no convite, na tela "Sua van" e no relógio do café (vanzeiro e passageiro).
 - [x] Banco: coluna `cafe_local`; `destino_pelo_convite` devolve o lugar. Testado na cópia local. 1 teste novo (412 no total), tsc e build passando.
 - [x] Aplicado no Supabase real pelo dono (SO-SQL-15) e conferido: coluna `cafe_local`, convite devolve o lugar, sem acesso sem login.
+
+---
+
+## "Vou" já aparece como pendente (decisão do dono, 17/11/2026) — feita
+- [x] Início do vanzeiro, card "A receber": quem confirmou "Vou" (Por viagem e Diário) numa viagem de hoje já soma no valor e em "Pendentes"; "Não vou" tira na hora.
+- [x] Nenhuma cobrança é criada nem editada por isso: a cobrança de verdade continua nascendo no "Embarcou" (aí a pessoa sai da conta prevista; nunca conta duas vezes). "Não estava no ponto" e viagem encerrada saem da conta. Mensal e Quinzenal não mudam (já têm a própria cobrança).
+- [x] 4 testes novos (416 no total), tsc e build passando.

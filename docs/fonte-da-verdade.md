@@ -838,6 +838,7 @@ Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas 
 | N3 | **Organizar pela distância** (pedido do dono, 17/11) | **Concluída (17/11)** | Na tela do destino, por cidade: ordem da busca em que cada um fica perto do próximo (linha reta, pelos pontos do mapa), vindo da cidade anterior; sem ponto vai para o fim; o vanzeiro ainda arrasta. |
 | PD | **Completar o perfil antes do primeiro destino** (pedido do dono, 17/11) | **Concluída (17/11)** | Card com telefone, Pix e van (modelo, placa, lugares) em "Pronto"/"Falta"; "Completar meu perfil" abre o Perfil editando e, ao salvar, segue para criar o destino. |
 | CAFÉ | **Parada do café** (pedido do dono, 17/11) | **Concluída (17/11)** — SQL aplicado e conferido | Uma parada do destino marcada como café (15–45 min), fora das cidades de embarque; botão "Café" na viagem com relógio para vanzeiro e passageiro; depois, conferência de quem está na van. |
+| VOU-PENDENTE | **"Vou" já conta como pendente** (decisão do dono, 17/11) | **Concluída (17/11)** | No Início, "A receber" e "Pendentes" somam quem confirmou "Vou" hoje (Por viagem e Diário) até o "Embarcou", quando nasce a cobrança de verdade; "Não vou" tira. Sem criar nem editar cobrança. |
 
 Fora do núcleo (decisão do dono, ver 22.9): GPS real, app na Play Store, domínio próprio.
 

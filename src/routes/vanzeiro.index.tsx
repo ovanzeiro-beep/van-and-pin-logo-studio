@@ -9,10 +9,10 @@ import { useDestinos } from "@/lib/destinos-store";
 import { presencaDaViagem } from "@/lib/passageiros";
 import { usePassageiros } from "@/lib/passageiros-store";
 import { dataDeHoje } from "@/lib/agora";
-import { resumoDoMes } from "@/lib/cobrancas";
+import { previstoDoVou, resumoDoMes } from "@/lib/cobrancas";
 import { useCobrancas } from "@/lib/cobrancas-store";
 import { escolherViagem, useViagensDoDia } from "@/lib/viagem-store";
-import { proximaViagem, viagemDoInicio } from "@/lib/viagem";
+import { aconteceEm, proximaViagem, viagemDoInicio } from "@/lib/viagem";
 import { useRespostasDoDia } from "@/lib/respostas-store";
 import { textoDaVan, usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -37,7 +37,8 @@ function InicioVanzeiro() {
   const { destino, feitas } = viagemDoInicio(destinos, viagens, dataDeHoje());
   const embarcaramHoje = feitas.reduce((n, d) => n + (viagens[d.id]?.embarcaram.length ?? 0), 0);
   const passageiros = usePassageiros();
-  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, destino?.id ?? "", useRespostasDoDia(dataDeHoje()));
+  const respostasDeHoje = useRespostasDoDia(dataDeHoje());
+  const { vao: confirmados, total, semResposta, naoVao } = presencaDaViagem(passageiros, destino?.id ?? "", respostasDeHoje);
   const perfil = usePerfilVanzeiro();
   // E1: with the van's seats in the Perfil, "1 de 15 lugares" (the bar fills up to the seats); without them, "1 de 4".
   const lugares = perfil.van.lugares;
@@ -45,6 +46,13 @@ function InicioVanzeiro() {
   const pct = base > 0 ? Math.min(100, Math.round((confirmados / base) * 100)) : 0;
   const saida = destino?.saida ?? "--:--";
   const financeiro = resumoDoMes(useCobrancas(), dataDeHoje());
+  // "Vou" already shows as pending (Por viagem and Diário), until "Embarcou" creates the real charge.
+  const previsto = previstoDoVou(
+    passageiros,
+    destinos.filter((d) => aconteceEm(d, dataDeHoje())).map((d) => d.id),
+    respostasDeHoje,
+    viagens,
+  );
   const semDestinos = destinos.length === 0;
   const proxima = destino || feitas.length > 0 ? null : proximaViagem(destinos, dataDeHoje());
 
@@ -147,11 +155,11 @@ function InicioVanzeiro() {
             icon={Wallet}
             tone="warning"
             label="A receber"
-            value={formatarReais(financeiro.aReceber)}
+            value={formatarReais(financeiro.aReceber + previsto.valor)}
           >
             <div className="grid grid-cols-3 gap-2 text-center">
               <Resumo valor={financeiro.pagos} rotulo="Pagos" className="bg-success-soft text-success" />
-              <Resumo valor={financeiro.pendentes} rotulo="Pendentes" className="bg-warning-soft text-warning" />
+              <Resumo valor={financeiro.pendentes + previsto.qtd} rotulo="Pendentes" className="bg-warning-soft text-warning" />
               <Resumo valor={financeiro.devendoQtd} rotulo="Devendo" className="bg-destructive-soft text-destructive" />
             </div>
           </InfoCard>
