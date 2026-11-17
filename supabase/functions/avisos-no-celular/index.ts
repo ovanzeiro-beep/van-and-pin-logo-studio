@@ -26,6 +26,7 @@ const TITULO: Record<string, string> = {
   destino_excluido: "Destino excluído",
   presenca_confirmada: "Presença confirmada",
   ausencia_registrada: "Ausência registrada",
+  proxima_parada: "A van está chegando",
 };
 
 /** The keys are made once, here, and never leave the database. */

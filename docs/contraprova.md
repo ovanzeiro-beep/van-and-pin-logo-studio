@@ -1462,3 +1462,8 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] App: `src/lib/embarque.ts`, `src/lib/banco/embarque.ts` (lê de novo a cada mudança da viagem pelo tempo real), componente `EmbarqueDaViagem` no card "Situação da van" durante a busca: "3 de 8 já embarcaram", bolinhas com as iniciais (até 6 e "+n"), "Faltam 2 antes de você" / "Falta 1 antes de você" / "Você é o próximo — aguarde no ponto" / "Você embarcou".
 - [x] Privacidade: só números e iniciais. Pendência: citar na Política de Privacidade (REV-06).
 - [x] Conferência: 373 testes (novo `rev09-embarque.test.ts`), tipos, build.
+
+## REV-10 — "Você é o próximo" (17/11/2026)
+- [x] Banco: `supabase/migrations/20261117060000_rev10_proxima_e_voce.sql` — a cada mudança da viagem na busca, o primeiro da ordem ainda não tratado recebe "Você é o próximo. Aguarde no ponto: a van está chegando." (uma vez só; ao iniciar, o primeiro; "Não estava no ponto" passa para o seguinte; nada depois da busca). Testado numa cópia e aplicado no Supabase real. Feito pelo banco: funciona também com a fila sem sinal do vanzeiro.
+- [x] App: tipo `proxima_parada` ("A van está chegando", ícone da van em âmbar) no sininho; programa de notificações do Supabase atualizado. 373 testes, tipos, build.
+- Limite: só com o banco (nos dados de exemplo, sem banco, o aviso não nasce).

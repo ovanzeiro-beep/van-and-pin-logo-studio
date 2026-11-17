@@ -22,6 +22,7 @@ const tipoAviso: Record<string, { label: string; cor: string }> = {
   destino_excluido: { label: "Destino excluído", cor: "text-destructive" },
   presenca_confirmada: { label: "Presença confirmada", cor: "text-success" },
   ausencia_registrada: { label: "Ausência registrada", cor: "text-destructive" },
+  proxima_parada: { label: "A van está chegando", cor: "text-warning" },
 };
 
 export const Route = createFileRoute("/passageiro/notificacoes")({
