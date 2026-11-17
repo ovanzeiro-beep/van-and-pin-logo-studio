@@ -1579,3 +1579,9 @@ Pedido do dono: o GPS marca a cidade sozinho; quem não está numa cidade por on
 - [x] Perfil completo: o card mostra "Seu perfil está pronto!" e "Criar meu primeiro destino".
 - [x] Aparece sempre que o vanzeiro ainda não tem destinos (toda primeira viagem).
 - [x] Conferido no celular simulado (390×844 e 375×667; no SE o card rola de leve por dentro). 2 testes novos (402 no total), tsc e build passando.
+
+### Ajuste (17/11/2026): o card só aparece quando falta algo
+Pedido do dono: preencheu tudo, não mostra mais; apagou qualquer item, volta a aparecer.
+- [x] Perfil completo (telefone, Pix, modelo, placa e lugares): "Crie seu primeiro destino" vai direto para criar o destino, sem card.
+- [x] Faltando qualquer item: o card abre antes. Conferido na tela: completo → foi direto; Pix apagado → card voltou.
+- [x] 402 testes, tsc e build passando.

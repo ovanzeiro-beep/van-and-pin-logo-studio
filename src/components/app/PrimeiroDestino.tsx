@@ -32,6 +32,9 @@ const PASSOS = [
 /** First use of a new vanzeiro (no destinos yet): a 3-step help and a single path, "Crie seu primeiro destino". */
 export function PrimeiroDestino() {
   const [aberto, setAberto] = useState(false);
+  const completo = perfilCompleto(usePerfilVanzeiro());
+  const botao =
+    "flex h-14 w-full items-center gap-3 rounded-2xl bg-accent px-4 text-left text-accent-foreground shadow-cta transition-transform active:scale-[0.98]";
   return (
     <div className="relative z-10 -mt-4 space-y-3 px-5 pb-3">
       <section className="rounded-3xl bg-card p-4 shadow-card">
@@ -63,16 +66,23 @@ export function PrimeiroDestino() {
           ))}
         </ol>
       </section>
-      <button
-        type="button"
-        onClick={() => setAberto(true)}
-        className="flex h-14 w-full items-center gap-3 rounded-2xl bg-accent px-4 text-left text-accent-foreground shadow-cta transition-transform active:scale-[0.98]"
-      >
-        <MapPinPlus className="h-5 w-5 shrink-0" />
-        <span className="flex-1 font-display text-base font-bold">Crie seu primeiro destino</span>
-        <ChevronRight className="h-5 w-5 shrink-0" />
-      </button>
-      <AntesDoPrimeiroDestino aberto={aberto} mudarAberto={setAberto} />
+      {/* Profile complete: straight to the destino. Something missing (new account, or erased later): the card first. */}
+      {completo ? (
+        <Link to="/vanzeiro/destinos/novo" className={botao}>
+          <MapPinPlus className="h-5 w-5 shrink-0" />
+          <span className="flex-1 font-display text-base font-bold">Crie seu primeiro destino</span>
+          <ChevronRight className="h-5 w-5 shrink-0" />
+        </Link>
+      ) : (
+        <>
+          <button type="button" onClick={() => setAberto(true)} className={botao}>
+            <MapPinPlus className="h-5 w-5 shrink-0" />
+            <span className="flex-1 font-display text-base font-bold">Crie seu primeiro destino</span>
+            <ChevronRight className="h-5 w-5 shrink-0" />
+          </button>
+          <AntesDoPrimeiroDestino aberto={aberto} mudarAberto={setAberto} />
+        </>
+      )}
     </div>
   );
 }
