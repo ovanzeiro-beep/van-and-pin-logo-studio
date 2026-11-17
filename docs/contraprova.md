@@ -1488,3 +1488,17 @@ Próximo passo: REV-03 (teste real com 2 celulares).
 - [x] Banco: `supabase/migrations/20261117090000_rev05_erros_do_app.sql` — qualquer celular grava (até sem login), ninguém lê pelo app, uma conta não grava em nome de outra, textos limitados. Testado numa cópia (6 checagens).
 - [x] Conferência: 376 testes (novo `rev05-erros.test.ts`), tipos, build.
 - [x] Aplicado no Supabase real pelo dono (SQL Editor, "Success") e conferido: tabela existe, celulares (com e sem login) podem gravar, ninguém lê pelo app. **REV-05 concluída.**
+
+---
+
+## REV-06 (parte 1): contato, Termos e Política reescritos (17/11/2026)
+
+Pedido do dono: colocar o contato e refazer os Termos de Uso "como advogado", para depois um advogado de verdade revisar.
+
+- [x] Política: responsável e encarregado Rafael Atencia, contato@ovanzeiro.com.br, (14) 99773-2018 (nenhum "(a definir)" restante).
+- [x] Política ganhou: quem cuida dos dados, base legal, dados do Google, onde os dados ficam (Supabase, Lovable, Google, Gmail, notificações), tempo de guarda (fiel ao que `excluir_minha_conta` faz hoje: telefone cadastrado pelo vanzeiro fica), direitos da LGPD (art. 18) com prazo de 15 dias e ANPD, menores de idade, registro de erros (REV-05) e segurança.
+- [x] Política cita as iniciais de quem embarcou mostradas aos outros passageiros (REV-09) — pendência da REV-09 resolvida.
+- [x] Termos reescritos em 15 partes: quem somos, aceite, conta (menores só com responsável), deveres do vanzeiro (é o único responsável pelo transporte, licenças e seguros), deveres do passageiro, lugares, cobranças/faltas (regras da seção 6 mantidas), avisos, o que não pode, funcionamento e limites (sem tirar direitos do CDC), preço (grátis no teste), dados, mudanças, lei e foro (cidade do consumidor), contato.
+- [x] Selo "Versão provisória" mantido.
+- [x] 376 testes, tsc e build passando.
+- Pendências (dono): revisão por advogado; plano Pro do Supabase; proteção de senhas vazadas.

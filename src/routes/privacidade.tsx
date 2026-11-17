@@ -17,7 +17,15 @@ export const Route = createFileRoute("/privacidade")({
 
 function Privacidade() {
   return (
-    <LeituraLayout titulo="Política de Privacidade" resumo="Quais dados guardamos e o que fazemos com eles.">
+    <LeituraLayout titulo="Política de Privacidade" resumo="Quais dados guardamos e o que fazemos com eles. Atualizada em 17/11/2026.">
+      <Secao titulo="Quem cuida dos seus dados">
+        <p>
+          O responsável pelos seus dados (controlador, pela Lei Geral de Proteção de Dados, LGPD) é{" "}
+          <strong>Rafael Atencia</strong>, que também é o encarregado de atender os pedidos sobre dados. O contato está
+          no fim desta página.
+        </p>
+      </Secao>
+
       <Secao titulo="Quais dados o app guarda">
         <ul>
           <li>Nome</li>
@@ -28,7 +36,8 @@ function Privacidade() {
         </ul>
         <p>
           Para o app funcionar, também ficam guardadas as respostas "Vou" e "Não vou", os embarques e faltas, as
-          cobranças e, do vanzeiro, a chave Pix e os dados da van.
+          cobranças e, do vanzeiro, a chave Pix, os dados da van e os gastos anotados. Se você entrar com o Google,
+          recebemos do Google o seu nome e e-mail.
         </p>
       </Secao>
 
@@ -44,6 +53,11 @@ function Privacidade() {
           <li>Respostas, embarques e cobranças: organizar as viagens e os pagamentos.</li>
         </ul>
         <p>Não vendemos seus dados.</p>
+        <p>
+          <strong>Base legal:</strong> usamos os dados para cumprir o serviço que você pediu ao criar a conta (execução de
+          contrato), para manter o app seguro e funcionando (legítimo interesse) e, nas notificações no celular, com o seu
+          consentimento.
+        </p>
       </Secao>
 
       <Secao titulo="Quem vê seus dados">
@@ -53,12 +67,74 @@ function Privacidade() {
         </p>
         <p>O passageiro vê o nome, o telefone, a chave Pix e a van do seu vanzeiro.</p>
         <p>Nenhum passageiro vê os dados de outro passageiro, nem o ponto dele no mapa.</p>
+        <p>
+          Durante a viagem, os passageiros da mesma viagem veem apenas <strong>quantos lugares estão ocupados</strong> e as{" "}
+          <strong>iniciais</strong> de quem já embarcou (por exemplo, "M. H."), nunca o nome completo, o telefone ou o
+          endereço.
+        </p>
+      </Secao>
+
+      <Secao titulo="Onde os dados ficam e quem nos ajuda">
+        <ul>
+          <li>Os dados ficam guardados no Supabase, um serviço de banco de dados seguro, com acesso protegido por senha.</li>
+          <li>O app é hospedado pelo Lovable.</li>
+          <li>O login com Google é feito pelo Google.</li>
+          <li>Os e-mails de cadastro e de troca de senha são enviados pelo Gmail.</li>
+          <li>As notificações no celular passam pelo serviço de notificações do seu navegador (Google ou Apple).</li>
+        </ul>
+        <p>
+          Esses serviços só tratam os dados para fazer o app funcionar. Alguns deles podem guardar dados fora do Brasil,
+          sempre com as proteções exigidas pela LGPD.
+        </p>
+      </Secao>
+
+      <Secao titulo="Por quanto tempo guardamos">
+        <ul>
+          <li>Enquanto a sua conta existir.</li>
+          <li>
+            Ao <strong>excluir a conta</strong>, seu login, seu nome e seu endereço são apagados. O vanzeiro continua com o
+            histórico das viagens e cobranças e com o telefone que ele mesmo cadastrou, pelo tempo que a lei exigir. Para
+            apagar também esses dados, peça no contato abaixo.
+          </li>
+          <li>Os registros de erros do app ficam guardados só pelo tempo necessário para corrigir os problemas.</li>
+        </ul>
       </Secao>
 
       <Secao titulo="Seus direitos">
+        <p>Pela LGPD, você pode pedir, a qualquer momento e de graça:</p>
+        <ul>
+          <li>para saber se temos seus dados e para ver quais são;</li>
+          <li>para corrigir dados errados ou desatualizados;</li>
+          <li>para apagar seus dados ou excluir a conta (também dá para fazer pelo Perfil);</li>
+          <li>uma cópia dos seus dados;</li>
+          <li>informações sobre com quem compartilhamos seus dados;</li>
+          <li>para retirar o seu consentimento, como desligar as notificações.</li>
+        </ul>
         <p>
-          Você pode pedir para <strong>ver, corrigir ou apagar</strong> seus dados a qualquer momento. É só falar com o
-          responsável pelo app no contato abaixo.
+          É só escrever para o contato abaixo. Respondemos em até 15 dias. Você também pode reclamar na Autoridade Nacional
+          de Proteção de Dados (ANPD).
+        </p>
+      </Secao>
+
+      <Secao titulo="Menores de idade">
+        <p>
+          Menores de 18 anos só usam o app com a autorização do responsável legal. O responsável pode pedir, a qualquer
+          momento, para ver, corrigir ou apagar os dados do menor.
+        </p>
+      </Secao>
+
+      <Secao titulo="Registro de erros">
+        <p>
+          Quando acontece um erro no app, guardamos o texto do erro, a tela onde aconteceu, o tipo de navegador e se você
+          é vanzeiro ou passageiro, para conseguir corrigir. E-mails e números de telefone são apagados do texto antes de
+          guardar.
+        </p>
+      </Secao>
+
+      <Secao titulo="Segurança">
+        <p>
+          Cada pessoa só acessa os dados que pode ver, e as regras de acesso ficam no próprio banco de dados. Mesmo assim,
+          nenhum sistema é 100% seguro. Se acontecer algum incidente que possa trazer risco a você, avisaremos.
         </p>
       </Secao>
 
@@ -86,7 +162,7 @@ function Privacidade() {
       <Secao titulo="Notificações no celular">
         <p>
           Só chegam se você ativar no Perfil. Elas mostram os mesmos avisos do sininho. Para parar, é só desligar nas
-          configurações do celular.
+          configurações do celular. Ao sair da conta, aquele celular para de receber os avisos dela.
         </p>
       </Secao>
 
@@ -122,11 +198,11 @@ function Privacidade() {
 
       <Secao titulo="Contato do responsável">
         <p>
-          <strong>Responsável:</strong> (a definir)
+          <strong>Responsável e encarregado:</strong> Rafael Atencia
           <br />
-          <strong>E-mail:</strong> (a definir)
+          <strong>E-mail:</strong> contato@ovanzeiro.com.br
           <br />
-          <strong>Telefone:</strong> (a definir)
+          <strong>Telefone e WhatsApp:</strong> (14) 99773-2018
         </p>
       </Secao>
     </LeituraLayout>
