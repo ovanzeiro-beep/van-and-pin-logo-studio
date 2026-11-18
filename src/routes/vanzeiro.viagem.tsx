@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { CalendarClock, CalendarX2, History, Home, MapPin, UserPlus, Volume2, VolumeX } from "lucide-react";
 import { AntesDeSair } from "@/components/app/viagem/AntesDeSair";
 import { EscolhaDaViagem } from "@/components/app/viagem/partes";
@@ -21,7 +21,8 @@ import { emAndamento, escolherViagem, useViagensDoDia } from "@/lib/viagem-store
 import { alternarVoz, fraseDaViagem, useVozDaViagem, useVozLigada, vozDisponivel } from "@/lib/voz";
 import { PilulaDoCabecalho } from "@/components/app/PilulaDoCabecalho";
 import { fazer } from "@/lib/acoes";
-import { comecarViagemNoBanco } from "@/lib/banco/viagem";
+import { carregarViagens, comecarViagemNoBanco } from "@/lib/banco/viagem";
+import { enviarPendentes, envioRecusado, inscreverNaFila } from "@/lib/banco/fila";
 
 export const Route = createFileRoute("/vanzeiro/viagem")({
   head: () => ({
@@ -66,6 +67,7 @@ function AbaViagem() {
           <BotaoVoz />
         </VanzeiroHeader>
         <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col">
+          <AvisoDeEnvioRecusado key={andamento.id} viagemId={andamento.id} />
           <ViagemEmCurso v={andamento} passageiros={passageiros} destino={destino} />
         </div>
       </div>
@@ -131,6 +133,7 @@ function AbaViagem() {
           <>
             <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-3 pt-3">
               <p className="mb-2 px-1 font-display text-base font-bold text-foreground">{nomeDestino(destino)}</p>
+              <AvisoDeEnvioRecusado key={feita.id} viagemId={feita.id} />
               <ResumoDaViagem v={feita} passageiros={passageiros} completo />
             </div>
             <div className="shrink-0 px-5 pb-3 pt-1">
@@ -176,6 +179,44 @@ function AbaViagem() {
 }
 
 /** Discreet way to the history of finished trips, in the header, when no trip is in progress. */
+function AvisoDeEnvioRecusado({ viagemId }: { viagemId: string }) {
+  const recusado = useSyncExternalStore(
+    inscreverNaFila,
+    () => envioRecusado(viagemId),
+    () => false,
+  );
+  const [enviando, setEnviando] = useState(false);
+  if (!recusado) return null;
+
+  async function tentarDeNovo() {
+    setEnviando(true);
+    try {
+      await enviarPendentes(viagemId);
+      if (!envioRecusado(viagemId)) await carregarViagens();
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <div className="shrink-0 px-5 pb-2 pt-4">
+      <div className="rounded-xl border bg-background p-3 text-sm">
+        <p role="status">A viagem está guardada neste aparelho. O servidor recusou o envio.</p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="mt-2"
+          disabled={enviando}
+          onClick={() => void tentarDeNovo()}
+        >
+          {enviando ? "Enviando…" : "Tentar enviar novamente"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function LinkViagensFeitas() {
   return (
     <PilulaDoCabecalho asChild>
