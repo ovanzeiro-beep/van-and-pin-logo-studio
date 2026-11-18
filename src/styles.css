@@ -236,3 +236,8 @@
   transform-origin: left;
   animation: progress-fill 2.2s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
+
+/* O selo da hospedagem sobrepõe a navegação inferior no celular. */
+aside#lovable-badge[aria-label="Edit with Lovable"] {
+  display: none !important;
+}
