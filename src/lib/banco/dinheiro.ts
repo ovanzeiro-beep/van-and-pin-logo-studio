@@ -9,16 +9,19 @@ import {
   marcarComoPago,
   obterCobrancas,
   obterRegistroDasViagens,
+  registrarEmbarque,
+  registrarFalta,
   type Embarque,
   type Falta,
 } from "@/lib/cobrancas-store";
 import { frase } from "@/lib/formatos";
 import { problemaDoGasto, type Gasto, type TipoDeGasto } from "@/lib/gastos";
 import { anotarGasto, apagarGasto, carregarGastosDoBanco } from "@/lib/gastos-store";
-import { obterPassageiros } from "@/lib/passageiros-store";
+import { obterMatriculas, obterPassageiros } from "@/lib/passageiros-store";
 import { novoId } from "@/lib/ids";
 import { obterSessao } from "@/lib/sessao";
 import { supabase, USA_BANCO } from "@/lib/supabase";
+import type { ViagemDoDia } from "@/lib/viagem";
 
 // W7 (docs/banco-de-dados.md, section 8.3): money in the database. The app keeps creating the charges by itself, with the
 // same rules as before (a trip made, the next month, an on-time "Não vou"); each new charge, boarding and falta is saved
@@ -163,7 +166,9 @@ export function sincronizarDinheiro(): Promise<boolean> {
 
 async function salvarMudancas(): Promise<boolean> {
   const sb = supabase();
-  if (!usaBanco() || !sb || !obterSessao().conta) return true;
+  const conta = obterSessao().conta?.id;
+  if (!usaBanco() || !sb || !conta) return true;
+  const mesmaConta = () => obterSessao().conta?.id === conta;
   const minhas = obterCobrancas().filter((c) => souDono(c.vanzeiroId));
   const donoDaMatricula = new Map(obterPassageiros().map((p) => [p.id, p.vanzeiroId]));
   const registro = obterRegistroDasViagens();
@@ -192,6 +197,7 @@ async function salvarMudancas(): Promise<boolean> {
       })),
       { onConflict: "matricula_id,data", ignoreDuplicates: true },
     );
+    if (!mesmaConta()) return false;
     if (error) tudo = false;
     else embarques.forEach((e) => embarquesSalvos.add(chaveDoDia(e.passageiroId, e.data)));
   }
@@ -205,6 +211,7 @@ async function salvarMudancas(): Promise<boolean> {
       })),
       { onConflict: "matricula_id,data", ignoreDuplicates: true },
     );
+    if (!mesmaConta()) return false;
     if (error) tudo = false;
     else faltas.forEach((f) => faltasSalvas.add(chaveDoDia(f.passageiroId, f.data)));
   }
@@ -212,6 +219,7 @@ async function salvarMudancas(): Promise<boolean> {
     const { error } = await sb
       .from("cobrancas")
       .upsert(novas, { onConflict: "id", ignoreDuplicates: true });
+    if (!mesmaConta()) return false;
     if (error) tudo = false;
     else novas.forEach((l) => salvas.set(l.id, JSON.stringify(l)));
   }
@@ -229,6 +237,7 @@ async function salvarMudancas(): Promise<boolean> {
         cancelamento_motivo: l.cancelamento_motivo,
       })
       .eq("id", l.id);
+    if (!mesmaConta()) return false;
     if (error) tudo = false;
     else salvas.set(l.id, JSON.stringify(l));
   }
@@ -251,9 +260,10 @@ if (typeof window !== "undefined") {
 // ---------- reading ----------
 
 /** Charges, boardings, faltas and expenses this account can see (the vanzeiro: theirs; the passenger: their own). */
-export async function carregarDinheiro(): Promise<void> {
+export async function carregarDinheiro(): Promise<boolean> {
   const sb = supabase();
-  if (!USA_BANCO.destinos || !sb) return;
+  if (!USA_BANCO.destinos || !sb) return false;
+  const conta = obterSessao().conta?.id;
   // What this phone created and has not saved yet goes first, so reading does not lose it.
   const salvouTudo = await sincronizarDinheiro();
   const [c, e, f, g] = await Promise.all([
@@ -262,13 +272,37 @@ export async function carregarDinheiro(): Promise<void> {
     sb.from("faltas").select("matricula_id, data, avisou_no_prazo, avisou_em"),
     sb.from("gastos").select("id, vanzeiro_id, tipo, descricao, valor, data"),
   ]);
+  if (obterSessao().conta?.id !== conta) return false;
   if (!g.error) carregarGastosDoBanco((g.data as LinhaGasto[]).map(gastoDaLinha));
-  if (!salvouTudo || c.error || e.error || f.error) return;
+  if (!salvouTudo || c.error || e.error || f.error) return false;
   const cobrancas = (c.data as LinhaCobranca[]).map(cobrancaDaLinha);
   const embarques = (e.data as LinhaEmbarque[]).map(embarqueDaLinha);
   const faltas = (f.data as LinhaFalta[]).map(faltaDaLinha);
   lembrarDoBanco(cobrancas, embarques, faltas);
   carregarDinheiroDoBanco(cobrancas, { embarques, faltas });
+  return true;
+}
+
+/** Replay the financial consequences after the trip exists on the server. */
+export async function reconciliarRegistrosDaViagem(
+  v: ViagemDoDia,
+  faltas: Falta[],
+): Promise<boolean> {
+  if (!souDono(v.vanzeiroId)) return false;
+  const ids = [...v.embarcaram, ...faltas.map((f) => f.passageiroId)];
+  if (!ids.length) return true;
+  const doDestino = obterMatriculas().filter(
+    (p) => p.vanzeiroId === v.vanzeiroId && p.destinoId === v.destinoId,
+  );
+  const matriculas = new Map(doDestino.map((p) => [p.id, p]));
+  if (ids.some((id) => !matriculas.has(id))) return false;
+  if (!(await carregarDinheiro()) || !souDono(v.vanzeiroId)) return false;
+
+  for (const id of v.embarcaram) registrarEmbarque(matriculas.get(id)!, v.data, v.id, true);
+  for (const f of faltas) {
+    registrarFalta(matriculas.get(f.passageiroId)!, f.data, f.avisouNoPrazo, f.avisouEm);
+  }
+  return sincronizarDinheiro();
 }
 
 // ---------- the vanzeiro's actions ----------

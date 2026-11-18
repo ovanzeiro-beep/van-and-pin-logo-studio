@@ -3,7 +3,13 @@ import type { Destino } from "@/data/exemplo";
 import { agora, dataDeHoje, horaDeAgora } from "@/lib/agora";
 import { prazoPassou } from "@/lib/destinos";
 import { obterDestinos } from "@/lib/destinos-store";
-import { criarProximasCobrancas, obterCobrancas, registrarEmbarque, registrarFalta } from "@/lib/cobrancas-store";
+import {
+  criarProximasCobrancas,
+  obterCobrancas,
+  registrarEmbarque,
+  registrarFalta,
+  type Falta,
+} from "@/lib/cobrancas-store";
 import { obterMomentoDaResposta, obterRespostasDoDia, fecharRespostas } from "@/lib/respostas-store";
 import { avisoDeVanSaiu, avisosDoRelogio } from "@/lib/avisos";
 import { criarAvisoUmaVez } from "@/lib/avisos-store";
@@ -67,15 +73,36 @@ export function escolherViagem(destinoId: string) {
   mudar({ ...estado, escolhida: destinoId });
 }
 
-export function comecarViagem(destino: Destino, ordem: string[]): Resultado {
+export function comecarViagem(
+  destino: Destino,
+  ordem: string[],
+  guardar?: (viagem: ViagemDoDia, faltas: Falta[]) => Resultado,
+): Resultado {
   if (emAndamento(estado)) return naoDeu("Já tem uma viagem acontecendo. Termine ela antes de começar outra.");
   if (estado.viagens[destino.id]) return naoDeu("A viagem de hoje deste destino já foi feita.");
-  fecharRespostas(destino.id, dataDeHoje());
-  const respostas = obterRespostasDoDia(dataDeHoje());
-  for (const p of obterPassageiros().filter((p) => p.destinoId === destino.id)) {
-    if (respostas[p.id] === "nao-vai") registrarFalta(p, dataDeHoje(), true, obterMomentoDaResposta(p.id, dataDeHoje())?.em);
+  const data = dataDeHoje();
+  const viagem = { ...iniciarViagem(destino, ordem, data), comecouEm: horaDeAgora() };
+  const respostas = obterRespostasDoDia(data);
+  const faltantes = obterPassageiros().filter(
+    (p) => p.destinoId === destino.id && respostas[p.id] === "nao-vai",
+  );
+  if (guardar) {
+    const resultado = guardar(
+      viagem,
+      faltantes.map((p) => ({
+        passageiroId: p.id,
+        data,
+        avisouNoPrazo: true,
+        avisouEm: obterMomentoDaResposta(p.id, data)?.em,
+      })),
+    );
+    if (!resultado.ok) return resultado;
   }
-  mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: { ...iniciarViagem(destino, ordem, dataDeHoje()), comecouEm: horaDeAgora() } } });
+  fecharRespostas(destino.id, data);
+  if (!guardar) {
+    for (const p of faltantes) registrarFalta(p, data, true, obterMomentoDaResposta(p.id, data)?.em);
+  }
+  mudar({ escolhida: destino.id, viagens: { ...estado.viagens, [destino.id]: viagem } });
   for (const id of ordem) {
     const p = passageiro(id);
     if (p) criarAvisoUmaVez(avisoDeVanSaiu(p, destino, dataDeHoje()));
