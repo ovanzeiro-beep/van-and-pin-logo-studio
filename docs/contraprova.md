@@ -1760,4 +1760,21 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Financeiro | No servidor simulado, após recuperar a viagem, houve um embarque, uma falta avisada no prazo, uma cobrança por viagem e uma quinzenal com um desconto. A falha temporária ao enviar as cobranças manteve a viagem pendente. O reenvio concluiu o financeiro sem reenviar a viagem já confirmada. A falta no ponto não virou desconto. |
 | Regressão | 428 testes em 86 arquivos. TypeScript e build passaram. Cenários de embarque com sinal, recusa do servidor e pagamentos conferidos com os testes existentes. Lint com 1.754 erros de formatação e cinco avisos herdados, sem apontamentos novos. |
 | Alcance e reversão | Simulação automatizada do navegador, do armazenamento, do cache e do servidor. Validação em celular físico e com contas reais fica em aberto. Operação sem rede depende de sessão válida e da cópia do app disponível no aparelho. Sem alterações no banco de produção. Se necessário, reverter o PR desta etapa. |
-| Próxima decisão | Após conferir a publicação, pedir ao dono autorização para a etapa 4, que verifica conta, convite e vagas. |
+| Merge e Lovable | PR 3 integrado na main em f13b56f. A verificação pública seguinte confirmou o cache separado por conta em sw.js e a mensagem de armazenamento cheio na tela Viagem. |
+| Próxima decisão | Após a confirmação pública, o dono autorizou a etapa 4. |
+
+<a id="etapa-4-conta-convite-vagas"></a>
+
+## 18/11/2026 · Etapa 4 · Conta, convite e vagas
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e base | Etapa 4 autorizada. Cópia isolada da main em f13b56f, branch docs/etapa-4-conta-vagas. A etapa 3 foi confirmada no Lovable antes dos testes. |
+| Conta e recuperação | O teste w1-conta confirmou cadastro e carregamento do último papel, normalização do e-mail de recuperação, destino do link em /nova-senha e envio da nova senha ao cliente de autenticação simulado. As duas rotas públicas de recuperação responderam no Lovable. A entrega do e-mail e o consumo de um link real ficaram fora da simulação. |
+| Convite vinculado | Em PostgreSQL 18.6 local, um motorista e dois passageiros fictícios usaram o esquema das migrações do repositório com autenticação simulada. O convite apontou para o destino certo e foi ligado à matrícula que já existia. Plano e valor foram preservados. Repetir a ligação ou enviar outro pedido após a vinculação retornou recusa. Motorista e passageiro consultaram o destino pela própria sessão. |
+| Última vaga e desistência | Com dois passageiros já cadastrados e o limite do veículo reduzido para um lugar, duas conexões tentaram confirmar para amanhã. A segunda aguardou a primeira transação e recebeu “A van lotou”. Depois da desistência no prazo, a contagem caiu para zero e a segunda confirmação entrou. O teste da lista de busca confirmou a troca do passageiro. |
+| Saída e dívida anterior | No PostgreSQL local, a saída encerrou a matrícula e cancelou a cobrança futura. A cobrança vencida manteve o valor e continuou disponível para o passageiro. |
+| Conferência com produção | Consulta somente de leitura confirmou a regra de matrícula única e o gatilho de lotação ativos. Os corpos de responder, sair_do_destino, destino_com_lugar e aceitar_pedido coincidiram com o repositório após remover comentários e diferenças de espaços. O teste escreveu apenas no banco local, com agendamento e notificações externas simulados. |
+| Regressão | 430 testes em 86 arquivos passaram, assim como checagem de tipos e build. O lint manteve 1.753 erros de formatação e cinco avisos herdados, sem novos apontamentos. |
+| Efeito no aplicativo | Os fluxos passaram com a implementação existente. A entrega acrescenta dois testes de regressão e a contraprova. O código servido ao usuário, o esquema e os dados de produção permanecem como estavam. |
+| Próxima decisão | Depois de verificar o merge, pedir autorização para a etapa 5, que verifica viagem e avisos entre aparelhos. |
