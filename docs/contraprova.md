@@ -1955,3 +1955,12 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 - A função `avisos-no-celular` passou da versão 9 para a 10, com a configuração de acesso anterior. O código consultado após a implantação correspondeu ao arquivo preparado. A consulta de um aviso inválido respondeu HTTP 200 com `ativa: false` e `Cache-Control: no-store`. A consulta da chave pública já existente também respondeu HTTP 200.
 - As três partes do banco foram aplicadas juntas na migration de produção `20261118152426_aviso_de_chegada_ativacao`. A consulta em transação de leitura com o papel autenticado retornou `botao_liberado: true`. A publicação de tempo real, o acesso por conta e o gatilho de fila estão ativos. Envio e confirmação anônimos seguem bloqueados. O reenvio existente estava ativo e a consulta não registrou tarefas agendadas com falha nos cinco minutos verificados.
 - A verificação de produção foi de leitura após a ativação. A tabela estava vazia no momento da consulta. A prova do toque, da entrega com o app fechado e da confirmação entre dois aparelhos fica para a rodada final.
+
+<a id="cartao-chegada-ao-destino"></a>
+
+## 18/11/2026 · Chegada ao destino e previsão de volta
+
+- Base `3ff32cd08d70ae4e7a16be49995a3549e29cea31`. O dono autorizou a primeira etapa, focada na tela do passageiro. O Início mostra a chegada no lugar dos cartões de previsão e situação da busca. O cartão do financeiro permanece disponível.
+- O retorno usa o horário do destino e a regra existente para a data de volta. Em uma ida sem volta, exibe «Ida concluída». Quando a hora programada chega, mostra «Aguardando o motorista iniciar a volta». A conferência e a volta em andamento usam a fase registrada pelo motorista.
+- A conferência local cobre ida sem volta, 42 minutos restantes, mudança para espera, retorno no dia seguinte e excursão em outra data. O cálculo continua correto virando a meia-noite quando recebe a viagem. A consulta atual do passageiro continua limitada à viagem do dia. Manter uma viagem do dia anterior visível após a meia-noite e distinguir embarques de pessoas que ficaram em uma parada exigem revisar essa leitura individual.
+- A etapa trata do painel. O disparo de «Chegamos ao destino» e sua entrega no celular permanecem para outra etapa. Nenhuma alteração no Supabase foi aplicada por esta entrega.

@@ -359,6 +359,10 @@ export function historicoDoPassageiro(
   return itens;
 }
 
+export function chegouAoDestinoComoPassageiro(v: ViagemDoDia | undefined, id: string) {
+  return v?.fase === "chegada" && v.embarcaram.includes(id) && !v.ficaram.includes(id);
+}
+
 export type SituacaoParaPassageiro = {
   situacao: string;
   detalhe: string;
@@ -391,6 +395,12 @@ export function situacaoParaPassageiro(a: {
   if (v.naoEstavam.includes(id)) return { situacao: "Você não estava no ponto", detalhe: "A van passou e seguiu viagem", etapa: -1, alerta: true };
   if (v.embarcaram.includes(id)) {
     if (v.desceram.includes(id) || v.fase === "encerrada") return { situacao: "Viagem encerrada", detalhe: "Até a próxima!", etapa: 2, alerta: false };
+    if (chegouAoDestinoComoPassageiro(v, id))
+      return { situacao: "Chegamos ao destino", detalhe: "Ida concluída", etapa: 2, alerta: false };
+    if (v.fase === "conferencia-volta")
+      return { situacao: "Embarque da volta", detalhe: "O motorista está preparando a volta.", etapa: 2, alerta: false };
+    if (v.fase === "volta")
+      return { situacao: "Volta em andamento", detalhe: "O motorista iniciou o trajeto de volta.", etapa: 2, alerta: false };
     return { situacao: "Na van", detalhe: "Boa viagem!", etapa: 2, alerta: false };
   }
   if (!v.ordem.includes(id)) {

@@ -699,6 +699,8 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 
 **Aviso de chegada ao ponto.** O Lovable está publicado com o código do botão e do painel do passageiro. Com autorização do dono, a função de entrega foi atualizada e o Supabase de produção liberou o botão para contas autenticadas. Na busca, o botão aparece no cartão do próximo passageiro vinculado a uma conta. O teste de entrega com o app fechado continua na rodada final em celular. [Contraprova da ativação](contraprova.md#aviso-de-chegada-ativado).
 
+**Chegada ao destino no painel do passageiro.** Ao registrar a chegada da ida, o Início mostra um cartão com a rota e o horário previsto de volta, quando configurado. O relógio usa a data da volta e chega a uma espera pelo motorista, que continua responsável por iniciar o retorno. A notificação da chegada ao destino ficou para outra etapa. [Contraprova do cartão de chegada](contraprova.md#cartao-chegada-ao-destino).
+
 > **Para qualquer IA que for trabalhar aqui (Claude, GPT, Lovable ou outra):** leia esta seção 22 inteira, depois `CLAUDE.md` e o último registro de `docs/contraprova.md`. Trabalhe uma etapa de 22.6 por vez, registre a prova (22.8) e atualize 22.6 e a contraprova no fim. O que já está pronto está em 22.4a; como mexer no banco está em 22.1a.
 
 ### 22.1 Projeto, objetivo e limites da revisão
