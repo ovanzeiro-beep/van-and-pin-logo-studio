@@ -1946,3 +1946,12 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 - O dono solicitou integrar o código do app para aparecer no Lovable. O botão e o painel do aviso de chegada só aparecem quando a consulta de capacidade no Supabase confirma a ativação. Em banco anterior, a tela de busca continua oferecendo os botões normais e o app não abre um canal para esse recurso.
 - Esta entrega inclui o código do app e do service worker. O SQL, a função de entrega e os testes específicos do servidor permanecem na cópia de trabalho até a autorização para o Supabase. Essa separação também evita aplicar migrations por uma eventual integração automática do GitHub com o Supabase.
 - Retomada: validar o app publicado e, com autorização para o Supabase, publicar a função de entrega e ativar as migrations. Após a ativação, o app com este código reconhece o recurso ao consultar novamente. A entrega com o app fechado em aparelho real continua no roteiro final.
+
+<a id="aviso-de-chegada-ativado"></a>
+
+## 18/11/2026 · Aviso de chegada ativado em produção
+
+- O dono autorizou a ativação do recurso. O código do app já publicado no Lovable correspondia ao merge `cca93b2`.
+- A função `avisos-no-celular` passou da versão 9 para a 10, com a configuração de acesso anterior. O código consultado após a implantação correspondeu ao arquivo preparado. A consulta de um aviso inválido respondeu HTTP 200 com `ativa: false` e `Cache-Control: no-store`. A consulta da chave pública já existente também respondeu HTTP 200.
+- As três partes do banco foram aplicadas juntas na migration de produção `20261118152426_aviso_de_chegada_ativacao`. A consulta em transação de leitura com o papel autenticado retornou `botao_liberado: true`. A publicação de tempo real, o acesso por conta e o gatilho de fila estão ativos. Envio e confirmação anônimos seguem bloqueados. O reenvio existente estava ativo e a consulta não registrou tarefas agendadas com falha nos cinco minutos verificados.
+- A verificação de produção foi de leitura após a ativação. A tabela estava vazia no momento da consulta. A prova do toque, da entrega com o app fechado e da confirmação entre dois aparelhos fica para a rodada final.

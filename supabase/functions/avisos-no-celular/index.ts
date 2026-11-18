@@ -59,19 +59,42 @@ type Entrega = {
 
 const DO_VANZEIRO = new Set(["pedido_novo", "resposta_passageiro", "cobranca_vencida"]);
 
+const ID_CHEGADA = /^chegada_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
+
+async function validadeDaChegada(tag: string): Promise<number> {
+  const id = ID_CHEGADA.exec(tag)?.[1];
+  if (!id) return 0;
+  const { data, error } = await sb.rpc("validade_push_de_chegada", { p_aviso_id: id });
+  if (error) throw new Error(error.message);
+  return Math.min(180, Math.max(0, Number(data) || 0));
+}
+
 async function enviar(entrega: Entrega) {
   let resultado: "enviado" | "repetir" | "celular_invalido" = "enviado";
+  let entregue = false;
   try {
-    await webpush.sendNotification(
-      entrega.endereco,
-      JSON.stringify({
-        titulo: TITULO[entrega.tipo] ?? "O Vanzeiro",
-        corpo: entrega.texto,
-        url: DO_VANZEIRO.has(entrega.tipo) ? "/vanzeiro/notificacoes" : "/passageiro/notificacoes",
-        tag: entrega.tag,
-      }),
-      { TTL: 60 * 60 * 24, timeout: 10000 },
-    );
+    const chegada = entrega.tipo === "chegada_no_ponto";
+    const ttl = chegada ? await validadeDaChegada(entrega.tag) : 60 * 60 * 24;
+    // O finalizador já existente remove o item com resultado "enviado".
+    // Quando o prazo zerou, só encerramos a fila, sem contabilizar envio.
+    if (ttl > 0) {
+      await webpush.sendNotification(
+        entrega.endereco,
+        JSON.stringify({
+          titulo: chegada ? "Sua van chegou" : (TITULO[entrega.tipo] ?? "O Vanzeiro"),
+          corpo: entrega.texto,
+          url: chegada
+            ? "/passageiro"
+            : DO_VANZEIRO.has(entrega.tipo)
+              ? "/vanzeiro/notificacoes"
+              : "/passageiro/notificacoes",
+          tag: entrega.tag,
+          ...(chegada ? { chegada: true } : {}),
+        }),
+        { TTL: ttl, timeout: 10000 },
+      );
+      entregue = true;
+    }
   } catch (erro) {
     const status = (erro as { statusCode?: number } | null)?.statusCode;
     resultado = status === 404 || status === 410 ? "celular_invalido" : "repetir";
@@ -83,7 +106,7 @@ async function enviar(entrega: Entrega) {
     resultado,
   });
   if (error) throw new Error(error.message);
-  return resultado === "enviado";
+  return entregue;
 }
 
 async function entregar(): Promise<number> {
@@ -102,6 +125,11 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   try {
     if (req.method === "GET") {
+      const tagChegada = new URL(req.url).searchParams.get("chegada");
+      if (tagChegada !== null) {
+        const ativa = (await validadeDaChegada(tagChegada)) > 0;
+        return Response.json({ ativa }, { headers: { ...cors, "Cache-Control": "no-store" } });
+      }
       const { publica } = await chaves();
       return Response.json({ chave: publica }, { headers: cors });
     }
