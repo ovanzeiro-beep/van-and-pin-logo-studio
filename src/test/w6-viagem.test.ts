@@ -29,7 +29,7 @@ vi.mock("@/lib/supabase", () => ({ USA_BANCO: { conta: true, destinos: true }, s
 
 import { destinosExemplo } from "@/data/exemplo";
 import { comecarViagemNoBanco, encerradaDaLinha, marcarEmbarcouNoBanco, marcarNaoEstavaNoBanco, viagemDoPassageiro } from "@/lib/banco/viagem";
-import { conferenciaDoPassageiro, proximoDaBusca } from "@/lib/viagem";
+import { conferenciaDoPassageiro, historicoDoPassageiro, proximoDaBusca } from "@/lib/viagem";
 import { emAndamento, obterViagensDoDia } from "@/lib/viagem-store";
 
 const destino = destinosExemplo.find((d) => d.id === "centro-unisul")!;
@@ -64,6 +64,29 @@ describe("W6: viagem no banco (Supabase simulado)", () => {
     expect(conferenciaDoPassageiro(v, "p-juliana")).toBe("perguntar");
     const confirmado = viagemDoPassageiro("p-juliana", { id: "centro-unisul", vanzeiroId: "vanzeiro-carlos" }, { viagem_id: "v1", fase: "conferencia", na_ordem: true, embarcou: true, conferencia: "na-van", comecou_em: "2026-11-13T09:40:00Z" });
     expect(conferenciaDoPassageiro(confirmado, "p-juliana")).toBe("confirmado");
+  });
+
+  it("o histórico do passageiro mostra a sua ausência no ponto", () => {
+    const v = viagemDoPassageiro("p-fernanda", destino, {
+      viagem_id: "v1",
+      fase: "encerrada",
+      na_ordem: true,
+      embarcou: false,
+      nao_estava: true,
+      conferencia: null,
+      comecou_em: "2026-11-13T09:40:00Z",
+    });
+    expect(v.naoEstavam).toEqual(["p-fernanda"]);
+    expect(
+      historicoDoPassageiro(
+        { id: "p-fernanda", plano: "diario" },
+        destino,
+        v.data,
+        { embarques: [], faltas: [] },
+        v,
+        0,
+      ),
+    ).toEqual([{ data: v.data, embarcou: false, motivo: "nao-estava" }]);
   });
 
   it("viagem encerrada vira histórico com o nome e o horário do dia", () => {

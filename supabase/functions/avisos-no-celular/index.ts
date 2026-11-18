@@ -48,79 +48,54 @@ async function chaves(): Promise<{ publica: string; privada: string }> {
   return salva!;
 }
 
-type Entrega = { para: string; tag: string; titulo: string; corpo: string; url: string };
+type Entrega = {
+  entrega_id: number;
+  ficha: string;
+  tag: string;
+  tipo: string;
+  texto: string;
+  endereco: Parameters<typeof webpush.sendNotification>[0];
+};
+
+const DO_VANZEIRO = new Set(["pedido_novo", "resposta_passageiro", "cobranca_vencida"]);
+
+async function enviar(entrega: Entrega) {
+  let resultado: "enviado" | "repetir" | "celular_invalido" = "enviado";
+  try {
+    await webpush.sendNotification(
+      entrega.endereco,
+      JSON.stringify({
+        titulo: TITULO[entrega.tipo] ?? "O Vanzeiro",
+        corpo: entrega.texto,
+        url: DO_VANZEIRO.has(entrega.tipo) ? "/vanzeiro/notificacoes" : "/passageiro/notificacoes",
+        tag: entrega.tag,
+      }),
+      { TTL: 60 * 60 * 24, timeout: 10000 },
+    );
+  } catch (erro) {
+    const status = (erro as { statusCode?: number } | null)?.statusCode;
+    resultado = status === 404 || status === 410 ? "celular_invalido" : "repetir";
+  }
+
+  const { error } = await sb.rpc("finalizar_entrega_push", {
+    entrega_id: entrega.entrega_id,
+    reserva: entrega.ficha,
+    resultado,
+  });
+  if (error) throw new Error(error.message);
+  return resultado === "enviado";
+}
 
 async function entregar(): Promise<number> {
   const c = await chaves();
   webpush.setVapidDetails("https://van-and-pin-logo-studio.lovable.app", c.publica, c.privada);
-  const agora = new Date().toISOString();
-  const entregas: Entrega[] = [];
-  // Taking the waiting ones and marking them in the same step: two calls never deliver the same notice twice.
-  const { data: avisos } = await sb
-    .from("avisos")
-    .update({ enviado_em: agora })
-    .is("enviado_em", null)
-    .select("id, vanzeiro_id, para, tipo, texto");
-  for (const a of avisos ?? []) {
-    // By the kind of notice (one account can be vanzeiro and passenger): it opens the right panel.
-    const doVanzeiro = ["pedido_novo", "resposta_passageiro", "cobranca_vencida"].includes(a.tipo);
-    entregas.push({
-      para: a.para,
-      tag: a.id,
-      titulo: TITULO[a.tipo] ?? "O Vanzeiro",
-      corpo: a.texto,
-      url: doVanzeiro ? "/vanzeiro/notificacoes" : "/passageiro/notificacoes",
-    });
-  }
-  const { data: pedidos } = await sb
-    .from("pedidos")
-    .update({ avisado_em: agora })
-    .is("avisado_em", null)
-    .select("id, vanzeiro_id, destino_id, nome");
-  for (const p of pedidos ?? []) {
-    const { data: d } = await sb
-      .from("destinos")
-      .select("origem, destino")
-      .eq("id", p.destino_id)
-      .maybeSingle();
-    entregas.push({
-      para: p.vanzeiro_id,
-      tag: p.id,
-      titulo: TITULO.pedido_novo,
-      corpo: `${p.nome} quer entrar${d ? ` em ${d.origem} → ${d.destino}` : ""}`,
-      url: "/vanzeiro/notificacoes",
-    });
-  }
-  // Only accounts have phones (a passenger without an account has nowhere to receive).
-  const contas = [...new Set(entregas.map((e) => e.para).filter((p) => /^[0-9a-f-]{36}$/.test(p)))];
-  if (contas.length === 0) return 0;
-  const { data: celulares } = await sb
-    .from("celulares")
-    .select("id, conta_id, endereco")
-    .in("conta_id", contas);
-  let enviadas = 0;
-  await Promise.all(
-    entregas.flatMap((e) =>
-      (celulares ?? [])
-        .filter((cel) => cel.conta_id === e.para)
-        .map(async (cel) => {
-          try {
-            await webpush.sendNotification(
-              cel.endereco,
-              JSON.stringify({ titulo: e.titulo, corpo: e.corpo, url: e.url, tag: e.tag }),
-              { TTL: 60 * 60 * 24 },
-            );
-            enviadas++;
-          } catch (erro) {
-            // The phone turned the notifications off or the app was removed: forget this address.
-            const status = (erro as { statusCode?: number }).statusCode;
-            if (status === 404 || status === 410)
-              await sb.from("celulares").delete().eq("id", cel.id);
-          }
-        }),
-    ),
-  );
-  return enviadas;
+
+  const { data, error } = await sb.rpc("reservar_entregas_push");
+  if (error) throw new Error(error.message);
+  const concluidas = await Promise.allSettled(((data ?? []) as Entrega[]).map(enviar));
+  const falha = concluidas.find((r) => r.status === "rejected");
+  if (falha) throw falha.reason;
+  return concluidas.filter((r) => r.status === "fulfilled" && r.value).length;
 }
 
 Deno.serve(async (req) => {
