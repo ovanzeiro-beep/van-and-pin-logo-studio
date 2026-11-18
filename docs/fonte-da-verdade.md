@@ -1,5 +1,7 @@
 # Fonte da verdade — O Vanzeiro
 
+> **Para executar uma etapa, comece pelo [roteiro de autorização e contraprova](#execucao-controlada).** Consulte o último registro em [contraprova.md](contraprova.md) antes de agir.
+
 > **Comece aqui:** [controle atual, evidências e plano por etapas — seção 22](#controle-atual). Revisão iniciada em 17/11/2026, a pedido do dono. O app já tem integração com banco; os textos sobre protótipo sem banco são históricos.
 
 **O que é este arquivo:** reúne a descrição das telas, as regras aprovadas e o acompanhamento do trabalho. O levantamento original foi registrado em 13/11/2026; as verificações daquela data não foram todas repetidas na revisão atual.
@@ -693,7 +695,7 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 
 ## 22. Controle atual — revisão funcional por etapas
 
-**Atualização:** 17/11/2026. **Etapas:** REV-00 concluída (documentação organizada, preparada por outra IA e corrigida e publicada no GitHub pelo Claude Code, a pedido do dono); REV-01 concluída (segurança rápida e G6, conferidas no banco real); REV-02 concluída (e-mails do login em português, testado pelo dono). **Próxima:** REV-03, teste real com 2 celulares (22.6). Nenhuma correção funcional foi feita na REV-00.
+**Controle de 17/11/2026.** A viagem em dois celulares da REV-03 já foi concluída pelo dono. A prioridade atual é recuperar marcações feitas sem internet quando o servidor recusa a sincronização. Consulte o [diagnóstico e a ordem de correção](#revisao-integral). A tabela 22.6 conserva as entregas anteriores e a REV-06 continua aberta.
 
 > **Para qualquer IA que for trabalhar aqui (Claude, GPT, Lovable ou outra):** leia esta seção 22 inteira, depois `CLAUDE.md` e o último registro de `docs/contraprova.md`. Trabalhe uma etapa de 22.6 por vez, registre a prova (22.8) e atualize 22.6 e a contraprova no fim. O que já está pronto está em 22.4a; como mexer no banco está em 22.1a.
 
@@ -827,6 +829,7 @@ Os códigos `REV-*` identificam esta revisão; não renomeiam nem apagam etapas 
 | REV-03 | Teste real com 2 celulares e correção do que aparecer | **Concluída (17/11)** — dono fez a viagem completa; conferido no banco real: viagem encerrada com 3 de 3 embarcados, avisos "Van saiu" e "A van está chegando" entregues, 3 cobranças "Por viagem" pagas por Pix | Roteiro de `docs/o-que-falta.md` (A6) feito pelo dono, com a IA acompanhando pelo banco; cada falha vira registro e correção pequena; repetir o passo que falhou até passar. Cobre os fluxos de 22.4: conta, destino, convite, "Vou", lotação, viagem com e sem sinal, pagamento, avisos e tempo real, sair do destino. |
 | REV-04 | Desempenho do banco | **Concluída (17/11)** — 19 índices e 18 regras de acesso otimizadas, aplicados no Supabase real; testes de segurança e de regras idênticos antes e depois. Ficam, de propósito: 13 avisos de "duas regras de leitura" (regra do dono + regra da própria pessoa, mantidas separadas por clareza; juntar só se houver lentidão medida) e avisos de "índice ainda não usado" (normal: acabaram de ser criados) | Avisos de desempenho do Supabase zerados ou explicados, sem mudar quem vê o quê. |
 | REV-05 | Registro de erros dos celulares | **Concluída (17/11)** — app publicado; tabela `erros_do_app` criada no Supabase real (conferido: celulares gravam, ninguém lê pelo app). Para ver os erros: SQL Editor → `select * from erros_do_app order by criado_em desc limit 50;` | Erros de tela e de rede gravados no banco (só texto do erro, tela e navegador; sem dados pessoais); a IA consulta; nada muda para o usuário. |
+| REV-11 | Recuperar marcações pendentes da viagem | **Falha reproduzida localmente em 17/11; correção em aberto.** | Critérios e ordem de entrega em [22.11](#revisao-integral). |
 | REV-06 | Preparar a operação real | Em andamento — 17/11: contato na Política e Termos/Política reescritos (rascunho, falta advogado) | Plano Pro do Supabase (sem pausa e com cópia de segurança diária); proteção de senhas vazadas ligada; contato do responsável na Política de Privacidade; revisão dos Termos e da Política por advogado; app publicado conferido com a última versão da `main`. |
 | REV-07 | Melhorias opcionais | Adiada — só com decisão do dono | "Marcar como pago" e "Anotar gasto" sem sinal; "ver mais" no histórico (limite de 300); extensão `pg_net` fora do esquema `public` (P-04). |
 
@@ -903,3 +906,105 @@ Pedido do dono, em resumo: o passageiro precisa ver **quantas vagas restam** na 
 
 **Como aplicar o banco:** seguir 22.1a (arquivo em `supabase/migrations/`, testar numa cópia, aplicar com autorização do dono, conferir). Ao terminar cada etapa, registrar na contraprova (22.8) e atualizar a tabela de 22.6.
 
+
+<a id="revisao-integral"></a>
+
+### 22.11 Diagnóstico ponta a ponta e próxima entrega
+
+**Parecer em 17/11/2026.** O motorista já consegue organizar uma viagem, receber confirmações, conferir embarques e fechar cobranças. A REV-03 registra uma viagem encerrada com três embarques e três cobranças marcadas como pagas por Pix. A prioridade é garantir que um embarque feito sem sinal sobreviva a uma falha no envio. Para liberar uma versão para uso diário, o critério é conseguir repetir as jornadas abaixo na versão publicada, inclusive após uma interrupção, mantendo os passageiros e os valores corretos.
+
+#### Base desta revisão
+
+| Verificação | Resultado | Alcance |
+| --- | --- | --- |
+| Código | [Commit d4d4dd9 no GitHub](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/tree/d4d4dd9ef134e66b640419f7d0648af04eacc4ff), cópia isolada com o arquivo de dependências travado | A revisão executou testes locais e só fez leituras nos serviços publicados. |
+| Aplicativo | 423 testes em 85 arquivos passaram. TypeScript e build de produção passaram. O lint encontrou 1.762 erros de formatação e 5 avisos de atualização de componentes. | Os testes usam simulações. A formatação tem tratamento separado, conforme P-07. |
+| Publicação | A [tela de entrada](https://van-and-pin-logo-studio.lovable.app/entrar) respondeu HTTP 200 com formulário de senha e recuperação. Os nomes dos 31 arquivos JavaScript e CSS referenciados aparecem no build local. | Evidência da tela de entrada. O identificador da publicação inteira e as jornadas autenticadas nesta versão ainda precisam de conferência. |
+| Supabase | Projeto `ovanzeiro`, referência `rnziztwicggdekmpwpgy`. As 21 tabelas públicas têm controle por linha. Há 14 tabelas publicadas em tempo real, cinco viagens e cinco cobranças. Na hora anterior à consulta, o agendador registrou 12 execuções com sucesso e zero falhas. | As contagens indicam atividade. O teste de recebimento no aparelho e a restauração do backup exigem provas próprias. |
+| Segurança e operação | O consultor de saúde retornou zero avisos. O de segurança apontou proteção contra senhas vazadas desligada, 31 funções privilegiadas disponíveis a usuários logados, extensão pg_net no esquema público e uma tabela de chaves com acesso por linha ativo e sem política. | Revisar por finalidade. A tabela de chaves deve continuar restrita. A REV-06 acompanha recuperação, acesso, publicação e revisão dos textos legais. |
+
+#### Primeiro conserto · REV-11
+
+**Falha reproduzida.** Executei o código de [fila.ts](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/blob/d4d4dd9ef134e66b640419f7d0648af04eacc4ff/src/lib/banco/fila.ts#L53) com uma viagem fictícia, armazenamento local em memória e respostas controladas do servidor. Com erro de rede, sobrou uma pendência. Com resposta de indisponibilidade do servidor, sobraram zero, apesar de o envio ter falhado. Com sucesso também sobraram zero, como esperado. O motorista pode perder o registro de que alguém embarcou. A simulação reproduziu a perda da pendência, sem demonstrar perda em viagens reais.
+
+**Dois limites do mesmo fluxo.** A gravação no aparelho ignora a falha se o armazenamento estiver cheio. A fila usa uma chave comum no aparelho e tenta enviar seus itens sem filtrá-los pela conta ativa. O efeito de trocar de conta com uma viagem pendente precisa ser medido com contas fictícias. A leitura de viagens também retorna cedo se o banco falhar, antes de carregar as pendências locais. É preciso testar fechar e reabrir o app ainda sem rede. [Gravação local](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/blob/d4d4dd9ef134e66b640419f7d0648af04eacc4ff/src/lib/banco/fila.ts#L28) · [Leitura da viagem](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/blob/d4d4dd9ef134e66b640419f7d0648af04eacc4ff/src/lib/banco/viagem.ts#L91)
+
+**Entrega em três passos pequenos.** Primeiro, manter uma marcação recuperável quando falta confirmação do servidor e indicar ao motorista quando ela precisa de atenção. Repetir um erro definitivo não pode gerar tentativas infinitas. Depois, testar e corrigir apenas as falhas reproduzidas na reabertura e na troca de conta. Por fim, conferir a viagem nos dois aparelhos e o resultado financeiro. Aceite da etapa:
+
+1. Em modo avião, registrar um embarque e uma falta. Fechar e abrir com e sem conexão. Ver os registros novamente ou um aviso fiel de qual ação exige recuperação.
+2. Simular armazenamento cheio e servidor temporariamente indisponível. A interface distingue “guardado no aparelho”, “salvo” e “precisa de atenção”. A ação aceita pelo aparelho permanece recuperável até confirmação do banco.
+3. Com pendência da conta A, entrar na conta B no mesmo aparelho. B só vê e envia os próprios registros. Voltar a A e recuperar os seus.
+4. Reconectar, repetir o envio e abrir os dois painéis. Conferir uma viagem, um embarque por passageiro e as cobranças previstas pelo plano, sem duplicação. Repetir o trajeto normal com sinal e comparar totais e avisos.
+
+#### Jornadas de aceitação e ordem de trabalho
+
+| Ordem e situação | O que já tem evidência | Condição para encerrar |
+| --- | --- | --- |
+| 1. Viagem com falha de sinal · corrigir | Viagem com sinal já exercitada em celulares. A suíte cobre perda e retorno normais da rede. | Fechar a REV-11 pelos quatro critérios acima. |
+| 2. Conta, perfil e destinos · regressão | Cadastro, recuperação, Google, capacidade, convite, cadastro manual e associação ao passageiro têm registros nas etapas anteriores. | Em contas de teste, entrar nos dois papéis, recuperar acesso e reler o destino após reabrir. Aceitar um convite deve produzir uma só matrícula. Testar recusa, mudança de endereço e saída sem apagar dívida anterior. |
+| 3. Da confirmação à volta · regressão | Há confirmações, vagas, posição de embarque, ordem de busca, navegação, parada do café, conferência e desembarque. | Dois passageiros disputam a última vaga. Só um confirma. Quem desistiu no prazo sai da busca. Embarcar, marcar ausência, conferir a parada e encerrar a volta. A lista final deve bater com o histórico e o painel de cada passageiro. |
+| 4. Dinheiro · regressão | Banco e código registram cobranças, pagamentos, faltas e gastos. Há restrição contra pagamento e cancelamento simultâneos e gatilho de proteção na atualização. | Em cópia com dados fictícios, conferir os quatro planos, desconto por falta no prazo, vencimento e virada do mês. Repetir um toque e atualizar dois aparelhos. O valor final deve coincidir, sem mudar cobrança encerrada. Conferir gasto e saldo. |
+| 5. Avisos, acesso e privacidade · validar na versão candidata | Existe envio de avisos, função publicada e atualização entre aparelhos. O projeto registra teste do dono. | Com dois usuários distintos, verificar último embarque, aviso no painel correto, app fechado, notificação desativada e saída da conta. Conferir no próprio aparelho o que chegou. Revisar as permissões das funções chamadas pelos fluxos afetados. |
+| 6. Operação e publicação · REV-06 aberta | Login publicado acessível, agendador ativo, termos e política já escritos. | Registrar publicação e commit, repetir o percurso curto em dois celulares e instalar/atualizar o app. Confirmar política de backup e demonstrar restauração em ambiente separado. Registrar decisão sobre senhas vazadas e revisão jurídica. |
+
+**Limites de produto.** O GPS do ponto de embarque e a navegação até o passageiro já existem. O mapa do passageiro simula a posição da van. Rastreamento ao vivo, Play Store e domínio próprio estão fora do núcleo aprovado. O histórico de viagens e avisos carrega até 300 itens, e registrar pagamentos e gastos sem conexão é melhoria adiada na REV-07. Para operações com grande volume, conferir também os totais financeiros com um conjunto acima do limite de linhas por consulta, pois a leitura atual busca cobranças sem paginação explícita. A divergência com volume alto ainda precisa ser testada.
+
+**Controle de cada entrega.** Abrir uma alteração isolada a partir de um commit identificado. Antes de corrigir, registrar a entrada, o resultado observado e o resultado esperado. Depois, repetir o cenário, a jornada que já funcionava e a suíte. Anotar na contraprova a versão, o ambiente, os resultados e a forma de reverter. Em caso de regressão, interromper a promoção e voltar à versão validada. Fechar a etapa só depois de verificar o resultado no ambiente a que a mudança se destina. Testes de gravação e restauração usam dados de teste em ambiente isolado.
+
+<a id="execucao-controlada"></a>
+
+### 22.12 Roteiro para a IA que vai executar o trabalho
+
+**Comece aqui a cada sessão.** A fonte da verdade define o comportamento esperado. A contraprova registra o que realmente aconteceu. Use o último registro para retomar o trabalho. Se ele divergir do que você encontrou no código, registre os dois fatos e confira a versão antes de editar.
+
+**Estado em 18/11/2026.** A etapa 1 passou na cópia isolada da `main` no commit `114b28d9cba2932aad9419fa7f52f4141ca8e7ee` de `ovanzeiro-beep/van-and-pin-logo-studio`. Passaram 423 testes em 85 arquivos, a checagem de tipos e o build. O lint apresentou os mesmos apontamentos da base anterior. A versão segura registrada pelo dono é `d4d4dd9`. O [pull request 1](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/1) registra a integração da etapa 1. Depois do merge, a etapa 2 aguarda autorização própria. [Contraprova da etapa 1](contraprova.md#etapa-1-base-conferida)
+
+**Regra permanente do dono. Não mexer na branch `claude/visualizar-main-1gamow`.** Antes de cada etapa, confira a branch local com `git branch --show-current` e o destino de qualquer operação no GitHub. Se a cópia estiver nessa branch, deixe-a intacta e trabalhe em outra cópia a partir da base autorizada. Essa proteção vale também para documentação, commits, push, merge, rebase, renomeação e exclusão. A autorização para avançar de etapa mantém esta regra em vigor.
+
+#### Regra de autorização do dono
+
+1. Leia este roteiro e o último registro de `docs/contraprova.md`. Localize a primeira etapa em aberto.
+2. Confira na conversa se o dono autorizou aquela etapa. Uma resposta afirmativa à pergunta sobre a etapa numerada vale só para ela. Se faltar essa resposta, diga o que será feito, pergunte **“Posso iniciar a etapa N — [nome]?”** e encerre a mensagem. Aguarde.
+3. Com autorização, trabalhe somente no objetivo da etapa. Use uma cópia isolada para testes. Dados e contas de teste devem ser fictícios. O dono autorizou o merge e a publicação de cada etapa após a validação. Escrever no banco real ou enviar avisos a passageiros reais exige autorização específica.
+4. Se a verificação passar, preserve a implementação. Se um teste falhar, registre o resultado antes de tentar corrigir. Na etapa 2 o reparo descrito já faz parte do escopo. Nas etapas de verificação, apresente a falha e peça autorização para o conserto específico. Mantenha a etapa aberta até repetir a prova.
+5. Quando a etapa passar, registre a contraprova, faça o merge da branch da etapa na `main` pelo GitHub e confira o commit integrado. O Lovable sincroniza a `main`. Verifique a sincronização e, se a publicação precisar de acionamento, use o controle de publicação já autorizado pelo dono, sem acionar o agente do Lovable. Confirme o resultado antes de afirmar que foi publicado. Se a etapa for só documental, explique que a entrega registra as verificações e que seu efeito se limita à documentação.
+6. Explique em linguagem simples o que a etapa faz no aplicativo, quem se beneficia e o que se percebe na tela, quando houver efeito visível. Informe o resultado dos testes e o estado do merge e da publicação. Depois do fechamento, pergunte **“Posso iniciar a etapa N — [nome da próxima]?”** e aguarde. Se faltar prova, acesso de escrita ou confirmação da publicação aplicável, registre o bloqueio e mantenha a etapa aberta. O pedido de explicação, o silêncio ou uma nova conversa mantêm a etapa seguinte em espera. Depois da última etapa, peça o aceite de encerramento.
+
+#### Procedimento para uma correção autorizada
+
+- Confira `git remote -v`, `git rev-parse HEAD` e `git status --short`. Registre o commit e os arquivos que já estavam alterados. Se a base avançou, releia as mudanças do fluxo. Preserve o trabalho existente e teste o comportamento atual antes de decidir se o reparo ainda se aplica.
+- Escreva a contraprova em três linhas: ação, resultado observado, resultado esperado. Reproduza com dados fictícios. Se o erro deixou de ocorrer, registre o cenário testado e mantenha o código.
+- Para um erro reproduzido, primeiro faça um teste que falhe pelo motivo observado. Altere apenas o trecho responsável. Repita o teste que falhou **e** um cenário vizinho que já funcionava. Preserve textos, aparência e regras aprovadas que não fazem parte do defeito.
+- Para uma mudança no app, execute na raiz `npm test`, `./node_modules/.bin/tsc --noEmit`, `npm run build` e compare o lint com a base. Confira `git diff --stat` e `git diff --check`. Registre falhas herdadas e novas separadamente. Se aparecer uma regressão, pare a promoção e isole ou reverta somente a mudança desta etapa na cópia de trabalho. Preserve alterações de outras pessoas.
+- Mostre a prova no nível certo. Um teste simulado comprova aquele cenário no código. Uma leitura do Supabase comprova o estado consultado. Recebimento de aviso e reabertura no aparelho exigem observação no celular. Identifique claramente toda verificação que ficou pendente.
+
+#### Fichas de execução
+
+Execute somente a ficha autorizada. A numeração é a ordem de execução deste roteiro. Os códigos REV continuam identificando as entregas históricas do projeto.
+
+| Etapa | O que fazer | Prova de aceite e comportamento que deve continuar funcionando |
+| --- | --- | --- |
+| **1 · Conferir a base** | Em cópia isolada, ler `AGENTS.md`, `CLAUDE.md`, as seções 22.11 e 22.12 e a última contraprova. Identificar commit e dependências. Se necessário, instalar com `bun install --frozen-lockfile`. Rodar suíte, tipos, build e lint. | Registrar comandos, resultados e diferenças para a referência de 17/11. As diferenças precisam estar explicadas antes de usar a base para avaliar uma correção. Integrar a documentação na `main`, explicar o efeito da etapa e pedir autorização para a etapa 2. |
+| **2 · Impedir descarte da marcação (REV-11)** | Começar por `src/lib/banco/fila.ts` e `src/test/sem-sinal-viagem.test.ts`. Com um embarque fictício na fila, simular falta de rede, retorno da rede com recusa temporária e, por último, confirmação do servidor. Comparar a fila antes e depois de cada resposta. Corrigir somente se o descarte indevido for reproduzido. | Quantidades esperadas após cada tentativa: **1, 1, 0**. A confirmação final grava um único embarque. Uma recusa definitiva deixa a pendência recuperável e identificável, sem reenvio infinito. Repetir o envio depois do sucesso e o embarque normal com sinal. Pedir autorização para a etapa 3. |
+| **3 · Recuperar a viagem no aparelho (REV-11)** | Ler `src/lib/banco/viagem.ts` e a fila. Em ambiente de teste, marcar um embarque e uma falta offline. Fechar e reabrir ainda offline. Testar armazenamento cheio. Em separado, trocar da conta A para B com uma pendência de A e reconectar como A. | Uma ação indicada como guardada reaparece. Se o aparelho não conseguir guardar, o motorista recebe aviso fiel. B só vê e transmite os próprios registros. Ao retornar a A, reconciliar um embarque, uma falta e as cobranças previstas, sem duplicação. Registrar qual parte foi observada em celular. Pedir autorização para a etapa 4. |
+| **4 · Conta, convite e vagas** | Usar usuários fictícios distintos. Criar ou recuperar acesso, conferir o perfil e um destino, aceitar um convite ligado a um cadastro existente e atualizar os dois painéis. Em uma viagem com uma vaga livre, dois passageiros tentam confirmar. Conferir desistência dentro do prazo. Testes de referência: `w1-conta`, `convite-real`, `e1-lugares-no-destino`. | Uma matrícula por pessoa naquele destino. Só um passageiro fica com a última vaga. Após desistência no prazo, a vaga fica disponível e a lista de busca reflete a mudança. Conferir que a saída mantém dívidas anteriores. Se passou, registrar e pedir autorização para a etapa 5. |
+| **5 · Viagem e avisos** | Com motorista e passageiro em aparelhos distintos, seguir busca, embarque, ausência, parada, conferência, volta e encerramento. Repetir um toque. Observar o aviso esperado com o app fechado e permissão concedida. Depois de sair da conta, verificar o destinatário dos avisos. Referências: `w6-viagem`, `w8-avisos`, `w10-celular`, `g2-sair-celular`. | Histórico, lista de bordo e situação individual concordam. O passageiro vê apenas as informações previstas para o seu papel. O aviso chega ao destinatário certo. Anotar o aparelho em que apareceu. Pedir autorização para a etapa 6. |
+| **6 · Cobranças e fechamento** | Montar fichas fictícias para os planos por viagem, diário, quinzenal e mensal. Anotar valor, vencimento, embarques e faltas antes de rodar. Calcular o esperado pelas regras aprovadas. Incluir falta avisada no prazo, virada do mês, pagamento, cancelamento, toque repetido e gasto. Referências: `dinheiro-ponta-a-ponta`, `w7-dinheiro` e seção 22.4. | Para cada ficha, registrar valor esperado e observado, situação e total mensal. Pagamento e cancelamento conservam as regras da cobrança encerrada. Reabrir ambos os painéis e conferir que um passageiro só consulta a própria cobrança. Pedir autorização para a etapa 7. |
+| **7 · Verificar a versão candidata (REV-06)** | Identificar versão candidata, endereço e data. Em dois celulares com contas de teste, instalar ou atualizar e repetir uma viagem curta até a cobrança. Conferir itens operacionais da REV-06, inclusive política de cópia de segurança e restauração em ambiente separado. Registrar qualquer dependência do dono. | Identificar qual versão foi testada, quais passos passaram nos aparelhos e quais ficaram bloqueados. Integrar a etapa validada na `main` e conferir a publicação no Lovable quando aplicável. Pedir aceite final quando todos os critérios do escopo estiverem atendidos. |
+
+#### Mensagem de entrega obrigatória
+
+Copie a ficha de registro no final de `docs/contraprova.md` para cada execução. Preencha somente o que observou. Inclua o caminho do arquivo, o nome do teste ou a referência à verificação feita no celular, sem dados pessoais. O último registro preenchido indica o ponto de retomada.
+
+**Resposta ao dono em até seis linhas**
+
+1. Etapa e resultado: passou, falhou ou falta prova.
+2. O que foi testado e em qual ambiente.
+3. Resultado esperado e resultado observado.
+4. Efeito para quem usa o aplicativo e comportamento conferido novamente.
+5. Commit do merge, resultado da publicação e pendência concreta, se houver.
+6. Pergunta de autorização para a próxima etapa, ou para o reparo da etapa atual, conforme o resultado. Aguarde a resposta.
+
+**Texto para iniciar outra conversa com uma IA**
+
+> Trabalhe no O Vanzeiro. Leia a seção 22.12 de docs/fonte-da-verdade.md e o último registro de docs/contraprova.md. Diga qual foi a última etapa aceita, qual é a próxima e qual prova será feita. Se faltar minha autorização para essa etapa, peça e pare. Execute uma etapa por vez. Depois de validar, faça o merge na main, confira o Lovable e mostre a contraprova e o efeito no aplicativo antes de pedir autorização para continuar.

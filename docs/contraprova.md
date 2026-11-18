@@ -1686,3 +1686,48 @@ Conferido no banco: o "Rafael passageiro" é a mesma conta do vanzeiro (entrou n
 
 ## Versão segura (18/11/2026)
 Antes de outra IA mexer no projeto, o dono pediu para guardar a versão atual. **Versão segura: commit `d4d4dd9`** ("Estou na van: confirmação antes de avisar o vanzeiro"). Cópia intacta na branch `claude/visualizar-main-1gamow` (não mexer nela). Para conferir o que mudou depois: `git diff d4d4dd9 main`. Banco (Supabase) nessa data: migrações até `20261117120000_boa_viagem`; função `avisos-no-celular` versão 8.
+
+## Revisão integral de 17/11/2026 — diagnóstico da REV-11
+
+Base `d4d4dd9`. Testes locais repetidos com Bun 1.3.13 e dependências travadas. Passaram 423 testes em 85 arquivos, TypeScript e build. O lint encontrou 1.762 erros de formatação e 5 avisos. Leitura do Supabase e comparação dos recursos públicos do login registradas na seção 22.11. Em simulação isolada, a fila conservou uma marcação após erro de rede, mas descartou a marcação após resposta de indisponibilidade do servidor. O fluxo completo em dois celulares é evidência anterior da REV-03. A REV-11 está aberta. [Diagnóstico, evidências e critérios de aceite](fonte-da-verdade.md#revisao-integral).
+
+## 18/11/2026 · Entrega do roteiro de execução controlada
+
+A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova por etapa e uma pergunta explícita antes de avançar. Entrega documental concluída na cópia de trabalho. A última verificação funcional é a revisão de 17/11. Nenhuma ficha de execução foi iniciada hoje. **Próxima autorização pendente: etapa 1 · Conferir a base.** [Abrir o roteiro e os critérios de aceite](fonte-da-verdade.md#execucao-controlada).
+
+### Modelo para copiar a cada execução
+
+| Campo | Preencher na entrega |
+| --- | --- |
+| Data, etapa e objetivo | Número, nome e resultado esperado |
+| Autorização recebida | Data e referência à resposta do dono para esta etapa |
+| Branch | Registrar a branch de trabalho e, quando aplicável, o destino no GitHub. Ambos devem respeitar a regra de preservar `claude/visualizar-main-1gamow`. |
+| Base e ambiente | Commit, versão publicada quando aplicável, cópia local, banco de teste ou aparelhos usados |
+| Antes da mudança | Ação, resultado esperado, resultado observado e evidência |
+| Alteração | Arquivos e motivo, ou “somente verificação” |
+| Depois e contraprova | Mesmo cenário repetido, resultado e evidência |
+| Regressão | Cenário aprovado repetido, comando ou passo, resultado |
+| Situação | Passou, falhou ou falta prova. Indicar o que falta e como retomar |
+| Reversão | Alteração isolada e maneira de retirar apenas essa alteração, se aplicável |
+| Efeito no aplicativo | O que o usuário percebe ou, em etapa documental, o que a verificação registrou |
+| Merge e Lovable | Commit integrado na main, resultado da sincronização e da publicação, ou bloqueio |
+| Próxima decisão | Pergunta enviada e etapa que aguarda autorização |
+
+<a id="etapa-1-base-conferida"></a>
+
+## 18/11/2026 · Etapa 1 · Conferir a base
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização | O dono autorizou a etapa 1 na conversa de 18/11/2026. |
+| Base e ambiente | Repositório `ovanzeiro-beep/van-and-pin-logo-studio`. Cópia isolada da `main`, inicialmente limpa, no commit `114b28d9cba2932aad9419fa7f52f4141ca8e7ee`. Node 24.22.1, npm 11.9.0 e Bun 1.3.13. |
+| Diferença para 17/11 | `git diff d4d4dd9 HEAD` mostra somente o registro da versão segura em `docs/contraprova.md`. Código, testes e dependências coincidem com a base anterior. |
+| Instalação | `bun install --frozen-lockfile` concluiu. |
+| Testes | `npm test` passou com 423 testes em 85 arquivos, iguais à referência. |
+| Tipos e build | `./node_modules/.bin/tsc --noEmit` e `npm run build` passaram. |
+| Lint | `npm run lint` saiu com código 1. Os 1.762 erros de formatação e os cinco avisos são idênticos ao resultado de 17/11 após remover os prefixos dos diretórios locais. |
+| Alteração | Verificação local com registro nos dois documentos. O patch inclui o roteiro já preparado, preserva o registro da versão segura da main e passa em `git diff --check`. |
+| Efeito no aplicativo | Nenhuma mudança de tela ou de comportamento. A etapa estabeleceu a versão de referência para comparar as próximas correções. |
+| Merge e Lovable | Após a instalação do conector, o GitHub aceitou o envio da branch de documentação. O [pull request 1](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/1) registra o estado do merge na `main`. A entrega altera somente documentação. |
+| Situação | Verificação aprovada. O merge do pull request 1 fecha a entrega documental da etapa 1. |
+| Próxima decisão | Depois do merge, pedir ao dono autorização para iniciar a etapa 2. |
