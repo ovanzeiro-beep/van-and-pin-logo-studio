@@ -1681,3 +1681,8 @@ Conferido no banco: o "Rafael passageiro" é a mesma conta do vanzeiro (entrou n
 
 ## "Estou na van" pede confirmação (pedido do dono, 17/11/2026) — feita
 - [x] Tocar em "Estou na van" abre "Você está dentro da van?": "Só confirme se você já está sentado na van…" e o aviso "Ainda não está na van? Volte para a van agora: ela vai sair em breve."; botões "Ainda não" e "Sim, estou na van". 423 testes, tsc e build passando.
+
+---
+
+## Versão segura (18/11/2026)
+Antes de outra IA mexer no projeto, o dono pediu para guardar a versão atual. **Versão segura: commit `d4d4dd9`** ("Estou na van: confirmação antes de avisar o vanzeiro"). Cópia intacta na branch `claude/visualizar-main-1gamow` (não mexer nela). Para conferir o que mudou depois: `git diff d4d4dd9 main`. Banco (Supabase) nessa data: migrações até `20261117120000_boa_viagem`; função `avisos-no-celular` versão 8.
