@@ -1849,3 +1849,23 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Pendência física | O dono havia respondido “Ainda não testei” à pergunta sobre aviso em celular com app fechado. A confirmação de publicação não relata esse teste. Continua pendente comprovar o recebimento no aparelho e identificar Android/iPhone, aviso e horário. Não foi disparada notificação artificial para usuários reais. |
 | Situação e próximo passo | Publicação do cliente **confirmada**. Etapa 5 **aguardando validação física**, sem iniciar a etapa 6. Em uma viagem de teste com contas fictícias, ativar notificações, fechar a página do passageiro e verificar o aviso gerado pela ação do motorista no aparelho correto. No iPhone, usar o app instalado na tela inicial. Conferir também a ausência no histórico individual e a separação dos avisos por conta. Após registrar o resultado, concluir a etapa ou reproduzir eventual falha antes de pedir autorização para cobranças e fechamento. |
 | Reversão | Se necessário, reverter apenas a atualização documental, sem alterar a publicação do app ou o banco e sem reescrever histórico. |
+
+
+<a id="etapa-6-financeiro"></a>
+
+## 18/11/2026 · Etapa 6 · Cobranças e fechamento
+
+**Autorização vigente:** o dono pediu “Vamos fazer as etapas aí depois vc monta um plano de testes”. Autoriza seguir as verificações técnicas das etapas 6 e 7 e preparar o roteiro de celular ao final. A prova física da etapa 5 foi adiada por essa decisão e continua pendente; não é uma aprovação implícita do recebimento de avisos.
+
+**Escopo da execução:** conferir os quatro planos, vencimentos, descontos, cobranças encerradas, duplicação, totais, gastos e permissões; banco com dados fictícios isolado; produção somente em leitura. Preservar a implementação que passar. Depois integrar a etapa 6 e seguir para a revisão operacional e o plano manual.
+
+| Campo | Resultado da etapa 6 |
+| --- | --- |
+| Base e branch | `2a3f5434ff3b9d2ccc03954b6debd877370c1331`, branch isolada `revisao/etapa6-financeiro`. Branch protegida pelo dono intacta. |
+| Fichas | Nove cenários de aceite novos; resultados calculados antes da execução. [Valores e limites](evidencias/2026-11-18-etapa6-financeiro.md). |
+| Banco isolado | Vinte verificações passaram em PostgreSQL 18.6, com 26 migrations reaplicadas. Transporte externo e autenticação simulados; engine SQL, RLS e restrições reais. Container sem rede, dados fictícios e rollback. |
+| Produção | Somente metadados: cinco funções financeiras coincidiram com a cópia local; RLS nas quatro tabelas financeiras; dois jobs ativos; 72 execuções com sucesso na hora anterior à consulta. Não foram consultados nomes, cobranças ou chaves de pessoas reais. |
+| Regressão | Base: 431 testes. Entrega: 440 testes em 87 arquivos, tipos e build passaram. Lint herdado com 1.752 erros e cinco avisos; arquivo novo sem apontamentos. |
+| Efeito no aplicativo | Nenhuma alteração de regra, tela, esquema ou dado de produção. Foram acrescentadas provas de regressão e um laboratório reproduzível. |
+| Situação | Verificação técnica do financeiro concluída para os cenários descritos. Reabertura e leitura nos aparelhos reais continuam no roteiro manual pedido pelo dono. Não equivale a aceite final. |
+| Reversão e próximo passo | Reverter apenas a entrega de testes/documentação se necessário. Após integrar esta etapa, seguir para os pontos técnicos da etapa 7 e montar o roteiro manual, já autorizados pelo pedido do dono. |
