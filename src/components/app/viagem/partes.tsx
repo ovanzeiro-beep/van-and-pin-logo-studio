@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { linkDaRotaCompleta, linkDoMapa } from "@/lib/viagem";
 
 /** Who is next: name, address and city, with "Ir até lá" (navigation) and "Rota completa" (the ones still to go). */
-export function PassageiroDaVez({ rotulo, p, posicao, faltam = [] }: { rotulo: string; p: Passageiro | undefined; posicao: string; faltam?: Passageiro[] }) {
+export function PassageiroDaVez({ rotulo, p, posicao, faltam = [], acaoExtra }: { rotulo: string; p: Passageiro | undefined; posicao: string; faltam?: Passageiro[]; acaoExtra?: ReactNode }) {
   const rota = faltam.length > 1 ? linkDaRotaCompleta(faltam) : null;
   return (
     <section className="rounded-3xl bg-card p-3.5 shadow-card">
@@ -37,6 +37,7 @@ export function PassageiroDaVez({ rotulo, p, posicao, faltam = [] }: { rotulo: s
           )}
         </div>
       )}
+      {acaoExtra}
     </section>
   );
 }
