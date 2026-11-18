@@ -77,6 +77,10 @@ self.addEventListener("push", (event) => {
   } catch (e) {
     dados = { corpo: event.data ? event.data.text() : "" };
   }
+  if (dados?.chegada === true) {
+    event.waitUntil(receberAvisoDeChegada(dados));
+    return;
+  }
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((janelas) => {
       // The app is on the screen: it plays its own loud alert (vibrates and rings) and shows the notice on the bell.
@@ -89,6 +93,30 @@ self.addEventListener("push", (event) => {
     }),
   );
 });
+
+// A van pode avançar entre o envio ao serviço de push e a entrega no aparelho.
+async function receberAvisoDeChegada(dados) {
+  const janelas = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+  // Só o painel do passageiro aberto acompanha o registro e toca por conta própria.
+  const painelVisivel = janelas.some((janela) => {
+    if (janela.visibilityState !== "visible") return false;
+    const caminho = new URL(janela.url).pathname;
+    return caminho === "/passageiro" || caminho.startsWith("/passageiro/");
+  });
+  if (painelVisivel) return;
+  const consulta = new URL("https://rnziztwicggdekmpwpgy.supabase.co/functions/v1/avisos-no-celular");
+  consulta.searchParams.set("chegada", dados.tag);
+  const controle = new AbortController();
+  const prazo = setTimeout(() => controle.abort(), 5000);
+  try {
+    const resposta = await fetch(consulta, { cache: "no-store", signal: controle.signal });
+    if (resposta.ok && (await resposta.json()).ativa === true) await mostrarNotificacao(dados);
+  } catch {
+    // Sem verificar a parada atual, o alerta poderia chamar alguém quando a van já seguiu.
+  } finally {
+    clearTimeout(prazo);
+  }
+}
 
 /** Minimized, screen off or app closed: the phone's notification. */
 function mostrarNotificacao(dados) {

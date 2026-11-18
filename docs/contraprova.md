@@ -1909,3 +1909,40 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 - Base `64cff3d07b8a87950625fe157e0b64b878a4c1b7`. O pedido do dono distingue a desistência de quem tinha confirmado do primeiro «Não vou».
 - Ao desistir, o diálogo mantém data, rota, horário, prazo e aviso de vaga liberada. Após salvar a resposta, o sininho do vanzeiro informa quem cancelou e qual vaga foi liberada. O sininho do passageiro confirma seu cancelamento e orienta como voltar a confirmar dentro do prazo se houver vaga. São usados os avisos por pessoa e viagem que já existiam.
 - Os testes conferem os dois textos, destinatários e toque repetido, além das duas versões do diálogo. A prova de entrega com o app fechado permanece no roteiro para celulares.
+
+<a id="aviso-de-chegada-banco-local"></a>
+
+## 18/11/2026 · Aviso de chegada ao ponto em banco descartável
+
+- Base `429ab9066317305fc08f80f712060470867b70f9`. Primeira etapa autorizada com entrega gradual. A alteração acrescenta um registro próprio para o aviso de chegada, com prazo inicial de três minutos e um aviso por matrícula e viagem. A confirmação registra o horário do primeiro toque.
+- Em PostgreSQL 18.6, em um container descartável sem rede, as 23 verificações de `supabase/testes/aviso-de-chegada.sql` passaram. O banco recusou sessão anônima, outro motorista, outro passageiro, acesso direto à tabela, cartão desatualizado, viagem fora da busca, matrícula sem conta e aviso vencido. Comparar o banco antes e depois das ações confirmou que os dados de viagem, avisos existentes, embarques, faltas e cobranças foram preservados.
+- A migration foi reaplicada no banco descartável com sucesso. Em conexões distintas, seis envios simultâneos retornaram o mesmo identificador e criaram uma única linha. Seis confirmações simultâneas retornaram o mesmo horário. As vinte checagens financeiras existentes também passaram após aplicar a migration no laboratório. As identidades de Auth, o agendador e o transporte de notificações foram simulados.
+- A entrega nesta cópia é a regra do banco em laboratório. A integração das telas, a entrega de push no aparelho e a publicação permanecem pendentes. Na próxima etapa, conferir o estado após perda de sinal, troca de passageiro ou conta e expiração. A prova física continua reservada à revisão final do dono.
+
+<a id="aviso-de-chegada-telas"></a>
+
+## 18/11/2026 · Botão de chegada e confirmação nas telas
+
+- Base local `9d34a5b`, com a regra da etapa anterior. O dono autorizou ligar as duas telas em uma cópia separada.
+- «Avisar que cheguei» aparece abaixo da navegação do próximo passageiro, durante a busca, quando há matrícula vinculada a uma conta. O painel do passageiro exibe um aviso com o trajeto e «Estou ciente». Depois que o banco grava a confirmação, o cartão do motorista mostra que o passageiro confirmou. Uma falha de conexão pede nova tentativa, sem enfileirar o aviso de chegada.
+- As consultas são restritas à parada do motorista ou à conta do passageiro. O canal de atualizações consulta só esse aviso e usa o sinal existente do destino para retirá-lo quando a busca avança. O passageiro usa o alerta sonoro existente com o painel em primeiro plano. O som depende do navegador e do aparelho.
+- A suíte completa passou com 446 testes em 88 arquivos, incluindo cinco cenários de tela com Supabase simulado. A checagem de tipos e a compilação passaram. Foram verificados destinatário, confirmação, troca de pessoa e de conta, avanço da busca, falta de internet, aviso vencido e chamada ao alerta sonoro. Em PostgreSQL 18.6 descartável sem rede passaram as 34 checagens da chegada, as vinte financeiras e as duas provas de concorrência. As duas migrations foram reaplicadas no laboratório.
+- Retomada: ligar a notificação do app fechado ao registro de chegada e verificar que um aviso vencido não chama a pessoa depois que a van seguiu. A validação em celulares continua reservada à rodada final. Integração na main, aplicação no Supabase real e publicação ainda não ocorreram.
+
+<a id="aviso-de-chegada-app-fechado"></a>
+
+## 18/11/2026 · Aviso de chegada com app fechado
+
+- Base local `8d22946`. O dono autorizou integrar a entrega de chegada com o app fechado na cópia de teste. O registro de chegada enfileira uma notificação para a conta do passageiro pela fila existente. A linha interna fica fora do sininho.
+- A função de envio usa o tempo que resta do aviso, com limite de três minutos, e descarta se venceu, foi confirmado ou a pessoa deixou de ser a próxima. No recebimento com o painel do passageiro fechado, o código do navegador consulta a validade novamente antes de exibir. A consulta retorna apenas um booleano e não é armazenada em cache. Tocar na notificação abre o painel do passageiro, que lê a chegada vigente.
+- Se a validação no celular falhar, o código não exibe o aviso de chegada. Se a notificação já foi exibida antes da van avançar, ela pode continuar visível na central do aparelho. Ao abrir o painel, a confirmação vencida fica indisponível. A segunda validação depende de o aparelho ter recebido a versão nova do service worker.
+- Em ambiente descartável, as 42 verificações da chegada, as vinte verificações do financeiro e as duas provas de concorrência passaram. A reaplicação das migrations também passou. A suíte completa passou com 452 testes, incluindo seis cenários novos de entrega simulada. A compilação do app e as checagens de tipos do app e da função de entrega passaram. Os testes simulados cobrem entrega válida, expiração, erro temporário, avanço da busca, retorno público sem cache e o aviso automático anterior. Não houve envio a aparelho real.
+- Retomada: com autorização de produção, conferir a versão atual e publicar primeiro a função de entrega compatível com os avisos existentes, aplicar as migrations da chegada e publicar o app. Confirmar a nova rota de validade e o novo service worker publicados. Na rodada final, testar com conta fictícia, app fechado e permissões concedidas, incluindo um aviso recebido após avançar da parada. Sem alterações aplicadas no ambiente real nesta etapa.
+
+<a id="aviso-de-chegada-merge-app"></a>
+
+## 18/11/2026 · Merge do app do aviso de chegada
+
+- O dono solicitou integrar o código do app para aparecer no Lovable. O botão e o painel do aviso de chegada só aparecem quando a consulta de capacidade no Supabase confirma a ativação. Em banco anterior, a tela de busca continua oferecendo os botões normais e o app não abre um canal para esse recurso.
+- Esta entrega inclui o código do app e do service worker. O SQL, a função de entrega e os testes específicos do servidor permanecem na cópia de trabalho até a autorização para o Supabase. Essa separação também evita aplicar migrations por uma eventual integração automática do GitHub com o Supabase.
+- Retomada: validar o app publicado e, com autorização para o Supabase, publicar a função de entrega e ativar as migrations. Após a ativação, o app com este código reconhece o recurso ao consultar novamente. A entrega com o app fechado em aparelho real continua no roteiro final.

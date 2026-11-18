@@ -25,6 +25,9 @@ import {
   type ViagemDoDia,
 } from "@/lib/viagem";
 import { PassageiroDaVez, Progresso } from "./partes";
+import { AvisoDeChegadaVanzeiro } from "./AvisoDeChegadaVanzeiro";
+import { useSessao } from "@/lib/sessao";
+import { USA_BANCO } from "@/lib/supabase";
 import { ResumoDaViagem } from "./ResumoDaViagem";
 import { fazer } from "@/lib/acoes";
 import { atualizarViagemNoBanco, marcarEmbarcouNoBanco, marcarNaoEstavaNoBanco } from "@/lib/banco/viagem";
@@ -56,11 +59,14 @@ function BotaoParada({ destino }: { destino?: Destino | undefined }) {
 
 /** Body of the Viagem tab while a trip is in progress, one screen per moment of the trip. */
 export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; passageiros: Passageiro[]; destino?: Destino | undefined }) {
+  const contaId = useSessao().conta?.id;
   const achar = (id: string | undefined) => passageiros.find((p) => p.id === id);
   const faltam = faltamNaRota(v).flatMap((id) => passageiros.filter((p) => p.id === id));
 
   if (v.fase === "busca") {
     const id = proximoDaBusca(v);
+    const proximo = achar(id);
+    const podeAvisar = USA_BANCO.destinos && contaId === v.vanzeiroId && proximo?.pessoaId;
     const feitos = v.embarcaram.length + v.naoEstavam.length;
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 px-5 pb-2.5 pt-3">
@@ -71,7 +77,15 @@ export function ViagemEmCurso({ v, passageiros, destino }: { v: ViagemDoDia; pas
           extra={v.naoEstavam.length > 0 && <span className="whitespace-nowrap text-sm font-bold text-destructive">{v.naoEstavam.length} {v.naoEstavam.length === 1 ? "não estava no ponto" : "não estavam no ponto"}</span>}
         />
         {id ? (
-          <PassageiroDaVez rotulo="Próximo passageiro" p={achar(id)} posicao={`${feitos + 1}º de ${v.ordem.length}`} faltam={faltam} />
+          <PassageiroDaVez
+            rotulo="Próximo passageiro"
+            p={proximo}
+            posicao={`${feitos + 1}º de ${v.ordem.length}`}
+            faltam={faltam}
+            acaoExtra={podeAvisar && contaId && (
+              <AvisoDeChegadaVanzeiro key={`${contaId}/${v.id}/${id}`} contaId={contaId} viagemId={v.id} matriculaId={id} />
+            )}
+          />
         ) : (
           <section className="flex flex-col items-center rounded-3xl bg-card p-5 text-center shadow-card">
             <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-success-soft text-success">

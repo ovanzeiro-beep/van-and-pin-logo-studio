@@ -18,13 +18,15 @@ const falso = vi.hoisted(() => {
   };
   const from = () => {
     let para = "";
+    let tipoOculto = "";
     const q = {
       select: () => q,
       eq: (_c: string, v: string) => ((para = v), q),
+      neq: (_c: string, v: string) => ((tipoOculto = v), q),
       order: () => q,
       limit: () => q,
       then: (ok: (r: unknown) => void) =>
-        ok({ data: avisos.filter((x) => x["para"] === para).map((x) => ({ ...x })), error: null }),
+        ok({ data: avisos.filter((x) => x["para"] === para && x["tipo"] !== tipoOculto).map((x) => ({ ...x })), error: null }),
     };
     return q;
   };

@@ -120,6 +120,7 @@ export async function carregarAvisos(): Promise<void> {
     .from("avisos")
     .select("*")
     .eq("para", conta.id)
+    .neq("tipo", "chegada_no_ponto")
     .order("criado_em", { ascending: false })
     .limit(300);
   if (error) return;
