@@ -259,6 +259,22 @@ if (typeof window !== "undefined") {
 
 // ---------- reading ----------
 
+/** Read all visible charges, even when the API caps the number of rows per response. */
+async function carregarCobrancas(sb: NonNullable<ReturnType<typeof supabase>>, conta: string | undefined) {
+  const linhas: LinhaCobranca[] = [];
+  let ultimoId: string | undefined;
+  do {
+    let consulta = sb.from("cobrancas").select("*", { count: "exact" }).order("id").limit(1000);
+    if (ultimoId !== undefined) consulta = consulta.gt("id", ultimoId);
+    const { data, error, count } = await consulta;
+    if (error || !data || obterSessao().conta?.id !== conta) return null;
+    const pagina = data as LinhaCobranca[];
+    linhas.push(...pagina);
+    if (pagina.length === 0 || pagina.length === count) return linhas;
+    ultimoId = pagina[pagina.length - 1]!.id;
+  } while (true);
+}
+
 /** Charges, boardings, faltas and expenses this account can see (the vanzeiro: theirs; the passenger: their own). */
 export async function carregarDinheiro(): Promise<boolean> {
   const sb = supabase();
@@ -267,15 +283,15 @@ export async function carregarDinheiro(): Promise<boolean> {
   // What this phone created and has not saved yet goes first, so reading does not lose it.
   const salvouTudo = await sincronizarDinheiro();
   const [c, e, f, g] = await Promise.all([
-    sb.from("cobrancas").select("*"),
+    carregarCobrancas(sb, conta),
     sb.from("embarques").select("matricula_id, data, viagem_id"),
     sb.from("faltas").select("matricula_id, data, avisou_no_prazo, avisou_em"),
     sb.from("gastos").select("id, vanzeiro_id, tipo, descricao, valor, data"),
   ]);
   if (obterSessao().conta?.id !== conta) return false;
   if (!g.error) carregarGastosDoBanco((g.data as LinhaGasto[]).map(gastoDaLinha));
-  if (!salvouTudo || c.error || e.error || f.error) return false;
-  const cobrancas = (c.data as LinhaCobranca[]).map(cobrancaDaLinha);
+  if (!salvouTudo || !c || e.error || f.error) return false;
+  const cobrancas = c.map(cobrancaDaLinha);
   const embarques = (e.data as LinhaEmbarque[]).map(embarqueDaLinha);
   const faltas = (f.data as LinhaFalta[]).map(faltaDaLinha);
   lembrarDoBanco(cobrancas, embarques, faltas);

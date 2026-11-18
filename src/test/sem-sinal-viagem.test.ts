@@ -1,3 +1,4 @@
+import { consultaFinanceiraSimulada } from "./consulta-financeira-simulada";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Without signal inside the van: the taps wait on the phone and go to the database when the signal comes back.
@@ -16,7 +17,7 @@ const falso = vi.hoisted(() => {
     from: (tabela: string) => {
       if (tabela !== "viagens") {
         return {
-          select: async () => ({ data: estado.dinheiro[tabela] ?? [], error: null }),
+          select: () => consultaFinanceiraSimulada(estado.dinheiro[tabela] ?? []),
           upsert: async (linhas: Record<string, unknown>[]) => {
             if (tabela === "cobrancas" && estado.falharCobranca) return falha;
             const guardadas = (estado.dinheiro[tabela] ??= []);
