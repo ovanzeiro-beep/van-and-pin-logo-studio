@@ -1896,3 +1896,8 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 - **Correção** `src/lib/banco/dinheiro.ts` lê as cobranças em páginas ordenadas pelo identificador. Uma falha de página ou mudança de conta interrompe a leitura antes de trocar a lista de cobranças em memória. Os cálculos continuam nos componentes e funções existentes. A alteração abrange a leitura das cobranças, com teste simulado da API.
 - **Resultado** 441 testes em 87 arquivos passaram. Na regressão de `w7-dinheiro.test.ts`, duas aberturas do financeiro carregaram as 1.005 cobranças e somaram R$ 30.150. A compilação e a checagem de tipos passaram.
 - **Retomada** Conferir se o Lovable está servindo o código corrigido. Medir depois a carga no pico e verificar a capacidade de e-mail e a recuperação de produção. A aprovação em dispositivos reais segue pendente.
+
+## 18/11/2026 · Publicação do financeiro e selo do Lovable
+
+- O módulo público `dinheiro-ufocZVDm.js` corresponde à compilação da paginação. SHA-256 `c554e90e3a4e5e0dcc7f86c05872a4e61af80bef0b0ee8003255552a2401c426`.
+- O HTML publicado contém o selo da hospedagem no elemento `aside#lovable-badge`. A regra em `src/styles.css` oculta esse elemento pelo identificador e pelo rótulo. O build passou. Em Chromium, com largura de 390 px, o selo do HTML publicado ficou oculto e o botão de navegação de teste manteve posição e tamanho. Conferir novamente depois da publicação.
