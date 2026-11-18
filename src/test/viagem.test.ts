@@ -38,6 +38,19 @@ describe("Viagens do dia", () => {
     expect(l.vao.map((p) => p.cidade)).toEqual(["Jacarezinho", "Jacarezinho", "Santo Antônio da Platina", "Santo Antônio da Platina"]);
     expect(l.semResposta.map((p) => p.id)).toEqual(["p-beatriz", "p-juliana-londrina"]);
   });
+
+  it("atualiza a lista de busca quando um passageiro desiste e outro confirma", () => {
+    const [primeira, segunda] = passageirosExemplo.filter((p) => p.destinoId === jacarezinho.id);
+    const passageiros = [primeira!, segunda!];
+    const listaInicial = listaDaViagem(passageiros, jacarezinho, { [primeira!.id]: "vai" });
+    const listaAtualizada = listaDaViagem(passageiros, jacarezinho, {
+      [primeira!.id]: "nao-vai",
+      [segunda!.id]: "vai",
+    });
+    expect(listaInicial.vao.map((p) => p.id)).toEqual([primeira!.id]);
+    expect(listaAtualizada.vao.map((p) => p.id)).toEqual([segunda!.id]);
+    expect(listaAtualizada.naoVao.map((p) => p.id)).toEqual([primeira!.id]);
+  });
 });
 
 describe("Durante a viagem", () => {

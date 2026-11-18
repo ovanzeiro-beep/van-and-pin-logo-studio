@@ -17,6 +17,8 @@ const falso = vi.hoisted(() => {
         return { data: { user: usuario, session: estado.cadastroComSessao ? {} : null }, error: null };
       },
       signOut: async () => ({ error: null }),
+      resetPasswordForEmail: vi.fn(async () => ({ error: null })),
+      updateUser: vi.fn(async () => ({ error: null })),
     },
     from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { nome: "Rosa Lima", ultimo_papel: "vanzeiro", aceite_termos_em: "2026-11-16T10:00:00Z" } }) }) }) }),
     rpc: async (nome: string, args?: unknown) => {
@@ -30,7 +32,16 @@ const falso = vi.hoisted(() => {
 vi.mock("@/lib/supabase", () => ({ USA_BANCO: { conta: true }, supabase: () => falso.cliente, SUPABASE_URL: "https://teste.supabase.co", SUPABASE_CHAVE_PUBLICA: "chave" }));
 
 import { obterDestinos } from "@/lib/destinos-store";
-import { criarContaComEmail, entrarComEmail, entrarComGoogle, escolherPapelDaConta, excluirContaDoBanco, sairDaConta } from "@/lib/conta";
+import {
+  criarContaComEmail,
+  entrarComEmail,
+  entrarComGoogle,
+  escolherPapelDaConta,
+  excluirContaDoBanco,
+  pedirSenhaNova,
+  sairDaConta,
+  salvarSenhaNova,
+} from "@/lib/conta";
 import { obterSessao } from "@/lib/sessao";
 import { validarSenhaNova } from "@/lib/cadastro";
 
@@ -78,6 +89,15 @@ describe("W1: login e conta de verdade (Supabase simulado)", () => {
     vi.stubGlobal("fetch", async () => ({ json: async () => ({ external: { google: false, email: true } }) }));
     expect(await entrarComGoogle()).toEqual({ ok: false, motivo: "O login com Google ainda não foi ligado. Use e-mail e senha." });
     vi.unstubAllGlobals();
+  });
+
+  it("solicita a recuperação e salva a nova senha pela autenticação", async () => {
+    expect(await pedirSenhaNova(" ROSA@EMAIL.COM ")).toEqual({ ok: true });
+    expect(falso.cliente.auth.resetPasswordForEmail).toHaveBeenCalledWith("rosa@email.com", {
+      redirectTo: `${window.location.origin}/nova-senha`,
+    });
+    expect(await salvarSenhaNova("senha-de-teste")).toEqual({ ok: true });
+    expect(falso.cliente.auth.updateUser).toHaveBeenCalledWith({ password: "senha-de-teste" });
   });
 
   it("senha nova: as mesmas regras do cadastro", () => {
