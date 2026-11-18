@@ -1778,3 +1778,40 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Regressão | 430 testes em 86 arquivos passaram, assim como checagem de tipos e build. O lint manteve 1.753 erros de formatação e cinco avisos herdados, sem novos apontamentos. |
 | Efeito no aplicativo | Os fluxos passaram com a implementação existente. A entrega acrescenta dois testes de regressão e a contraprova. O código servido ao usuário, o esquema e os dados de produção permanecem como estavam. |
 | Próxima decisão | Depois de verificar o merge, pedir autorização para a etapa 5, que verifica viagem e avisos entre aparelhos. |
+
+<a id="etapa-5-viagem-avisos"></a>
+
+## 18/11/2026 · Etapa 5 · Viagem e avisos
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e base | Etapa 5 autorizada pelo dono. Cópia isolada da main em e5029c6, branch docs/etapa-5-viagem-avisos. |
+| Viagem e isolamento | No PostgreSQL 18.6 isolado, três conexões autenticadas com contas fictícias acompanharam busca, embarque, ausência, parada, conferência, volta, desembarque e encerramento. Motorista viu o registro completo e o histórico. Passageiros consultaram somente a própria projeção. Os gatilhos criaram os avisos “A van está chegando” e “Boa viagem!” para os destinatários esperados. Repetir a gravação do embarque manteve um único aviso. |
+| Aparelho e troca de conta | A conta A removeu sua inscrição de um aparelho e a inscrição seguinte ficou vinculada à conta B no banco local. O teste automatizado da saída chamou a remoção da assinatura no navegador. |
+| App fechado | Em Chromium 156, dois perfis de navegador foram isolados e a permissão de notificação foi concedida no perfil do passageiro. Com a página do app fechada, o service worker recebeu duas vezes o mesmo evento fictício. Ficou uma notificação “Boa viagem!” no perfil do passageiro e nenhuma no perfil do motorista. O evento foi entregue pelo ambiente de teste. Recebimento em aparelho físico e transporte externo real ficam em aberto. |
+| Falha 1 · histórico do passageiro | Após o motorista marcar “Não estava no ponto”, a ausência apareceu na viagem encerrada do motorista. A consulta individual do passageiro não devolveu esse campo. O teste com a resposta do banco e as funções da tela esperava uma entrada com “Não estava no ponto” e recebeu uma lista vazia. A assinatura em produção antes da correção também omitia esse campo. |
+| Falha 2 · reenvio de notificação | A função avisos-no-celular rodou com banco e serviço de envio simulados. No caso saudável, um aviso chegou ao destino certo sem duplicar. No caso de falha temporária 503, o aviso ficou marcado como enviado com zero entregas. Depois de restaurar o serviço, a execução seguinte retornou zero entregas quando deveria entregar uma. A versão 8 da função marcava o aviso antes da tentativa. |
+| Regressão e estado | Os 430 testes existentes passaram. As duas provas dirigidas falharam pelos motivos acima. Entrega documental em revisão, sem alteração no app, no banco ou na função publicada. Nenhuma ação foi feita na branch preservada pelo dono. |
+| Próxima decisão | Pedir autorização para preparar e testar as duas correções em ambiente isolado. Antes de aplicar em produção, apresentar a migração e a atualização da função para autorização específica. A etapa 6 aguarda o fechamento da etapa 5. |
+
+### Correções da etapa 5 validadas em ambiente isolado
+
+| Campo | Evidência |
+| --- | --- |
+| Ausência no ponto | A migração rev11_ausencia_no_ponto devolve apenas se a própria matrícula faltou ao embarque de hoje. A tela passa a registrar “Não estava no ponto” no histórico do passageiro. O PostgreSQL local devolveu verdadeiro para a conta ausente, falso para quem embarcou e nenhuma linha quando uma conta consultou a matrícula da outra. O teste de regressão do histórico passou. |
+| Notificações | A migração rev11_reenvio_push guarda uma entrega por evento e aparelho. Uma falha temporária mantém aquela entrega para nova tentativa, sem reenviar aos aparelhos que já receberam. A fila tem reserva com expiração em dois minutos, reenvio após um minuto e retenção de até 24 horas. O trabalho agendado chama a função quando há envios prontos. |
+| Provas de reenvio | Função real executada com o PostgreSQL 18.6 isolado e transporte push simulado. Um aparelho recebeu e outro falhou com 503. O reenvio atingiu apenas o segundo, mesmo após renovar a inscrição na mesma conta. A troca da conta impediu a entrega pendente ao antigo destinatário. O erro 410 removeu a inscrição inválida. Pedido de entrada continuou chegando ao motorista. Duas conexões não reservaram a mesma entrega, e uma confirmação antiga não apagou a reserva mais recente. |
+| Segurança e regressão | A fila tem controle de acesso por linha, e as funções de reserva e confirmação são executáveis apenas pela função do servidor com service_role. As duas migrações foram executadas duas vezes no banco local. O comando do agendamento rodou com pg_cron e transporte externo simulados. Passaram 431 testes, checagem de tipos, build e checagem da função com Deno. O lint manteve apenas apontamentos herdados. |
+| Produção e ordem de publicação | O Supabase foi consultado em modo de leitura antes da autorização, com pg_cron e pg_net disponíveis. O estado após a implantação consta no próximo registro. |
+| Reversão | Em caso de problema, interromper o agendamento vanzeiro-reenvio-push e reverter a função publicada para a versão anterior. Preservar os registros de entrega e as marcações de origem para recuperar pendências sem reenviar avisos antigos. |
+
+### Implantação autorizada no Supabase de produção
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e escopo | O dono autorizou as duas migrações e a atualização da função de avisos. Foram aplicados os arquivos do commit `c31748e`, testados no ambiente isolado. |
+| Migrações | `rev11_ausencia_no_ponto` foi registrada no Supabase como `20261118072612` e `rev11_reenvio_push` como `20261118075255`. A leitura do catálogo confirmou `nao_estava boolean` no retorno da consulta do passageiro, RLS ativa em `entregas_push` e execução das duas funções de entrega permitida a `service_role` e vedada a `authenticated`. |
+| Função e agendamento | A função `avisos-no-celular` está ativa na versão 9 e respondeu HTTP 200 a uma verificação `OPTIONS`. O agendamento `vanzeiro-reenvio-push` está ativo a cada minuto. A execução observada no catálogo às 07:54 UTC terminou com sucesso. |
+| O que se percebe no app | Quando o motorista marca “Não estava no ponto”, a versão corrigida mostra o registro no histórico do dia do próprio passageiro. Uma falha temporária de notificação entra em nova tentativa para a inscrição que falhou. |
+| Publicação e prova em aparelho | A [entrega do cliente](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/5) tem merge autorizado. Verificar o código servido pelo Lovable após a integração. Nenhum envio artificial foi disparado em produção. A entrega de um aviso externo em celular físico segue sem prova. |
+| Próxima decisão | Conferir merge e publicação no Lovable antes de fechar a etapa. Depois, pedir autorização para a etapa 6, cobranças e fechamento. |

@@ -32,7 +32,16 @@ import { carregarViagensEncerradas } from "@/lib/viagens-encerradas-store";
 // situation (`minha_viagem_de_hoje`), and "Estou na van" goes through `estou_na_van`.
 
 type LinhaViagem = ViagemPendente & { comecou_em: string };
-type MinhaViagem = { viagem_id: string; fase: FaseViagem; na_ordem: boolean; embarcou: boolean; conferencia: "na-van" | "ficou" | null; comecou_em: string; volta_as?: string | null };
+type MinhaViagem = {
+  viagem_id: string;
+  fase: FaseViagem;
+  na_ordem: boolean;
+  embarcou: boolean;
+  conferencia: "na-van" | "ficou" | null;
+  comecou_em: string;
+  volta_as?: string | null;
+  nao_estava?: boolean;
+};
 
 const usaBanco = () => USA_BANCO.destinos && supabase() !== null;
 
@@ -69,7 +78,7 @@ export function viagemDoPassageiro(matriculaId: string, destino: Pick<Destino, "
     fase: m.fase,
     ordem: m.na_ordem ? [matriculaId] : [],
     embarcaram: m.embarcou ? [matriculaId] : [],
-    naoEstavam: [],
+    naoEstavam: m.nao_estava ? [matriculaId] : [],
     ficaram: m.conferencia === "ficou" ? [matriculaId] : [],
     conferencia: m.conferencia ? { [matriculaId]: m.conferencia } : {},
     peloCelular: naVan ? [matriculaId] : [],
