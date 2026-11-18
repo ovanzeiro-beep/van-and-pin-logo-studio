@@ -1834,3 +1834,18 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Próxima prova | Após publicar, na viagem de teste com contas fictícias e notificações permitidas, manter o app do passageiro fechado e verificar no celular a chegada do aviso esperado após a ação do motorista. Registrar Android/iPhone, aviso, horário e resultado; no iPhone, usar o app instalado na tela inicial. Conferir a ausência no ponto no histórico individual do passageiro e a separação dos avisos por conta. |
 | Situação e retomada | Etapa 5 **aguardando publicação e validação física**. O pedido atual não encerra a etapa nem autoriza automaticamente a etapa 6. Após repetir as provas, atualizar este registro por acréscimo e pedir autorização para cobranças e fechamento. |
 | Reversão | Esta entrega altera somente documentação; se necessário, reverter o commit documental sem tocar no app nem no banco e sem reescrever histórico. |
+
+
+<a id="etapa-5-publicacao-confirmada"></a>
+
+## 18/11/2026 · Etapa 5 · Publicação do cliente confirmada
+
+| Campo | Evidência |
+| --- | --- |
+| Retomada e base | O dono informou “Atualizei lá no lovable”. Base documental `1cce636638f264f39c5682e529f64e2b4f941faf`, após o PR 6. Atualização somente de documentação, na branch `docs/confirmar-publicacao-etapa5-20261118`; branch preservada pelo dono não utilizada. |
+| Conferência pública | Nova leitura de `/passageiro/viagens` com pedido sem cache retornou HTTP 200. A página agora referencia `/assets/viagem-COmA4avK.js`, o módulo gerado pelo build da versão integrada do PR 5. SHA-256 observado: `b895a2d7559d4cbc003458cb8b912da64f7e5d978937047dc86e66ecaa1280eb`. |
+| Correção servida | Leitura direta do módulo confirmou `naoEstavam:n.nao_estava?[e]:[]`. O arquivo anterior, `viagem-C1whIg2e.js`, montava uma lista vazia. A mudança do cliente para interpretar a ausência no ponto está publicada. Isso não é uma nova execução da jornada autenticada inteira nem uma nova certificação das migrações. |
+| Validação da entrega | Apenas a fonte da verdade e esta contraprova foram atualizadas. O build já passou na conferência anterior desta mesma versão de código. Não foi necessário repetir testes de código para uma alteração exclusivamente documental; não foram alterados telas, regras, dependências, banco nem a função publicada. |
+| Pendência física | O dono havia respondido “Ainda não testei” à pergunta sobre aviso em celular com app fechado. A confirmação de publicação não relata esse teste. Continua pendente comprovar o recebimento no aparelho e identificar Android/iPhone, aviso e horário. Não foi disparada notificação artificial para usuários reais. |
+| Situação e próximo passo | Publicação do cliente **confirmada**. Etapa 5 **aguardando validação física**, sem iniciar a etapa 6. Em uma viagem de teste com contas fictícias, ativar notificações, fechar a página do passageiro e verificar o aviso gerado pela ação do motorista no aparelho correto. No iPhone, usar o app instalado na tela inicial. Conferir também a ausência no histórico individual e a separação dos avisos por conta. Após registrar o resultado, concluir a etapa ou reproduzir eventual falha antes de pedir autorização para cobranças e fechamento. |
+| Reversão | Se necessário, reverter apenas a atualização documental, sem alterar a publicação do app ou o banco e sem reescrever histórico. |
