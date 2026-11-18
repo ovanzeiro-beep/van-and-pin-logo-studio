@@ -13,7 +13,7 @@ describe("'Não vou' pede confirmação (toque sem querer não tira o lugar)", (
     );
   });
 
-  it("quem tinha dito Vou vê que o lugar fica livre; só muda depois de 'Confirmar que não vou'", () => {
+  it("quem tinha dito Vou vê que o lugar fica livre; vê a opção de confirmar cancelamento", () => {
     render(
       <BotaoNaoVou
         passageiroId={eu.id}
@@ -23,10 +23,10 @@ describe("'Não vou' pede confirmação (toque sem querer não tira o lugar)", (
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Não vou/ }));
-    expect(screen.getByText("Avisar que não vai")).toBeTruthy();
+    expect(screen.getByText("Cancelar participação?")).toBeTruthy();
     expect(screen.getByText(/Seu lugar na van fica livre para outra pessoa/)).toBeTruthy();
     expect(screen.getByText(/Pode mudar de ideia no app/)).toBeTruthy();
-    expect(screen.getByRole("button", { name: /Confirmar que não vou/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Confirmar cancelamento/ })).toBeTruthy();
   });
 
   it("sem ter dito Vou, não fala de lugar", () => {
@@ -40,5 +40,6 @@ describe("'Não vou' pede confirmação (toque sem querer não tira o lugar)", (
     );
     fireEvent.click(screen.getByRole("button", { name: /Não vou/ }));
     expect(screen.queryByText(/Seu lugar na van fica livre/)).toBeNull();
+    expect(screen.getByRole("button", { name: "Confirmar que não vou" })).toBeTruthy();
   });
 });

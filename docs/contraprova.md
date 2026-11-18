@@ -1901,3 +1901,11 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 
 - O módulo público `dinheiro-ufocZVDm.js` corresponde à compilação da paginação. SHA-256 `c554e90e3a4e5e0dcc7f86c05872a4e61af80bef0b0ee8003255552a2401c426`.
 - O HTML publicado contém o selo da hospedagem no elemento `aside#lovable-badge`. A regra em `src/styles.css` oculta esse elemento pelo identificador e pelo rótulo. O build passou. Em Chromium, com largura de 390 px, o selo do HTML publicado ficou oculto e o botão de navegação de teste manteve posição e tamanho. Conferir novamente depois da publicação.
+
+<a id="avisos-de-cancelamento"></a>
+
+## 18/11/2026 · Confirmação e avisos de cancelamento
+
+- Base `64cff3d07b8a87950625fe157e0b64b878a4c1b7`. O pedido do dono distingue a desistência de quem tinha confirmado do primeiro «Não vou».
+- Ao desistir, o diálogo mantém data, rota, horário, prazo e aviso de vaga liberada. Após salvar a resposta, o sininho do vanzeiro informa quem cancelou e qual vaga foi liberada. O sininho do passageiro confirma seu cancelamento e orienta como voltar a confirmar dentro do prazo se houver vaga. São usados os avisos por pessoa e viagem que já existiam.
+- Os testes conferem os dois textos, destinatários e toque repetido, além das duas versões do diálogo. A prova de entrega com o app fechado permanece no roteiro para celulares.

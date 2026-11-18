@@ -177,6 +177,7 @@ export function BotaoNaoVou({
 }) {
   const destino = useDestinos().find((d) => d.id === destinoId);
   const [aberto, setAberto] = useState(false);
+  const tinhaVaga = resposta === "vai";
   const avisar = async () => {
     const r = await fazer(() => responderNoBanco(passageiroId, data, "nao-vai"));
     if (r.ok) setAberto(false);
@@ -195,10 +196,12 @@ export function BotaoNaoVou({
         <AlertDialog open={aberto} onOpenChange={setAberto}>
           <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
             <AlertDialogHeader>
-              <AlertDialogTitle>Avisar que não vai</AlertDialogTitle>
-              <AlertDialogDescription>Confira a viagem antes de avisar.</AlertDialogDescription>
+              <AlertDialogTitle>{tinhaVaga ? "Cancelar participação?" : "Avisar que não vai"}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {tinhaVaga ? "Confira os dados da viagem antes de cancelar." : "Confira a viagem antes de avisar."}
+              </AlertDialogDescription>
             </AlertDialogHeader>
-            {resposta === "vai" && (
+            {tinhaVaga && (
               <p className="flex gap-2 rounded-2xl bg-warning-soft px-3.5 py-2.5 text-sm font-semibold text-warning" role="status">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> Seu lugar na van fica livre para outra pessoa. Se mudar de ideia, pode não ter
                 mais lugar.
@@ -225,7 +228,8 @@ export function BotaoNaoVou({
             <AlertDialogFooter className="gap-2">
               <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Voltar</AlertDialogCancel>
               <Button size="lg" variant="destructive" onClick={() => void avisar()}>
-                <X className="!h-5 !w-5" /> Confirmar que não vou
+                <X className="!h-5 !w-5" />
+                {tinhaVaga ? "Confirmar cancelamento" : "Confirmar que não vou"}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
