@@ -1,3 +1,4 @@
+import { consultaFinanceiraSimulada } from "./consulta-financeira-simulada";
 import { describe, expect, it, vi } from "vitest";
 
 // W7: charges, payments, cancellations, boardings, faltas and expenses with Supabase simulated.
@@ -16,7 +17,7 @@ const falso = vi.hoisted(() => {
   };
   const erro = { atual: null as null | { code: string; message: string } };
   const from = (t: string) => ({
-    select: () => ({ then: (ok: (r: unknown) => void) => ok({ data: banco[t], error: null }) }),
+    select: () => consultaFinanceiraSimulada(banco[t]!),
     upsert: async (linhas: Record<string, unknown>[]) => {
       for (const l of linhas)
         if (!banco[t]!.some((x) => chave[t]!(x) === chave[t]!(l))) banco[t]!.push({ ...l });
@@ -75,6 +76,7 @@ import {
   registrarEmbarque,
   registrarFalta,
 } from "@/lib/cobrancas-store";
+import { resumoDoMes } from "@/lib/cobrancas";
 import { obterGastos } from "@/lib/gastos-store";
 import { mudarSessao } from "@/lib/sessao";
 
@@ -210,4 +212,19 @@ describe("W7: dinheiro no banco (Supabase simulado)", () => {
     expect(falso.banco["gastos"]).toEqual([]);
     expect(obterGastos()).toEqual([]);
   });
+  it("reabre o financeiro com todas as 1.005 cobranças diárias de R$ 30", async () => {
+    const exemplo = falso.banco["cobrancas"]![0]!;
+    falso.banco["cobrancas"] = Array.from({ length: 1005 }, (_, i) => ({
+      ...exemplo, id: `volume-${i}`, tipo: "diario", valor_base: 3000, faltas: 0,
+      vencimento: "2026-11-13", pagamento_data: null, cancelamento_data: null,
+    }));
+    for (let abertura = 0; abertura < 2; abertura++) {
+      comecarContaDeVerdade({ id: "leitor-volume", nome: "Teste" });
+      mudarSessao({ conta: { id: "leitor-volume", email: "teste@example.invalid", nome: "Teste" } });
+      expect(await carregarDinheiro()).toBe(true);
+      expect(obterCobrancas()).toHaveLength(1005);
+      expect(resumoDoMes(obterCobrancas(), "2026-11-13").aReceber).toBe(3015000);
+    }
+  });
+
 });

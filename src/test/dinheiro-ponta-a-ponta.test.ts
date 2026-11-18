@@ -1,3 +1,4 @@
+import { consultaFinanceiraSimulada } from "./consulta-financeira-simulada";
 import { describe, expect, it, vi } from "vitest";
 
 // Varredura do dinheiro, ponta a ponta, com um banco simulado dividido entre o celular do vanzeiro e o do passageiro:
@@ -14,10 +15,7 @@ const falso = vi.hoisted(() => {
   const chave = (t: string, r: Record<string, unknown>) =>
     t === "embarques" || t === "faltas" ? `${r["matricula_id"]}|${r["data"]}` : String(r["id"]);
   const from = (t: string) => ({
-    select: () => ({
-      then: (ok: (r: unknown) => void) =>
-        ok({ data: banco[t]!.map((x) => ({ ...x })), error: null }),
-    }),
+    select: () => consultaFinanceiraSimulada(banco[t]!),
     insert: async (l: Record<string, unknown>) => (banco[t]!.push({ ...l }), { error: null }),
     upsert: async (ls: Record<string, unknown>[] | Record<string, unknown>) => {
       for (const l of Array.isArray(ls) ? ls : [ls])

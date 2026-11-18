@@ -1886,3 +1886,13 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Efeito e regressão | App, banco, dados, identidade visual e regras preservados. Acrescentada opção de restauração ao laboratório e utilitário de navegação sem login; ambos executados com sucesso. A suíte do app continua a evidência de 440 testes da etapa 6; não foi repetida por alterações exclusivas de utilitários/documentação. |
 | Pendências reais | Aviso com app fechado no aparelho; jornada autenticada/instalação/atualização e modo avião nos dois celulares; política e recuperação de backup de produção; revisão jurídica e decisão sobre senhas vazadas; uso em grande volume por API. |
 | Retomada e reversão | Executar primeiro Bloco A e B3 do roteiro e registrar passado/falho/não testado. Aceite final continua aberto; diante de falha, reproduzir antes de reparar. Se necessário, reverter somente a entrega de utilitários/documentação, sem reescrever histórico ou alterar produção. |
+
+<a id="paginacao-financeiro"></a>
+
+## 18/11/2026 · Paginação das cobranças
+
+- **Base** `e932a4f84aafc9dc32aceaf040031d55fdf3b3dd`. O dono autorizou a etapa depois de revisar seu escopo. As verificações em celulares foram reservadas para o final.
+- **Cenário** Um banco descartável com 100 motoristas, 1.500 passageiros e 100.500 cobranças fictícias mostrou 1.005 cobranças e R$ 30.150 para a conta de motorista conferida. Ao impor um limite de 1.000 linhas no laboratório, a soma caiu para R$ 30.000. O limite efetivo em produção não foi medido.
+- **Correção** `src/lib/banco/dinheiro.ts` lê as cobranças em páginas ordenadas pelo identificador. Uma falha de página ou mudança de conta interrompe a leitura antes de trocar a lista de cobranças em memória. Os cálculos continuam nos componentes e funções existentes. A alteração abrange a leitura das cobranças, com teste simulado da API.
+- **Resultado** 441 testes em 87 arquivos passaram. Na regressão de `w7-dinheiro.test.ts`, duas aberturas do financeiro carregaram as 1.005 cobranças e somaram R$ 30.150. A compilação e a checagem de tipos passaram.
+- **Retomada** Conferir se o Lovable está servindo o código corrigido. Medir depois a carga no pico e verificar a capacidade de e-mail e a recuperação de produção. A aprovação em dispositivos reais segue pendente.
