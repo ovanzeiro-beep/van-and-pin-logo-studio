@@ -15,20 +15,24 @@ export type ViagemPendente = {
   terminou_em: string | null;
 };
 
-const CHAVE = "vanzeiro-viagens-sem-sinal";
+type RegistroDaFila = ViagemPendente & { recusada?: boolean };
 
-function ler(): Record<string, ViagemPendente> {
+const CHAVE = "vanzeiro-viagens-sem-sinal";
+const EVENTO = "vanzeiro-fila-atualizada";
+
+function ler(): Record<string, RegistroDaFila> {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE) ?? "{}") as Record<string, ViagemPendente>;
+    return JSON.parse(localStorage.getItem(CHAVE) ?? "{}") as Record<string, RegistroDaFila>;
   } catch {
     return {};
   }
 }
 
-function gravar(fila: Record<string, ViagemPendente>) {
+function gravar(fila: Record<string, RegistroDaFila>) {
   try {
     if (Object.keys(fila).length === 0) localStorage.removeItem(CHAVE);
     else localStorage.setItem(CHAVE, JSON.stringify(fila));
+    if (typeof window !== "undefined") window.dispatchEvent(new Event(EVENTO));
   } catch {
     // No room on the phone: the tap still counts on the screen.
   }
@@ -41,25 +45,47 @@ export function semSinal(erro: { message?: string } | null): boolean {
 }
 
 export function guardarSemSinal(v: ViagemPendente) {
-  gravar({ ...ler(), [v.id]: v });
+  const fila = ler();
+  fila[v.id] = fila[v.id]?.recusada ? { ...v, recusada: true } : v;
+  gravar(fila);
 }
 
 export const temPendente = (id: string) => id in ler();
 export const viagensPendentes = () => Object.values(ler());
 
+export const envioRecusado = (id: string) => ler()[id]?.recusada === true;
+
+export function inscreverNaFila(atualizar: () => void) {
+  window.addEventListener(EVENTO, atualizar);
+  return () => window.removeEventListener(EVENTO, atualizar);
+}
+
 let enviando: Promise<void> | null = null;
 
-/** Sends what is waiting. What the database refuses (not a lack of signal) cannot be sent and is dropped. */
-export function enviarPendentes(): Promise<void> {
+/** Remove a pending trip only after the server accepts it. Rejected trips can be retried manually. */
+export async function enviarPendentes(tentarId?: string): Promise<void> {
+  if (tentarId && enviando) await enviando;
   enviando ??= (async () => {
     const sb = supabase();
     if (!sb) return;
-    for (const v of viagensPendentes()) {
-      const { error } = await sb.from("viagens").upsert(v, { onConflict: "id" });
+    for (const registro of viagensPendentes()) {
+      const { recusada, ...viagem } = registro;
+      if (tentarId ? viagem.id !== tentarId : recusada) continue;
+
+      const { error, status } = await sb.from("viagens").upsert(viagem, { onConflict: "id" });
       if (error && semSinal(error)) break;
+
       const fila = ler();
-      // Only if no newer tap arrived meanwhile.
-      if (JSON.stringify(fila[v.id]) === JSON.stringify(v)) delete fila[v.id];
+      // Leave a newer tap untouched while the request was in flight.
+      if (JSON.stringify(fila[viagem.id]) !== JSON.stringify(registro)) continue;
+
+      if (!error) {
+        delete fila[viagem.id];
+      } else if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
+        fila[viagem.id] = { ...registro, recusada: true };
+      } else {
+        continue;
+      }
       gravar(fila);
     }
   })().finally(() => (enviando = null));

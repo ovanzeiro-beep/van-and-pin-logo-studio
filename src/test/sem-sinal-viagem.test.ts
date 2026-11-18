@@ -2,7 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 
 // Without signal inside the van: the taps wait on the phone and go to the database when the signal comes back.
 const falso = vi.hoisted(() => {
-  const estado = { viagens: [] as Record<string, unknown>[], semSinal: true };
+  const estado = {
+    viagens: [] as Record<string, unknown>[],
+    semSinal: true,
+    statusRecusa: 0,
+    tentativas: 0,
+  };
   const falha = { error: { message: "TypeError: Failed to fetch" } };
   const cliente = {
     rpc: async () => ({ data: null, error: null }),
@@ -11,7 +16,11 @@ const falso = vi.hoisted(() => {
         estado.semSinal ? falha : (estado.viagens.push(linha), { error: null }),
       update: () => ({ eq: async () => (estado.semSinal ? falha : { error: null }) }),
       upsert: async (linha: Record<string, unknown>) => {
+        estado.tentativas++;
         if (estado.semSinal) return falha;
+        if (estado.statusRecusa) {
+          return { error: { message: "Envio recusado" }, status: estado.statusRecusa };
+        }
         estado.viagens = [...estado.viagens.filter((v) => v["id"] !== linha["id"]), linha];
         return { error: null };
       },
@@ -27,7 +36,7 @@ vi.mock("@/lib/supabase", () => ({
 }));
 
 import { destinosExemplo } from "@/data/exemplo";
-import { enviarPendentes, viagensPendentes } from "@/lib/banco/fila";
+import { enviarPendentes, envioRecusado, viagensPendentes } from "@/lib/banco/fila";
 import {
   comecarViagemNoBanco,
   marcarEmbarcouNoBanco,
@@ -52,10 +61,30 @@ describe("Sem sinal: a viagem continua e vai para o banco quando o sinal volta",
     ).toEqual(["p-fernanda"]);
   });
 
-  it("o sinal voltou: tudo vai para o banco de uma vez e o celular esvazia", async () => {
+  it("conserva o embarque até o servidor aceitar o envio", async () => {
+    await enviarPendentes();
+    expect(viagensPendentes()).toHaveLength(1);
+
     falso.estado.semSinal = false;
+    falso.estado.statusRecusa = 503;
+    await enviarPendentes();
+    expect(viagensPendentes()).toHaveLength(1);
+    expect(falso.estado.viagens).toEqual([]);
+    expect(envioRecusado("centro-unisul_2026-11-13")).toBe(false);
+
+    falso.estado.statusRecusa = 403;
+    await enviarPendentes();
+    expect(viagensPendentes()).toHaveLength(1);
+    expect(envioRecusado("centro-unisul_2026-11-13")).toBe(true);
+    const tentativas = falso.estado.tentativas;
+    falso.estado.statusRecusa = 0;
+    await enviarPendentes();
+    expect(falso.estado.tentativas).toBe(tentativas);
+
+    await enviarPendentes("centro-unisul_2026-11-13");
     await enviarPendentes();
     expect(falso.estado.viagens).toHaveLength(1);
+    expect(falso.estado.viagens[0]).not.toHaveProperty("recusada");
     expect(falso.estado.viagens[0]).toMatchObject({
       id: "centro-unisul_2026-11-13",
       fase: "busca",

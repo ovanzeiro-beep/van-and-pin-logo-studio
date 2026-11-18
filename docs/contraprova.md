@@ -1731,3 +1731,17 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Merge e Lovable | Após a instalação do conector, o GitHub aceitou o envio da branch de documentação. O [pull request 1](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/1) registra o estado do merge na `main`. A entrega altera somente documentação. |
 | Situação | Verificação aprovada. O merge do pull request 1 fecha a entrega documental da etapa 1. |
 | Próxima decisão | Depois do merge, pedir ao dono autorização para iniciar a etapa 2. |
+
+<a id="etapa-2-envio-de-embarque"></a>
+
+## 18/11/2026 · Etapa 2 · Impedir descarte da marcação
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e base | Etapa 2 autorizada pelo dono. Branch `fix/etapa-2-fila` em cópia isolada, a partir da `main` no commit `e579058`. |
+| Antes da mudança | `sem-sinal-viagem.test.ts` reproduziu o problema. Depois da resposta fictícia 503, a fila tinha zero itens quando deveria ter uma pendência. |
+| Depois da mudança | A fila conservou uma pendência sem rede e outra vez após 503. A recusa 403 manteve o registro e suspendeu o reenvio automático daquele item. A tentativa manual bem-sucedida esvaziou a fila e gravou um único embarque, mesmo conferindo de novo. |
+| Efeito no aplicativo | O aparelho guarda a marcação até o servidor aceitar. Se houver uma recusa que exige atenção, a aba Viagem mostra o aviso e permite tentar o envio novamente. |
+| Regressão | O teste de embarque com sinal passou. `npm test` passou com 423 testes em 85 arquivos. TypeScript e build passaram. O lint mantém os 1.762 erros de formatação e cinco avisos anteriores, sem novos apontamentos. |
+| Alcance e reversão | Verificação com dados e servidor simulados. Sem migração nem alteração de dados no Supabase. Se necessário, reverter o pull request desta etapa. Reabertura sem internet e troca de conta ficam para a etapa 3. |
+| Merge e Lovable | O editor privado do projeto exigiu login neste ambiente. Conferir o merge no GitHub e a publicação no Lovable antes de avançar. |
