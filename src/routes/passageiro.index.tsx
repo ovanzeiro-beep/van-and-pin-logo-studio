@@ -15,6 +15,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { AlarmClock, CalendarClock, CircleCheck, MessageCircle, UserCheck, Wallet, X } from "lucide-react";
 import { InfoCard, StatusBadge } from "@/components/app/InfoCard";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
+import { ChegadaAoDestino } from "@/components/app/passageiro/ChegadaAoDestino";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -33,7 +34,7 @@ import { EmbarqueDaViagem } from "@/components/app/passageiro/EmbarqueDaViagem";
 import { useEmbarqueDaViagem } from "@/lib/banco/embarque";
 import { situacaoComEmbarque } from "@/lib/embarque";
 import { cn } from "@/lib/utils";
-import { conferenciaDoPassageiro } from "@/lib/viagem";
+import { chegouAoDestinoComoPassageiro, conferenciaDoPassageiro } from "@/lib/viagem";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { fazer } from "@/lib/acoes";
 import { responderNoBanco } from "@/lib/banco/respostas";
@@ -71,12 +72,17 @@ function InicioPassageiro() {
     .sort((a, b) => a.vencimento.localeCompare(b.vencimento));
   const sAberta = aberta ? situacao(aberta, dataDeHoje()) : null;
   const conferencia = conferenciaDoPassageiro(viagemDeHoje, eu.id);
+  const chegou = destino && viagemDeHoje && chegouAoDestinoComoPassageiro(viagemDeHoje, eu.id);
+  const naVolta = viagemDeHoje?.embarcaram.includes(eu.id)
+    && (viagemDeHoje.fase === "volta" || viagemDeHoje.fase === "conferencia-volta");
 
   return (
     <>
       <PassageiroHeader compacto titulo="Início" subtitulo="Tudo sobre a sua próxima viagem." />
       <div className="relative z-10 -mt-4 space-y-2.5 px-5 pb-2">
-        {viagemDeHoje?.fase === "parada" && viagemDeHoje.voltaAs ? (
+        {chegou ? (
+          <ChegadaAoDestino key={viagemDeHoje.id} destino={destino} dataIda={viagemDeHoje.data} />
+        ) : viagemDeHoje?.fase === "parada" && viagemDeHoje.voltaAs ? (
           <RelogioDoCafe onde={destino?.cafe ? textoDoCafe(destino.cafe) : undefined} voltaAs={viagemDeHoje.voltaAs} passageiro />
         ) : conferencia === "perguntar" ? (
           <AvisoConferencia onConfirmar={() => void fazer(() => confirmarNaVanNoBanco(eu.id))} />
@@ -85,7 +91,7 @@ function InicioPassageiro() {
             <CircleCheck className="h-8 w-8 shrink-0 text-success" />
             <p className="font-display text-lg font-bold leading-tight text-success">Confirmado — boa viagem!</p>
           </section>
-        ) : (
+        ) : naVolta ? null : (
         <InfoCard
           compacto
           icon={CalendarClock}
@@ -120,6 +126,7 @@ function InicioPassageiro() {
         </InfoCard>
         )}
 
+        {!chegou && (
         <Link to="/passageiro/van" className="block" aria-label="Situação da van — ver no mapa">
         <InfoCard
           compacto
@@ -134,6 +141,7 @@ function InicioPassageiro() {
           }
           aside={<StatusBadge status="info">{vanzeiro.van.placa}</StatusBadge>}
         >
+          {!naVolta && <>
           <div className="flex items-center gap-2">
             {etapas.map((etapa, i) => (
               <div key={etapa} className="flex-1">
@@ -150,8 +158,10 @@ function InicioPassageiro() {
             ))}
           </div>
           <EmbarqueDaViagem e={embarque} />
+          </>}
         </InfoCard>
         </Link>
+        )}
 
         <InfoCard
           compacto
