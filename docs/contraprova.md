@@ -1728,6 +1728,6 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Lint | `npm run lint` saiu com código 1. Os 1.762 erros de formatação e os cinco avisos são idênticos ao resultado de 17/11 após remover os prefixos dos diretórios locais. |
 | Alteração | Verificação local com registro nos dois documentos. O patch inclui o roteiro já preparado, preserva o registro da versão segura da main e passa em `git diff --check`. |
 | Efeito no aplicativo | Nenhuma mudança de tela ou de comportamento. A etapa estabeleceu a versão de referência para comparar as próximas correções. |
-| Merge e Lovable | O dono autorizou o merge de cada etapa. O GitHub retornou 403 ao criar `docs/etapa-1-contraprova` por falta de acesso de escrita da integração. Patch verificado localmente. Integração e sincronização pendentes. |
-| Situação | Verificação local aprovada. Fechamento da etapa 1 aguarda integração na main. |
-| Próxima decisão | Liberar o acesso de escrita para concluir o merge da etapa 1. A etapa 2 aguarda fechamento e autorização própria. |
+| Merge e Lovable | Após a instalação do conector, o GitHub aceitou o envio da branch de documentação. O [pull request 1](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/1) registra o estado do merge na `main`. A entrega altera somente documentação. |
+| Situação | Verificação aprovada. O merge do pull request 1 fecha a entrega documental da etapa 1. |
+| Próxima decisão | Depois do merge, pedir ao dono autorização para iniciar a etapa 2. |
