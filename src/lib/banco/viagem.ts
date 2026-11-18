@@ -3,10 +3,17 @@ import { deuCerto, naoDeu, SEM_RESPOSTA, type Resultado } from "@/lib/acoes";
 import { dataDeHoje, horaDeAgora, instanteDeAgora } from "@/lib/agora";
 import { enviarPendentes, guardarSemSinal, semSinal, temPendente, viagensPendentes, type ViagemPendente } from "@/lib/banco/fila";
 import { momentoDe } from "@/lib/banco/respostas";
+import { registrarEmbarque, type Falta } from "@/lib/cobrancas-store";
 import { obterPassageiros } from "@/lib/passageiros-store";
 import { obterSessao } from "@/lib/sessao";
 import { supabase, USA_BANCO } from "@/lib/supabase";
-import { iniciarViagem, type FaseViagem, type ViagemDoDia } from "@/lib/viagem";
+import {
+  embarcou,
+  iniciarViagem,
+  naoEstava,
+  type FaseViagem,
+  type ViagemDoDia,
+} from "@/lib/viagem";
 import {
   atualizarViagem,
   carregarViagensDoDia,
@@ -16,7 +23,6 @@ import {
   marcarEmbarcou,
   marcarNaoEstava,
   obterViagensDoDia,
-  restaurarViagem,
 } from "@/lib/viagem-store";
 import { carregarViagensEncerradas } from "@/lib/viagens-encerradas-store";
 
@@ -25,7 +31,7 @@ import { carregarViagensEncerradas } from "@/lib/viagens-encerradas-store";
 // trip goes on from where it was. Without signal, the taps wait on the phone (src/lib/banco/fila.ts). The passenger never reads the whole trip (it has the other passengers): only their own
 // situation (`minha_viagem_de_hoje`), and "Estou na van" goes through `estou_na_van`.
 
-type LinhaViagem = { id: string; vanzeiro_id: string; destino_id: string; data: string; fase: FaseViagem; estado: ViagemDoDia; comecou_em: string; terminou_em: string | null };
+type LinhaViagem = ViagemPendente & { comecou_em: string };
 type MinhaViagem = { viagem_id: string; fase: FaseViagem; na_ordem: boolean; embarcou: boolean; conferencia: "na-van" | "ficou" | null; comecou_em: string; volta_as?: string | null };
 
 const usaBanco = () => USA_BANCO.destinos && supabase() !== null;
@@ -92,71 +98,110 @@ export async function carregarViagens(): Promise<void> {
   const sb = supabase();
   if (!USA_BANCO.destinos || !sb) return;
   const hoje = dataDeHoje();
-  // What was done without signal goes first.
+  const conta = obterSessao().conta;
+  const mesmaConta = () => obterSessao().conta?.id === conta?.id;
+  const pendentesDeHoje = () =>
+    Object.fromEntries(
+      viagensPendentes()
+        .filter((l) => l.data === hoje)
+        .map((l) => [l.destino_id, l.estado]),
+    );
+  const locais = pendentesDeHoje();
+  if (Object.keys(locais).length > 0) {
+    carregarViagensDoDia({ ...obterViagensDoDia().viagens, ...locais });
+  }
+
   await enviarPendentes();
+  if (!mesmaConta()) return;
   const [deHoje, antes] = await Promise.all([
     sb.from("viagens").select("*").eq("data", hoje),
     sb.from("viagens").select("*").lt("data", hoje).eq("fase", "encerrada").order("data", { ascending: false }).limit(300),
   ]);
-  if (deHoje.error || antes.error) return;
-  const viagens: Record<string, ViagemDoDia> = {};
-  for (const l of deHoje.data as LinhaViagem[]) viagens[l.destino_id] = l.estado;
-  // Taps still waiting for signal are newer than what the database has.
-  for (const l of viagensPendentes()) if (l.data === hoje) viagens[l.destino_id] = l.estado;
-  // The passenger side: the destinos this account is in (and does not drive).
-  const conta = obterSessao().conta;
+  if (!mesmaConta()) return;
+  if (!antes.error) carregarViagensEncerradas((antes.data as LinhaViagem[]).map(encerradaDaLinha));
+  if (deHoje.error) return;
+
+  const viagens = Object.fromEntries(
+    (deHoje.data as LinhaViagem[]).map((l) => [l.destino_id, l.estado]),
+  );
+  // The passenger side only reads the passenger's own place in each trip.
   const minhas = conta ? obterPassageiros().filter((p) => p.pessoaId === conta.id && !viagens[p.destinoId]) : [];
   const vistas = await Promise.all(minhas.map((p) => sb.rpc("minha_viagem_de_hoje", { matricula: p.id }).then((r) => ({ p, linha: (r.data as MinhaViagem[] | null)?.[0] }))));
+  if (!mesmaConta()) return;
   for (const { p, linha } of vistas) if (linha) viagens[p.destinoId] = viagemDoPassageiro(p.id, { id: p.destinoId, vanzeiroId: p.vanzeiroId }, linha);
-  carregarViagensDoDia(viagens);
-  carregarViagensEncerradas((antes.data as LinhaViagem[]).map(encerradaDaLinha));
+  carregarViagensDoDia({ ...viagens, ...pendentesDeHoje() });
 }
 
-/** "Iniciar viagem": saved first; then the same steps as before (answers closed, faltas, "a van saiu"). */
+const SEM_ESPACO = "Não deu para guardar no aparelho. Libere espaço ou conecte-se e tente de novo.";
+
+function guardarViagem(v: ViagemDoDia, faltas?: Falta[]): Resultado {
+  return guardarSemSinal(linhaDaViagem(v), faltas) ? deuCerto : naoDeu(SEM_ESPACO);
+}
+
+/** "Iniciar viagem": save before closing answers and opening the trip. */
 export async function comecarViagemNoBanco(destino: Destino, ordem: string[]): Promise<Resultado> {
   if (!usaBanco()) return comecarViagem(destino, ordem);
+  const conta = obterSessao().conta?.id;
   const v: ViagemDoDia = { ...iniciarViagem(destino, ordem, dataDeHoje()), comecouEm: horaDeAgora() };
   const { error } = await supabase()!.from("viagens").insert({ id: v.id, vanzeiro_id: v.vanzeiroId, destino_id: v.destinoId, data: v.data, fase: v.fase, estado: v });
+  if (obterSessao().conta?.id !== conta) return naoDeu(SEM_RESPOSTA);
   if (error && !semSinal(error)) return naoDeu(motivo(error));
-  const r = comecarViagem(destino, ordem);
-  // Without signal the trip starts anyway; it goes to the database when the signal comes back.
-  const comecou = obterViagensDoDia().viagens[destino.id];
-  if (error && r.ok && comecou) guardarSemSinal(linhaDaViagem(comecou));
-  return r;
+  return comecarViagem(destino, ordem, error ? guardarViagem : undefined);
 }
 
-/** One step of the trip in progress: done on the screen, saved at once; if the database refuses, it goes back. */
-async function passoNoBanco(passo: () => Resultado): Promise<Resultado> {
-  if (!usaBanco()) return passo();
-  const antes = emAndamento(obterViagensDoDia());
-  const r = passo();
-  if (!r.ok || !antes) return r;
-  const depois = obterViagensDoDia().viagens[antes.destinoId];
-  if (!depois || depois === antes) return r;
-  // Something is already waiting for signal: this tap waits with it (in order), and they go together.
-  if (temPendente(depois.id)) {
-    guardarSemSinal(linhaDaViagem(depois));
-    void enviarPendentes();
-    return deuCerto;
-  }
-  const { error } = await supabase()!
-    .from("viagens")
-    .update({ fase: depois.fase, estado: depois, ...(depois.fase === "encerrada" ? { terminou_em: instanteDeAgora() } : {}) })
-    .eq("id", depois.id);
-  if (error && semSinal(error)) {
-    guardarSemSinal(linhaDaViagem(depois));
-    return deuCerto;
-  }
-  if (error) {
-    restaurarViagem(antes);
-    return naoDeu(motivo(error));
-  }
-  return deuCerto;
+let passos = Promise.resolve<Resultado>(deuCerto);
+
+/** Save first, so a tap that did not fit on the phone is never shown as accepted. */
+function passoNoBanco(
+  passo: (v: ViagemDoDia) => ViagemDoDia,
+  embarqueId?: string,
+): Promise<Resultado> {
+  const conta = obterSessao().conta?.id;
+  const executar = async (): Promise<Resultado> => {
+    if (obterSessao().conta?.id !== conta) return naoDeu(SEM_RESPOSTA);
+    const antes = emAndamento(obterViagensDoDia());
+    if (!antes) return naoDeu("Nenhuma viagem está acontecendo agora.");
+    let depois = passo(antes);
+    if (depois === antes) return deuCerto;
+    if (depois.fase === "encerrada") depois = { ...depois, terminouEm: horaDeAgora() };
+
+    let pendente = temPendente(depois.id);
+    if (!pendente) {
+      const { error } = await supabase()!
+        .from("viagens")
+        .update({
+          fase: depois.fase,
+          estado: depois,
+          ...(depois.fase === "encerrada" ? { terminou_em: instanteDeAgora() } : {}),
+        })
+        .eq("id", depois.id);
+      if (obterSessao().conta?.id !== conta) return naoDeu(SEM_RESPOSTA);
+      if (error && !semSinal(error)) return naoDeu(motivo(error));
+      pendente = Boolean(error);
+    }
+    if (pendente) {
+      const guardou = guardarViagem(depois);
+      if (!guardou.ok) return guardou;
+    }
+    if (emAndamento(obterViagensDoDia())?.id !== antes.id) return naoDeu(SEM_RESPOSTA);
+    const r = atualizarViagem(() => depois);
+    if (pendente) void enviarPendentes();
+    else if (r.ok && embarqueId) {
+      const p = obterPassageiros().find((passageiro) => passageiro.id === embarqueId);
+      if (p) registrarEmbarque(p, depois.data, depois.id);
+    }
+    return r;
+  };
+  passos = passos.then(executar, executar);
+  return passos;
 }
 
-export const marcarEmbarcouNoBanco = (id: string) => passoNoBanco(() => marcarEmbarcou(id));
-export const marcarNaoEstavaNoBanco = (id: string) => passoNoBanco(() => marcarNaoEstava(id));
-export const atualizarViagemNoBanco = (fazer: (v: ViagemDoDia) => ViagemDoDia) => passoNoBanco(() => atualizarViagem(fazer));
+export const marcarEmbarcouNoBanco = (id: string) =>
+  usaBanco() ? passoNoBanco((v) => embarcou(v, id), id) : marcarEmbarcou(id);
+export const marcarNaoEstavaNoBanco = (id: string) =>
+  usaBanco() ? passoNoBanco((v) => naoEstava(v, id)) : marcarNaoEstava(id);
+export const atualizarViagemNoBanco = (passo: (v: ViagemDoDia) => ViagemDoDia) =>
+  usaBanco() ? passoNoBanco(passo) : atualizarViagem(passo);
 
 /** "Estou na van" on the passenger's phone. */
 export async function confirmarNaVanNoBanco(matriculaId: string): Promise<Resultado> {

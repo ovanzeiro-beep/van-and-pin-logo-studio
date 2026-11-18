@@ -1744,4 +1744,20 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Efeito no aplicativo | O aparelho guarda a marcação até o servidor aceitar. Se houver uma recusa que exige atenção, a aba Viagem mostra o aviso e permite tentar o envio novamente. |
 | Regressão | O teste de embarque com sinal passou. `npm test` passou com 423 testes em 85 arquivos. TypeScript e build passaram. O lint mantém os 1.762 erros de formatação e cinco avisos anteriores, sem novos apontamentos. |
 | Alcance e reversão | Verificação com dados e servidor simulados. Sem migração nem alteração de dados no Supabase. Se necessário, reverter o pull request desta etapa. Reabertura sem internet e troca de conta ficam para a etapa 3. |
-| Merge e Lovable | O editor privado do projeto exigiu login neste ambiente. Conferir o merge no GitHub e a publicação no Lovable antes de avançar. |
+| Merge e Lovable | O PR 2 foi integrado na main em `7eb3a2b`. A rota pública da Viagem carregou o arquivo que contém o aviso novo. Publicação confirmada antes da etapa 3. |
+
+<a id="etapa-3-recuperar-viagem"></a>
+
+## 18/11/2026 · Etapa 3 · Recuperar a viagem no aparelho
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e base | Etapa 3 autorizada pelo dono. Cópia isolada de `7eb3a2b` em `fix/etapa-3-recuperar-viagem`. |
+| Antes da mudança | Três testes falharam no código anterior. Ao apagar o estado em memória e reabrir sem rede, a viagem não reapareceu. A conta B tentou enviar e carregar a viagem de A. Ao simular armazenamento cheio, o início retornou sucesso mesmo sem gravação. |
+| Recuperação | Em sessão conhecida e com a tela disponível offline, a viagem do dia é restaurada antes de ler o servidor. Embarque e ausência no ponto reapareceram no teste. |
+| Armazenamento cheio | Se o aparelho recusar a gravação, o app retorna um aviso e conserva a última marcação salva. A prova simulou a falha ao começar a viagem e durante o embarque. |
+| Troca de conta | A fila usa o dono gravado em cada item, inclusive nos registros do formato anterior. Os dados consultados offline no service worker ficam separados pela sessão que fez a consulta. Os testes verificaram que B não lê nem envia a pendência de A e que A a recupera ao voltar. |
+| Financeiro | No servidor simulado, após recuperar a viagem, houve um embarque, uma falta avisada no prazo, uma cobrança por viagem e uma quinzenal com um desconto. A falha temporária ao enviar as cobranças manteve a viagem pendente. O reenvio concluiu o financeiro sem reenviar a viagem já confirmada. A falta no ponto não virou desconto. |
+| Regressão | 428 testes em 86 arquivos. TypeScript e build passaram. Cenários de embarque com sinal, recusa do servidor e pagamentos conferidos com os testes existentes. Lint com 1.754 erros de formatação e cinco avisos herdados, sem apontamentos novos. |
+| Alcance e reversão | Simulação automatizada do navegador, do armazenamento, do cache e do servidor. Validação em celular físico e com contas reais fica em aberto. Operação sem rede depende de sessão válida e da cópia do app disponível no aparelho. Sem alterações no banco de produção. Se necessário, reverter o PR desta etapa. |
+| Próxima decisão | Após conferir a publicação, pedir ao dono autorização para a etapa 4, que verifica conta, convite e vagas. |

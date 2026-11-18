@@ -117,7 +117,7 @@ export async function sairDaConta(): Promise<Resultado> {
   await esquecerEsteCelular();
   sair();
   // The copy of the data kept for opening without signal belongs to this account (public/sw.js).
-  if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados").catch(() => false);
+  if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados-v2").catch(() => false);
   const sb = supabase();
   if (USA_BANCO.conta && sb) await sb.auth.signOut();
   mudarSessao({ conta: null });
@@ -132,7 +132,7 @@ export async function excluirContaDoBanco(): Promise<Resultado> {
   const { error } = await sb.rpc("excluir_minha_conta");
   if (error) return naoDeu(motivo(error));
   await sb.auth.signOut();
-  if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados").catch(() => false);
+  if (typeof caches !== "undefined") await caches.delete("vanzeiro-dados-v2").catch(() => false);
   mudarSessao({ conta: null, papel: null });
   return deuCerto;
 }
@@ -206,9 +206,12 @@ async function carregarConta(user: User) {
   }
   const nome = (data?.nome as string | undefined) || (user.user_metadata?.["nome"] as string | undefined) || "";
   const papel = (data?.ultimo_papel as Papel | null | undefined) ?? null;
-  const antes = obterSessao().conta;
-  if (antes?.id !== user.id) {
-    comecarContaDeVerdade({ id: user.id, nome });
+  const conta = { id: user.id, email: user.email ?? "", nome };
+  const antes = obterSessao();
+  if (antes.conta?.id === user.id && !antes.contaPronta) return;
+  if (antes.conta?.id !== user.id) {
+    mudarSessao({ conta, papel, contaPronta: false });
+    comecarContaDeVerdade(conta);
     // W2 and W3: the profile and the destinos come from the database.
     await carregarPerfisEDestinos();
     // W4: memberships, pedidos and address changes.
@@ -220,9 +223,10 @@ async function carregarConta(user: User) {
     // W7: charges, payments, cancellations, boardings, faltas and expenses.
     await carregarDinheiro();
   }
-  mudarSessao({ conta: { id: user.id, email: user.email ?? "", nome }, papel, contaPronta: true });
+  if (obterSessao().conta?.id !== user.id) return;
+  mudarSessao({ conta, papel, contaPronta: true });
   // W8: the bell's notices of this account.
-  if (antes?.id !== user.id) await carregarAvisos();
+  if (antes.conta?.id !== user.id) await carregarAvisos();
 }
 
 /** In the root of the app: finds out who is logged in when the app opens, and follows logins and logouts. */

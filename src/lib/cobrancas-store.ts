@@ -161,12 +161,34 @@ export function limparCobrancas() {
 }
 
 /** "Embarcou" on a trip: counts as a trip made (Por viagem and Diário get that day's charge). */
-export function registrarEmbarque(p: Passageiro, data = dataDeHoje(), viagemId?: string) {
+export function registrarEmbarque(
+  p: Passageiro,
+  data = dataDeHoje(),
+  viagemId?: string,
+  recuperarCobranca = false,
+) {
   const mesmo = (e: Embarque) =>
     e.passageiroId === p.id && (p.plano === "viagem" ? (e.viagemId ?? e.data) === (viagemId ?? data) : e.data === data);
-  if (registro.embarques.some(mesmo)) return;
-  registro = { ...registro, embarques: [...registro.embarques, { passageiroId: p.id, data, viagemId }] };
-  cobrancas = aplicarEmbarque(cobrancas, p, data, dataDeHoje(), viagemId);
+  const novoEmbarque = !registro.embarques.some(mesmo);
+  if (!novoEmbarque) {
+    if (!recuperarCobranca) return;
+    if (
+      cobrancas.some(
+        (c) => c.id === `${p.id}_${data}` || (viagemId && c.id === `${p.id}_${viagemId}`),
+      )
+    ) {
+      return;
+    }
+  }
+  const novasCobrancas = aplicarEmbarque(cobrancas, p, data, dataDeHoje(), viagemId);
+  if (!novoEmbarque && novasCobrancas === cobrancas) return;
+  if (novoEmbarque) {
+    registro = {
+      ...registro,
+      embarques: [...registro.embarques, { passageiroId: p.id, data, viagemId }],
+    };
+  }
+  cobrancas = novasCobrancas;
   avisar();
 }
 
