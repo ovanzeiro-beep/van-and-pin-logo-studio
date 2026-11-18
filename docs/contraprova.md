@@ -1815,3 +1815,22 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | O que se percebe no app | Quando o motorista marca “Não estava no ponto”, a versão corrigida mostra o registro no histórico do dia do próprio passageiro. Uma falha temporária de notificação entra em nova tentativa para a inscrição que falhou. |
 | Publicação e prova em aparelho | A [entrega do cliente](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/5) tem merge autorizado. Verificar o código servido pelo Lovable após a integração. Nenhum envio artificial foi disparado em produção. A entrega de um aviso externo em celular físico segue sem prova. |
 | Próxima decisão | Conferir merge e publicação no Lovable antes de fechar a etapa. Depois, pedir autorização para a etapa 6, cobranças e fechamento. |
+
+
+<a id="etapa-5-conferencia-publicacao"></a>
+
+## 18/11/2026 · Etapa 5 · Conferência da publicação e atualização do controle
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e escopo | Dono respondeu “Sim pode fazer” ao fechamento da etapa 5 e à atualização do acompanhamento. Conferência e documentação somente, sem novas alterações de comportamento ou gravações no banco. |
+| Base e isolamento | `main` em `3767d518db4d23fe8d2e50e30801eeaa53f5e2c9`; cópia isolada e branch `docs/conferencia-publicacao-etapa5-20261118`. A branch `claude/visualizar-main-1gamow` não foi usada nem alterada. |
+| GitHub | Consulta ao PR 5 confirmou merge em `3767d518db4d23fe8d2e50e30801eeaa53f5e2c9`, às 07:57:01 UTC de 18/11. Merge no GitHub não comprovou publicação no Lovable. |
+| Publicação observada | A rota pública `/passageiro/viagens` respondeu HTTP 200. O módulo servido `/assets/viagem-C1whIg2e.js` ainda monta `naoEstavam:[]`, sem ler `nao_estava`. SHA-256 desse arquivo: `71e7eb298b0559d43090826e1b8fca7f5057c5cff76a5e002e2ba3272821a1d1`. Conferência registrada em `2026-11-18T09:05:58.933223+00:00`. |
+| Comparação com a versão integrada | Instalação com Bun 1.3.13 e lockfile congelado; `npm run build` passou. O build da base gera `viagem-COmA4avK.js` com `naoEstavam:n.nao_estava?[e]:[]`. Dos 45 módulos JavaScript próprios referenciados pela página pública, 37 coincidiram por SHA-256 com o build local; 8 não. A leitura direta do módulo de viagem comprova a ausência da correção no cliente servido, sem depender só de nomes diferentes de arquivos. |
+| Prova de uso e limite | O dono respondeu “Ainda não testei” à pergunta sobre notificação chegando no celular do passageiro com app fechado. Não foram disparados avisos artificiais nem acessadas contas reais. Uma rota HTTP 200 e a leitura dos arquivos não comprovam a jornada autenticada ou a recepção no aparelho. |
+| Entrega documental | Fonte atualizada no início da seção 22, na linha REV-11 e no roteiro 22.12. Diagnóstico 22.11 contextualizado como histórico. Registro anterior preservado. Código, aparência, dependências, migrações e produção preservados. A suíte de 431 testes pertence à entrega anterior; não foi apresentada como uma nova execução nesta conferência documental. |
+| Bloqueio de publicação | A integração Lovable não está conectada nesta sessão, e nenhuma ferramenta de publicação ou controle do navegador foi oferecida. Não foi acionado o agente do Lovable. Publicar pelo botão Publish/Update do projeto ou pela integração quando conectada; depois comparar novamente o arquivo servido. |
+| Próxima prova | Após publicar, na viagem de teste com contas fictícias e notificações permitidas, manter o app do passageiro fechado e verificar no celular a chegada do aviso esperado após a ação do motorista. Registrar Android/iPhone, aviso, horário e resultado; no iPhone, usar o app instalado na tela inicial. Conferir a ausência no ponto no histórico individual do passageiro e a separação dos avisos por conta. |
+| Situação e retomada | Etapa 5 **aguardando publicação e validação física**. O pedido atual não encerra a etapa nem autoriza automaticamente a etapa 6. Após repetir as provas, atualizar este registro por acréscimo e pedir autorização para cobranças e fechamento. |
+| Reversão | Esta entrega altera somente documentação; se necessário, reverter o commit documental sem tocar no app nem no banco e sem reescrever histórico. |
