@@ -1,0 +1,301 @@
+{
+  "code_reference": "f4bddee6e7b1c59dfee7cdeeb1cc3a832621d41c",
+  "browser_target": "local, not authenticated",
+  "browser_version": "Chromium 156.0.8078.79",
+  "production_database_writes": false,
+  "browser_checks": [
+    {
+      "route": "/entrar",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/criar-conta",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/criar-conta",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/esqueci-senha",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/esqueci-senha",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/nova-senha",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/nova-senha",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/termos",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/termos",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/privacidade",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/privacidade",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/vanzeiro",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/passageiro",
+      "viewport": "390x844",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/entrar",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/criar-conta",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/criar-conta",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/esqueci-senha",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/esqueci-senha",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/nova-senha",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/nova-senha",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/termos",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/termos",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/privacidade",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/privacidade",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/vanzeiro",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/passageiro",
+      "viewport": "360x740",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/entrar",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/criar-conta",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/criar-conta",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/esqueci-senha",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/esqueci-senha",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/nova-senha",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/nova-senha",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/termos",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/termos",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/privacidade",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/privacidade",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/vanzeiro",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    },
+    {
+      "route": "/passageiro",
+      "viewport": "375x667",
+      "http": 200,
+      "url": "http://127.0.0.1:4176/entrar",
+      "horizontal_overflow": false,
+      "page_errors": [],
+      "has_visible_text": true
+    }
+  ],
+  "public_http_checks": {
+    "resources": [
+      {
+        "path": "/entrar",
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "sha256": "3547ed940f68154da3e73a19c804bd3eac0c14de54d36bbaa6cd254ced5b2778"
+      },
+      {
+        "path": "/manifest.webmanifest",
+        "status": 200,
+        "mime": "application/manifest+json",
+        "sha256": "431dc37d79c62e4def25672dc4e840782d4a28eb6c98b60b02521ad41d75d473"
+      },
+      {
+        "path": "/sw.js",
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "sha256": "852d8a3f98e7307259725e1dd4604380b8a5582318697ca96a18691f1efb27d9"
+      },
+      {
+        "path": "/icones/icone-192.png",
+        "status": 200,
+        "mime": "image/png",
+        "sha256": "a9060f73c3cb294403937e449800aee393916b910c35e566fc9ddb811a1687d3"
+      },
+      {
+        "path": "/icones/icone-512.png",
+        "status": 200,
+        "mime": "image/png",
+        "sha256": "be7dce8ca5e37686beadeaa0841b85250fb558ad6527f6eba514f9cc5c38e559"
+      },
+      {
+        "path": "/icones/icone-512-margem.png",
+        "status": 200,
+        "mime": "image/png",
+        "sha256": "1965f4b7c337371da14360d4dc2bce91a0724a4df0149766e8a04967131c95ad"
+      }
+    ],
+    "manifest": {
+      "name": "O Vanzeiro",
+      "short_name": "Vanzeiro",
+      "description": "Passageiros, rotas e cobranças da van em um só lugar.",
+      "lang": "pt-BR",
+      "id": "/",
+      "start_url": "/",
+      "scope": "/",
+      "display": "fullscreen",
+      "display_override": [
+        "fullscreen",
+        "standalone"
+      ],
+      "orientation": "portrait",
+      "background_color": "#1b2a4a",
+      "theme_color": "#1b2a4a",
+      "icons": [
+        {
+          "src": "/icones/icone-192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icones/icone-512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icones/icone-512-margem.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    }
+  }
+}

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Recria SOMENTE um banco Docker descartável; nunca recebe URL de produção.
 
-Uso: python3 scripts/testar-financeiro-local.py
+Uso: python3 scripts/testar-financeiro-local.py [--restaurar]
 Requer Docker no socket local. Auth, pg_cron e transporte HTTP são simulados.
 As migrations originais são lidas, nunca alteradas. Nenhum aviso sai do container.
 """
 import os
+import argparse
 from pathlib import Path
 import re
 import subprocess
@@ -60,6 +61,10 @@ create publication supabase_realtime;
 '''
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--restaurar', action='store_true',
+                        help='também testa dump/restore dos dados fictícios em outro banco local')
+    options = parser.parse_args()
     try:
         run(['run', '--rm', '-d', '--network', 'none', '--name', NAME,
              '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', 'postgres:18.6'])
@@ -83,8 +88,31 @@ if __name__ == '__main__':
             from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public'
             and p.proname in ('cobranca_nunca_editada','r_vencimentos','r_nova_cobranca','tarefas_do_relogio','gasto_ate_hoje');""")
         print('FINGERPRINTS: ' + fingerprints.strip(), flush=True)
-        output = sql((ROOT / 'supabase/testes/etapa6-financeiro.sql').read_text())
+        matrix = (ROOT / 'supabase/testes/etapa6-financeiro.sql').read_text()
+        if options.restaurar:
+            # Só no banco Docker criado acima, sem rede. Mantém as fichas para o dump.
+            assert matrix.rstrip().endswith('rollback;')
+            matrix = matrix.rstrip()[:-len('rollback;')] + 'commit;\n'
+        output = sql(matrix)
         print(output, flush=True)
+        if options.restaurar:
+            snapshot = """select jsonb_build_object(
+              'cobrancas', (select count(*) from public.cobrancas),
+              'matriculas', (select count(*) from public.matriculas),
+              'gastos', (select count(*) from public.gastos),
+              'valores_e_historico', (select md5(jsonb_agg(to_jsonb(t) order by id)::text) from public.cobrancas t),
+              'matriculas_hash', (select md5(jsonb_agg(to_jsonb(t) order by id)::text) from public.matriculas t),
+              'gastos_hash', (select md5(jsonb_agg(to_jsonb(t) order by id)::text) from public.gastos t));"""
+            before = sql(snapshot).strip()
+            run(['exec', NAME, 'pg_dump', '-U', 'postgres', '-Fc',
+                 '-f', '/tmp/fixture.dump', 'vanzeiro_etapa6'])
+            sql('create database vanzeiro_etapa7_restore;', 'postgres')
+            run(['exec', NAME, 'pg_restore', '-U', 'postgres', '--exit-on-error',
+                 '-d', 'vanzeiro_etapa7_restore', '/tmp/fixture.dump'])
+            after = sql(snapshot, 'vanzeiro_etapa7_restore').strip()
+            if before != after:
+                raise RuntimeError('Restauração divergiu das fichas originais')
+            print('RESTORE PASS: contagens e hashes idênticos: ' + after, flush=True)
         print('PostgreSQL local 18.6: fichas financeiras concluídas; container sem rede removido.', flush=True)
     finally:
         # NAME é gerado por esta execução; nunca remove outro container.

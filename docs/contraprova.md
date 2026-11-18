@@ -1869,3 +1869,20 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Efeito no aplicativo | Nenhuma alteração de regra, tela, esquema ou dado de produção. Foram acrescentadas provas de regressão e um laboratório reproduzível. |
 | Situação | Verificação técnica do financeiro concluída para os cenários descritos. Reabertura e leitura nos aparelhos reais continuam no roteiro manual pedido pelo dono. Não equivale a aceite final. |
 | Reversão e próximo passo | Reverter apenas a entrega de testes/documentação se necessário. Após integrar esta etapa, seguir para os pontos técnicos da etapa 7 e montar o roteiro manual, já autorizados pelo pedido do dono. |
+
+
+<a id="etapa-7-tecnica-e-roteiro"></a>
+
+## 18/11/2026 · Etapa 7 · Conferência técnica e roteiro manual
+
+| Campo | Resultado |
+| --- | --- |
+| Autorização | Continuação do pedido do dono de fazer as etapas técnicas e deixar o roteiro de testes para o final. Não é autorização para marcar provas físicas como concluídas nem para contratar serviços. |
+| Etapa anterior e base | Etapa 6 integrada pelo [PR 8](https://github.com/ovanzeiro-beep/van-and-pin-logo-studio/pull/8), merge `f4bddee6e7b1c59dfee7cdeeb1cc3a832621d41c`. Nova branch isolada `revisao/etapa7-roteiro`. Branch protegida pelo dono não usada. |
+| Publicação e telas | Seis recursos públicos HTTP 200, manifesto válido, cliente corrigido da etapa 5 mantido. No navegador local sem login, 24 verificações de rotas e tamanhos passaram; painéis sem sessão redirecionaram para Entrar. Sem mudanças no app. [Provas e limites](evidencias/2026-11-18-etapa7-operacao.md). |
+| Restauração | Dump/restore em PostgreSQL local descartável sem rede: quatro matrículas, seis cobranças e um gasto preservados por contagem e hash, após vinte checagens financeiras. Não foi restaurado nem exportado banco real. Auth, agendador e transporte são simulados no laboratório. |
+| Operação real | Projeto ativo e saudável na consulta. Agendamentos e RLS conferidos em leitura na etapa 6. Avisos de segurança continuam documentados; política e restauração de backup de produção não confirmadas por esta execução. |
+| Roteiro entregue | [Testes no celular](roteiro-testes-celular.md), dividido em acesso, viagem/avisos, offline, financeiro e separação de contas. Cada caso contém ação e resultado esperado; nenhuma caixa foi aprovada sem execução. |
+| Efeito e regressão | App, banco, dados, identidade visual e regras preservados. Acrescentada opção de restauração ao laboratório e utilitário de navegação sem login; ambos executados com sucesso. A suíte do app continua a evidência de 440 testes da etapa 6; não foi repetida por alterações exclusivas de utilitários/documentação. |
+| Pendências reais | Aviso com app fechado no aparelho; jornada autenticada/instalação/atualização e modo avião nos dois celulares; política e recuperação de backup de produção; revisão jurídica e decisão sobre senhas vazadas; uso em grande volume por API. |
+| Retomada e reversão | Executar primeiro Bloco A e B3 do roteiro e registrar passado/falho/não testado. Aceite final continua aberto; diante de falha, reproduzir antes de reparar. Se necessário, reverter somente a entrega de utilitários/documentação, sem reescrever histórico ou alterar produção. |
