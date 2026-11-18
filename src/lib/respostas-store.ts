@@ -120,8 +120,9 @@ export function responder(passageiroId: string, data: string, resposta: Resposta
   const prazo = prazoDaViagem(d, data);
   momentos = { ...momentos, [data]: { ...(momentos[data] ?? {}), [passageiroId]: { em: `${agoraMesmo.data} ${agoraMesmo.hora}`, prazo: `${prazo.data} ${prazo.hora}` } } };
   ouvintes.forEach((o) => o());
-  trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje()));
-  trocarAviso(avisoDePresenca(p, d, data, resposta, dataDeHoje()));
+  const cancelou = resposta === "nao-vai" && doDia[passageiroId] === "vai";
+  trocarAviso(avisoDeResposta(p, d, data, resposta, dataDeHoje(), cancelou));
+  trocarAviso(avisoDePresenca(p, d, data, resposta, dataDeHoje(), cancelou));
   return deuCerto;
 }
 

@@ -38,7 +38,7 @@ export function quandoVai(data: string, hoje: string) {
  * "Não vou", "Ausência registrada" with the deadline to change their mind. One per trip day: the newest answer
  * replaces it, so the two never contradict each other.
  */
-export function avisoDePresenca(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string): NovoAviso {
+export function avisoDePresenca(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string, cancelou = false): NovoAviso {
   const prazo = prazoDaViagem(d, data);
   const ate = prazo.data === data ? `até as ${prazo.hora}` : `até ${quando(prazo.data, hoje)}, às ${prazo.hora}`;
   return {
@@ -53,12 +53,14 @@ export function avisoDePresenca(p: Passageiro, d: Destino, data: string, respost
     textoResumido:
       resposta === "vai"
         ? `Você confirmou que ${quandoVai(data, hoje)} vai de ${d.origem} a ${d.destino}. Se desistir, avise no app ${ate}.`
-        : `Você avisou que ${quandoVai(data, hoje)} não vai de ${d.origem} a ${d.destino}. Se mudar de ideia, toque em Vou ${ate}.`,
+        : cancelou
+          ? `Você cancelou sua participação na viagem de ${d.origem} a ${d.destino} (${diaMes(data)}). Se mudar de ideia, confirme novamente ${ate}, se houver vaga.`
+          : `Você avisou que ${quandoVai(data, hoje)} não vai de ${d.origem} a ${d.destino}. Se mudar de ideia, toque em Vou ${ate}.`,
   };
 }
 
 /** Vanzeiro: a passenger answered (or changed the answer). The newest answer replaces the notice. */
-export function avisoDeResposta(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string): NovoAviso {
+export function avisoDeResposta(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string, cancelou = false): NovoAviso {
   return {
     chave: `resposta_${p.id}_${data}`,
     vanzeiroId: d.vanzeiroId,
@@ -72,7 +74,9 @@ export function avisoDeResposta(p: Passageiro, d: Destino, data: string, respost
     textoResumido:
       resposta === "vai"
         ? `${primeiroNome(p.nome)} confirmou que ${quandoVai(data, hoje)} vai de ${d.origem} a ${d.destino}.`
-        : `${primeiroNome(p.nome)} avisou que ${quandoVai(data, hoje)} não vai de ${d.origem} a ${d.destino}.`,
+        : cancelou
+          ? `${primeiroNome(p.nome)} cancelou a participação na viagem de ${d.origem} a ${d.destino} (${diaMes(data)}). A vaga foi liberada.`
+          : `${primeiroNome(p.nome)} avisou que ${quandoVai(data, hoje)} não vai de ${d.origem} a ${d.destino}.`,
   };
 }
 

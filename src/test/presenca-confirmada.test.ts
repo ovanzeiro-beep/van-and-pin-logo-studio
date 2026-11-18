@@ -20,8 +20,15 @@ describe("Aviso de presença confirmada (dono, 17/11)", () => {
     expect(depois.map((a) => [a.tipo, a.textoResumido])).toEqual([
       [
         "ausencia_registrada",
-        "Você avisou que hoje não vai de Cambará a UENP Jacarezinho. Se mudar de ideia, toque em Vou até as 05:40.",
+        "Você cancelou sua participação na viagem de Cambará a UENP Jacarezinho (13/11). Se mudar de ideia, confirme novamente até as 05:40, se houver vaga.",
       ],
     ]);
+    const avisoDoVanzeiro = obterAvisos().find((a) => a.chave === `resposta_p-juliana_${hoje}`);
+    expect(avisoDoVanzeiro).toMatchObject({
+      paraVanzeiroOuPassageiroId: "vanzeiro-carlos",
+      textoResumido: "Juliana cancelou a participação na viagem de Cambará a UENP Jacarezinho (13/11). A vaga foi liberada.",
+    });
+    expect(responder("p-juliana", hoje, "nao-vai")).toEqual({ ok: true });
+    expect(obterAvisos().find((a) => a.chave === avisoDoVanzeiro?.chave)).toEqual(avisoDoVanzeiro);
   });
 });
