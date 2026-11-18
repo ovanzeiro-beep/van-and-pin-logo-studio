@@ -1778,3 +1778,18 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Regressão | 430 testes em 86 arquivos passaram, assim como checagem de tipos e build. O lint manteve 1.753 erros de formatação e cinco avisos herdados, sem novos apontamentos. |
 | Efeito no aplicativo | Os fluxos passaram com a implementação existente. A entrega acrescenta dois testes de regressão e a contraprova. O código servido ao usuário, o esquema e os dados de produção permanecem como estavam. |
 | Próxima decisão | Depois de verificar o merge, pedir autorização para a etapa 5, que verifica viagem e avisos entre aparelhos. |
+
+<a id="etapa-5-viagem-avisos"></a>
+
+## 18/11/2026 · Etapa 5 · Viagem e avisos
+
+| Campo | Evidência |
+| --- | --- |
+| Autorização e base | Etapa 5 autorizada pelo dono. Cópia isolada da main em e5029c6, branch docs/etapa-5-viagem-avisos. |
+| Viagem e isolamento | No PostgreSQL 18.6 isolado, três conexões autenticadas com contas fictícias acompanharam busca, embarque, ausência, parada, conferência, volta, desembarque e encerramento. Motorista viu o registro completo e o histórico. Passageiros consultaram somente a própria projeção. Os gatilhos criaram os avisos “A van está chegando” e “Boa viagem!” para os destinatários esperados. Repetir a gravação do embarque manteve um único aviso. |
+| Aparelho e troca de conta | A conta A removeu sua inscrição de um aparelho e a inscrição seguinte ficou vinculada à conta B no banco local. O teste automatizado da saída chamou a remoção da assinatura no navegador. |
+| App fechado | Em Chromium 156, dois perfis de navegador foram isolados e a permissão de notificação foi concedida no perfil do passageiro. Com a página do app fechada, o service worker recebeu duas vezes o mesmo evento fictício. Ficou uma notificação “Boa viagem!” no perfil do passageiro e nenhuma no perfil do motorista. O evento foi entregue pelo ambiente de teste. Recebimento em aparelho físico e transporte externo real ficam em aberto. |
+| Falha 1 · histórico do passageiro | Após o motorista marcar “Não estava no ponto”, a ausência apareceu na viagem encerrada do motorista. A consulta individual do passageiro não devolveu esse campo. O teste com a resposta do banco e as funções da tela esperava uma entrada com “Não estava no ponto” e recebeu uma lista vazia. A assinatura ativa em produção também omite esse campo. |
+| Falha 2 · reenvio de notificação | A função avisos-no-celular rodou com banco e serviço de envio simulados. No caso saudável, um aviso chegou ao destino certo sem duplicar. No caso de falha temporária 503, o aviso ficou marcado como enviado com zero entregas. Depois de restaurar o serviço, a execução seguinte retornou zero entregas quando deveria entregar uma. A função publicada também marca o aviso antes da tentativa. |
+| Regressão e estado | Os 430 testes existentes passaram. As duas provas dirigidas falharam pelos motivos acima. Entrega documental em revisão, sem alteração no app, no banco ou na função publicada. Nenhuma ação foi feita na branch preservada pelo dono. |
+| Próxima decisão | Pedir autorização para preparar e testar as duas correções em ambiente isolado. Antes de aplicar em produção, apresentar a migração e a atualização da função para autorização específica. A etapa 6 aguarda o fechamento da etapa 5. |
