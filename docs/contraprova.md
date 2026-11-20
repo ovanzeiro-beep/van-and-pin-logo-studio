@@ -2054,3 +2054,13 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Testes juntos | App 472/472, tipos e build ok, lint sem nada novo; banco 110/117 (os 7 são de correções futuras); C1 26/26, C2 17/17, C3 14/14, financeiro 20/20, E3 28/28; Chromium 17/17 e 0/60 erros no zoom; ensaio sobre cópia dos dados reais: dados inalterados, cobranças 8 → 8, 0 avisos duplicados, reversão idêntica; verificação pós-implantação 9/9. |
 | Pendências | Autorização para: migrações C1 → C2 → C3, merge, publicação. Prova em celular físico. Plano Pro (backup automático). Viagem de 18/11 parada em «chegada» (o vanzeiro encerra no app). Correções 5 e 6 e P1/P2. |
 
+
+### 20/11/2026 · Implantação controlada (em andamento, pausada)
+
+| Campo | Resultado |
+| --- | --- |
+| Verificações antes | Ok: branch com as 4 correções; `main` e Lovable em `1206cbd`; banco idêntico ao backup (20/20 tabelas), 71 funções e regras de acesso iguais às da auditoria; 7 contas de login; migrações só com funções e gatilhos. |
+| Correção 1 | **Aplicada em produção** às 17:34 UTC (`20261120173419_correcao1_avisos_seguros`). As 5 funções ficaram idênticas ao arquivo testado; funções internas fechadas ao app. Compatível com o app publicado. |
+| Correção 2 | **Não aplicada.** A ferramenta do Supabase pede confirmação para migrações com gatilhos recriados ou com `delete` dentro de função; a pergunta não aparece no app Android, e as duas tentativas expiraram em 60 s sem mudar nada (conferido). |
+| Correção 3, merge, publicação | Não feitos. Aguardam a Correção 2. |
+| Próximo passo | Repetir a Correção 2 com o dono acompanhando por um navegador de computador (claude.ai), onde a confirmação deve aparecer; não contornar a confirmação. |
