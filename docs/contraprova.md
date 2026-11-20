@@ -2064,3 +2064,15 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Correção 2 | **Não aplicada.** A ferramenta do Supabase pede confirmação para migrações com gatilhos recriados ou com `delete` dentro de função; a pergunta não aparece no app Android, e as duas tentativas expiraram em 60 s sem mudar nada (conferido). |
 | Correção 3, merge, publicação | Não feitos. Aguardam a Correção 2. |
 | Próximo passo | Repetir a Correção 2 com o dono acompanhando por um navegador de computador (claude.ai), onde a confirmação deve aparecer; não contornar a confirmação. |
+
+### 20/11/2026 · Implantação das Correções 1 a 4 (concluída no banco e no código)
+
+| Campo | Resultado |
+| --- | --- |
+| Correção 2 | **Aplicada pelo dono** no SQL Editor do Supabase (celular), com o texto exato de `20261120130000_correcao2_cobrancas_preservadas.sql` entre `begin;` e `commit;`; antes, testada de novo numa cópia isolada. Conferido só em leitura: as 9 funções idênticas ao arquivo (md5), os 2 gatilhos ligados, funções internas fechadas, 8 cobranças sem mudança, 180 linhas, 7 contas. |
+| Correção 3 | **Aplicada pelo dono** do mesmo jeito (`20261120140000_correcao3_cobranca_no_embarque.sql`). As 3 funções têm o código idêntico ao arquivo, comparando sem espaços/quebras de linha (o celular reorganizou os espaços ao colar); 2 gatilhos ligados. Impressão digital das 8 cobranças igual à de antes; os 2 embarques fictícios de 17/11 continuam sem cobrança (viagens encerradas, o app não as salva de novo). |
+| Histórico do Supabase | C2 e C3 não aparecem na lista de migrações do Supabase (foram coladas no SQL Editor); o registro oficial delas é esta contraprova. |
+| Verificação pós-implantação | `implantacao-verificar.sql` com marco em 20/11 17:34 UTC: **9 de 9 no valor esperado** (12 funções, 4 gatilhos, 0 internas abertas, 0 erros, 0 tarefas com falha, 0 notificações com falha, 0 embarcados sem cobrança, 0 cancelamentos indevidos, 0 avisos duplicados). |
+| Antes do merge | Branch `claude/integracao-correcoes-1-a-4` (`34a1d34`): 472/472 testes, tipos ok, build ok. `main` (`1206cbd`) ancestral direta: merge por avanço, sem conflito. |
+| Merge e publicação | Autorizados pelo dono. Merge por avanço na `main`; publicação no Lovable em seguida (conferência abaixo). |
+| Não feito | Correção 5 (não iniciada, por decisão do dono). Nenhum SQL novo além de C2 e C3. Branch `claude/visualizar-main-1gamow` mantida intacta em `d4d4dd9` (cópia de segurança antiga). |
