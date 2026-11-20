@@ -1,0 +1,422 @@
+[
+ {
+  "teste": "T1.1",
+  "descricao": "Passageiro sai do destino: cobrança de viagem FEITA ainda não vencida continua valendo",
+  "esperado": "valendo",
+  "obtido": "Saiu do destino",
+  "passou": false
+ },
+ {
+  "teste": "T1.2",
+  "descricao": "Passageiro sai do destino: cobrança vencida (devendo) continua valendo",
+  "esperado": "valendo",
+  "obtido": "valendo",
+  "passou": true
+ },
+ {
+  "teste": "T1.3",
+  "descricao": "Depois de sair, o passageiro ainda vê as próprias cobranças",
+  "esperado": "2",
+  "obtido": "2",
+  "passou": true
+ },
+ {
+  "teste": "T1.4",
+  "descricao": "Tarefa automática cria a mensalidade seguinte de quem é Mensal",
+  "esperado": "1 cobrança",
+  "obtido": "[('m2_2026-12-10', datetime.date(2026, 12, 10), 'Mensalidade de dezembro')]",
+  "passou": true
+ },
+ {
+  "teste": "T1.5",
+  "descricao": "Passageiro Mensal exclui a conta no meio do período: mensalidade do período já iniciado é preservada (D1-C)",
+  "esperado": "valendo",
+  "obtido": "[('Conta excluída', 'P2 Teste', '43999990002')]",
+  "passou": false
+ },
+ {
+  "teste": "T1.6",
+  "descricao": "LGPD: depois de excluir a conta, a cobrança ainda guarda nome e telefone (observação para D3)",
+  "esperado": "decisão D3",
+  "obtido": "('P2 Teste', '43999990002')",
+  "passou": true
+ },
+ {
+  "teste": "T1.7",
+  "descricao": "Exclusão do passageiro anonimiza a matrícula",
+  "esperado": "nome 'Conta excluída', sem conta",
+  "obtido": "[('Conta excluída', '', None)]",
+  "passou": true
+ },
+ {
+  "teste": "T1.8",
+  "descricao": "Dívida de quem saiu: o vanzeiro continua recebendo o aviso 'cobrança vencida'",
+  "esperado": "1 aviso",
+  "obtido": "0",
+  "passou": false
+ },
+ {
+  "teste": "T1.11",
+  "descricao": "Excluir destino: o banco sozinho mantém a cobrança (o cancelamento vem do app, src/lib/exclusoes.ts)",
+  "esperado": "valendo",
+  "obtido": "[('valendo',)]",
+  "passou": true
+ },
+ {
+  "teste": "T1.9",
+  "descricao": "Excluir destino no banco: matrículas encerradas e passageiros avisados; cobranças não são tocadas pelo banco",
+  "esperado": "0 ativas, avisos>0",
+  "obtido": "(0, 1)",
+  "passou": true
+ },
+ {
+  "teste": "T1.10",
+  "descricao": "Vanzeiro exclui a conta: histórico financeiro dos passageiros é preservado (D2 B+C)",
+  "esperado": "cobranças preservadas",
+  "obtido": "antes (4, 3, 1) → depois (0, 0, 0) (ok)",
+  "passou": false
+ },
+ {
+  "teste": "T2.1",
+  "descricao": "Passageiro cria aviso falso (tipo 'cobrança vencida', texto livre) para outro passageiro",
+  "esperado": "recusado",
+  "obtido": "ok; P2 vê: [('Mensalidade mudou: pague R$ 500 no Pix golpe@exemplo.invalid',)]",
+  "passou": false
+ },
+ {
+  "teste": "T2.2",
+  "descricao": "Passageiro sobrescreve um aviso legítimo do vanzeiro para outra pessoa",
+  "esperado": "recusado; texto original mantido",
+  "obtido": "ok; P2 vê: [('Pedido aceito. Pague a taxa de matrícula no Pix golpe@exemplo.invalid',)]",
+  "passou": false
+ },
+ {
+  "teste": "T2.3",
+  "descricao": "Passageiro cria aviso de tipo do vanzeiro ('pedido novo') para o vanzeiro",
+  "esperado": "recusado",
+  "obtido": "('ok', [('',)])",
+  "passou": false
+ },
+ {
+  "teste": "T2.4",
+  "descricao": "Pessoa de fora do destino cria aviso",
+  "esperado": "recusado",
+  "obtido": "('erro', 'Este aviso não é deste destino.')",
+  "passou": true
+ },
+ {
+  "teste": "T2.5",
+  "descricao": "Passageiro tenta apagar avisos de outra pessoa",
+  "esperado": "0 apagados",
+  "obtido": "0",
+  "passou": true
+ },
+ {
+  "teste": "T2.6",
+  "descricao": "Passageiro lê avisos de outras pessoas",
+  "esperado": "0",
+  "obtido": "0",
+  "passou": true
+ },
+ {
+  "teste": "T2.7",
+  "descricao": "Aviso falso entra na fila de notificação do celular (gatilho entregar_aviso)",
+  "esperado": "não entra",
+  "obtido": "aviso gravado: 1",
+  "passou": false
+ },
+ {
+  "teste": "T3.1",
+  "descricao": "Sem login, consultar convite",
+  "esperado": "recusado",
+  "obtido": "erro",
+  "passou": true
+ },
+ {
+  "teste": "T3.2",
+  "descricao": "Conta comum testa todos os 9.000 códigos VAN-1000…VAN-9999",
+  "esperado": "bloqueado após poucas tentativas",
+  "obtido": "2 destinos achados em 2.2s, sem bloqueio; exemplo: [('d1', 'Cidade A', 'Cidade B', ['Cidade A', 'Cidade B'], '23:50', 'Vanzeiro Teste', None, None, None)]",
+  "passou": false
+ },
+ {
+  "teste": "T3.3",
+  "descricao": "Mesma conta manda 30 pedidos repetidos para o mesmo destino",
+  "esperado": "1 pedido aguardando",
+  "obtido": "30 pedidos criados",
+  "passou": false
+ },
+ {
+  "teste": "T3.4",
+  "descricao": "Conta qualquer descobre se um telefone está cadastrado (pedir_juntar_pelo_telefone)",
+  "esperado": "mesma resposta para os dois",
+  "obtido": "telefone cadastrado → 1; inexistente → 0",
+  "passou": false
+ },
+ {
+  "teste": "T3.5",
+  "descricao": "O pedido de 'assumir' o cadastro de outra pessoa chega ao vanzeiro sem verificação do telefone",
+  "esperado": "observação",
+  "obtido": "[(UUID('f27e1033-73c8-44e7-842b-f5903c1d6f5b'), '43999990555')]",
+  "passou": true
+ },
+ {
+  "teste": "T3.6",
+  "descricao": "Outro vanzeiro lê destino e passageiros alheios",
+  "esperado": "(0, 0)",
+  "obtido": "(0, 0)",
+  "passou": true
+ },
+ {
+  "teste": "T4.1",
+  "descricao": "'Não vou' no prazo vira falta e desconto na mensalidade aberta; tarefa repetida não duplica",
+  "esperado": "faltas=1, valor_falta=1000, 1 falta",
+  "obtido": "((1, 1000), 1)",
+  "passou": true
+ },
+ {
+  "teste": "T4.2",
+  "descricao": "Celular do vanzeiro com dado antigo grava 'faltas=0' por cima do desconto feito pelo banco",
+  "esperado": "recusado (desconto mantido)",
+  "obtido": "ok; faltas agora = 0",
+  "passou": false
+ },
+ {
+  "teste": "T4.3",
+  "descricao": "Vanzeiro altera o valor de uma cobrança aberta",
+  "esperado": "recusado",
+  "obtido": "('erro', 'Uma cobrança nunca é editada: só pode ser paga ou cancelada.')",
+  "passou": true
+ },
+ {
+  "teste": "T4.4",
+  "descricao": "Passageiro tenta aumentar o próprio desconto",
+  "esperado": "nenhuma linha alterada",
+  "obtido": "('ok', 0); faltas = 0",
+  "passou": true
+ },
+ {
+  "teste": "T5.1",
+  "descricao": "Embarque 'Por viagem'/'Diário' gravado sem a cobrança: o banco cria ou aponta a falta",
+  "esperado": "cobrança criada ou pendência apontada",
+  "obtido": "0 cobranças para 2 embarques",
+  "passou": false
+ },
+ {
+  "teste": "T5.2",
+  "descricao": "Mesma cobrança enviada 3 vezes pelo celular (reenvio após falha)",
+  "esperado": "1 cobrança",
+  "obtido": "1",
+  "passou": true
+ },
+ {
+  "teste": "T7.1",
+  "descricao": "Vanzeiro aceita dois pedidos ao mesmo tempo para a última vaga",
+  "esperado": "só 1 aceito; 4 matrículas",
+  "obtido": "['erro', 'ok']; ativas=4",
+  "passou": true
+ },
+ {
+  "teste": "T7.2",
+  "descricao": "Dois passageiros tocam 'Vou' ao mesmo tempo na última vaga da viagem",
+  "esperado": "só 1 confirmado (2 no total)",
+  "obtido": "['erro', 'ok']; vão=2",
+  "passou": true
+ },
+ {
+  "teste": "T7.3",
+  "descricao": "Desistência no prazo libera a vaga para quem ficou de fora",
+  "esperado": "ok",
+  "obtido": "('ok', [('',)])",
+  "passou": true
+ },
+ {
+  "teste": "T6.1",
+  "descricao": "Toque duplo no 'Vou'",
+  "esperado": "1 resposta",
+  "obtido": "1",
+  "passou": true
+ },
+ {
+  "teste": "T6.2",
+  "descricao": "Marcar como pago em dois celulares ao mesmo tempo (Pix e Dinheiro)",
+  "esperado": "1 vence, o outro é recusado",
+  "obtido": "[('erro', 'Esta cobrança já foi paga ou cancelada e não muda mais.'), ('ok', 1)]; ficou dinheiro",
+  "passou": true
+ },
+ {
+  "teste": "T6.3",
+  "descricao": "Pagar e cancelar a mesma cobrança ao mesmo tempo",
+  "esperado": "só uma das duas",
+  "obtido": "['erro', 'ok']; pago,cancelado=(False, True)",
+  "passou": true
+ },
+ {
+  "teste": "T6.4",
+  "descricao": "Três execuções simultâneas da tarefa automática",
+  "esperado": "1 mensalidade, sem duplicar",
+  "obtido": "['ok', 'ok', 'ok']; mensais=1; duplicadas=0",
+  "passou": true
+ },
+ {
+  "teste": "T6.5",
+  "descricao": "Toque duplo em 'Iniciar viagem' (dois envios)",
+  "esperado": "1 viagem",
+  "obtido": "['ok', 'erro']; viagens=1",
+  "passou": true
+ },
+ {
+  "teste": "T6.6",
+  "descricao": "Responder depois que a viagem começou",
+  "esperado": "recusado",
+  "obtido": "('erro', 'A viagem já começou. Não dá mais para responder.')",
+  "passou": true
+ },
+ {
+  "teste": "T8.1",
+  "descricao": "Conexão cai no meio do 'Aceitar pedido'",
+  "esperado": "pedido continua 'aguardando', sem matrícula pela metade",
+  "obtido": "('aguardando', None)",
+  "passou": true
+ },
+ {
+  "teste": "T9.1",
+  "descricao": "Desfazer um pagamento",
+  "esperado": "recusado; pagamento intacto",
+  "obtido": "('erro', 'Esta cobrança já foi paga ou cancelada e não muda mais.'); [('pix',)]",
+  "passou": true
+ },
+ {
+  "teste": "T9.2",
+  "descricao": "Cancelar cobrança já paga",
+  "esperado": "recusado; pagamento intacto",
+  "obtido": "('erro', 'Esta cobrança já foi paga ou cancelada e não muda mais.'); [('pix',)]",
+  "passou": true
+ },
+ {
+  "teste": "T9.3",
+  "descricao": "Apagar cobrança",
+  "esperado": "recusado; pagamento intacto",
+  "obtido": "('ok', 0); [('pix',)]",
+  "passou": true
+ },
+ {
+  "teste": "T9.4",
+  "descricao": "Marcar como pago com data no futuro",
+  "esperado": "recusado",
+  "obtido": "('ok', 1)",
+  "passou": false
+ },
+ {
+  "teste": "T9.5",
+  "descricao": "Forma de pagamento inválida ('cheque')",
+  "esperado": "recusado",
+  "obtido": "('erro', 'new row for relation \"cobrancas\" violates check constraint \"cobrancas_pagamento_forma_check\"')",
+  "passou": true
+ },
+ {
+  "teste": "T9.8",
+  "descricao": "Cancelar sem motivo (motivo vazio)",
+  "esperado": "recusado",
+  "obtido": "('erro', 'new row for relation \"cobrancas\" violates check constraint \"cobranca_cancelada_com_motivo\"')",
+  "passou": true
+ },
+ {
+  "teste": "T9.6",
+  "descricao": "Cobrança com valor negativo",
+  "esperado": "recusado",
+  "obtido": "('erro', 'new row for relation \"cobrancas\" violates check constraint \"cobrancas_valor_base_check\"')",
+  "passou": true
+ },
+ {
+  "teste": "T9.7",
+  "descricao": "Outro vanzeiro cria cobrança para passageiro alheio",
+  "esperado": "recusado",
+  "obtido": "('erro', 'new row violates row-level security policy for table \"cobrancas\"')",
+  "passou": true
+ },
+ {
+  "teste": "T10.1",
+  "descricao": "Sem login, ler as 23 tabelas",
+  "esperado": "nada",
+  "obtido": "{'contas': 'sem acesso', 'perfis_vanzeiro': 'sem acesso', 'destinos': 'sem acesso', 'dias_sem_viagem': 'sem acesso', 'matriculas': 'sem acesso', 'pedidos': 'sem acesso', 'mudancas_endereco': 'sem acesso', 'juntar_conta':",
+  "passou": true
+ },
+ {
+  "teste": "T10.2",
+  "descricao": "Outro vanzeiro só vê os próprios dados",
+  "esperado": "só d2 e nada de d1",
+  "obtido": "{'destinos': 1, 'matriculas': 0, 'pedidos': 0, 'respostas': 0, 'cobrancas': 0, 'avisos': 0}",
+  "passou": true
+ },
+ {
+  "teste": "T10.3",
+  "descricao": "Passageiro só vê a própria matrícula e não lê a tabela de viagens",
+  "esperado": "matriculas=1, viagens=0",
+  "obtido": "{'matriculas': 1, 'cobrancas': 3, 'respostas': 0, 'viagens': 0, 'pedidos': 1}",
+  "passou": true
+ },
+ {
+  "teste": "T10.4",
+  "descricao": "Passageiro muda o próprio valor",
+  "esperado": "recusado",
+  "obtido": "('ok', 0)",
+  "passou": true
+ },
+ {
+  "teste": "T10.5",
+  "descricao": "Passageiro grava o próprio embarque",
+  "esperado": "recusado",
+  "obtido": "('erro', 'new row violates row-level security policy for table \"embarques\"')",
+  "passou": true
+ },
+ {
+  "teste": "T10.6",
+  "descricao": "Passageiro grava falta com desconto",
+  "esperado": "recusado",
+  "obtido": "('erro', 'new row violates row-level security policy for table \"faltas\"')",
+  "passou": true
+ },
+ {
+  "teste": "T10.7",
+  "descricao": "Passageiro marca 'Estou na van' por outra pessoa",
+  "esperado": "recusado",
+  "obtido": "('erro', 'Só dá para confirmar por você mesmo.')",
+  "passou": true
+ },
+ {
+  "teste": "T10.8",
+  "descricao": "Passageiro tira outra pessoa do destino",
+  "esperado": "recusado",
+  "obtido": "('erro', 'Não achamos este destino. Ele pode ter sido excluído ou você saiu dele.')",
+  "passou": true
+ },
+ {
+  "teste": "T10.9",
+  "descricao": "Passageiro responde por outra pessoa",
+  "esperado": "recusado",
+  "obtido": "('erro', 'Não achamos este destino. Ele pode ter sido excluído ou você saiu dele.')",
+  "passou": true
+ },
+ {
+  "teste": "T10.10",
+  "descricao": "Passageiro consulta o embarque usando a matrícula de outra pessoa",
+  "esperado": "nada",
+  "obtido": "[]",
+  "passou": true
+ },
+ {
+  "teste": "T10.11",
+  "descricao": "Sem login, gravar 200 'erros' falsos seguidos",
+  "esperado": "limitado",
+  "obtido": "200 gravados",
+  "passou": false
+ },
+ {
+  "teste": "T10.12",
+  "descricao": "Ex-passageiro continua vendo o perfil (Pix/telefone) do vanzeiro, mas não o destino",
+  "esperado": "observação",
+  "obtido": "(1, 0)",
+  "passou": true
+ }
+]

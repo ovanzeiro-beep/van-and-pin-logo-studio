@@ -1,0 +1,150 @@
+// REGISTRO DA FASE 4 (20/11/2026) — NÃO roda na suíte: documenta o problema P0-3 (cobrança perdida).
+// Para reproduzir: copie para src/test/ numa cópia do projeto e rode o vitest. Esperado HOJE: A e B falham, C passa.
+// Base: src/test/sem-sinal-viagem.test.ts, com o simulador guardando o update da viagem.
+import { consultaFinanceiraSimulada } from "./consulta-financeira-simulada";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Without signal inside the van: the taps wait on the phone and go to the database when the signal comes back.
+const falso = vi.hoisted(() => {
+  const estado = {
+    viagens: [] as Record<string, unknown>[],
+    semSinal: true,
+    statusRecusa: 0,
+    tentativas: 0,
+    falharCobranca: false,
+    dinheiro: {} as Record<string, Record<string, unknown>[]>,
+  };
+  const falha = { error: { message: "TypeError: Failed to fetch" } };
+  const cliente = {
+    rpc: async () => ({ data: null, error: null }),
+    from: (tabela: string) => {
+      if (tabela !== "viagens") {
+        return {
+          select: () => consultaFinanceiraSimulada(estado.dinheiro[tabela] ?? []),
+          upsert: async (linhas: Record<string, unknown>[]) => {
+            if (tabela === "cobrancas" && estado.falharCobranca) return falha;
+            const guardadas = (estado.dinheiro[tabela] ??= []);
+            for (const linha of linhas) {
+              if (!guardadas.some((r) => JSON.stringify(r) === JSON.stringify(linha))) {
+                guardadas.push(linha);
+              }
+            }
+            return { error: null };
+          },
+        };
+      }
+      return {
+        select: () => ({
+          eq: async () => (estado.semSinal ? falha : { data: estado.viagens, error: null }),
+          lt: () => ({
+            eq: () => ({ order: () => ({ limit: async () => ({ data: [], error: null }) }) }),
+          }),
+        }),
+        insert: async (linha: Record<string, unknown>) =>
+          estado.semSinal ? falha : (estado.viagens.push(linha), { error: null }),
+        update: (mudanca: Record<string, unknown>) => ({ eq: async (_c: string, id: string) => { if (estado.semSinal) return falha; estado.viagens = estado.viagens.map((v) => (v["id"] === id ? { ...v, ...mudanca } : v)); return { error: null }; } }),
+        upsert: async (linha: Record<string, unknown>) => {
+          estado.tentativas++;
+          if (estado.semSinal) return falha;
+          if (estado.statusRecusa) {
+            return { error: { message: "Envio recusado" }, status: estado.statusRecusa };
+          }
+          estado.viagens = [...estado.viagens.filter((v) => v["id"] !== linha["id"]), linha];
+          return { error: null };
+        },
+      };
+    },
+  };
+  return { estado, cliente };
+});
+vi.mock("@/lib/supabase", () => ({
+  USA_BANCO: { conta: true, destinos: true },
+  supabase: () => falso.cliente,
+  SUPABASE_URL: "",
+  SUPABASE_CHAVE_PUBLICA: "",
+}));
+
+import { destinosExemplo } from "@/data/exemplo";
+import { enviarPendentes, envioRecusado, viagensPendentes } from "@/lib/banco/fila";
+import {
+  carregarViagens,
+  comecarViagemNoBanco,
+  marcarEmbarcouNoBanco,
+  marcarNaoEstavaNoBanco,
+} from "@/lib/banco/viagem";
+import { limparCobrancas } from "@/lib/cobrancas-store";
+import { carregarRespostasDoBanco } from "@/lib/respostas-store";
+import { mudarSessao } from "@/lib/sessao";
+import { emAndamento, limparViagens, obterViagensDoDia } from "@/lib/viagem-store";
+
+const destino = destinosExemplo.find((d) => d.id === "centro-unisul")!;
+
+const contaA = { id: destino.vanzeiroId, email: "", nome: "Conta A" };
+const contaB = { id: "conta-b", email: "", nome: "Conta B" };
+
+beforeEach(() => {
+  localStorage.clear();
+  limparViagens();
+  limparCobrancas();
+  mudarSessao({ conta: contaA });
+  Object.assign(falso.estado, {
+    viagens: [],
+    semSinal: true,
+    statusRecusa: 0,
+    tentativas: 0,
+    dinheiro: {},
+    falharCobranca: false,
+  });
+});
+import { carregarDinheiro } from "@/lib/banco/dinheiro";
+
+const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+describe("FASE 4 — Embarcou COM sinal e queda logo depois", () => {
+  it("A: a cobrança falha no envio e o app é fechado antes de tentar de novo", async () => {
+    falso.estado.semSinal = false;
+    expect(await comecarViagemNoBanco(destino, ["p-camila"])).toEqual({ ok: true });
+    falso.estado.falharCobranca = true;
+    expect(await marcarEmbarcouNoBanco("p-camila")).toEqual({ ok: true });
+    await esperar(600); // o envio automático do dinheiro acontece ~400 ms depois
+    expect(falso.estado.dinheiro["embarques"]).toHaveLength(1);
+    expect(falso.estado.dinheiro["cobrancas"] ?? []).toHaveLength(0);
+    // fecha o app (memória some; o armazenamento do celular fica) e abre de novo, com sinal
+    limparViagens();
+    limparCobrancas();
+    falso.estado.falharCobranca = false;
+    await carregarViagens();
+    await carregarDinheiro();
+    await enviarPendentes();
+    await esperar(600);
+    console.log("FASE4-A viagem no servidor:", JSON.stringify((falso.estado.viagens[0] as { estado?: { embarcaram?: string[] } })?.estado?.embarcaram ?? "(atualizada por update)"));
+    console.log("FASE4-A embarques:", JSON.stringify(falso.estado.dinheiro["embarques"]));
+    console.log("FASE4-A cobrancas:", JSON.stringify(falso.estado.dinheiro["cobrancas"] ?? []));
+    expect(falso.estado.dinheiro["cobrancas"] ?? []).toEqual([expect.objectContaining({ matricula_id: "p-camila", tipo: "viagem" })]);
+  });
+
+  it("B: o app é fechado antes do envio automático (menos de 400 ms)", async () => {
+    falso.estado.semSinal = false;
+    expect(await comecarViagemNoBanco(destino, ["p-camila"])).toEqual({ ok: true });
+    expect(await marcarEmbarcouNoBanco("p-camila")).toEqual({ ok: true });
+    limparViagens();
+    limparCobrancas(); // fechou na hora
+    await esperar(600);
+    await carregarViagens();
+    await carregarDinheiro();
+    await enviarPendentes();
+    await esperar(600);
+    console.log("FASE4-B embarques:", JSON.stringify(falso.estado.dinheiro["embarques"] ?? []));
+    console.log("FASE4-B cobrancas:", JSON.stringify(falso.estado.dinheiro["cobrancas"] ?? []));
+    expect(falso.estado.dinheiro["cobrancas"] ?? []).toEqual([expect.objectContaining({ matricula_id: "p-camila", tipo: "viagem" })]);
+  });
+
+  it("C (controle): com sinal e sem queda, a cobrança é criada", async () => {
+    falso.estado.semSinal = false;
+    expect(await comecarViagemNoBanco(destino, ["p-camila"])).toEqual({ ok: true });
+    expect(await marcarEmbarcouNoBanco("p-camila")).toEqual({ ok: true });
+    await esperar(600);
+    console.log("FASE4-C cobrancas:", JSON.stringify((falso.estado.dinheiro["cobrancas"] ?? []).map((c) => [c["id"], c["valor_base"]])));
+    expect(falso.estado.dinheiro["cobrancas"] ?? []).toEqual([expect.objectContaining({ matricula_id: "p-camila", tipo: "viagem" })]);
+  });
+});
