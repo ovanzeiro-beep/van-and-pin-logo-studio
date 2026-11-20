@@ -2,7 +2,14 @@ import { textoDoEmbarque, type EmbarqueDaViagem as Embarque } from "@/lib/embarq
 import { cn } from "@/lib/utils";
 
 /** REV-09: "3 de 8 já embarcaram", the initials of who boarded and "Faltam 2 antes de você". */
-export function EmbarqueDaViagem({ e }: { e: Embarque | null }) {
+export function EmbarqueDaViagem({
+  e,
+  mostrarMinhaPosicao = true,
+}: {
+  e: Embarque | null;
+  /** CORREÇÃO 4: off on the map screen, where the card's title already says the person's place. */
+  mostrarMinhaPosicao?: boolean;
+}) {
   if (!e || e.total === 0) return null;
   const t = textoDoEmbarque(e);
   const mostrar = e.iniciais.slice(0, 6);
@@ -27,7 +34,7 @@ export function EmbarqueDaViagem({ e }: { e: Embarque | null }) {
           )}
         </div>
       </div>
-      {t.minha && (
+      {mostrarMinhaPosicao && t.minha && (
         <p
           className={cn(
             "mt-1 text-xs font-bold",

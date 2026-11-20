@@ -69,3 +69,7 @@ Login do Supabase, pg_net e pg_cron simulados; PostgreSQL 16 no laboratório e 1
 - D3: preservar só o necessário para obrigação legal ou exercício de direitos, com prazo e base legal a definir; eliminar ou anonimizar o resto; não apagar o histórico financeiro legítimo.
 - D4: retirar a localização fictícia da van; só informação real e verificável.
 - D5: considerar o plano Pro do Supabase antes do lançamento; nenhuma contratação nesta etapa.
+
+## Decisão do dono sobre os 2 embarques de 17/11/2026 (registrada em 20/11/2026)
+
+A leitura de produção de 20/11 achou 2 embarques «Por viagem» de 17/11 sem registro de embarque e sem cobrança (defeito corrigido pela Correção 3). O dono informou que eram **testes com passageiros fictícios**. Decisão: **não** executar `supabase/testes/correcao3-recuperar-embarques.sql`, **não** criar cobranças desses embarques e **não** alterar esses registros. O roteiro fica no repositório só para uso futuro, com autorização.

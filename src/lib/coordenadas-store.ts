@@ -22,6 +22,23 @@ const inscrever = (o: () => void) => {
 
 export const obterCoordenadas = () => coordenadas;
 
+/** Changes whenever a search starts or ends, so a screen can show "Carregando o mapa…" (CORREÇÃO 4). */
+let versaoDaBusca = 0;
+const avisarBusca = () => {
+  versaoDaBusca++;
+  ouvintes.forEach((o) => o());
+};
+
+/** Whether any of these cities is being looked up right now. */
+export function useProcurandoAlguma(nomes: string[]) {
+  useSyncExternalStore(
+    inscrever,
+    () => versaoDaBusca,
+    () => 0,
+  );
+  return nomes.some((n) => procurando.has(n.trim()));
+}
+
 export function useCoordenadas() {
   return useSyncExternalStore(inscrever, obterCoordenadas, () => coordenadasExemplo);
 }
@@ -51,6 +68,7 @@ export async function procurarCidades(
   const faltam = [...new Set(nomes.map((n) => n.trim()).filter(Boolean))].filter((n) => !coordenadas[n] && !procurando.has(n) && !naoAchadas.has(n));
   if (faltam.length === 0) return;
   faltam.forEach((n) => procurando.add(n));
+  avisarBusca();
   try {
     for (const [i, nome] of faltam.entries()) {
       if (i > 0) await esperar(intervaloMs);
@@ -67,6 +85,7 @@ export async function procurarCidades(
     }
   } finally {
     faltam.forEach((n) => procurando.delete(n));
+    avisarBusca();
   }
 }
 

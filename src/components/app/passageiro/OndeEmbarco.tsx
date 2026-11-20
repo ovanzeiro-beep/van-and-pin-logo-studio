@@ -174,7 +174,6 @@ export function OndeEmbarco({
             <MapaDaVan
               cidades={cidades}
               meuPonto={valor.ponto}
-              van={null}
               marcando
               foco={foco}
               aoMarcar={(ponto) => {

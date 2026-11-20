@@ -118,6 +118,11 @@ export type ViagemDoDia = {
   desceram: string[];
   /** Coffee stop in progress: back in the van at this time (HH:MM). */
   voltaAs?: string | undefined;
+  /**
+   * The passenger's own view of the trip (with the database): it has only the person's own place, not the pickup
+   * order of the others, so "Você é o próximo" / "Faltam N" can't come from it (CORREÇÃO 4).
+   */
+  parcial?: boolean | undefined;
 };
 
 export function iniciarViagem(destino: Destino, ordem: string[], data: string): ViagemDoDia {
@@ -408,6 +413,15 @@ export function situacaoParaPassageiro(a: {
       ? { situacao: "Você não vai hoje", detalhe: "O vanzeiro já sabe", etapa: -1, alerta: false }
       : { situacao: "A van não vai passar", detalhe: "Você não confirmou a tempo", etapa: -1, alerta: true };
   }
+  // CORREÇÃO 4: without the real pickup order (the passenger's own view), no "Você é o próximo" / "Faltam N": the
+  // place in line comes only from the database (`embarque_da_viagem`, applied by situacaoComEmbarque).
+  if (v.parcial)
+    return {
+      situacao: "Viagem começou",
+      detalhe: "A van está buscando os passageiros",
+      etapa: 0,
+      alerta: false,
+    };
   if (proximoDaBusca(v) === id) return { situacao: "Você é o próximo", detalhe: "Fique pronto no seu ponto", etapa: 1, alerta: false };
   const antes = v.ordem.slice(0, v.ordem.indexOf(id)).filter((x) => !v.embarcaram.includes(x) && !v.naoEstavam.includes(x)).length;
   return {

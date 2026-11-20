@@ -2026,3 +2026,18 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Pendências | Os 2 casos de 17/11 em produção só são recuperados com autorização (`supabase/testes/correcao3-recuperar-embarques.sql`, depois da migração); confirmar antes se eram contas de teste. Sem prova em produção nem em celular. |
 | Para produção | Com autorização: aplicar as migrações das Correções 1, 2 e 3, nessa ordem; conferir em leitura; publicar o app (exigido pela Correção 2; a Correção 3 não muda o app). Opcional: recuperar os 2 casos antigos. |
 | Como desfazer | `supabase/testes/correcao3-reverter.sql` (com autorização). Embarques e cobranças criados enquanto a correção esteve ligada continuam como estão. |
+
+<a id="correcao-4-mapa"></a>
+
+## 20/11/2026 · Correção 4 · Mapa do passageiro sem localização fictícia (P0 do mapa e erro `_leaflet_pos`)
+
+| Campo | Resultado |
+| --- | --- |
+| Autorização | Dono autorizou só a Correção 4 em 20/11/2026: sem produção, sem publicação, sem merge na `main`, sem GPS real. Os 2 embarques de 17/11 eram testes fictícios: não recuperar ([decisão](evidencias/2026-11-20-auditoria-fase4.md)). |
+| Base e branch | Branch `claude/correcao-4-mapa`, a partir de `claude/correcao-3-embarque` (`b426994`). `main` intocada em `1206cbd`. |
+| Problema reproduzido | No app real (Chromium, banco simulado no navegador): van desenhada, «Chega no seu ponto em 1 min», «Está passando por Jacarezinho» e «Você é o próximo» com o banco dizendo 2 antes. Erro `_leaflet_pos` reproduzido com o componente do app: 20/20 e 20/20 ao fechar durante zoom. |
+| Mudança | Só app, sem banco. `src/lib/mapa.ts` (sem simulação), `src/components/app/MapaDaVan.tsx` (sem van; zoom encerrado antes de destruir o mapa; descrição para leitor de tela), `src/routes/passageiro.van.tsx` (tela «Situação da van»), novos `src/lib/painel-do-mapa.ts` e `src/components/app/passageiro/PainelDoMapa.tsx`, `src/lib/viagem.ts` + `src/lib/banco/viagem.ts` (vista parcial do passageiro não inventa posição na fila), `src/lib/coordenadas-store.ts` («Carregando o mapa…»), `EmbarqueDaViagem.tsx` (opção de não repetir a posição; Início igual), `OndeEmbarco.tsx` (sem a prop da van). |
+| Testes | `correcao4-mapa.test.tsx` 14/14; Chromium: fechar durante zoom 0/60 com erro; percurso do passageiro no app 17/17; «Onde você embarca» ok; 3 tamanhos de celular sem rolagem. App: 472 testes, tipos e build ok; lint 1.733 erros de formatação herdados e os mesmos 5 avisos. Banco: C1 26/26, C2 17/17, C3 14/14, regressão sem mudança, financeiro 20/20, E3 28/28. [Provas](evidencias/2026-11-20-correcao4-mapa.md). |
+| Pendências | Prova em celular físico; GPS real fora do escopo; fornecedor de mapa e de busca de endereço para uso comercial (OpenStreetMap gratuito tem limites). |
+| Para produção | Nenhuma mudança no banco. Publicar o app (junto com as Correções 1–3, depois de aplicar as migrações). |
+| Como desfazer | Reverter o commit da Correção 4 na branch. |

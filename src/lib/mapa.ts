@@ -1,15 +1,12 @@
 import type { Destino, Passageiro } from "@/data/exemplo";
 import { obterCoordenadas } from "@/lib/coordenadas-store";
 import { caminhoCompleto } from "@/lib/destinos";
-import { proximoDaBusca, type ViagemDoDia } from "@/lib/viagem";
 
-// The van on the map (section 12, stage 2 of docs/fonte-da-verdade.md). For now the van's position is SIMULATED
-// from the trip on the vanzeiro's phone; with the database, the real GPS position replaces it here.
+// The trip on the map: the route's cities and the passenger's own point. CORREÇÃO 4 (20/11/2026): the van's position
+// is NOT shown. There is no real GPS yet, and the old simulated van (and its "chega em N min") looked real; both were
+// removed. Real GPS stays out of the current scope (decision of the owner).
 
 export type Ponto = { lat: number; lng: number };
-
-/** Average speed used to estimate "chega em uns N min" (city and road mixed). */
-const VELOCIDADE_MEDIA_KMH = 40;
 
 function coordenadaDaCidade(nome: string): Ponto | null {
   return obterCoordenadas()[nome] ?? null;
@@ -36,72 +33,4 @@ export function distanciaKm(a: Ponto, b: Ponto) {
   const dLng = rad(b.lng - a.lng);
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * r * Math.asin(Math.sqrt(h));
-}
-
-const entre = (a: Ponto, b: Ponto, t: number): Ponto => ({ lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t });
-
-export type VanNoMapa = {
-  /** Where the van is drawn (null = not on the map: trip not started or already over). */
-  ponto: Ponto | null;
-  /** "Jacarezinho": the nearest city of the trip. */
-  passandoPor: string | null;
-  /** Minutes until the passenger's point (only while the van is coming to pick them up). */
-  minutosAteVoce: number | null;
-};
-
-/**
- * Simulated van: during the pickup it goes from the last handled point toward the next passenger;
- * `progresso` (0 to 1) moves it along that stretch. At the destino it waits there.
- */
-export function vanSimulada(a: {
-  destino: Destino;
-  viagem: ViagemDoDia | undefined;
-  passageiros: Pick<Passageiro, "id" | "ponto" | "cidade">[];
-  euId: string;
-  progresso: number;
-}): VanNoMapa {
-  const { viagem: v, destino } = a;
-  const cidades = cidadesNoMapa(destino);
-  const nada = { ponto: null, passandoPor: null, minutosAteVoce: null };
-  if (!v || v.fase === "encerrada" || cidades.length === 0) return nada;
-  const origem = cidades[0]!.ponto;
-  const fim = cidades[cidades.length - 1]!.ponto;
-  const pontoDe = (id: string) => {
-    const p = a.passageiros.find((x) => x.id === id);
-    return (p && pontoDoPassageiro(p)) ?? origem;
-  };
-
-  let ponto: Ponto;
-  let minutosAteVoce: number | null = null;
-  if (v.fase === "busca" || v.fase === "parada" || v.fase === "conferencia") {
-    const tratados = v.ordem.filter((id) => v.embarcaram.includes(id) || v.naoEstavam.includes(id));
-    const ultimo = tratados.length ? pontoDe(tratados[tratados.length - 1]!) : origem;
-    const proximo = proximoDaBusca(v);
-    const alvo = proximo ? pontoDe(proximo) : fim;
-    ponto = v.fase === "busca" ? entre(ultimo, alvo, Math.min(Math.max(a.progresso, 0), 1)) : ultimo;
-
-    if (v.ordem.includes(a.euId) && !tratados.includes(a.euId)) {
-      const faltam = v.ordem.slice(v.ordem.indexOf(proximo ?? a.euId), v.ordem.indexOf(a.euId) + 1).map(pontoDe);
-      let km = 0;
-      let de = ponto;
-      for (const p of faltam) {
-        km += distanciaKm(de, p);
-        de = p;
-      }
-      minutosAteVoce = Math.max(1, Math.round((km / VELOCIDADE_MEDIA_KMH) * 60));
-    }
-  } else if (v.fase === "volta") {
-    ponto = entre(fim, origem, Math.min(Math.max(a.progresso, 0), 1) * 0.5);
-  } else {
-    ponto = fim;
-  }
-
-  const maisPerto = [...cidades].sort((x, y) => distanciaKm(ponto, x.ponto) - distanciaKm(ponto, y.ponto))[0]!;
-  return { ponto, passandoPor: maisPerto.nome, minutosAteVoce };
-}
-
-/** "Chega no seu ponto em uns 12 min" / "em menos de 1 min". */
-export function textoDaChegada(minutos: number | null) {
-  if (minutos === null) return null;
-  return minutos <= 1 ? "Chega no seu ponto em 1 min" : `Chega no seu ponto em uns ${minutos} min`;
 }

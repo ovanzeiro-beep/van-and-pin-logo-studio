@@ -1,95 +1,129 @@
 import { textoDoCafe } from "@/lib/destinos";
-import { useEffect, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Clock, Coffee, MapPin, Navigation } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { MapaDaVan } from "@/components/app/MapaDaVan";
+import { PainelDoMapa } from "@/components/app/passageiro/PainelDoMapa";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { cidadesNoMapa, textoDaChegada, vanSimulada } from "@/lib/mapa";
+import { cidadesNoMapa } from "@/lib/mapa";
 import { caminhoCompleto, nomeDestino } from "@/lib/destinos";
-import { useCoordenadas, useProcurarCidades } from "@/lib/coordenadas-store";
+import { useCoordenadas, useProcurandoAlguma, useProcurarCidades } from "@/lib/coordenadas-store";
+import { useEmbarqueDaViagem } from "@/lib/banco/embarque";
+import { situacaoComEmbarque } from "@/lib/embarque";
 import { useSituacaoDaVan } from "@/lib/minha-viagem";
-import { usePassageiros } from "@/lib/passageiros-store";
+import { estadoDoMapa, rotuloDoMapa, TEXTO_DO_MAPA } from "@/lib/painel-do-mapa";
 import { cn } from "@/lib/utils";
 import { BotaoVoltar } from "@/components/app/PilulaDoCabecalho";
 
 export const Route = createFileRoute("/passageiro/van")({
   head: () => ({
     meta: [
-      { title: "Onde está a van — O Vanzeiro" },
-      { name: "description", content: "A van no mapa e quanto falta para chegar no seu ponto." },
+      { title: "Situação da van — O Vanzeiro" },
+      {
+        name: "description",
+        content: "A rota da viagem, o seu ponto de embarque e a situação da van.",
+      },
     ],
   }),
-  component: OndeEstaAVan,
+  component: SituacaoDaVanNoMapa,
 });
 
-/** Simulated movement: the van crosses each stretch in about a minute (only while the pickup goes on). */
-function useProgresso() {
-  const [progresso, setProgresso] = useState(0.3);
-  useEffect(() => {
-    const t = setInterval(() => setProgresso(((Date.now() / 1000) % 60) / 60), 1000);
-    return () => clearInterval(t);
-  }, []);
-  return progresso;
-}
-
-function OndeEstaAVan() {
-  const { eu, destino, viagemDeHoje, van } = useSituacaoDaVan();
-  const passageiros = usePassageiros();
-  const progresso = useProgresso();
+/**
+ * CORREÇÃO 4 (20/11/2026): only real data. The route and the person's point on the map; under it, the same "Situação
+ * da van" as the Início (with the real boarding from the database). No van on the map and no "chega em N min": there
+ * is no real GPS yet, and the old simulated van looked real.
+ */
+function SituacaoDaVanNoMapa() {
+  const { eu, destino, van: situacao } = useSituacaoDaVan();
+  // The place in line ("Você é o próximo", "Faltam 2 antes de você") comes only from the real boarding (REV-09).
+  const embarque = useEmbarqueDaViagem(eu.id, destino?.id ?? "");
+  const van = situacaoComEmbarque(situacao, embarque);
 
   useCoordenadas();
-  useProcurarCidades(destino ? caminhoCompleto(destino) : []);
+  const caminho = destino ? caminhoCompleto(destino) : [];
+  useProcurarCidades(caminho);
+  const procurando = useProcurandoAlguma(caminho);
   const cidades = destino ? cidadesNoMapa(destino) : [];
+  const estado = estadoDoMapa({
+    temDestino: Boolean(destino),
+    cidadesNoMapa: cidades.length,
+    procurando,
+  });
   // Only a point the person marked: the city center is never shown as "seu ponto".
   const meuPonto = eu.ponto ?? null;
-  const naVan = destino ? vanSimulada({ destino, viagem: viagemDeHoje, passageiros, euId: eu.id, progresso }) : null;
-  const chegada = textoDaChegada(naVan?.minutosAteVoce ?? null);
-
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PassageiroHeader compacto titulo="Onde está a van" subtitulo={destino ? nomeDestino(destino) : "Sua viagem."}>
+      <PassageiroHeader
+        compacto
+        titulo="Situação da van"
+        subtitulo={destino ? nomeDestino(destino) : "Sua viagem."}
+      >
         <BotaoVoltar senao="/passageiro" />
       </PassageiroHeader>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 px-5 pb-4 pt-4">
         <div className="relative min-h-0 flex-1">
-          {cidades.length > 0 ? (
-            <MapaDaVan cidades={cidades} meuPonto={meuPonto} van={naVan?.ponto ?? null} marcando={false} aoMarcar={() => undefined} />
+          {estado === "pronto" && destino ? (
+            <MapaDaVan
+              cidades={cidades}
+              meuPonto={meuPonto}
+              marcando={false}
+              aoMarcar={() => undefined}
+              rotulo={rotuloDoMapa(nomeDestino(destino), meuPonto !== null)}
+            />
           ) : (
-            <div className="flex h-full items-center justify-center rounded-3xl bg-card p-6 text-center text-sm text-muted-foreground shadow-card">
-              O mapa deste destino ainda não está disponível.
+            <div
+              className="flex h-full items-center justify-center rounded-3xl bg-card p-6 text-center text-sm text-muted-foreground shadow-card"
+              aria-busy={estado === "carregando"}
+            >
+              {TEXTO_DO_MAPA[estado === "pronto" ? "indisponivel" : estado]}
             </div>
           )}
         </div>
 
-        <>
-            <section className="shrink-0 rounded-3xl bg-card p-4 shadow-card">
-              <p className={cn("font-display text-lg font-bold leading-tight", van.alerta ? "text-destructive" : "text-foreground")}>{van.situacao}</p>
-              <p className="text-sm text-muted-foreground">{van.detalhe}</p>
-              {naVan?.passandoPor && (
-                <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Navigation className="h-4 w-4 shrink-0 text-primary" /> Está passando por {naVan.passandoPor}
-                </p>
-              )}
-              {chegada && (
-                <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Clock className="h-4 w-4 shrink-0 text-warning" /> {chegada}
-                </p>
-              )}
-              {destino?.cafe && (
-                <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Coffee className="h-4 w-4 shrink-0 text-warning" /> Parada do café: {textoDoCafe(destino.cafe)} ({destino.cafe.minutos} min)
-                </p>
-              )}
-              {!eu.ponto && cidades.length > 0 && <p className="mt-2 text-sm font-semibold text-warning">Você ainda não marcou o seu ponto no mapa.</p>}
-              <p className="mt-2 text-xs text-muted-foreground">Posição simulada. A posição de verdade, pelo GPS do vanzeiro, entra com o banco de dados.</p>
-            </section>
-            <Link to="/passageiro/embarque/$pid" params={{ pid: eu.id }} className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full shrink-0")}>
-              <MapPin className="!h-5 !w-5" /> {eu.ponto ? "Mudar onde embarco" : "Marcar meu ponto no mapa"}
+        {estado === "pronto" && (
+          <ul
+            className="flex shrink-0 items-center gap-4 px-1 text-xs font-semibold text-muted-foreground"
+            aria-label="Legenda do mapa"
+          >
+            <li className="flex items-center gap-1.5">
+              <span
+                className="inline-block w-5 border-t-[3px] border-dashed border-primary"
+                aria-hidden="true"
+              />{" "}
+              Rota da viagem
+            </li>
+            {meuPonto && (
+              <li className="flex items-center gap-1">
+                <MapPin className="h-4 w-4 text-warning" aria-hidden="true" /> Seu ponto
+              </li>
+            )}
+          </ul>
+        )}
+
+        {destino && (
+          <>
+            <PainelDoMapa
+              van={van}
+              embarque={embarque}
+              cafe={
+                destino.cafe
+                  ? `Parada do café: ${textoDoCafe(destino.cafe)} (${destino.cafe.minutos} min)`
+                  : null
+              }
+              semPonto={!eu.ponto && estado === "pronto"}
+            />
+            <Link
+              to="/passageiro/embarque/$pid"
+              params={{ pid: eu.id }}
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full shrink-0")}
+            >
+              <MapPin className="!h-5 !w-5" />{" "}
+              {eu.ponto ? "Mudar onde embarco" : "Marcar meu ponto no mapa"}
             </Link>
-        </>
+          </>
+        )}
       </div>
     </div>
   );

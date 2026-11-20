@@ -49,7 +49,7 @@ export function useMinhasViagens() {
   return { eu, destino, destaque, proximas, matriculas, destinos, viagens, proximaDistante: distante?.data ?? null, viagemDeHoje: viagens[eu.destinoId], respostaDeHoje: respostasDoDia(agora_val.data)[eu.id] };
 }
 
-/** "Situação da van" (Início and "Onde está a van"): the same answer on both screens. */
+/** "Situação da van" (Início and the map screen, "Situação da van"): the same answer on both screens. */
 export function useSituacaoDaVan() {
   const m = useMinhasViagens();
   const { eu, destino, destaque, proximas, proximaDistante, viagemDeHoje, respostaDeHoje } = m;

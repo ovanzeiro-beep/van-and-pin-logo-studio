@@ -88,6 +88,8 @@ export function viagemDoPassageiro(matriculaId: string, destino: Pick<Destino, "
     desceram: [],
     comecouEm: momentoDe(m.comecou_em).slice(11),
     voltaAs: m.volta_as ?? undefined,
+    // Only this person's place: the pickup order of the others is not on this phone (CORREÇÃO 4).
+    parcial: true,
   };
 }
 
