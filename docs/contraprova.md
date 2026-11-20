@@ -2041,3 +2041,16 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Pendências | Prova em celular físico; GPS real fora do escopo; fornecedor de mapa e de busca de endereço para uso comercial (OpenStreetMap gratuito tem limites). |
 | Para produção | Nenhuma mudança no banco. Publicar o app (junto com as Correções 1–3, depois de aplicar as migrações). |
 | Como desfazer | Reverter o commit da Correção 4 na branch. |
+
+<a id="integracao-correcoes-1-a-4"></a>
+## 20/11/2026 · Integração das Correções 1 a 4 (preparada, NÃO implantada)
+
+| Campo | Resultado |
+| --- | --- |
+| Autorização | Dono pediu só a preparação: sem mudar o Supabase de produção, sem merge na `main`, sem publicar, sem recuperar os 2 embarques fictícios de 17/11, sem iniciar a Correção 5. |
+| Branch | `claude/integracao-correcoes-1-a-4`, a partir de `claude/correcao-4-mapa` (`fd79d07`). `main` intocada em `1206cbd`; merge seria avanço direto, sem conflito. |
+| Pacote | `docs/implantacao-correcoes-1-a-4.md` (sequência, celulares antigos, monitoramento, reversão, Lovable), `docs/roteiro-celular-correcoes-1-a-4.md`, `supabase/testes/implantacao-verificar.sql` (9 conferências só leitura), `supabase/testes/correcao1-reverter.sql` (novo), `supabase/testes/correcao2-reverter.sql` (passa a apagar 5 funções internas que ficavam para trás), `scripts/backup-ensaio-implantacao.py`. |
+| Backup | Exportação só em leitura de 16 tabelas (180 linhas), entregue ao dono fora do GitHub; sha256 `b573d3753b8581c171261f8e419bedf25351df788f772dcdbdc78128af5d1841`. Fora: contas de login, `chaves_push`, `celulares`, `entregas_push`. Restauração provada 20/20 idêntica. |
+| Testes juntos | App 472/472, tipos e build ok, lint sem nada novo; banco 110/117 (os 7 são de correções futuras); C1 26/26, C2 17/17, C3 14/14, financeiro 20/20, E3 28/28; Chromium 17/17 e 0/60 erros no zoom; ensaio sobre cópia dos dados reais: dados inalterados, cobranças 8 → 8, 0 avisos duplicados, reversão idêntica; verificação pós-implantação 9/9. |
+| Pendências | Autorização para: migrações C1 → C2 → C3, merge, publicação. Prova em celular físico. Plano Pro (backup automático). Viagem de 18/11 parada em «chegada» (o vanzeiro encerra no app). Correções 5 e 6 e P1/P2. |
+

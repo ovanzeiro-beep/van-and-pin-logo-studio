@@ -157,4 +157,11 @@ revoke all on function public.avisar_destino_excluido() from public, anon, authe
 
 revoke all on function public.tarefas_do_relogio(timestamptz) from public, anon, authenticated;
 
+-- As funções novas da correção, que ficam sem uso depois de tirar os gatilhos.
+drop function if exists public.cobranca_regras_da_saida();
+drop function if exists public.matricula_encerrada();
+drop function if exists public.r_cancelar_periodos_futuros(text, text, date);
+drop function if exists public.r_periodo_futuro(public.cobrancas, integer, date);
+drop function if exists public.r_inicio_do_periodo(public.cobrancas, integer);
+
 commit;
