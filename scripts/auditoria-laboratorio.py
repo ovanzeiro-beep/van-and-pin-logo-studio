@@ -421,6 +421,158 @@ def t8_t9_t10(base):
     c.close()
 
 
+# ---------------------------------------------------------------- C1: Correção 1 (avisos seguros)
+SEMANA_CHEIA = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]  # date.weekday()
+MESES_CURTOS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+
+
+def quando_vai(dia, hoje):
+    """Mesma frase de quandoVai() em src/lib/avisos.ts (terceira implementação, só para os fluxos do teste)."""
+    if dia == hoje:
+        return "hoje"
+    return ("no " if dia.weekday() >= 5 else "na ") + f"{SEMANA_CHEIA[dia.weekday()]}, {dia.day} de {MESES_CURTOS[dia.month - 1]}"
+
+
+def aviso(id, destino, para, tipo, texto, chave=None, mid=None, cid=None, criado=None):
+    a = {"id": id, "destino_id": destino, "para": str(para), "tipo": tipo, "texto": texto, "chave": chave or id}
+    if mid: a["matricula_id"] = mid
+    if cid: a["cobranca_id"] = cid
+    if criado: a["criado_em"] = str(criado)
+    return json.dumps(a)
+
+
+def salvar(c, uid, a, trocar=False):
+    como(c, uid)
+    return tenta(c, "select public.salvar_aviso(%s, %s)", (a, trocar))
+
+
+def c1(base):
+    c = nova_db(base, "c1"); u = cenario(c); h = u["hoje"]
+    admin(c)
+    tem_correcao = q(c, "select count(*) from pg_proc where proname='r_textos_da_resposta'")[0][0] == 1
+    registra("C1.0", "Banco do laboratório tem a Correção 1 aplicada", "sim", tem_correcao, tem_correcao)
+    if not tem_correcao:
+        return
+    # (a) o banco monta exatamente os textos que o app escreve (arquivo gerado pelo próprio app)
+    casos = json.load(open(ROOT / "supabase/testes/correcao1-textos-dos-avisos.json"))
+    erradas = []
+    for k in casos:
+        if k["tipo"] == "resposta":
+            ok = q(c, "select %s = any(public.r_textos_da_resposta(%s, %s, %s, %s, %s, %s))",
+                   (k["texto"], k["nome"], k["origem"], k["destino"], k["dia"], k["resposta"], k["hoje"]))[0][0]
+        else:
+            ok = q(c, "select %s = any(public.r_textos_do_periodo(%s, %s, %s, %s, %s))",
+                   (k["texto"], k["nome"], k["origem"], k["destino"], k["de"], k["ate"]))[0][0]
+        if not ok:
+            erradas.append(k["texto"])
+    registra("C1.1", f"Os {len(casos)} textos escritos pelo app são aceitos pelo banco", "0 diferenças", f"{len(erradas)} diferenças {erradas[:2]}", not erradas)
+
+    V, P1, P2, P3, X, V2 = u["V"], u["P1"], u["P2"], u["P3"], u["X"], u["V2"]
+    nome1, nome2 = "P1", "P2"  # primeiro nome das matrículas do cenário ("P1 Teste")
+    # ---- ataques (todos precisam ser recusados)
+    ataques = [
+        ("C1.A1", P1, aviso("g1", "d1", P2, "cobranca_vencida", "Mensalidade mudou: pague no Pix golpe@exemplo.invalid", mid="m1"), False,
+         "Passageiro manda 'cobrança vencida' com Pix falso a outro passageiro"),
+        ("C1.A2", P1, aviso("g2", "d1", V, "pedido_novo", "Pedido novo falso", mid="m1"), False, "Passageiro manda 'pedido novo' falso ao vanzeiro"),
+        ("C1.A3", P1, aviso("g3", "d1", V, "resposta_passageiro", "URGENTE: sua conta será suspensa, pague a taxa no Pix", chave=f"resposta_m1_{h}", mid="m1"), True,
+         "Passageiro manda 'resposta' com texto inventado ao vanzeiro"),
+        ("C1.A4", P1, aviso("g4", "d1", V, "resposta_passageiro", f"{nome2} confirmou que hoje vai de Cidade A a Cidade B.", chave=f"resposta_m2_{h}", mid="m2"), True,
+         "Passageiro manda 'resposta' usando a matrícula de outra pessoa"),
+        ("C1.A5", P1, aviso("g5", "d1", V, "resposta_passageiro", f"{nome1} confirmou que hoje vai de Cidade A a Cidade B.", chave=f"resposta_m1_{h}", mid="m1"), True,
+         "Passageiro manda 'resposta' de um dia em que não respondeu"),
+        ("C1.A6", P1, aviso("g6", "d1", P2, "presenca_confirmada", "Você confirmou...", chave=f"presenca_m2_{h}", mid="m1"), True,
+         "Passageiro manda aviso de presença para outra pessoa"),
+        ("C1.A7", P1, aviso("proxima_x", "d1", P1, "prazo_chegando", "x", chave=f"proxima_vg_m1", mid="m1"), False,
+         "Passageiro usa chave reservada ao banco ('proxima_')"),
+        ("C1.A8", P1, aviso("g8", "d1", V, "resposta_passageiro", f"{nome1} marcou \"Não vou\" em 01/01, em Cidade A → Cidade B", chave="nao_vou_periodo_naoexiste", mid="m1"), True,
+         "Passageiro manda aviso de período 'Não vou' que não existe"),
+        ("C1.A9", V2, aviso("g9", "d1", P1, "pedido_aceito", "Seu pedido foi aceito", mid="m1"), False, "Outro vanzeiro avisa passageiro alheio"),
+        ("C1.A10", V, aviso("g10", "d1", P1, "boa_viagem", "Boa viagem", mid="m1"), False, "Vanzeiro cria tipo que só o banco cria ('boa viagem')"),
+        ("C1.A11", V, aviso("g11", "d1", P1, "cobranca_vencida", "Você está devendo", chave="cobranca_vencida_x", mid="m1"), False,
+         "Vanzeiro manda 'cobrança vencida' (aviso do vanzeiro) para passageiro"),
+        ("C1.A12", V, aviso("g12", "d1", P2, "pedido_aceito", "Seu pedido foi aceito", mid="m1"), False,
+         "Vanzeiro manda aviso de uma matrícula para outra pessoa"),
+        ("C1.A13", X, aviso("g13", "d1", P1, "prazo_chegando", "x", mid="m1"), False, "Pessoa de fora do destino cria aviso"),
+        ("C1.A14", V, aviso("g14", "d1", P1, "van_saiu", "x" * 401, chave=f"van_saiu_m1_{h}", mid="m1"), False, "Aviso com texto de 401 letras"),
+        ("C1.A15", P1, aviso("g15", "d1", P1, "presenca_confirmada", "x", chave=f"presenca_m1_{h}"), True, "Passageiro manda aviso sem dizer a matrícula"),
+    ]
+    for teste, quem, a, trocar, desc in ataques:
+        r = salvar(c, quem, a, trocar)
+        admin(c); gravado = q(c, "select count(*) from public.avisos where id=%s", (json.loads(a)["id"],))[0][0]
+        registra(teste, desc, "recusado e nada gravado", f"{r[0]}: {r[1]}", r[0] == "erro" and gravado == 0)
+
+    # ---- sobrescrever avisos existentes (precisa ficar como estava)
+    r = salvar(c, V, aviso("legit-p2", "d1", P2, "pedido_aceito", "O vanzeiro aceitou seu pedido para Cidade A → Cidade B", mid="m2"))
+    admin(c); antes = q(c, "select texto from public.avisos where id='legit-p2'")
+    salvar(c, P1, aviso("legit-p2b", "d1", P2, "pedido_aceito", "Pague a taxa no Pix golpe", chave="legit-p2", mid="m1"), True)
+    admin(c); depois = q(c, "select texto from public.avisos where chave='legit-p2' and para=%s", (str(P2),))
+    registra("C1.B1", "Passageiro tenta trocar o texto de um aviso do vanzeiro para outra pessoa", "texto original", depois, depois == antes and len(antes) == 1)
+    admin(c)
+    q(c, """insert into public.avisos (id, vanzeiro_id, para, tipo, texto, chave, destino_id, matricula_id, criado_em)
+            values ('sis', %s, %s, 'destino_excluido', 'Texto do sistema', 'destino_excluido_d1', 'd1', 'm1', current_date)""", (V, str(P1)))
+    q(c, """insert into public.avisos (id, vanzeiro_id, para, tipo, texto, chave, destino_id, matricula_id, criado_em)
+            values ('sis-prazo', %s, %s, 'prazo_chegando', 'Prazo do sistema', %s, 'd1', 'm1', current_date)""", (V, str(P1), f"prazo_m1_{h}"))
+    r1 = salvar(c, V, aviso("sis2", "d1", P1, "van_saiu", "Trocado", chave="destino_excluido_d1", mid="m1"), True)
+    r2 = salvar(c, V, aviso("sis3", "d1", P1, "prazo_chegando", "Trocado", chave=f"prazo_m1_{h}", mid="m1"), True)
+    admin(c); st = q(c, "select texto from public.avisos where para=%s and chave in ('destino_excluido_d1', %s) order by texto", (str(P1), f"prazo_m1_{h}"))
+    registra("C1.B2", "Vanzeiro tenta trocar avisos já existentes do passageiro (chave reservada e chave comum)", "textos originais mantidos",
+             f"{r1[0]}, {r2[0]}; {st}", st == [("Prazo do sistema",), ("Texto do sistema",)])
+
+    # ---- fluxos legítimos (como o app faz): precisam continuar funcionando
+    como(c, P1); q(c, "select public.responder('m1', %s, 'vai')", (h,))
+    txt_vou = f"{nome1} confirmou que {quando_vai(h, h)} vai de Cidade A a Cidade B."
+    r1 = salvar(c, P1, aviso("r1", "d1", V, "resposta_passageiro", txt_vou, chave=f"resposta_m1_{h}", mid="m1", criado=h), True)
+    r2 = salvar(c, P1, aviso("pr1", "d1", P1, "presenca_confirmada", "Você confirmou que hoje vai de Cidade A a Cidade B. Se desistir, avise no app até as 23:20.",
+                             chave=f"presenca_m1_{h}", mid="m1", criado=h), True)
+    como(c, P1); q(c, "select public.responder('m1', %s, 'nao-vai')", (h,))
+    txt_cancel = f"{nome1} cancelou a participação na viagem de Cidade A a Cidade B ({h.strftime('%d/%m')}). A vaga foi liberada."
+    r3 = salvar(c, P1, aviso("r2", "d1", V, "resposta_passageiro", txt_cancel, chave=f"resposta_m1_{h}", mid="m1", criado=h), True)
+    r4 = salvar(c, P1, aviso("pr2", "d1", P1, "ausencia_registrada", "Você cancelou sua participação...", chave=f"presenca_m1_{h}", mid="m1", criado=h), True)
+    como(c, V); vis = q(c, "select texto from public.avisos where chave=%s", (f"resposta_m1_{h}",))
+    como(c, P1); pres = q(c, "select tipo from public.avisos where chave=%s", (f"presenca_m1_{h}",))
+    registra("C1.L1", "Passageiro responde 'Vou' e depois desiste: o vanzeiro vê só a última resposta; presença trocada",
+             "4 ok; vanzeiro vê o cancelamento; presença = ausência registrada", f"{[r1[0], r2[0], r3[0], r4[0]]}; {vis}; {pres}",
+             [r1[0], r2[0], r3[0], r4[0]] == ["ok"] * 4 and vis == [(txt_cancel,)] and pres == [("ausencia_registrada",)])
+    r = salvar(c, P1, aviso("r3", "d1", V, "resposta_passageiro", "URGENTE: pague a taxa no Pix golpe@exemplo.invalid", chave=f"resposta_m1_{h}", mid="m1", criado=h), True)
+    como(c, V); vis2 = q(c, "select texto from public.avisos where chave=%s", (f"resposta_m1_{h}",))
+    registra("C1.A16", "Com uma resposta verdadeira gravada, passageiro troca o texto do aviso por um golpe", "recusado; vanzeiro vê o texto certo",
+             f"{r[0]}: {r[1]}; {vis2}", r[0] == "erro" and vis2 == [(txt_cancel,)])
+    como(c, P2); per = q(c, "select public.marcar_nao_vou('m2', %s, %s)", (h, h + dt.timedelta(days=2)))[0][0]
+    dias = f"de {h.strftime('%d/%m')} até {(h + dt.timedelta(days=2)).strftime('%d/%m')}"
+    r5 = salvar(c, P2, aviso("np1", "d1", V, "resposta_passageiro", f'{nome2} marcou "Não vou" {dias}, em Cidade A → Cidade B', chave=f"nao_vou_periodo_{per}", mid="m2", criado=h), True)
+    como(c, P2); q(c, "select public.tirar_nao_vou(%s)", (per,))
+    r6 = salvar(c, P2, aviso("np2", "d1", V, "resposta_passageiro", f'{nome2} tirou o "Não vou" {dias}, em Cidade A → Cidade B', chave=f"nao_vou_periodo_{per}", mid="m2", criado=h), True)
+    como(c, V); vis = q(c, "select texto from public.avisos where chave=%s", (f"nao_vou_periodo_{per}",))
+    registra("C1.L2", "Passageiro marca e tira 'Não vou de… até…': o vanzeiro vê o aviso trocado", "2 ok; texto 'tirou'", f"{[r5[0], r6[0]]}; {vis}",
+             [r5[0], r6[0]] == ["ok", "ok"] and len(vis) == 1 and "tirou" in vis[0][0])
+    como(c, V)
+    q(c, """insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
+            values ('cv1', %s, 'm3', 'd1', 'P3 Teste', '43999990003', 'diario', 'Diária', %s, 2000)""", (V, h + dt.timedelta(days=2)))
+    do_vanzeiro = [
+        aviso("v1", "d1", P3, "pedido_aceito", "O vanzeiro aceitou seu pedido para Cidade A → Cidade B", mid="m3"),
+        aviso("v2", "d1", P3, "endereco_aceito", "O vanzeiro aceitou seu novo endereço: Rua 2", mid="m3"),
+        aviso("v3", "d1", P3, "viagem_cancelada", "Não vai ter viagem", mid="m3"),
+        aviso("v4", "d1", P3, "viagem_de_volta", "Vai ter viagem", mid="m3"),
+        aviso("v5", "d1", P3, "van_saiu", "A van saiu", chave=f"van_saiu_m3_{h}", mid="m3"),
+        aviso("v6", "d1", P3, "prazo_chegando", "Responda até 23:20", chave=f"prazo_m3_{h}", mid="m3"),
+        aviso("v7", "d1", P3, "cobranca_vencendo", "Diária vence", chave="cobranca_vencendo_cv1", mid="m3", cid="cv1"),
+        aviso("v8", "d1", V, "cobranca_vencida", "P3 está devendo", chave="cobranca_vencida_cv1", mid="m3", cid="cv1"),
+        aviso("v9", "d1", P3, "endereco_recusado", "O vanzeiro não aceitou o novo endereço", mid="m3"),
+    ]
+    res = [salvar(c, V, a)[0] for a in do_vanzeiro]
+    registra("C1.L3", "Os 9 tipos de aviso que o app do vanzeiro cria continuam aceitos", "9 ok", res, res == ["ok"] * 9)
+    res = [salvar(c, P3, aviso("s1", "d1", P3, "prazo_chegando", "Responda até 23:20", chave=f"prazo_m3_{h + dt.timedelta(days=1)}", mid="m3"))[0],
+           salvar(c, P3, aviso("s2", "d1", P3, "cobranca_vencendo", "Diária vence", chave="cobranca_vencendo_cv1", mid="m3", cid="cv1"))[0]]
+    registra("C1.L4", "Avisos que o passageiro cria para si mesmo (prazo, cobrança vencendo)", "2 ok", res, res == ["ok", "ok"])
+    a = aviso("v1b", "d1", P3, "van_saiu", "A van saiu", chave=f"van_saiu_m3_{h}", mid="m3")
+    r = salvar(c, V, a); admin(c); n = q(c, "select count(*) from public.avisos where chave=%s", (f"van_saiu_m3_{h}",))[0][0]
+    registra("C1.L5", "Mesmo aviso enviado de novo (reenvio do celular) não duplica", "ok e 1 aviso", (r[0], n), r[0] == "ok" and n == 1)
+    admin(c); q(c, "select public.tarefas_do_relogio(now())")
+    como(c, V); q(c, "update public.destinos set excluido_em=now(), ativo=false where id='d1'")
+    admin(c); n = q(c, "select count(*) from public.avisos where tipo='destino_excluido' and chave like 'destino_excluido_d1'")[0][0]
+    registra("C1.L6", "Avisos criados pelo próprio banco (tarefa automática e destino excluído) continuam funcionando", "aviso de destino excluído criado", n, n >= 1)
+    c.close()
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
@@ -443,7 +595,7 @@ def montar_base(nome="vz_auditoria_base"):
     return nome
 
 
-GRUPOS = {"t1": t1, "t2": t2, "t3": t3, "t4": t4_t5, "t6": t6_t7, "t8": t8_t9_t10}
+GRUPOS = {"t1": t1, "t2": t2, "t3": t3, "t4": t4_t5, "t6": t6_t7, "t8": t8_t9_t10, "c1": c1}
 
 if __name__ == "__main__":
     import argparse

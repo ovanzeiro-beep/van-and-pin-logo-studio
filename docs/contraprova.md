@@ -1964,3 +1964,29 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 - O retorno usa o horário do destino e a regra existente para a data de volta. Em uma ida sem volta, exibe «Ida concluída». Quando a hora programada chega, mostra «Aguardando o motorista iniciar a volta». A conferência e a volta em andamento usam a fase registrada pelo motorista.
 - A conferência local cobre ida sem volta, 42 minutos restantes, mudança para espera, retorno no dia seguinte e excursão em outra data. O cálculo continua correto virando a meia-noite quando recebe a viagem. A consulta atual do passageiro continua limitada à viagem do dia. Manter uma viagem do dia anterior visível após a meia-noite e distinguir embarques de pessoas que ficaram em uma parada exigem revisar essa leitura individual.
 - A etapa trata do painel. O disparo de «Chegamos ao destino» e sua entrega no celular permanecem para outra etapa. Nenhuma alteração no Supabase foi aplicada por esta entrega.
+
+<a id="auditoria-2026-11-20"></a>
+
+## 20/11/2026 · Auditoria (fases 1 a 4)
+
+- Base `1206cbdeccecf8b9c5a51e3b6b17f94540b37d5b`. Fases 1 a 3 só leitura; Fase 4 num PostgreSQL local descartável, com dados fictícios. Nada foi escrito em produção.
+- 60 testes de banco: 45 passaram, 15 falharam. Teste do app: cobrança perdida quando a internet cai logo depois do «Embarcou» (dois cenários reproduzidos; controle passou). Regressão: 20/20 verificações financeiras, 451/451 testes do app.
+- Provas, classificação P0–P3 e decisões D1–D5 do dono: [registro da auditoria](evidencias/2026-11-20-auditoria-fase4.md). Laboratório reproduzível: `scripts/auditoria-laboratorio.py`.
+
+<a id="correcao-1-avisos"></a>
+
+## 20/11/2026 · Correção 1 · Bloqueio dos avisos falsos (P0-2)
+
+| Campo | Resultado |
+| --- | --- |
+| Autorização | Dono autorizou a Correção 1 em 20/11/2026, sem aplicar em produção, sem publicar e sem merge na `main`. |
+| Base e branch | `1206cbd`; branch de trabalho `claude/oi-nhsei8`. `main` intocada. |
+| Problema reproduzido | T2.1, T2.2, T2.3 e T2.7: passageiro criava aviso de qualquer tipo e texto para qualquer pessoa do destino (inclusive Pix falso) e trocava o texto de avisos do vanzeiro. |
+| Mudança no banco | `supabase/migrations/20261120120000_correcao1_avisos_seguros.sql`: nova versão de `salvar_aviso` (mesmo nome e parâmetros) e quatro funções internas de texto (`r_primeiro_nome`, `r_quando_vai`, `r_textos_da_resposta`, `r_textos_do_periodo`), sem permissão para o app. Nenhuma tabela, política ou dado alterado. |
+| Regra nova | Cada papel só cria os tipos que o próprio app cria; passageiro só pela própria matrícula; «Resposta de passageiro» só com o texto exato que o app escreve para uma resposta ou período existente; vanzeiro só para passageiros do próprio destino; troca de aviso só da própria resposta/presença; chaves do sistema reservadas; texto até 400 letras. |
+| Mudança no app | Só testes e um comentário em `src/lib/avisos.ts`. Teste novo `src/test/correcao1-textos-dos-avisos.test.ts` prende os 330 textos do app ao arquivo `supabase/testes/correcao1-textos-dos-avisos.json`. O teste histórico `supabase/testes/e3-ponta-a-ponta.sql` passou a enviar o texto real do app. |
+| Banco descartável | Grupo `c1`: 26 de 26 (16 ataques recusados, 2 sobrescritas impedidas, 330 textos do app aceitos, 9 tipos do vanzeiro e 2 do passageiro aceitos, troca de resposta e de período funcionando, reenvio sem duplicar, avisos do próprio banco intactos). Grupo `t2` da Fase 4: 7 de 7 (antes 3 de 7). Regressão completa: 86 testes, 75 passaram; os 11 que falham são os problemas das próximas correções, iguais aos da Fase 4. Financeiro 20/20. E3 28/28. Migração reaplicada duas vezes sem erro. |
+| App | 452 testes em 90 arquivos passaram; tipos e build sem erro; lint igual ao herdado (1.776 erros de formatação e 5 avisos; arquivo novo sem apontamentos). |
+| Não verificado | Produção, celular físico e entrega real das notificações. O laboratório usa PostgreSQL 16 e login simulado. |
+| Para produção | Com autorização do dono: aplicar a migration no Supabase (`apply_migration`), conferir em leitura a função e as permissões, e repetir no celular: responder Vou/Não vou, marcar e tirar «Não vou de… até…», aceitar pedido e iniciar viagem. Nenhuma publicação do app é necessária para esta correção. |
+| Como desfazer | Reaplicar a definição anterior de `salvar_aviso` (em `supabase/migrations/20261116170000_w8_avisos.sql`). As funções internas novas podem ficar; não afetam nada. |

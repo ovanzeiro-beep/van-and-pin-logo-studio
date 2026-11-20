@@ -9,6 +9,8 @@ declare
   saida text := '23:59';
   amanha date := public.hoje_em_brasilia() + 1;
   ped1 text; ped2 text; m1 text; x text; n int;
+  -- Correção 1 (20/11/2026): o aviso de resposta precisa ter o texto que o app escreve.
+  texto_vou text := (public.r_textos_da_resposta('Passageiro Um', 'Jacarezinho PR', 'Londrina PR', amanha, 'vai', public.hoje_em_brasilia()))[1];
   res text := '';
   procedure_ok boolean;
 begin
@@ -68,7 +70,7 @@ begin
   select count(*) into n from public.destinos; res := res || '09 P1 vê o destino depois de aceito: ' || n || E'\n';
   select count(*) into n from public.perfis_vanzeiro where pix = 'teste@pix'; res := res || '10 P1 vê o Pix do vanzeiro: ' || n || E'\n';
   begin
-    perform public.salvar_aviso(json_build_object('id','e3-a1','para',v,'tipo','resposta_passageiro','texto','Passageiro respondeu Vou','chave','resposta_e3-m1_' || amanha,'destino_id','e3-destino','matricula_id',m1)::jsonb, true);
+    perform public.salvar_aviso(json_build_object('id','e3-a1','para',v,'tipo','resposta_passageiro','texto',texto_vou,'chave','resposta_e3-m1_' || amanha,'destino_id','e3-destino','matricula_id',m1)::jsonb, true);
     res := res || '11 P1 avisa o vanzeiro (sininho): ok' || E'\n';
   exception when others then res := res || '11 aviso: ERRO ' || sqlerrm || E'\n'; end;
 

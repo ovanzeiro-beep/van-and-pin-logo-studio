@@ -59,7 +59,11 @@ export function avisoDePresenca(p: Passageiro, d: Destino, data: string, respost
   };
 }
 
-/** Vanzeiro: a passenger answered (or changed the answer). The newest answer replaces the notice. */
+/**
+ * Vanzeiro: a passenger answered (or changed the answer). The newest answer replaces the notice.
+ * Correção 1: the database accepts only these exact texts (r_textos_da_resposta / r_textos_do_periodo); a change here
+ * needs the same change there (test: src/test/correcao1-textos-dos-avisos.test.ts).
+ */
 export function avisoDeResposta(p: Passageiro, d: Destino, data: string, resposta: RespostaViagem, hoje: string, cancelou = false): NovoAviso {
   return {
     chave: `resposta_${p.id}_${data}`,
