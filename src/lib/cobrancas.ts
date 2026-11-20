@@ -327,12 +327,40 @@ export function resumoDaSaida(lista: Cobranca[], passageiroIds: string[], hoje: 
  * Decision 6: pendentes are cancelled with the reason; devendo keep being collected; paid and
  * cancelled ones stay in the history untouched.
  */
-export function cancelarPendentes(lista: Cobranca[], passageiroIds: string[], motivo: string, hoje: string): Cobranca[] {
-  return lista.map((c) =>
-    passageiroIds.includes(c.passageiroId) && situacao(c, hoje) === "pendente"
-      ? { ...c, cancelamento: { data: hoje, motivo } }
-      : c,
-  );
+/**
+ * First day of the period a Mensal/Quinzenal charge pays (the faltas window: the day after the previous due date up to
+ * the due date). null for Por viagem and Diário, and when it can't be known.
+ */
+export function inicioDoPeriodo(
+  c: Pick<Cobranca, "tipo" | "vencimento" | "periodoFaltas">,
+  dia: number | null | undefined,
+) {
+  if (c.tipo !== "mensal" && c.tipo !== "quinzenal") return null;
+  if (c.periodoFaltas) return c.periodoFaltas.de;
+  if (!dia) return null;
+  return c.tipo === "mensal"
+    ? somarDias(somarMeses(c.vencimento, -1, dia), 1)
+    : somarDias(quinzenaAnterior(dia, c.vencimento), 1);
+}
+
+/**
+ * Correção 2 (decisão D1-C do dono): when a passenger leaves (or is removed, deletes the account, or the destino is
+ * deleted), only the open charges of a period that starts AFTER the exit day are cancelled. Trips made (Por viagem,
+ * Diário), periods already started, overdue and paid charges stay. The database applies the same rule
+ * (supabase/migrations/20261120130000_correcao2_cobrancas_preservadas.sql); this one is for the app without it.
+ */
+export function cancelarPeriodosFuturos(
+  lista: Cobranca[],
+  passageiros: Pick<Passageiro, "id" | "vencimento">[],
+  motivo: string,
+  saida: string,
+): Cobranca[] {
+  const dia = new Map(passageiros.map((p) => [p.id, p.vencimento]));
+  return lista.map((c) => {
+    if (!dia.has(c.passageiroId) || situacao(c, saida) !== "pendente") return c;
+    const inicio = inicioDoPeriodo(c, dia.get(c.passageiroId));
+    return inicio !== null && inicio > saida ? { ...c, cancelamento: { data: saida, motivo } } : c;
+  });
 }
 
 /** Message the passenger sends after paying, so the vanzeiro can check and mark it as paid. */

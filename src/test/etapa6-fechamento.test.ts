@@ -3,7 +3,7 @@ import type { Passageiro } from "@/data/exemplo";
 import {
   aplicarEmbarque,
   aplicarFalta,
-  cancelarPendentes,
+  cancelarPeriodosFuturos,
   gerarCobrancas,
   proximaCobranca,
   resumoDoMes,
@@ -117,7 +117,7 @@ describe("Etapa 6: fichas financeiras de aceite", () => {
     },
   );
 
-  it("cobranças encerradas mantêm o valor e a saída conserva a dívida vencida", () => {
+  it("cobranças encerradas mantêm o valor e a saída conserva a dívida vencida e o mês em andamento", () => {
     const p = { ...pessoa("mensal"), id: "pessoa-a", descontaFaltas: true, valorFalta: 1500 };
     const paga = cobranca("paga", { pagamento: { data: "2026-11-17", forma: "pix" } });
     const cancelada = cobranca("cancelada", {
@@ -129,9 +129,14 @@ describe("Etapa 6: fichas financeiras de aceite", () => {
     const depois = aplicarFalta(antes, p, "2026-11-18", "2026-11-18", true);
     expect(depois.slice(0, 3)).toEqual(antes.slice(0, 3));
     expect(valorFinal(depois[3]!)).toBe(28500);
-    const saida = cancelarPendentes(depois, [p.id], "Saiu do destino", "2026-11-18");
-    expect(saida.slice(0, 3)).toEqual(antes.slice(0, 3));
-    expect(totalDevido(saida, p.id)).toBe(6000);
+    // Correção 2 (D1-C): o mês 21/10–20/11 já começou em 18/11; ele fica, com o desconto da falta.
+    const saida = cancelarPeriodosFuturos(depois, [p], "Saiu do destino", "2026-11-18");
+    expect(saida).toEqual(depois);
+    expect(totalDevido(saida, p.id)).toBe(6000 + 28500);
+    // Um mês que só começa depois da saída (21/11–20/12) é cancelado.
+    const futura = cobranca("futura", { vencimento: "2026-12-20" });
+    const [cancelada2] = cancelarPeriodosFuturos([futura], [p], "Saiu do destino", "2026-11-18");
+    expect(cancelada2?.cancelamento).toEqual({ data: "2026-11-18", motivo: "Saiu do destino" });
   });
 
   it("fechamento: total atual, dívida antiga, mês futuro, cancelamento e gastos", () => {

@@ -573,7 +573,169 @@ def c1(base):
     registra("C1.L6", "Avisos criados pelo próprio banco (tarefa automática e destino excluído) continuam funcionando", "aviso de destino excluído criado", n, n >= 1)
     c.close()
 
+# ---------------------------------------------------------------- C2: Correção 2 (cobranças preservadas na saída)
+H2 = dt.date(2026, 11, 18)  # "hoje" fixo do banco de teste (quarta-feira), para os resultados não dependerem do dia
+AGORA2 = dt.datetime(2026, 11, 18, 15, 0, tzinfo=dt.timezone.utc)  # 12:00 em Brasília
+
+
+def cobranca(c, vz, id, mid, destino, tipo, venc, valor=10000, de=None, ate=None, pago=None):
+    como(c, vz)
+    q(c, """insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base, periodo_de, periodo_ate)
+            values (%s, %s, %s, %s, 'Nome Teste', '43999990000', %s, 'Ref', %s, %s, %s, %s)""", (id, vz, mid, destino, tipo, venc, valor, de, ate))
+    if pago:
+        q(c, "update public.cobrancas set pagamento_data=%s, pagamento_forma='pix' where id=%s", (pago, id))
+
+
+def estado(c, *ids):
+    admin(c)
+    rows = q(c, "select id, case when pagamento_data is not null then 'paga' when cancelamento_data is not null then 'cancelada: ' || cancelamento_motivo else 'valendo' end from public.cobrancas where id = any(%s)", (list(ids),))
+    return dict(rows)
+
+
+def matricula_manual(c, vz, id, destino, plano, valor, venc=None, tel=None):
+    como(c, vz)
+    q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor, vencimento) values (%s,%s,%s,'Manual Teste',%s,%s,%s,%s)",
+      (id, vz, destino, tel or ("4399990" + str(abs(hash(id)) % 10000).zfill(4)), plano, valor, venc))
+
+
+def c2(base):
+    c = nova_db(base, "c2"); u = cenario(c, lugares=12)
+    admin(c); q(c, "create or replace function public.hoje_em_brasilia() returns date language sql stable as $$ select date '2026-11-18' $$")
+    V, H = u["V"], H2
+    d = lambda n: H + dt.timedelta(days=n)
+    # P4 entra como Quinzenal (dias 5 e 20)
+    como(c, u["P4"]); ped = q(c, "select public.pedir_para_entrar('VAN-4821', 'P4 Teste', '43999990004', 'Cidade A', 'Rua', null, null)")[0][0]
+    como(c, V); q(c, "select public.aceitar_pedido(%s, %s)", (ped, json.dumps({"id": "m4", "nome": "P4 Teste", "telefone": "43999990004", "plano": "quinzenal", "valor": 15000, "vencimento": 5})))
+    matricula_manual(c, V, "m7", "d1", "mensal", 30000, 18, "43999990007")
+    como(c, V)
+    q(c, """insert into public.destinos (id, vanzeiro_id, origem, destino, tipo, dias, saida, prazo, convite, paradas, ativo)
+            values ('d3', %s, 'Cidade E', 'Cidade F', 'fixa', array['seg'], '07:00', '1h', 'VAN-5555', array['Cidade E','Cidade F'], true)""", (V,))
+    matricula_manual(c, V, "m5", "d3", "mensal", 30000, 10, "43999990005")
+    matricula_manual(c, V, "m6", "d3", "viagem", 3000, None, "43999990006")
+
+    # Por viagem (m1): feita e ainda não vencida, vencida, paga
+    cobranca(c, V, "A_pend", "m1", "d1", "viagem", d(7)); cobranca(c, V, "A_venc", "m1", "d1", "viagem", d(-2)); cobranca(c, V, "A_paga", "m1", "d1", "viagem", d(3), pago=H)
+    # Diário (m3)
+    cobranca(c, V, "B_pend", "m3", "d1", "diario", d(7)); cobranca(c, V, "B_venc", "m3", "d1", "diario", d(-1))
+    # Mensal com desconto (m2, dia 10): período atual 11/11–10/12 (já começou), futuro 11/12–10/01, vencida 10/11
+    cobranca(c, V, "C_atual", "m2", "d1", "mensal", dt.date(2026, 12, 10), 30000, dt.date(2026, 11, 11), dt.date(2026, 12, 10))
+    cobranca(c, V, "C_futura", "m2", "d1", "mensal", dt.date(2027, 1, 10), 30000, dt.date(2026, 12, 11), dt.date(2027, 1, 10))
+    cobranca(c, V, "C_venc", "m2", "d1", "mensal", dt.date(2026, 11, 10), 30000, dt.date(2026, 10, 11), dt.date(2026, 11, 10))
+    # Quinzenal sem desconto (m4, dias 5 e 20): atual 06/11–20/11, futura 21/11–05/12
+    cobranca(c, V, "D_atual", "m4", "d1", "quinzenal", dt.date(2026, 11, 20), 15000); cobranca(c, V, "D_futura", "m4", "d1", "quinzenal", dt.date(2026, 12, 5), 15000)
+    # Mensal dia 18 (m7): vence hoje (período 19/10–18/11) e a próxima (19/11–18/12) começa amanhã
+    cobranca(c, V, "G_hoje", "m7", "d1", "mensal", dt.date(2026, 11, 18)); cobranca(c, V, "G_prox", "m7", "d1", "mensal", dt.date(2026, 12, 18))
+    # Destino d3: mensal (dia 10) atual e futura, e uma viagem feita
+    cobranca(c, V, "E_atual", "m5", "d3", "mensal", dt.date(2026, 12, 10)); cobranca(c, V, "E_futura", "m5", "d3", "mensal", dt.date(2027, 1, 10))
+    cobranca(c, V, "E_viagem", "m6", "d3", "viagem", d(7))
+    admin(c); total_antes = q(c, "select count(*) from public.cobrancas")[0][0]
+
+    # 1. Passageiro (Por viagem) sai do destino
+    como(c, u["P1"]); r = tenta(c, "select public.sair_do_destino('m1')")
+    e = estado(c, "A_pend", "A_venc", "A_paga")
+    registra("C2.1", "Por viagem: sai do destino com viagem feita ainda não vencida, vencida e paga", "valendo, valendo, paga",
+             f"{r[0]}; {e}", e == {"A_pend": "valendo", "A_venc": "valendo", "A_paga": "paga"})
+    # 2. Passageiro (Diário) exclui a conta
+    como(c, u["P3"]); r = tenta(c, "select public.excluir_minha_conta()")
+    e = estado(c, "B_pend", "B_venc"); admin(c); vinculo = q(c, "select matricula_id, destino_id from public.cobrancas where id='B_pend'")
+    registra("C2.2", "Diário: exclui a conta; cobranças continuam valendo e ligadas à matrícula e ao destino", "valendo, valendo; (m3, d1)",
+             f"{r[0]}; {e}; {vinculo}", e == {"B_pend": "valendo", "B_venc": "valendo"} and vinculo == [("m3", "d1")])
+    # 3. Mensal sai no meio do período
+    como(c, u["P2"]); r = tenta(c, "select public.sair_do_destino('m2')")
+    e = estado(c, "C_atual", "C_futura", "C_venc")
+    registra("C2.3", "Mensal: sai no meio do período; período iniciado e vencida ficam; só o período futuro é cancelado",
+             "valendo, cancelada: Saiu do destino, valendo", f"{r[0]}; {e}",
+             e == {"C_atual": "valendo", "C_futura": "cancelada: Saiu do destino", "C_venc": "valendo"})
+    # 4. Quinzenal removido pelo vanzeiro (como o app faz: marca a saída na matrícula)
+    como(c, V); q(c, "update public.matriculas set saiu_em=%s where id='m4'", (H,))
+    e = estado(c, "D_atual", "D_futura")
+    registra("C2.4", "Quinzenal: vanzeiro remove o passageiro; quinzena iniciada fica, a que começa depois é cancelada",
+             "valendo, cancelada: Removido do destino", e, e == {"D_atual": "valendo", "D_futura": "cancelada: Removido do destino"})
+    # 5. Saída no dia do vencimento (limite)
+    como(c, V); q(c, "update public.matriculas set saiu_em=%s where id='m7'", (H,))
+    e = estado(c, "G_hoje", "G_prox")
+    registra("C2.5", "Mensal: sai no dia do vencimento; a cobrança do dia fica; a do período que começa amanhã é cancelada",
+             "valendo, cancelada: Removido do destino", e, e == {"G_hoje": "valendo", "G_prox": "cancelada: Removido do destino"})
+    # 6. Vanzeiro exclui um destino
+    como(c, V); q(c, "update public.destinos set excluido_em=now(), ativo=false where id='d3'")
+    e = estado(c, "E_atual", "E_futura", "E_viagem")
+    registra("C2.6", "Destino excluído: período iniciado e viagem feita ficam; só o período futuro é cancelado",
+             "valendo, cancelada: Destino excluído, valendo", e, e == {"E_atual": "valendo", "E_futura": "cancelada: Destino excluído", "E_viagem": "valendo"})
+    # 7. Celular antigo tenta o cancelamento automático de um período já iniciado
+    como(c, V); r = tenta(c, "update public.cobrancas set cancelamento_data=%s, cancelamento_motivo='Saiu do destino' where id='C_atual'", (H,))
+    e = estado(c, "C_atual")
+    registra("C2.7", "Celular com versão antiga cancela automaticamente um período já iniciado", "recusado; continua valendo", f"{r}; {e}",
+             r[0] == "erro" and e == {"C_atual": "valendo"})
+    # 8. Cancelamento manual justificado continua possível (D1-C)
+    como(c, V); r = tenta(c, "update public.cobrancas set cancelamento_data=%s, cancelamento_motivo='Combinado com a família: só pagou metade do mês' where id='E_atual'", (H,))
+    e = estado(c, "E_atual")
+    registra("C2.8", "Vanzeiro cancela à mão, com motivo próprio, uma cobrança de quem saiu", "permitido",
+             f"{r[0]}; {e}", r[0] == "ok" and e["E_atual"].startswith("cancelada: Combinado"))
+    # 9. Nada de cobrança nova de período futuro para quem saiu (celular antigo ou tarefa automática)
+    cobranca_futura = tenta(c, """insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
+                    values ('C_nova', %s, 'm2', 'd1', 'Nome', '43999990000', 'mensal', 'Ref', '2027-02-10', 30000)""", (V,))
+    viagem_atrasada = tenta(c, """insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
+                    values ('A_atrasada', %s, 'm1', 'd1', 'Nome', '43999990000', 'viagem', 'Ref', %s, 3000)""", (V, d(5)))
+    admin(c); q(c, "select public.tarefas_do_relogio(%s)", (AGORA2,))
+    existe_atrasada = q(c, "select count(*) from public.cobrancas where id='A_atrasada'")[0][0]
+    nova = q(c, "select count(*) from public.cobrancas where id='C_nova'")[0][0]
+    registra("C2.9", "Depois da saída: celular antigo não cria mensalidade futura; viagem feita antes da saída ainda pode ser lançada",
+             "mensalidade futura não gravada; viagem atrasada gravada", f"mensalidade futura={nova}; viagem atrasada={existe_atrasada} ({cobranca_futura[0]}, {viagem_atrasada[0]})",
+             nova == 0 and existe_atrasada == 1)
+    # 10. Avisos de dívida de quem saiu (T1.8), sem duplicar
+    admin(c); q(c, "select public.tarefas_do_relogio(%s)", (AGORA2,)); q(c, "select public.tarefas_do_relogio(%s)", (AGORA2,))
+    av = q(c, "select cobranca_id, count(*) from public.avisos where tipo='cobranca_vencida' and para=%s group by 1 order by 1", (str(V),))
+    passag = q(c, "select count(*) from public.avisos where tipo='cobranca_vencendo' and matricula_id in ('m1','m2','m3')")[0][0]
+    registra("C2.10", "Vanzeiro recebe 'cobrança vencida' das dívidas de quem saiu, uma vez só; quem saiu não recebe 'vencendo'",
+             "A_venc, B_venc, C_venc (1 cada); 0 para passageiros que saíram", f"{av}; vencendo para quem saiu={passag}",
+             av == [("A_venc", 1), ("B_venc", 1), ("C_venc", 1)] and passag == 0)
+    # 9b. 40 dias depois (os períodos atuais já venceram): a tarefa automática não cria período novo para quem saiu
+    admin(c); q(c, "select public.tarefas_do_relogio(%s)", (AGORA2 + dt.timedelta(days=40),))
+    novas = q(c, "select id from public.cobrancas where matricula_id in ('m2','m4','m7','m5') and id not in ('C_atual','C_futura','C_venc','D_atual','D_futura','G_hoje','G_prox','E_atual','E_futura') order by 1")
+    registra("C2.9b", "40 dias depois: a tarefa automática não cria mensalidade ou quinzena nova para quem saiu", "nenhuma nova", novas, novas == [])
+    # 11. Integridade: nenhuma cobrança apagada, todas ligadas
+    admin(c)
+    total = q(c, "select count(*) from public.cobrancas where id <> 'A_atrasada'")[0][0]
+    orfas = q(c, "select count(*) from public.cobrancas k where not exists (select 1 from public.matriculas m where m.id=k.matricula_id) or not exists (select 1 from public.destinos x where x.id=k.destino_id)")[0][0]
+    registra("C2.11", "Nenhuma cobrança apagada e nenhuma sem matrícula ou destino", f"{total_antes} cobranças, 0 órfãs", f"{total}, {orfas}",
+             total == total_antes and orfas == 0)
+    como(c, u["P2"]); vis = q(c, "select count(*) from public.cobrancas")[0][0]
+    registra("C2.12", "Quem saiu continua vendo as próprias cobranças", "3", vis, vis == 3)
+    c.close()
+
+
+def c2_concorrencia(base):
+    """Saída e pagamento ao mesmo tempo; saída repetida; queda no meio da saída."""
+    c = nova_db(base, "c2b"); u = cenario(c, lugares=12)
+    admin(c); q(c, "create or replace function public.hoje_em_brasilia() returns date language sql stable as $$ select date '2026-11-18' $$")
+    V = u["V"]
+    cobranca(c, V, "X_atual", "m2", "d1", "mensal", dt.date(2026, 12, 10), 30000, dt.date(2026, 11, 11), dt.date(2026, 12, 10))
+    cobranca(c, V, "X_futura", "m2", "d1", "mensal", dt.date(2027, 1, 10), 30000, dt.date(2026, 12, 11), dt.date(2027, 1, 10))
+    # queda no meio da saída: nada muda
+    c2c = psycopg.connect(DSN.format(db="c2b")); como(c2c, u["P2"]); q(c2c, "select public.sair_do_destino('m2')"); c2c.close()
+    admin(c); st = q(c, "select saiu_em from public.matriculas where id='m2'")[0][0]
+    e = estado(c, "X_atual", "X_futura")
+    registra("C2.13", "Conexão cai no meio da saída do destino", "nada muda (matrícula ativa, cobranças valendo)", f"saiu_em={st}; {e}",
+             st is None and e == {"X_atual": "valendo", "X_futura": "valendo"})
+    # saída e pagamento ao mesmo tempo
+    r = em_paralelo("c2b", [(u["P2"], "select public.sair_do_destino('m2')", None),
+                            (V, "update public.cobrancas set pagamento_data='2026-11-18', pagamento_forma='pix' where id='X_futura'", None),
+                            (V, "update public.cobrancas set pagamento_data='2026-11-18', pagamento_forma='dinheiro' where id='X_atual'", None)])
+    e = estado(c, "X_atual", "X_futura")
+    registra("C2.14", "Passageiro sai enquanto o vanzeiro marca pagamentos", "período iniciado pago; futuro pago ou cancelado (nunca os dois)",
+             f"{[x[0] for x in r]}; {e}", e["X_atual"] == "paga" and e["X_futura"] in ("paga", "cancelada: Saiu do destino"))
+    como(c, u["P2"]); r = tenta(c, "select public.sair_do_destino('m2')")
+    admin(c); n = q(c, "select count(*) from public.cobrancas where matricula_id='m2'")[0][0]
+    registra("C2.15", "Toque repetido em 'Sair do destino'", "recusado, nada muda", f"{r[0]}; cobranças={n}", r[0] == "erro" and n == 2)
+    r = em_paralelo("c2b", [(None, "select public.tarefas_do_relogio('2026-11-18 15:00+00')", None)] * 3)
+    admin(c); dup = q(c, "select count(*) from public.avisos group by para, chave having count(*) > 1")
+    registra("C2.16", "Tarefa automática rodando 3 vezes ao mesmo tempo depois da saída", "nenhum aviso duplicado", f"{[x[0] for x in r]}; duplicados={dup}", dup == [])
+    c.close()
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+
+IGNORAR = set()  # migrations deixadas de fora (ex.: rodar os testes "antes" de uma correção)
 
 
 def montar_base(nome="vz_auditoria_base"):
@@ -590,19 +752,24 @@ def montar_base(nome="vz_auditoria_base"):
     c = conectar(nome)
     c.execute(re.sub(r"create role [a-z_]+ nologin( bypassrls)?;", "", lab.BOOTSTRAP))
     for p in sorted((ROOT / "supabase/migrations").glob("*.sql")):
+        if p.name in IGNORAR:
+            print("IGNORADA:", p.name, flush=True)
+            continue
         c.execute(re.sub(r"create extension if not exists (?:pg_net|pg_cron)[^;]*;", "-- simulada", p.read_text(), flags=re.I))
     c.close()
     return nome
 
 
-GRUPOS = {"t1": t1, "t2": t2, "t3": t3, "t4": t4_t5, "t6": t6_t7, "t8": t8_t9_t10, "c1": c1}
+GRUPOS = {"t1": t1, "t2": t2, "t3": t3, "t4": t4_t5, "t6": t6_t7, "t8": t8_t9_t10, "c1": c1, "c2": c2, "c2b": c2_concorrencia}
 
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--saida", help="arquivo JSON com esperado/obtido de cada teste")
     ap.add_argument("--grupos", default=",".join(GRUPOS), help="ex.: t2 (só os testes de avisos)")
+    ap.add_argument("--ignorar", default="", help="migrations a deixar de fora, separadas por vírgula")
     a = ap.parse_args()
+    IGNORAR.update(x for x in a.ignorar.split(",") if x)
     base = montar_base()
     for g in a.grupos.split(","):
         try:

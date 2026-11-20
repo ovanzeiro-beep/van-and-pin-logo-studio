@@ -309,7 +309,10 @@ export async function sairDoDestinoNoBanco(matriculaId: string): Promise<Resulta
   if (!usaBanco()) return sairDoDestino(matriculaId);
   const { error } = await supabase()!.rpc("sair_do_destino", { matricula: matriculaId });
   if (error) return naoDeu(motivo(error));
-  return sairDoDestino(matriculaId);
+  const r = sairDoDestino(matriculaId);
+  // Correção 2: the database decided which charges stay (all but future periods); the screen reads them back.
+  await carregarDinheiro().catch(() => false);
+  return r;
 }
 
 // ---------- vanzeiro ----------
@@ -366,6 +369,8 @@ export async function removerPassageiroNoBanco(matriculaId: string): Promise<Res
     await carregarPassageirosEPedidos();
     return naoDeu(motivo(error));
   }
+  // Correção 2: the database cancelled only the future periods; the screen reads the charges back.
+  await carregarDinheiro().catch(() => false);
   return deuCerto;
 }
 

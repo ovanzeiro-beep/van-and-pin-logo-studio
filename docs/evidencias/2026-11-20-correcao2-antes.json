@@ -1,0 +1,121 @@
+[
+ {
+  "teste": "C2.1",
+  "descricao": "Por viagem: sai do destino com viagem feita ainda não vencida, vencida e paga",
+  "esperado": "valendo, valendo, paga",
+  "obtido": "ok; {'A_venc': 'valendo', 'A_paga': 'paga', 'A_pend': 'cancelada: Saiu do destino'}",
+  "passou": false
+ },
+ {
+  "teste": "C2.2",
+  "descricao": "Diário: exclui a conta; cobranças continuam valendo e ligadas à matrícula e ao destino",
+  "esperado": "valendo, valendo; (m3, d1)",
+  "obtido": "ok; {'B_venc': 'valendo', 'B_pend': 'cancelada: Conta excluída'}; [('m3', 'd1')]",
+  "passou": false
+ },
+ {
+  "teste": "C2.3",
+  "descricao": "Mensal: sai no meio do período; período iniciado e vencida ficam; só o período futuro é cancelado",
+  "esperado": "valendo, cancelada: Saiu do destino, valendo",
+  "obtido": "ok; {'C_venc': 'valendo', 'C_atual': 'cancelada: Saiu do destino', 'C_futura': 'cancelada: Saiu do destino'}",
+  "passou": false
+ },
+ {
+  "teste": "C2.4",
+  "descricao": "Quinzenal: vanzeiro remove o passageiro; quinzena iniciada fica, a que começa depois é cancelada",
+  "esperado": "valendo, cancelada: Removido do destino",
+  "obtido": "{'D_atual': 'valendo', 'D_futura': 'valendo'}",
+  "passou": false
+ },
+ {
+  "teste": "C2.5",
+  "descricao": "Mensal: sai no dia do vencimento; a cobrança do dia fica; a do período que começa amanhã é cancelada",
+  "esperado": "valendo, cancelada: Removido do destino",
+  "obtido": "{'G_hoje': 'valendo', 'G_prox': 'valendo'}",
+  "passou": false
+ },
+ {
+  "teste": "C2.6",
+  "descricao": "Destino excluído: período iniciado e viagem feita ficam; só o período futuro é cancelado",
+  "esperado": "valendo, cancelada: Destino excluído, valendo",
+  "obtido": "{'E_atual': 'valendo', 'E_futura': 'valendo', 'E_viagem': 'valendo'}",
+  "passou": false
+ },
+ {
+  "teste": "C2.7",
+  "descricao": "Celular com versão antiga cancela automaticamente um período já iniciado",
+  "esperado": "recusado; continua valendo",
+  "obtido": "('erro', 'Esta cobrança já foi paga ou cancelada e não muda mais.'); {'C_atual': 'cancelada: Saiu do destino'}",
+  "passou": false
+ },
+ {
+  "teste": "C2.8",
+  "descricao": "Vanzeiro cancela à mão, com motivo próprio, uma cobrança de quem saiu",
+  "esperado": "permitido",
+  "obtido": "ok; {'E_atual': 'cancelada: Combinado com a família: só pagou metade do mês'}",
+  "passou": true
+ },
+ {
+  "teste": "C2.9",
+  "descricao": "Depois da saída: celular antigo não cria mensalidade futura; viagem feita antes da saída ainda pode ser lançada",
+  "esperado": "mensalidade futura não gravada; viagem atrasada gravada",
+  "obtido": "mensalidade futura=1; viagem atrasada=1 (ok, ok)",
+  "passou": false
+ },
+ {
+  "teste": "C2.10",
+  "descricao": "Vanzeiro recebe 'cobrança vencida' das dívidas de quem saiu, uma vez só; quem saiu não recebe 'vencendo'",
+  "esperado": "A_venc, B_venc, C_venc (1 cada); 0 para passageiros que saíram",
+  "obtido": "[]; vencendo para quem saiu=0",
+  "passou": false
+ },
+ {
+  "teste": "C2.9b",
+  "descricao": "40 dias depois: a tarefa automática não cria mensalidade ou quinzena nova para quem saiu",
+  "esperado": "nenhuma nova",
+  "obtido": "[('C_nova',)]",
+  "passou": false
+ },
+ {
+  "teste": "C2.11",
+  "descricao": "Nenhuma cobrança apagada e nenhuma sem matrícula ou destino",
+  "esperado": "15 cobranças, 0 órfãs",
+  "obtido": "16, 0",
+  "passou": false
+ },
+ {
+  "teste": "C2.12",
+  "descricao": "Quem saiu continua vendo as próprias cobranças",
+  "esperado": "3",
+  "obtido": "4",
+  "passou": false
+ },
+ {
+  "teste": "C2.13",
+  "descricao": "Conexão cai no meio da saída do destino",
+  "esperado": "nada muda (matrícula ativa, cobranças valendo)",
+  "obtido": "saiu_em=None; {'X_atual': 'valendo', 'X_futura': 'valendo'}",
+  "passou": true
+ },
+ {
+  "teste": "C2.14",
+  "descricao": "Passageiro sai enquanto o vanzeiro marca pagamentos",
+  "esperado": "período iniciado pago; futuro pago ou cancelado (nunca os dois)",
+  "obtido": "['ok', 'ok', 'ok']; {'X_atual': 'paga', 'X_futura': 'paga'}",
+  "passou": true
+ },
+ {
+  "teste": "C2.15",
+  "descricao": "Toque repetido em 'Sair do destino'",
+  "esperado": "recusado, nada muda",
+  "obtido": "erro; cobranças=2",
+  "passou": true
+ },
+ {
+  "teste": "C2.16",
+  "descricao": "Tarefa automática rodando 3 vezes ao mesmo tempo depois da saída",
+  "esperado": "nenhum aviso duplicado",
+  "obtido": "['ok', 'ok', 'ok']; duplicados=[]",
+  "passou": true
+ }
+]

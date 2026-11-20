@@ -9,6 +9,7 @@ import { supabase, USA_BANCO } from "@/lib/supabase";
 import { carregarPerfis, obterPerfilDoVanzeiro, salvarPerfilVanzeiro, type PerfilVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos } from "@/lib/passageiros-store";
 import { dataDeHoje } from "@/lib/agora";
+import { carregarDinheiro } from "@/lib/banco/dinheiro";
 
 // W2 and W3 (docs/banco-de-dados.md, section 8.3): the vanzeiro's profile and the destinos in the database.
 // Each action first saves in Supabase; only when the database says it worked does the screen change (the same
@@ -174,7 +175,10 @@ export async function excluirDestinoNoBanco(destinoId: string): Promise<Resultad
   // Its passengers leave it and the waiting pedidos are refused (W4).
   await sb.from("matriculas").update({ saiu_em: dataDeHoje() }).eq("destino_id", destinoId).is("saiu_em", null);
   await Promise.all(obterPedidos().filter((x) => x.destinoId === destinoId).map((x) => sb.rpc("recusar_pedido", { pedido: x.id })));
-  return excluirDestino(destinoId);
+  const r = excluirDestino(destinoId);
+  // Correção 2: the database cancelled only the future periods; the screen reads the charges back.
+  await carregarDinheiro().catch(() => false);
+  return r;
 }
 
 /** "Salvar" in the vanzeiro's Perfil. */

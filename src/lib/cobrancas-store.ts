@@ -11,7 +11,14 @@ import {
   type Passageiro,
 } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
-import { aplicarEmbarque, aplicarFalta, cancelarPendentes, gerarCobrancas, proximaCobranca, type Cobranca } from "@/lib/cobrancas";
+import {
+  aplicarEmbarque,
+  aplicarFalta,
+  cancelarPeriodosFuturos,
+  gerarCobrancas,
+  proximaCobranca,
+  type Cobranca,
+} from "@/lib/cobrancas";
 import { somarDias } from "@/lib/datas";
 import { useSoDoMeuPainel } from "@/lib/painel";
 import { deuCerto, naoDeu, type Resultado } from "@/lib/acoes";
@@ -96,9 +103,15 @@ function problemaDaCobranca(id: string): string | null {
   return null;
 }
 
-/** A destino was deleted or a passenger left it: their pendentes are cancelled with the reason. */
-export function cancelarPendentesDe(passageiroIds: string[], motivo: string, hoje = dataDeHoje()) {
-  cobrancas = cancelarPendentes(cobrancas, passageiroIds, motivo, hoje);
+/** A destino was deleted or a passenger left it: only the charges of periods that start later are cancelled. */
+export function cancelarPeriodosFuturosDe(
+  passageiros: Pick<Passageiro, "id" | "vencimento">[],
+  motivo: string,
+  hoje = dataDeHoje(),
+) {
+  const novas = cancelarPeriodosFuturos(cobrancas, passageiros, motivo, hoje);
+  if (novas.every((c, i) => c === cobrancas[i])) return;
+  cobrancas = novas;
   avisar();
 }
 
