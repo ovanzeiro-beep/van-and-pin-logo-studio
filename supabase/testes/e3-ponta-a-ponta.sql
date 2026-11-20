@@ -89,9 +89,11 @@ begin
   insert into public.viagens (id, vanzeiro_id, destino_id, data, fase, estado)
   values ('e3-viagem', v, 'e3-destino', public.hoje_em_brasilia(), 'busca', json_build_object('ordem', json_build_array(m1), 'embarcaram', '[]'::json, 'conferencia', '{}'::json)::jsonb);
   update public.viagens set estado = jsonb_set(estado, '{embarcaram}', jsonb_build_array(m1)) where id = 'e3-viagem';
-  insert into public.embarques (matricula_id, data, viagem_id) values (m1, public.hoje_em_brasilia(), 'e3-viagem');
+  -- Correção 3 (20/11/2026): o banco já cria embarque e cobrança junto com a viagem; aqui, como no app, "ignorar se já existe".
+  insert into public.embarques (matricula_id, data, viagem_id) values (m1, public.hoje_em_brasilia(), 'e3-viagem') on conflict do nothing;
   insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
-  values (m1 || '_' || public.hoje_em_brasilia(), v, m1, 'e3-destino', 'Passageiro Um', '43999990002', 'diario', 'Diária de hoje', public.hoje_em_brasilia() + 7, 15000);
+  values (m1 || '_' || public.hoje_em_brasilia(), v, m1, 'e3-destino', 'Passageiro Um', '43999990002', 'diario', 'Diária de hoje', public.hoje_em_brasilia() + 7, 15000)
+  on conflict (id) do nothing;
   res := res || '15 viagem, embarque e cobrança R$ 150: ok' || E'\n';
 
   perform set_config('request.jwt.claims', json_build_object('sub', p1, 'role', 'authenticated')::text, true);

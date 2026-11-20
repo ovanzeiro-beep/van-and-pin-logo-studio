@@ -117,14 +117,15 @@ def t1(base):
     # embarque de hoje (Por viagem) e a cobrança que o app cria no "Embarcou": vence em 7 dias
     q(c, "insert into public.embarques (matricula_id, data) values ('m1', %s)", (h,))
     q(c, """insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
-            values ('m1_v1', %s, 'm1', 'd1', 'P1 Teste', '43999990001', 'viagem', 'Viagem de hoje', %s, 3000)""", (u["V"], h + dt.timedelta(days=7)))
+            values (%s, %s, 'm1', 'd1', 'P1 Teste', '43999990001', 'viagem', 'Viagem de hoje', %s, 3000) on conflict (id) do nothing""", (f"m1_{h}", u["V"], h + dt.timedelta(days=7)))
+    # ↑ mesmo identificador do app; com a Correção 3 o banco já criou esta cobrança junto com o embarque
     q(c, """insert into public.cobrancas (id, vanzeiro_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
             values ('m1_antiga', %s, 'm1', 'd1', 'P1 Teste', '43999990001', 'viagem', 'Viagem antiga', %s, 3000)""", (u["V"], h - dt.timedelta(days=2)))
     como(c, u["P1"]); r = tenta(c, "select public.sair_do_destino('m1')")
     admin(c)
     linhas = dict(q(c, "select id, coalesce(cancelamento_motivo,'valendo') from public.cobrancas where matricula_id='m1'"))
     registra("T1.1", "Passageiro sai do destino: cobrança de viagem FEITA ainda não vencida continua valendo", "valendo",
-             linhas.get("m1_v1"), linhas.get("m1_v1") == "valendo")
+             linhas.get(f"m1_{h}"), linhas.get(f"m1_{h}") == "valendo")
     registra("T1.2", "Passageiro sai do destino: cobrança vencida (devendo) continua valendo", "valendo", linhas.get("m1_antiga"), linhas.get("m1_antiga") == "valendo")
     como(c, u["P1"]); vis = q(c, "select count(*) from public.cobrancas")[0][0]
     registra("T1.3", "Depois de sair, o passageiro ainda vê as próprias cobranças", "2", vis, vis == 2)
@@ -732,6 +733,130 @@ def c2_concorrencia(base):
     registra("C2.16", "Tarefa automática rodando 3 vezes ao mesmo tempo depois da saída", "nenhum aviso duplicado", f"{[x[0] for x in r]}; duplicados={dup}", dup == [])
     c.close()
 
+# ---------------------------------------------------------------- C3: Correção 3 (cobrança do embarque no banco)
+def viagem_estado(id, destino, data, embarcaram, fase="busca", ordem=None):
+    return json.dumps({"id": id, "destinoId": destino, "data": str(data), "fase": fase, "ordem": ordem or embarcaram,
+                       "embarcaram": embarcaram, "naoEstavam": [], "ficaram": [], "conferencia": {}})
+
+
+def c3(base):
+    c = nova_db(base, "c3"); u = cenario(c, lugares=12)
+    admin(c); q(c, "create or replace function public.hoje_em_brasilia() returns date language sql stable as $$ select date '2026-11-18' $$")
+    tem = q(c, "select count(*) from pg_trigger where tgname='viagem_registra_embarques'")[0][0] == 1
+    registra("C3.0", "Banco do laboratório tem a Correção 3 aplicada", "sim", tem, tem)
+    V, H = u["V"], H2
+    vid = f"d1_{H}"
+    # (a) contrato: a cobrança do banco é igual à do app (arquivo gerado pelo próprio app)
+    if tem:
+        casos = json.load(open(ROOT / "supabase/testes/correcao3-cobrancas-do-embarque.json"))
+        admin(c)
+        for k in {x["matricula"]: x for x in casos}.values():
+            l = k["linha"]
+            q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor) values (%s,%s,'d1',%s,%s,%s,%s)",
+              (k["matricula"], V, l["nome"], l["telefone"], l["tipo"], l["valor_base"]))
+        dif = []
+        campos = ["id", "viagem_id", "matricula_id", "destino_id", "nome", "telefone", "tipo", "referencia", "vencimento", "valor_base",
+                  "faltas", "valor_falta", "periodo_de", "periodo_ate", "pagamento_data", "pagamento_forma", "cancelamento_data", "cancelamento_motivo"]
+        for k in casos:
+            q(c, "select public.r_cobranca_do_embarque(%s, %s, %s)", (k["matricula"], k["data"], k["viagem"]))
+            row = q(c, f"select {', '.join(campos)}, vanzeiro_id from public.cobrancas where id=%s", (k["linha"]["id"],))
+            if not row:
+                dif.append((k["linha"]["id"], "não criada")); continue
+            r = dict(zip(campos + ["vanzeiro_id"], [str(v) if isinstance(v, (dt.date, uuid.UUID)) else v for v in row[0]]))
+            esperado = {**k["linha"], "vanzeiro_id": str(V)}
+            for f in campos + ["vanzeiro_id"]:
+                if r[f] != esperado[f]:
+                    dif.append((k["linha"]["id"], f, r[f], esperado[f]))
+        q(c, "delete from public.cobrancas where matricula_id in ('mx1','mx2','mx3')"); q(c, "delete from public.matriculas where id in ('mx1','mx2','mx3')")
+        registra("C3.1", f"As {len(casos)} cobranças de embarque do banco são idênticas às do app (identificador e valores)", "0 diferenças", dif[:3], not dif)
+
+    def contar(mid):
+        admin(c)
+        return (q(c, "select count(*) from public.embarques where matricula_id=%s and data=%s", (mid, H))[0][0],
+                q(c, "select count(*) from public.cobrancas where matricula_id=%s", (mid,))[0][0])
+
+    # (b) com sinal: o app grava só a viagem e fecha (nenhum envio de embarque ou cobrança)
+    como(c, V)
+    q(c, "insert into public.viagens (id, vanzeiro_id, destino_id, data, fase, estado) values (%s,%s,'d1',%s,'busca',%s)", (vid, V, H, viagem_estado(vid, "d1", H, [])))
+    q(c, "update public.viagens set estado=%s where id=%s", (viagem_estado(vid, "d1", H, ["m1"], ordem=["m1", "m3", "m2"]), vid))
+    admin(c); cob = q(c, "select id, tipo, referencia, vencimento, valor_base, viagem_id from public.cobrancas where matricula_id='m1'")
+    registra("C3.2", "Por viagem: 'Embarcou' com sinal e o app fecha na hora — o banco já tem embarque e cobrança", "1 embarque; cobrança m1_d1_2026-11-18 de R$ 30, vence 25/11",
+             f"{contar('m1')}; {cob}", contar("m1") == (1, 1) and cob and cob[0][0] == f"m1_{vid}" and cob[0][3] == dt.date(2026, 11, 25) and cob[0][4] == 3000)
+    como(c, V); q(c, "update public.viagens set estado=%s where id=%s", (viagem_estado(vid, "d1", H, ["m1", "m3", "m2"]), vid))
+    admin(c); cob3 = q(c, "select id, referencia from public.cobrancas where matricula_id='m3'")
+    registra("C3.3", "Diário: embarque gera a diária do dia", "1 embarque; cobrança m3_2026-11-18 'Diária de 18/11'", f"{contar('m3')}; {cob3}",
+             contar("m3") == (1, 1) and cob3 == [("m3_2026-11-18", "Diária de 18/11")])
+    admin(c); cob2 = q(c, "select count(*) from public.cobrancas where matricula_id='m2' and tipo='mensal' and id like %s", (f"m2_{H}%",))[0][0]
+    registra("C3.4", "Mensal: embarque é registrado, mas não gera cobrança por viagem", "1 embarque; 0 cobranças do dia", (contar("m2")[0], cob2),
+             contar("m2")[0] == 1 and cob2 == 0)
+    # (c) repetições: mesma viagem reenviada, toques repetidos e o envio do próprio app
+    como(c, V)
+    for _ in range(3):
+        q(c, "update public.viagens set estado=%s where id=%s", (viagem_estado(vid, "d1", H, ["m1", "m3", "m2"]), vid))
+    linha = (f"m1_{vid}", V, vid, "m1", "d1", "P1 Teste", "43999990001", "viagem", "Viagem de 18/11", dt.date(2026, 11, 25), 3000)
+    for _ in range(2):
+        q(c, """insert into public.cobrancas (id, vanzeiro_id, viagem_id, matricula_id, destino_id, nome, telefone, tipo, referencia, vencimento, valor_base)
+                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) on conflict (id) do nothing""", linha)
+        q(c, "insert into public.embarques (matricula_id, data, viagem_id) values ('m1', %s, %s) on conflict (matricula_id, data) do nothing", (H, vid))
+    registra("C3.5", "Viagem reenviada 3 vezes e o app envia embarque e cobrança 2 vezes", "1 embarque e 1 cobrança por pessoa",
+             [contar("m1"), contar("m3")], contar("m1") == (1, 1) and contar("m3") == (1, 1))
+    # (d) cobrança paga ou cancelada não muda quando a viagem é reenviada
+    como(c, V); q(c, "update public.cobrancas set pagamento_data=%s, pagamento_forma='pix' where id=%s", (H, f"m1_{vid}"))
+    q(c, "update public.cobrancas set cancelamento_data=%s, cancelamento_motivo='Cortesia' where id='m3_2026-11-18'", (H,))
+    q(c, "update public.viagens set estado=%s, fase='encerrada' where id=%s", (viagem_estado(vid, "d1", H, ["m1", "m3", "m2"], fase="encerrada"), vid))
+    e = estado(c, f"m1_{vid}", "m3_2026-11-18")
+    registra("C3.6", "Paga e cancelada continuam assim quando a viagem é reenviada", "paga; cancelada: Cortesia", e,
+             e == {f"m1_{vid}": "paga", "m3_2026-11-18": "cancelada: Cortesia"})
+    # (e) sem sinal: a fila do celular envia a viagem inteira depois (insert com 'on conflict do update')
+    H3 = H + dt.timedelta(days=1); vid3 = f"d1_{H3}"
+    como(c, V)
+    q(c, """insert into public.viagens (id, vanzeiro_id, destino_id, data, fase, estado) values (%s,%s,'d1',%s,'encerrada',%s)
+            on conflict (id) do update set fase=excluded.fase, estado=excluded.estado""", (vid3, V, H3, viagem_estado(vid3, "d1", H3, ["m1", "m3"], fase="encerrada")))
+    admin(c); n = q(c, "select id from public.cobrancas where id in (%s, %s) order by 1", (f"m1_{vid3}", f"m3_{H3}"))
+    registra("C3.7", "Sem sinal: quando a fila envia a viagem, embarques e cobranças nascem juntos", f"m1_{vid3} e m3_{H3}", n, len(n) == 2)
+    # (f) embarque gravado sem cobrança (T5.1, celular antigo)
+    H4 = H + dt.timedelta(days=2)
+    como(c, V); q(c, "insert into public.embarques (matricula_id, data) values ('m3', %s)", (H4,))
+    admin(c); n = q(c, "select count(*) from public.cobrancas where id=%s", (f"m3_{H4}",))[0][0]
+    registra("C3.8", "Embarque gravado sozinho (versão antiga do app) ganha a cobrança", "1", n, n == 1)
+    # (g) identificadores estranhos em 'embarcaram' são ignorados
+    como(c, u["V2"])
+    q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor) values ('x2', %s, 'd2', 'Outro Teste', '43999990777', 'viagem', 9999)", (u["V2"],))
+    H5 = H + dt.timedelta(days=3); vid5 = f"d1_{H5}"
+    como(c, V)
+    q(c, "insert into public.viagens (id, vanzeiro_id, destino_id, data, fase, estado) values (%s,%s,'d1',%s,'encerrada',%s)",
+      (vid5, V, H5, viagem_estado(vid5, "d1", H5, ["x2", "nao-existe", "m1"], fase="encerrada")))
+    admin(c); est = q(c, "select (select count(*) from public.embarques where matricula_id in ('x2','nao-existe')), (select count(*) from public.cobrancas where matricula_id='x2'), (select count(*) from public.cobrancas where id=%s)", (f"m1_{vid5}",))[0]
+    registra("C3.9", "Viagem com matrícula de outro vanzeiro e identificador inexistente", "ignorados (0, 0); m1 cobrado (1)", est, est == (0, 0, 1))
+    # (h) passageiro não grava viagem
+    como(c, u["P1"]); r = tenta(c, "update public.viagens set estado=%s where id=%s", (viagem_estado(vid, "d1", H, ["m1", "m2", "m3", "m4"]), vid))
+    registra("C3.10", "Passageiro tenta gravar a viagem para gerar cobranças", "nenhuma linha alterada", r, r[0] == "erro" or r[1] == 0)
+    # (i) queda no meio da gravação da viagem: nada pela metade
+    H6 = H + dt.timedelta(days=4); vid6 = f"d1_{H6}"
+    c2c = psycopg.connect(DSN.format(db="c3")); como(c2c, V)
+    q(c2c, "insert into public.viagens (id, vanzeiro_id, destino_id, data, fase, estado) values (%s,%s,'d1',%s,'encerrada',%s)", (vid6, V, H6, viagem_estado(vid6, "d1", H6, ["m1"], fase="encerrada")))
+    c2c.close()
+    admin(c); est = q(c, "select (select count(*) from public.viagens where id=%s), (select count(*) from public.embarques where data=%s), (select count(*) from public.cobrancas where id=%s)", (vid6, H6, f"m1_{vid6}"))[0]
+    registra("C3.11", "Conexão cai antes de confirmar a gravação da viagem", "nada gravado (0, 0, 0): a viagem fica na fila do celular", est, est == (0, 0, 0))
+    # (j) quem embarcou e depois saiu do destino continua devendo a viagem (Correção 2)
+    como(c, u["P1"]); q(c, "select public.sair_do_destino('m1')")
+    admin(c); e = q(c, "select count(*) from public.cobrancas where matricula_id='m1' and cancelamento_data is null and pagamento_data is null")[0][0]
+    registra("C3.12", "Passageiro que embarcou sai do destino: as viagens feitas continuam cobradas", "2 em aberto", e, e == 2)
+    c.close()
+
+
+def c3_concorrencia(base):
+    c = nova_db(base, "c3b"); u = cenario(c, lugares=12)
+    V, H = u["V"], H2; vid = f"d1_{H}"
+    como(c, V); q(c, "insert into public.viagens (id, vanzeiro_id, destino_id, data, fase, estado) values (%s,%s,'d1',%s,'busca',%s)", (vid, V, H, viagem_estado(vid, "d1", H, [])))
+    tarefas = [(V, "update public.viagens set estado=%s where id=%s", (viagem_estado(vid, "d1", H, ["m1", "m3"]), vid))] * 3
+    tarefas += [(V, "insert into public.embarques (matricula_id, data, viagem_id) values ('m1', %s, %s) on conflict do nothing", (H, vid))] * 2
+    r = em_paralelo("c3b", tarefas)
+    admin(c); est = q(c, "select (select count(*) from public.embarques where data=%s), (select count(*) from public.cobrancas where matricula_id in ('m1','m3'))", (H,))[0]
+    registra("C3.13", "Três celulares/toques gravam a mesma viagem e o app envia o embarque ao mesmo tempo", "2 embarques e 2 cobranças",
+             f"{[x[0] for x in r]}; {est}", est == (2, 2))
+    c.close()
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
@@ -760,7 +885,7 @@ def montar_base(nome="vz_auditoria_base"):
     return nome
 
 
-GRUPOS = {"t1": t1, "t2": t2, "t3": t3, "t4": t4_t5, "t6": t6_t7, "t8": t8_t9_t10, "c1": c1, "c2": c2, "c2b": c2_concorrencia}
+GRUPOS = {"t1": t1, "t2": t2, "t3": t3, "t4": t4_t5, "t6": t6_t7, "t8": t8_t9_t10, "c1": c1, "c2": c2, "c2b": c2_concorrencia, "c3": c3, "c3b": c3_concorrencia}
 
 if __name__ == "__main__":
     import argparse

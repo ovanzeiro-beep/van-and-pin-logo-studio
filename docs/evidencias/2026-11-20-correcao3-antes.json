@@ -1,0 +1,93 @@
+[
+ {
+  "teste": "C3.0",
+  "descricao": "Banco do laboratório tem a Correção 3 aplicada",
+  "esperado": "sim",
+  "obtido": "False",
+  "passou": false
+ },
+ {
+  "teste": "C3.2",
+  "descricao": "Por viagem: 'Embarcou' com sinal e o app fecha na hora — o banco já tem embarque e cobrança",
+  "esperado": "1 embarque; cobrança m1_d1_2026-11-18 de R$ 30, vence 25/11",
+  "obtido": "(0, 0); []",
+  "passou": false
+ },
+ {
+  "teste": "C3.3",
+  "descricao": "Diário: embarque gera a diária do dia",
+  "esperado": "1 embarque; cobrança m3_2026-11-18 'Diária de 18/11'",
+  "obtido": "(0, 0); []",
+  "passou": false
+ },
+ {
+  "teste": "C3.4",
+  "descricao": "Mensal: embarque é registrado, mas não gera cobrança por viagem",
+  "esperado": "1 embarque; 0 cobranças do dia",
+  "obtido": "(0, 0)",
+  "passou": false
+ },
+ {
+  "teste": "C3.5",
+  "descricao": "Viagem reenviada 3 vezes e o app envia embarque e cobrança 2 vezes",
+  "esperado": "1 embarque e 1 cobrança por pessoa",
+  "obtido": "[(1, 1), (0, 0)]",
+  "passou": false
+ },
+ {
+  "teste": "C3.6",
+  "descricao": "Paga e cancelada continuam assim quando a viagem é reenviada",
+  "esperado": "paga; cancelada: Cortesia",
+  "obtido": "{'m1_d1_2026-11-18': 'paga'}",
+  "passou": false
+ },
+ {
+  "teste": "C3.7",
+  "descricao": "Sem sinal: quando a fila envia a viagem, embarques e cobranças nascem juntos",
+  "esperado": "m1_d1_2026-11-19 e m3_2026-11-19",
+  "obtido": "[]",
+  "passou": false
+ },
+ {
+  "teste": "C3.8",
+  "descricao": "Embarque gravado sozinho (versão antiga do app) ganha a cobrança",
+  "esperado": "1",
+  "obtido": "0",
+  "passou": false
+ },
+ {
+  "teste": "C3.9",
+  "descricao": "Viagem com matrícula de outro vanzeiro e identificador inexistente",
+  "esperado": "ignorados (0, 0); m1 cobrado (1)",
+  "obtido": "(0, 0, 0)",
+  "passou": false
+ },
+ {
+  "teste": "C3.10",
+  "descricao": "Passageiro tenta gravar a viagem para gerar cobranças",
+  "esperado": "nenhuma linha alterada",
+  "obtido": "('ok', 0)",
+  "passou": true
+ },
+ {
+  "teste": "C3.11",
+  "descricao": "Conexão cai antes de confirmar a gravação da viagem",
+  "esperado": "nada gravado (0, 0, 0): a viagem fica na fila do celular",
+  "obtido": "(0, 0, 0)",
+  "passou": true
+ },
+ {
+  "teste": "C3.12",
+  "descricao": "Passageiro que embarcou sai do destino: as viagens feitas continuam cobradas",
+  "esperado": "2 em aberto",
+  "obtido": "0",
+  "passou": false
+ },
+ {
+  "teste": "C3.13",
+  "descricao": "Três celulares/toques gravam a mesma viagem e o app envia o embarque ao mesmo tempo",
+  "esperado": "2 embarques e 2 cobranças",
+  "obtido": "['ok', 'ok', 'ok', 'ok', 'ok']; (1, 0)",
+  "passou": false
+ }
+]
