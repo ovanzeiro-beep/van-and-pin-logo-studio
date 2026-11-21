@@ -709,6 +709,8 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 
 > **Para qualquer IA que for trabalhar aqui (Claude, GPT, Lovable ou outra):** leia esta seção 22 inteira, depois `CLAUDE.md` e o último registro de `docs/contraprova.md`. Trabalhe uma etapa de 22.6 por vez, registre a prova (22.8) e atualize 22.6 e a contraprova no fim. O que já está pronto está em 22.4a; como mexer no banco está em 22.1a.
 
+**Prontidão P0-F1 — 21/11/2026, prompt-26.** Base conferida `ebbf4b4`; SQL existente intacto, migration adicional ainda ausente nesta cópia. Não houve nova tentativa de contornar o bloqueio. Compatibilidade demonstrada anteriormente no laboratório; **compatibilidade com o banco atual não confirmada**, pois não há acesso externo de leitura disponível nesta sessão. Próxima ação: obter as definições reais somente em leitura, comparar com o pacote testado, registrar a cópia integral como migration pelo fluxo externo e, somente após autorização, instalar e validar. [Procedimento e critérios de encerramento](implantacao-desconto-protegido.md#o-que-falta-na-ordem-mais-simples). Sem alterações no app/SQL, produção, merge, publicação ou branch da Correção 6; nenhum teste repetido nesta conferência.
+
 ### 22.1 Projeto, objetivo e limites da revisão
 
 - **Único repositório deste trabalho:** `ovanzeiro-beep/van-and-pin-logo-studio`. Não usar diagnósticos de outro repositório como prova deste.
