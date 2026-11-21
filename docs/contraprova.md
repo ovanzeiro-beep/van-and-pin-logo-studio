@@ -2163,3 +2163,16 @@ Branch `claude/relatorio-planilha-xlsx` (a partir de `8bc603b`). Nada no banco, 
 | [x] Conferência com os dados de exemplo | 31 cobranças (19 recebidas, 11 a receber, 1 cancelada) + 5 gastos = 36 linhas; a receber R$ 1.661,00 = o valor que a tela de exclusão mostra; arquivo lido pelo openpyxl e aberto no LibreOffice |
 | [x] Testes | App **478/478**, tipos e build ok |
 | [ ] Merge e publicação | Aguardando autorização do dono |
+
+### 21/11/2026 · Correção 5 — CONCLUÍDA (implantação e verificação visual)
+
+| Item | Situação |
+| --- | --- |
+| [x] Banco | Correção 5 aplicada pelo dono no SQL Editor; 23/23 conferências só em leitura; estrutura idêntica ao laboratório |
+| [x] App | Correção 5 publicada (`8bc603b`); relatório em planilha Excel publicado (`85507f0`, commit atual da `main` e do Lovable) |
+| [x] Função de avisos | Versão 11 = versão 10 + título "Vanzeiro saiu do app" |
+| [x] Verificação visual pelo dono, no celular | Tela de exclusão com o valor a receber e o botão do relatório; planilha baixada em `.xlsx`, com colunas separadas, datas e valores corretos. Nenhuma conta foi excluída |
+| [x] Dados preservados | 7 contas, 9 cobranças e históricos iguais ao backup de 21/11; nenhum erro novo no app |
+| Limite da validação | **A exclusão completa de contas (vanzeiro que sai com dívidas em aberto, aviso "Vanzeiro saiu do app", acerto informado, apagamento dos contatos ao fim da finalidade) foi validada só no laboratório (45/45), NÃO em produção** — por decisão do dono, sem excluir contas reais nem criar dados fictícios na produção |
+| Pendente (fora desta etapa) | Prazo legal máximo dos contatos (`regras_de_guarda`): vazio até o advogado definir |
+| Melhoria futura (anotada, não feita) | Ajustar a largura e a apresentação das colunas da planilha para leitura no celular |
