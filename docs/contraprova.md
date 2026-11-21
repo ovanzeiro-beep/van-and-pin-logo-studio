@@ -2096,3 +2096,24 @@ Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, se
 | Reverter | `supabase/testes/correcao5-reverter.sql`: no laboratório, funções voltaram idênticas; ligações iguais (login → conta volta como NOT VALID, de propósito). |
 | Achado | 4 funções em produção diferem dos arquivos do GitHub (`conta_so_por_funcao`, `destino_com_lugar`, `mudar_meu_embarque`, `responder`): versões coladas à mão em algum momento. Não muda a Correção 5; registrar as versões da produção numa etapa de documentação. |
 | Depende do dono | Decisões A, B e C; autorização para aplicar no Supabase (pelo SQL Editor), merge e publicação; teste no celular. |
+
+### 21/11/2026 · Correção 5 revisada com as decisões do dono — preparada, NÃO implantada
+
+Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, sem publicação.
+
+| Decisão | Como ficou |
+| --- | --- |
+| A — dívidas | Nenhuma dívida legítima é cancelada sozinha: viagens feitas, vencidas e períodos já começados continuam em aberto; só as cobranças de período futuro são canceladas (regra da Correção 2). Pagas e canceladas não mudam. Antes de excluir, o vanzeiro vê quanto tem a receber e pode marcar o que recebeu. Quem tem valor em aberto recebe o aviso "Vanzeiro saiu do app". Depois, o passageiro pode **informar um acerto** feito fora do app (`informar_acerto`, tabela `acertos_informados`): fica registrado como declaração dele com data, **não** como pagamento (a cobrança não muda); só vale para o próprio passageiro, só em cobrança em aberto e só quando o vanzeiro saiu do app. |
+| B — contatos | Telefone e Pix do vanzeiro que saiu: só enquanto algum passageiro **com conta** tem valor em aberto sem acerto informado, e só esses passageiros veem (regra de acesso do perfil). Telefone de quem excluiu a conta: só nas cobranças em aberto com vanzeiro que continua no app; apagado das pagas, canceladas, pedidos e cadastros sem finalidade. Passageiros sem conta de um vanzeiro que saiu ficam sem nome, endereço e telefone (dívida continua registrada). Tarefa `encerrar_finalidade_dos_contatos` (de hora em hora, na exclusão e a cada acerto) apaga ao fim da finalidade. Prazo legal máximo: `regras_de_guarda` (vazio até o advogado definir; a tarefa já aplica quando for preenchido). Lembretes automáticos de cobrança param para o vanzeiro que saiu. |
+| C — gastos | "Baixar meu relatório (planilha)" na confirmação de exclusão (recebidos, a receber, cancelados e gastos); depois os gastos são apagados. Sem totais para estatística. |
+| Reversão | `supabase/testes/correcao5-reverter.sql` nunca volta a cascata nem a ligação login → conta (sem NOT VALID). Testado: só `excluir_minha_conta` fica diferente da base (de propósito); 0 cascatas; ponta a ponta idêntico. |
+| 4 funções "divergentes" | `conta_so_por_funcao`, `destino_com_lugar`, `mudar_meu_embarque` e `responder`: **funcionamento idêntico** ao GitHub — o código é o mesmo; só os comentários (`--`) não estão na produção. Nada a aplicar. |
+
+| Teste | Resultado |
+| --- | --- |
+| Correção 5 no laboratório (`supabase/testes/correcao5-exclusao-de-contas.sql`): exclusão com dívidas abertas, vários passageiros (com e sem conta), acertos, contatos, lembretes, prazo legal, viagem em andamento, proteções | **45/45** |
+| Ponta a ponta E3 | idêntico antes/depois |
+| Auditoria (`scripts/auditoria-laboratorio.py`) | **111/117**; C1, C2 e C3: 57/57; as 6 restantes são das próximas etapas |
+| App | **477/477**, tipos e build ok; telas conferidas em 390×844 |
+
+Implantação (depende de autorização): backup novo → dono cola a Correção 5 no SQL Editor → conferência só em leitura → merge → publicação → função de avisos com o título "Vanzeiro saiu do app" → teste no celular com contas de teste → advogado define o prazo legal.

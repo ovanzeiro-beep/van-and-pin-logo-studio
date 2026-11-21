@@ -281,6 +281,7 @@ export type TipoAviso =
   | "ausencia_registrada"
   | "proxima_parada"
   | "boa_viagem"
+  | "vanzeiro_saiu"
   | "endereco_aceito"
   | "endereco_recusado"
   | "pedido_novo"

@@ -1,12 +1,13 @@
 import type { Passageiro } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
-import { cancelarCobranca, cancelarPeriodosFuturosDe, obterCobrancas } from "@/lib/cobrancas-store";
+import { cancelarPeriodosFuturosDe, obterCobrancas } from "@/lib/cobrancas-store";
 import { alternarAtivo, obterDestinos, removerDestino } from "@/lib/destinos-store";
 import { obterPassageiros, removerDoDestino, sairDaMatricula } from "@/lib/passageiros-store";
 import { obterMinhasMatriculas } from "@/lib/sessao-passageiro";
 import { idDoVanzeiro } from "@/lib/sessao";
 import { emAndamento, obterViagensDoDia } from "@/lib/viagem-store";
 import { deuCerto, naoDeu, SEM_DESTINO, type Resultado } from "@/lib/acoes";
+import { valorFinal } from "@/lib/cobrancas";
 import { USA_BANCO } from "@/lib/supabase";
 
 // Excluir destino (vanzeiro) and Sair deste destino (passageiro). Correção 2 (D1-C, 20/11/2026): paid, cancelled and
@@ -23,8 +24,11 @@ const cancelarNaMemoria = (
 export const MOTIVO_DESTINO_EXCLUIDO = "Destino excluído";
 export const MOTIVO_SAIU_DO_DESTINO = "Saiu do destino";
 export const MOTIVO_REMOVIDO_DO_DESTINO = "Removido do destino";
-/** Correção 5: what was still open when the vanzeiro deleted the account (nobody collects it in the app anymore). */
-export const MOTIVO_CONTA_DO_VANZEIRO = "Conta do vanzeiro excluída";
+/** Correção 5: what the vanzeiro still has to receive (shown before deleting the account, with the report). */
+export function aReceberAntesDeExcluir(vanzeiroId = idDoVanzeiro()) {
+  const abertas = obterCobrancas().filter((c) => c.vanzeiroId === vanzeiroId && !c.pagamento && !c.cancelamento);
+  return { quantos: new Set(abertas.map((c) => c.passageiroId)).size, valor: abertas.reduce((s, c) => s + valorFinal(c), 0) };
+}
 const VIAGEM_ACONTECENDO = "A viagem de hoje deste destino está acontecendo. Espere ela terminar.";
 
 /** Neither works while that destino's trip of today is in progress. */
@@ -79,14 +83,9 @@ export function removerPassageiroDoDestino(passageiroId: string, hoje = dataDeHo
  * their destinos. Returns false (and changes nothing) while one of those trips is in progress. */
 export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = dataDeHoje()): Resultado {
   if (contaComViagemEmAndamento(papel)) return naoDeu("Uma das suas viagens está acontecendo agora. Espere ela terminar para excluir a conta.");
-  if (papel === "vanzeiro") {
-    meusDestinos().forEach((d) => excluirDestino(d.id, hoje));
-    // Correção 5: with the database, the database does it (one operation); without it, the same rule here.
-    if (!USA_BANCO.destinos)
-      obterCobrancas()
-        .filter((c) => c.vanzeiroId === idDoVanzeiro() && !c.pagamento && !c.cancelamento)
-        .forEach((c) => cancelarCobranca(c.id, MOTIVO_CONTA_DO_VANZEIRO, hoje));
-  } else obterMinhasMatriculas().forEach((p) => sairDoDestino(p.id, hoje));
+  // Correção 5 (decisão A): legitimate debts stay open; only charges of future periods are cancelled (Correção 2).
+  if (papel === "vanzeiro") meusDestinos().forEach((d) => excluirDestino(d.id, hoje));
+  else obterMinhasMatriculas().forEach((p) => sairDoDestino(p.id, hoje));
   return deuCerto;
 }
 

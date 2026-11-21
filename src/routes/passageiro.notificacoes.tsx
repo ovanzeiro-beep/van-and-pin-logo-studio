@@ -24,6 +24,7 @@ const tipoAviso: Record<string, { label: string; cor: string }> = {
   ausencia_registrada: { label: "Ausência registrada", cor: "text-destructive" },
   proxima_parada: { label: "A van está chegando", cor: "text-warning" },
   boa_viagem: { label: "Boa viagem!", cor: "text-success" },
+  vanzeiro_saiu: { label: "Vanzeiro saiu do app", cor: "text-warning" },
 };
 
 export const Route = createFileRoute("/passageiro/notificacoes")({

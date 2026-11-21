@@ -50,6 +50,7 @@ const ICONE: Record<string, { icone: LucideIcon | "van"; fundo: string }> = {
   ausencia_registrada: { icone: CalendarX2, fundo: "bg-destructive-soft text-destructive" },
   proxima_parada: { icone: "van", fundo: "bg-warning-soft text-warning" },
   boa_viagem: { icone: "van", fundo: "bg-success-soft text-success" },
+  vanzeiro_saiu: { icone: Wallet, fundo: "bg-warning-soft text-warning" },
 };
 
 /** "Hoje", "Ontem" or "16/11". */

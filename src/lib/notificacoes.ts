@@ -46,6 +46,7 @@ export const ROTULO_DO_AVISO: Record<TipoAviso, string> = {
   ausencia_registrada: "Ausência registrada",
   proxima_parada: "A van está chegando",
   boa_viagem: "Boa viagem!",
+  vanzeiro_saiu: "Vanzeiro saiu do app",
 };
 
 export type Notificacao = { titulo: string; corpo: string; url: string; tag: string };

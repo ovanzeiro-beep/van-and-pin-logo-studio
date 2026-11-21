@@ -21,6 +21,7 @@ import { obterMatriculas, obterPassageiros } from "@/lib/passageiros-store";
 import { novoId } from "@/lib/ids";
 import { obterSessao } from "@/lib/sessao";
 import { supabase, USA_BANCO } from "@/lib/supabase";
+import { carregarAcertosDoBanco } from "@/lib/banco/acertos";
 import type { ViagemDoDia } from "@/lib/viagem";
 
 // W7 (docs/banco-de-dados.md, section 8.3): money in the database. The app keeps creating the charges by itself, with the
@@ -296,6 +297,8 @@ export async function carregarDinheiro(): Promise<boolean> {
   const faltas = (f.data as LinhaFalta[]).map(faltaDaLinha);
   lembrarDoBanco(cobrancas, embarques, faltas);
   carregarDinheiroDoBanco(cobrancas, { embarques, faltas });
+  // Correção 5: settlements the passenger informed after the vanzeiro left the app.
+  void carregarAcertosDoBanco();
   return true;
 }
 
