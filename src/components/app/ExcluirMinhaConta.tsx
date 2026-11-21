@@ -34,7 +34,10 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
   // Correção 5: before deleting, the vanzeiro sees what is still open and can download the report.
   const aReceber = papel === "vanzeiro" ? aReceberAntesDeExcluir() : { quantos: 0, valor: 0 };
   const baixar = () =>
-    baixarArquivo(`o-vanzeiro-relatorio-${dataDeHoje()}.csv`, relatorioDoVanzeiro(obterCobrancas(), obterGastos(), idDoVanzeiro()));
+    baixarArquivo(
+      `o-vanzeiro-relatorio-${dataDeHoje()}.xlsx`,
+      relatorioDoVanzeiro(obterCobrancas(), obterGastos(), idDoVanzeiro(), dataDeHoje()),
+    );
 
   const excluir = async () => {
     const r = await fazer(() => excluirMinhaConta(papel));

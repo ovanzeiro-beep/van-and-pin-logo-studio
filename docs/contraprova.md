@@ -2144,3 +2144,22 @@ Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, se
 | [x] Estrutura da produção × laboratório com a Correção 5 | Idênticas: 88 funções, 18 gatilhos, 39 regras de acesso, 111 restrições, 200 colunas, 3 tarefas. Permissões: só a diferença antiga de `viagem_sinais`; `acertos_informados` só leitura para quem entrou; `regras_de_guarda` fechada |
 | [x] Cobranças | 9 (3 pagas, 5 canceladas, 1 em aberto), iguais ao backup; 0 acertos |
 | [ ] Merge, publicação no Lovable e função de avisos | Aguardando autorização do dono |
+
+### 21/11/2026 · Correção 5 implantada + ajuste do relatório em planilha Excel (.xlsx) — ajuste NÃO publicado
+
+**Implantação da Correção 5 (concluída):** SQL colado pelo dono (`schedule = 9`); 23/23 conferências; merge na `main` (`8bc603b`); publicado no Lovable e confirmado pelo registro do Supabase (celular Android pedindo `acertos_informados`, sem erros 4xx/5xx); função `avisos-no-celular` versão 11 = versão 10 + título "Vanzeiro saiu do app"; 7 contas, 9 cobranças, nenhum erro novo do app. Dono conferiu no celular: tela de exclusão e download do relatório funcionando.
+
+**Problema achado pelo dono:** o relatório era CSV com ";" e, no celular, abria tudo na coluna A.
+
+Branch `claude/relatorio-planilha-xlsx` (a partir de `8bc603b`). Nada no banco, sem merge, sem publicação.
+
+| Item | Situação |
+| --- | --- |
+| [x] Arquivo `.xlsx` de verdade, gerado no próprio celular, sem biblioteca nova (`src/lib/planilha.ts`) | Abre em Excel, Google Planilhas e LibreOffice |
+| [x] Colunas: Tipo, Data, Passageiro, Valor (R$), Situação, Descrição, Vencimento | Cabeçalho azul em negrito, fixo ao rolar, com filtro; larguras ajustadas; valor e situação perto do início para caber na tela |
+| [x] Datas como datas (dd/mm/aaaa) e valores como dinheiro (formato Real `[$R$-416]`) | Em português: "R$ 280,00"; os valores podem ser somados |
+| [x] Conteúdo | Recebidos (data do pagamento, Pix/Dinheiro), A receber (Pendente/Devendo, palavras do app), Cancelados (motivo), Gastos (tipo e descrição). Agora também o vencimento de pagas e canceladas (antes se perdia) |
+| [x] Sem dados de outros vanzeiros | Só cobranças e gastos do vanzeiro logado (teste com cobrança e gasto de outro vanzeiro: ficam fora) |
+| [x] Conferência com os dados de exemplo | 31 cobranças (19 recebidas, 11 a receber, 1 cancelada) + 5 gastos = 36 linhas; a receber R$ 1.661,00 = o valor que a tela de exclusão mostra; arquivo lido pelo openpyxl e aberto no LibreOffice |
+| [x] Testes | App **478/478**, tipos e build ok |
+| [ ] Merge e publicação | Aguardando autorização do dono |

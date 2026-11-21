@@ -12,7 +12,7 @@ import {
   MOTIVO_DESTINO_EXCLUIDO,
 } from "@/lib/exclusoes";
 import type { Gasto } from "@/lib/gastos";
-import { relatorioDoVanzeiro } from "@/lib/relatorio";
+import { linhasDoRelatorio, relatorioDoVanzeiro } from "@/lib/relatorio";
 import { idDoVanzeiro } from "@/lib/sessao";
 
 const sql = readFileSync(
@@ -97,6 +97,13 @@ describe("Correção 5 (revisada): excluir a conta não apaga histórico nem per
         vencimento: "2026-11-19",
         valorBase: 999,
       },
+      {
+        ...base,
+        id: "5",
+        referencia: "Viagem de 24/11",
+        vencimento: "2026-11-25",
+        valorBase: 15000,
+      },
     ] as unknown as Cobranca[];
     const gastos = [
       {
@@ -108,15 +115,56 @@ describe("Correção 5 (revisada): excluir a conta não apaga histórico nem per
         data: "2026-11-15",
       },
     ] as Gasto[];
-    const csv = relatorioDoVanzeiro(cobrancas, gastos, "v").split("\r\n");
-    expect(csv[0]).toBe("Tipo;Data;Descrição;Passageiro;Valor (R$);Situação");
-    expect(csv).toContain('Recebido;2026-11-11;Viagem de 10/11;"Ana; Souza";150,00;Pago (Pix)');
-    expect(csv).toContain('A receber;2026-11-19;Viagem de 12/11;"Ana; Souza";150,00;Em aberto');
-    expect(csv).toContain(
-      'Cancelado;2026-11-20;Mensal;"Ana; Souza";300,00;Cancelado: Destino excluído',
-    );
-    expect(csv).toContain("Gasto;2026-11-15;Combustível;;200,00;");
-    expect(csv.join()).not.toContain("De outro");
+    gastos.push({
+      id: "g2",
+      vanzeiroId: "v",
+      tipo: "outros",
+      descricao: "Lavagem",
+      valor: 3500,
+      data: "2026-11-16",
+    });
+    gastos.push({
+      id: "g3",
+      vanzeiroId: "outro",
+      tipo: "combustivel",
+      descricao: "",
+      valor: 777,
+      data: "2026-11-16",
+    });
+    expect(linhasDoRelatorio(cobrancas, gastos, "v", "2026-11-21")).toEqual([
+      [
+        "Recebido",
+        "2026-11-11",
+        "Ana; Souza",
+        15000,
+        "Pago (Pix)",
+        "Viagem de 10/11",
+        "2026-11-17",
+      ],
+      ["A receber", "2026-11-19", "Ana; Souza", 15000, "Devendo", "Viagem de 12/11", "2026-11-19"],
+      ["A receber", "2026-11-25", "Ana; Souza", 15000, "Pendente", "Viagem de 24/11", "2026-11-25"],
+      [
+        "Cancelado",
+        "2026-11-20",
+        "Ana; Souza",
+        30000,
+        "Cancelada: Destino excluído",
+        "Mensal",
+        "2026-12-10",
+      ],
+      ["Gasto", "2026-11-15", null, 20000, null, "Combustível", null],
+      ["Gasto", "2026-11-16", null, 3500, null, "Outros: Lavagem", null],
+    ]);
+    // A real .xlsx (a zip): header, dates as Excel days, money as numbers, nothing from another vanzeiro.
+    const xlsx = relatorioDoVanzeiro(cobrancas, gastos, "v", "2026-11-21");
+    expect([...xlsx.slice(0, 4)]).toEqual([0x50, 0x4b, 0x03, 0x04]);
+    const texto = new TextDecoder().decode(xlsx);
+    expect(texto).toContain("xl/worksheets/sheet1.xml");
+    expect(texto).toContain('<t xml:space="preserve">Situação</t>');
+    expect(texto).toContain('<c r="B2" s="2"><v>46337</v></c>'); // 11/11/2026
+    expect(texto).toContain('<c r="D2" s="3"><v>150.00</v></c>');
+    expect(texto).not.toContain("De outro");
+    expect(texto).not.toContain("7.77");
   });
 
   it("banco: sem cascata, sem perdão automático, contato com fim de finalidade e prazo legal configurável", () => {
