@@ -7,8 +7,8 @@ Arquivos (branch `claude/correcao-6-convites-e-telefones`):
 | Arquivo | Para quê |
 | --- | --- |
 | `supabase/testes/correcao6-verificar.sql` | Conferência antes e depois (só leitura) |
-| `supabase/SO-SQL-17-correcao-6.sql` | A Correção 6 para colar no SQL Editor (tudo ou nada; colar duas vezes não estraga) |
-| `supabase/SO-SQL-17b-desfazer-correcao-6.sql` | Desfazer, se precisar |
+| `supabase/SO-SQL-18-correcao-6.sql` | A Correção 6 para colar no SQL Editor (tudo ou nada; colar duas vezes não estraga) |
+| `supabase/SO-SQL-18b-desfazer-correcao-6.sql` | Desfazer, se precisar |
 | `scripts/correcao6-laboratorio.py` | Teste completo num banco descartável (39 itens) |
 | `scripts/correcao6-ensaio.py` | Ensaio sobre a cópia dos dados reais (backup fora do GitHub) |
 
@@ -21,7 +21,7 @@ código, então, se o banco viesse primeiro, ninguém conseguiria entrar numa va
    (itens 20 a 25). Se possível, um backup novo (como o de 21/11).
 2. **Merge e publicação do app.** Conferir no celular: a tela "Entrar em outro destino" mostra "Ex.: VAN-7K2Q9M".
    Com o banco ainda antigo, tudo continua funcionando com os códigos de hoje.
-3. **Banco:** o dono cola `SO-SQL-17-correcao-6.sql` no SQL Editor e toca em **Run** uma vez. Certo: "Success".
+3. **Banco:** o dono cola `SO-SQL-18-correcao-6.sql` no SQL Editor e toca em **Run** uma vez. Certo: "Success".
    Erro: nada é gravado; não tentar de novo; mandar a mensagem.
 4. **Conferência:** o Claude roda `correcao6-verificar.sql` de novo (só leitura): itens 1 a 11 iguais ao esperado e
    itens 20 a 25 iguais aos do passo 1 (só o código mudou).
@@ -41,5 +41,5 @@ O teste do bloqueio (10 erros) fica só no laboratório, para não travar a cont
 | Quando | O que fazer |
 | --- | --- |
 | Erro ao colar | Nada foi gravado. |
-| Conferência não bate | Colar `SO-SQL-17b-desfazer-correcao-6.sql` e conferir com o Claude. |
-| Problema depois | Colar `SO-SQL-17b`. Volta a busca do convite e o pedido de antes; **os códigos novos continuam valendo** (não precisa avisar ninguém de novo) e as funções antigas de telefone **continuam fechadas**. O app publicado continua funcionando com o banco desfeito. |
+| Conferência não bate | Colar `SO-SQL-18b-desfazer-correcao-6.sql` e conferir com o Claude. |
+| Problema depois | Colar `SO-SQL-18b`. Volta a busca do convite e o pedido de antes; **os códigos novos continuam valendo** (não precisa avisar ninguém de novo) e as funções antigas de telefone **continuam fechadas**. O app publicado continua funcionando com o banco desfeito. |

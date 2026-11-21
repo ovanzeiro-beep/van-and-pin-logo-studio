@@ -3,9 +3,9 @@
 
 O backup (JSON com dados pessoais) fica FORA do repositório. Este script:
   1. monta um banco igual ao de hoje (sem a Correção 6) e restaura o backup (md5 igual ao da produção);
-  2. cola supabase/SO-SQL-17-correcao-6.sql: só o código dos destinos não excluídos muda; o resto fica igual;
+  2. cola supabase/SO-SQL-18-correcao-6.sql: só o código dos destinos não excluídos muda; o resto fica igual;
   3. cola de novo: nada muda;
-  4. desfaz (SO-SQL-17b): as regras voltam às de hoje, menos as duas funções de juntar (continuam fechadas);
+  4. desfaz (SO-SQL-18b): as regras voltam às de hoje, menos as duas funções de juntar (continuam fechadas);
   5. cola outra vez depois de desfazer: funciona.
 Uso: LAB_PGPORT=54329 .venv-lab/bin/python scripts/correcao6-ensaio.py /caminho/backup.json
 """
@@ -52,7 +52,7 @@ r = {}
 hoje = tabelas()
 r["1 backup restaurado"] = f"{sum(hoje[t] == md5p[t] for t in md5p)} de {len(md5p)} tabelas iguais à produção"
 e0, k0, s0 = estrutura(), convites(), tabelas(True)
-colar = (ROOT / "supabase/SO-SQL-17-correcao-6.sql").read_text()
+colar = (ROOT / "supabase/SO-SQL-18-correcao-6.sql").read_text()
 c.execute(colar)
 k1 = convites(); d1 = tabelas(); s1 = tabelas(True)
 trocados = {i: (k0[i], k1[i]) for i in k0 if k0[i] != k1[i]}
@@ -63,7 +63,7 @@ r["2 tabelas que mudaram"] = [t for t in md5p if d1[t] != hoje[t]]
 r["2 sem contar o código, todas as tabelas"] = "iguais" if s1 == s0 else [t for t in s0 if s0[t] != s1[t]]
 c.execute(colar)
 r["3 colar de novo"] = "nada mudou" if convites() == k1 and tabelas() == d1 else "MUDOU"
-c.execute((ROOT / "supabase/SO-SQL-17b-desfazer-correcao-6.sql").read_text())
+c.execute((ROOT / "supabase/SO-SQL-18b-desfazer-correcao-6.sql").read_text())
 e2 = estrutura()
 r["4 desfazer: diferenças com hoje"] = sorted({k for k in set(e0) | set(e2) if e0.get(k) != e2.get(k)})
 r["4 desfazer: dados"] = "iguais aos de depois da Correção 6" if tabelas() == d1 else "MUDOU"

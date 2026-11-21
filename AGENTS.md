@@ -48,6 +48,7 @@ use the editor.
 - The vanzeiro layout is a fixed-height shell where `<main>` scrolls, so a screen can pin its header and scroll only its list (Destinos).
 - Destinos, passageiros and pedidos live in in-memory stores (`src/lib/destinos-store.ts`, `src/lib/passageiros-store.ts`) seeded from sample data, so changes work across screens without a backend; passenger counts are derived from the passenger list, never stored.
 - Charges use pure generators and the shared charge store; trip charges deduplicate by stable trip identity, daily charges by boarding date. Only verified on-time negative answers enter discount history, finalized at departure; due, paid and cancelled charges are immutable. Both vanzeiro summaries read `resumoDoMes`.
+- Protect open-charge discount UPDATEs with an invoker trigger that preserves stored discount/period fields from clients, preventing stale overwrites of the clock's atomic calculation; finalized charges pass unchanged to the existing Correction 5 immutability guard.
 - Sample "today" and "now" are the fixed `DATA_DE_HOJE` and `HORA_DE_AGORA` in `src/data/exemplo.ts`, so charge statuses and confirmation deadlines stay coherent with the sample history; swap them for the real clock with the backend.
 - Multi-step forms share `PassosLayout` (header with "Passo X de 3", progress bar, Voltar/Continuar/Salvar) so every wizard looks the same.
 - Passenger pages are un-nested children of a destino (`vanzeiro.destinos.$id_.passageiros.*`) because the destino detail page has no `<Outlet />`.
