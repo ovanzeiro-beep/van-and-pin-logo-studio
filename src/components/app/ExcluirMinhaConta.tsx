@@ -57,9 +57,9 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
                         ? "Você não tem destinos."
                         : `${plural(numDestinos, "destino é excluído", "destinos são excluídos")} como se você tivesse excluído cada um.`}
                     </li>
-                    <li>Cobranças pendentes são canceladas.</li>
-                    <li>Cobranças que estão devendo continuam a receber.</li>
-                    <li>Seus dados pessoais são apagados.</li>
+                    <li>Os passageiros são avisados e saem dos destinos.</li>
+                    <li>O que ainda está em aberto é cancelado. O histórico de viagens e pagamentos fica para os passageiros.</li>
+                    <li>Seu nome, telefone, Pix, van e gastos são apagados.</li>
                     <li>O app volta para a tela Entrar.</li>
                   </>
                 ) : (
@@ -69,9 +69,8 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
                         ? "Você não está em nenhum destino."
                         : `Você sai de ${plural(numDestinos, "destino", "destinos")} como se tivesse saído de cada um.`}
                     </li>
-                    <li>Cobranças pendentes são canceladas.</li>
-                    <li>Cobranças que estão devendo continuam a receber.</li>
-                    <li>Seus dados pessoais são apagados.</li>
+                    <li>Viagens feitas e mensalidades já começadas continuam a receber. As de períodos futuros são canceladas.</li>
+                    <li>Seu nome e endereço são apagados. O vanzeiro continua com o histórico e o telefone.</li>
                     <li>O app volta para a tela Entrar.</li>
                   </>
               )}

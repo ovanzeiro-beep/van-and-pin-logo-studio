@@ -2076,3 +2076,23 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Antes do merge | Branch `claude/integracao-correcoes-1-a-4` (`34a1d34`): 472/472 testes, tipos ok, build ok. `main` (`1206cbd`) ancestral direta: merge por avanço, sem conflito. |
 | Merge e publicação | Autorizados pelo dono. Merge por avanço na `main`; publicação no Lovable em seguida (conferência abaixo). |
 | Não feito | Correção 5 (não iniciada, por decisão do dono). Nenhum SQL novo além de C2 e C3. Branch `claude/visualizar-main-1gamow` mantida intacta em `d4d4dd9` (cópia de segurança antiga). |
+
+### 20/11/2026 · Lançamento fictício de R$ 150 regularizado
+Pagamento por Pix de 20/11 marcado no teste do celular (não houve dinheiro). Dono autorizou a correção única: arquivo testado em cópia isolada (caso certo, rodar 2 vezes, cobrança inexistente, valor diferente), aplicado pelo dono no SQL Editor. Conferido só em leitura: cobrança `passageiro-mwpc18iw-10_destino-mwpbl3wm-10_2026-11-20` sem pagamento, cancelada com o motivo "Lançamento de teste: o Pix marcado em 20/11/2026 não aconteceu. Corrigido pelo dono."; proteção `cobranca_sem_edicao` ligada; 8 cobranças antigas idênticas; 9 verificações certas.
+
+---
+
+## Correção 5 — exclusão de contas sem perder histórico (21/11/2026) — preparada, NÃO implantada
+
+Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, sem publicação.
+
+| Campo | Resultado |
+| --- | --- |
+| Problema (auditoria) | Vanzeiro: apagar o login apagava em cascata destinos, matrículas, viagens, **cobranças** e avisos (T1.10). Passageiro: o nome continuava nas cobranças (D3). Texto da tela ainda dizia "Cobranças pendentes são canceladas" (desatualizado desde a Correção 2). |
+| Banco (`20261121120000_correcao5_exclusao_de_contas.sql`) | Login não apaga mais a conta (sem cascata); a conta vira "Conta excluída" (`excluida_em`). Histórico (destinos, matrículas, viagens, cobranças, pedidos, perfil) passa a impedir apagar a conta. Vanzeiro: destinos excluídos (avisos e Correção 2), pedidos recusados, em aberto cancelado com "Conta do vanzeiro excluída" [decisão A], perfil sem nome/telefone/Pix/van, gastos apagados [decisão C]. Passageiro: como antes + nome sai das cobranças, mudanças de endereço e avisos de resposta; telefone fica [decisão B]. Bloqueado no meio de uma viagem de hoje. Única exceção à "cobrança nunca editada": trocar o nome por "Conta excluída", só dentro da função. |
+| App | Texto da confirmação atualizado; mesma regra nos dados de exemplo; Política de Privacidade atualizada. |
+| Laboratório | Banco descartável montado com todas as migrações + 4 funções espelhadas da produção (`supabase/testes/espelho-producao-4-funcoes-20261121.sql`): **83/83 funções idênticas à produção**. |
+| Testes | C5 (`supabase/testes/correcao5-exclusao-de-contas.sql`): **30/30**. Ponta a ponta E3: 28 linhas idênticas antes e depois. Auditoria (`scripts/auditoria-laboratorio.py`): **111/117** (antes 110/117): T1.10 passou; T1.7 mantido; as 6 que faltam são das próximas etapas (T3.2, T3.3, T3.4, T4.2, T9.4, T10.11). App: **475/475**, tipos e build ok. |
+| Reverter | `supabase/testes/correcao5-reverter.sql`: no laboratório, funções voltaram idênticas; ligações iguais (login → conta volta como NOT VALID, de propósito). |
+| Achado | 4 funções em produção diferem dos arquivos do GitHub (`conta_so_por_funcao`, `destino_com_lugar`, `mudar_meu_embarque`, `responder`): versões coladas à mão em algum momento. Não muda a Correção 5; registrar as versões da produção numa etapa de documentação. |
+| Depende do dono | Decisões A, B e C; autorização para aplicar no Supabase (pelo SQL Editor), merge e publicação; teste no celular. |

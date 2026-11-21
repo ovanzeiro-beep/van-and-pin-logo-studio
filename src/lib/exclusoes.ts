@@ -1,6 +1,6 @@
 import type { Passageiro } from "@/data/exemplo";
 import { dataDeHoje } from "@/lib/agora";
-import { cancelarPeriodosFuturosDe } from "@/lib/cobrancas-store";
+import { cancelarCobranca, cancelarPeriodosFuturosDe, obterCobrancas } from "@/lib/cobrancas-store";
 import { alternarAtivo, obterDestinos, removerDestino } from "@/lib/destinos-store";
 import { obterPassageiros, removerDoDestino, sairDaMatricula } from "@/lib/passageiros-store";
 import { obterMinhasMatriculas } from "@/lib/sessao-passageiro";
@@ -23,6 +23,8 @@ const cancelarNaMemoria = (
 export const MOTIVO_DESTINO_EXCLUIDO = "Destino excluído";
 export const MOTIVO_SAIU_DO_DESTINO = "Saiu do destino";
 export const MOTIVO_REMOVIDO_DO_DESTINO = "Removido do destino";
+/** Correção 5: what was still open when the vanzeiro deleted the account (nobody collects it in the app anymore). */
+export const MOTIVO_CONTA_DO_VANZEIRO = "Conta do vanzeiro excluída";
 const VIAGEM_ACONTECENDO = "A viagem de hoje deste destino está acontecendo. Espere ela terminar.";
 
 /** Neither works while that destino's trip of today is in progress. */
@@ -77,8 +79,14 @@ export function removerPassageiroDoDestino(passageiroId: string, hoje = dataDeHo
  * their destinos. Returns false (and changes nothing) while one of those trips is in progress. */
 export function excluirMinhaConta(papel: "vanzeiro" | "passageiro", hoje = dataDeHoje()): Resultado {
   if (contaComViagemEmAndamento(papel)) return naoDeu("Uma das suas viagens está acontecendo agora. Espere ela terminar para excluir a conta.");
-  if (papel === "vanzeiro") meusDestinos().forEach((d) => excluirDestino(d.id, hoje));
-  else obterMinhasMatriculas().forEach((p) => sairDoDestino(p.id, hoje));
+  if (papel === "vanzeiro") {
+    meusDestinos().forEach((d) => excluirDestino(d.id, hoje));
+    // Correção 5: with the database, the database does it (one operation); without it, the same rule here.
+    if (!USA_BANCO.destinos)
+      obterCobrancas()
+        .filter((c) => c.vanzeiroId === idDoVanzeiro() && !c.pagamento && !c.cancelamento)
+        .forEach((c) => cancelarCobranca(c.id, MOTIVO_CONTA_DO_VANZEIRO, hoje));
+  } else obterMinhasMatriculas().forEach((p) => sairDoDestino(p.id, hoje));
   return deuCerto;
 }
 
