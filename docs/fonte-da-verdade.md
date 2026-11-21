@@ -711,6 +711,8 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 
 **Prontidão P0-F1 — 21/11/2026, prompt-26.** Base conferida `ebbf4b4`; SQL existente intacto, migration adicional ainda ausente nesta cópia. Não houve nova tentativa de contornar o bloqueio. Compatibilidade demonstrada anteriormente no laboratório; **compatibilidade com o banco atual não confirmada**, pois não há acesso externo de leitura disponível nesta sessão. Próxima ação: obter as definições reais somente em leitura, comparar com o pacote testado, registrar a cópia integral como migration pelo fluxo externo e, somente após autorização, instalar e validar. [Procedimento e critérios de encerramento](implantacao-desconto-protegido.md#o-que-falta-na-ordem-mais-simples). Sem alterações no app/SQL, produção, merge, publicação ou branch da Correção 6; nenhum teste repetido nesta conferência.
 
+**Prévia — 21/11/2026, 14:38 UTC.** Sobre `7d41c65`, resolvida a ausência local da dependência `web-push@3.6.7` usada pela função existente de avisos, com biblioteca e tipos como dependências de desenvolvimento. Resolução conferida, teste W10 2/2 e sinal automático **build OK**. Sem alterações em telas, função ou SQL, sem implantação de banco, merge ou publicação. A instalação da C6 e a validação de avisos em aparelhos reais não foram realizadas nesta correção.
+
 ### 22.1 Projeto, objetivo e limites da revisão
 
 - **Único repositório deste trabalho:** `ovanzeiro-beep/van-and-pin-logo-studio`. Não usar diagnósticos de outro repositório como prova deste.
