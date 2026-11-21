@@ -129,3 +129,26 @@ describe("Correção 5 (revisada): excluir a conta não apaga histórico nem per
     expect(sql).toMatch(/Uma das suas viagens está acontecendo agora/);
   });
 });
+
+describe("Correção 5: acerto informado nas listas", () => {
+  it("o item mostra o acerto, mas continua em aberto e o saldo não muda", async () => {
+    const { render: r, screen: sc } = await import("@testing-library/react");
+    const { CobrancaItem } = await import("@/components/app/CobrancaItem");
+    const { RouterProvider, createRouter, createRootRoute, createMemoryHistory } =
+      await import("@tanstack/react-router");
+    const { resumoDoMes } = await import("@/lib/cobrancas");
+    const { dataDeHoje } = await import("@/lib/agora");
+    const c = obterCobrancas().find((x) => !x.pagamento && !x.cancelamento)!;
+    const antes = resumoDoMes(obterCobrancas(), dataDeHoje());
+    await informarAcertoNoBanco(c.id);
+    const raiz = createRootRoute({ component: () => <CobrancaItem c={c} para="passageiro" /> });
+    const router = createRouter({
+      routeTree: raiz,
+      history: createMemoryHistory({ initialEntries: ["/"] }),
+    });
+    r(<RouterProvider router={router} />);
+    expect(await sc.findByText(/Acerto informado por você em/)).toBeTruthy();
+    expect(sc.getByText(/continua em aberto/)).toBeTruthy();
+    expect(resumoDoMes(obterCobrancas(), dataDeHoje())).toEqual(antes);
+  });
+});

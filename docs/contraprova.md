@@ -2117,3 +2117,17 @@ Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, se
 | App | **477/477**, tipos e build ok; telas conferidas em 390×844 |
 
 Implantação (depende de autorização): backup novo → dono cola a Correção 5 no SQL Editor → conferência só em leitura → merge → publicação → função de avisos com o título "Vanzeiro saiu do app" → teste no celular com contas de teste → advogado define o prazo legal.
+
+### 21/11/2026 · Correção 5 — preparação da implantação (ajustes finais) — NÃO implantada
+
+Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, sem publicação. Roteiro: `docs/implantacao-correcao-5.md`.
+
+| Item | Situação |
+| --- | --- |
+| [x] Listas de cobranças | Com acerto informado, a cobrança mostra "Acerto informado por você/pelo passageiro em DD/MM. Não é comprovante: continua em aberto." Etiqueta (Pendente/Devendo), valor e saldo não mudam (teste). |
+| [x] Título "Vanzeiro saiu do app" | `supabase/functions/avisos-no-celular/index.ts` = versão 10 da produção + 1 linha. Não publicado. |
+| [x] Testes | App **478/478**, sem erros soltos (a carga dos acertos ficou protegida contra falha), tipos e build ok. |
+| [x] Backup | Lógico, 20 tabelas, 198 linhas, fora do GitHub. Ensaio (`scripts/backup-ensaio-correcao5.py`): restauração 20/20 idêntica; Correção 5 não muda dados; tarefas 2x sem mudança; desfazer ok, 0 cascatas. **Não é backup completo** (sem logins, chaves e celulares). |
+| [x] SQL definitivo | `supabase/SO-SQL-16-correcao-5.sql` (tudo ou nada). Ensaio da colagem: aplicar, aplicar de novo, desfazer (`SO-SQL-16b`) e reaplicar — conferência 23/23. |
+| [x] Conferências | Antes: `supabase/testes/correcao5-pre-verificar.sql` — rodada na produção (só leitura) em 21/11: tudo igual ao backup, 7 contas, nenhuma viagem em andamento. Depois: `supabase/testes/correcao5-verificar.sql`. |
+| [ ] Implantação | Aguarda autorização do dono. |

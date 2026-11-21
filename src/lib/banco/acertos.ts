@@ -8,9 +8,13 @@ const usaBanco = () => USA_BANCO.destinos && supabase() !== null;
 /** The settlements this account can see (the passenger's own). Before the Correção 5 is in the database, nothing. */
 export async function carregarAcertosDoBanco(): Promise<void> {
   if (!usaBanco()) return;
-  const { data, error } = await supabase()!.from("acertos_informados").select("cobranca_id, informado_em");
-  if (error || !data) return;
-  carregarAcertos(Object.fromEntries((data as { cobranca_id: string; informado_em: string }[]).map((l) => [l.cobranca_id, l.informado_em.slice(0, 10)])));
+  try {
+    const { data, error } = await supabase()!.from("acertos_informados").select("cobranca_id, informado_em");
+    if (error || !Array.isArray(data)) return;
+    carregarAcertos(Object.fromEntries((data as { cobranca_id: string; informado_em: string }[]).map((l) => [l.cobranca_id, l.informado_em.slice(0, 10)])));
+  } catch {
+    // Without the list the charges still show; only the "acerto informado" line is missing until the next load.
+  }
 }
 
 /** "Informar que acertei com o vanzeiro": the database checks it is the person's own open charge and the vanzeiro left. */
