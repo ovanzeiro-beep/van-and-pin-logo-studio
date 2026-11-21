@@ -89,12 +89,14 @@ def cenario(c, lugares=4):
     como(c, u["V2"])
     q(c, """insert into public.destinos (id, vanzeiro_id, origem, destino, tipo, dias, saida, prazo, convite, paradas, ativo)
             values ('d2', %s, 'Cidade C', 'Cidade D', 'fixa', array['seg'], '07:00', '1h', 'VAN-7310', array['Cidade C','Cidade D'], true)""", (u["V2"],))
+    # Correção 6: o banco é quem cria o código; os testes usam o código que ficou gravado.
+    admin(c); u["convite"] = q(c, "select convite from public.destinos where id='d1'")[0][0]
     planos = {"P1": ("m1", "viagem", 3000, None, False, None, "43999990001"),
               "P2": ("m2", "mensal", 30000, 10, True, 1000, "43999990002"),
               "P3": ("m3", "diario", 2000, None, False, None, "43999990003")}
     for k, (mid, plano, valor, venc, desc, vfalta, tel) in planos.items():
         como(c, u[k])
-        ped = q(c, "select public.pedir_para_entrar('VAN-4821', %s, %s, 'Cidade A', 'Rua Ficticia 1', null, null)", (k + " Teste", tel))[0][0]
+        ped = q(c, "select public.pedir_para_entrar(%s, %s, %s, 'Cidade A', 'Rua Ficticia 1', null, null)", (u["convite"], k + " Teste", tel))[0][0]
         como(c, u["V"])
         q(c, "select public.aceitar_pedido(%s, %s)", (ped, json.dumps({"id": mid, "nome": k + " Teste", "telefone": tel, "plano": plano, "valor": valor,
                                                                     "vencimento": venc, "desconta_faltas": desc, "valor_falta": vfalta})))
@@ -211,26 +213,30 @@ def t2(base):
 # ---------------------------------------------------------------- T3 convites
 def t3(base):
     c = nova_db(base, "t3"); u = cenario(c)
-    anon(c); r = tenta(c, "select * from public.destino_pelo_convite('VAN-4821')")
+    anon(c); r = tenta(c, "select * from public.destino_pelo_convite(%s)", (u["convite"],))
     registra("T3.1", "Sem login, consultar convite", "recusado", r[0], r[0] == "erro")
-    como(c, u["X"]); t0 = time.time(); achados = []
+    y = usuario(c, "Adivinho Teste"); como(c, y); q(c, "select public.escolher_papel('passageiro')")
+    t0 = time.time(); achados = []; bloqueio = None
     for n in range(1000, 10000):
-        rows = q(c, "select * from public.destino_pelo_convite(%s)", (f"VAN-{n}",))
-        if rows:
-            achados.append(rows[0])
+        r = tenta(c, "select * from public.destino_pelo_convite(%s)", (f"VAN-{n}",))
+        if r[0] == "ok" and r[1]:
+            achados.append(r[1][0])
+        elif r[0] == "erro" and bloqueio is None:
+            bloqueio = (n - 1000, r[1])
     seg = time.time() - t0
     registra("T3.2", "Conta comum testa todos os 9.000 códigos VAN-1000…VAN-9999", "bloqueado após poucas tentativas",
-             f"{len(achados)} destinos achados em {seg:.1f}s, sem bloqueio; exemplo: {achados[:1]}", len(achados) == 0)
+             f"{len(achados)} destinos achados em {seg:.1f}s; bloqueio: {bloqueio}; exemplo: {achados[:1]}",
+             len(achados) == 0 and bloqueio is not None and bloqueio[0] <= 10)
     como(c, u["X"]); ok = 0
     for i in range(30):
-        if tenta(c, "select public.pedir_para_entrar('VAN-4821', 'Estranho Teste', '43999990099', 'Cidade A', 'Rua', null, null)")[0] == "ok":
+        if tenta(c, "select public.pedir_para_entrar(%s, 'Estranho Teste', '43999990099', 'Cidade A', 'Rua', null, null)", (u["convite"],))[0] == "ok":
             ok += 1
     registra("T3.3", "Mesma conta manda 30 pedidos repetidos para o mesmo destino", "1 pedido aguardando", f"{ok} pedidos criados", ok <= 1)
     como(c, u["V"])
     q(c, """insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor) values ('mman', %s, 'd1', 'Cadastro Manual', '43999990555', 'viagem', 3000)""", (u["V"],))
     como(c, u["X"])
-    a = q(c, "select public.pedir_juntar_pelo_telefone('43999990555')")[0][0]
-    b = q(c, "select public.pedir_juntar_pelo_telefone('43999990777')")[0][0]
+    a = tenta(c, "select public.pedir_juntar_pelo_telefone('43999990555')")
+    b = tenta(c, "select public.pedir_juntar_pelo_telefone('43999990777')")
     registra("T3.4", "Conta qualquer descobre se um telefone está cadastrado (pedir_juntar_pelo_telefone)", "mesma resposta para os dois",
              f"telefone cadastrado → {a}; inexistente → {b}", a == b)
     como(c, u["V"]); pend = q(c, "select conta_id, telefone from public.juntar_conta where matricula_id='mman'")
@@ -298,7 +304,7 @@ def t6_t7(base):
     # T7.1 duas pessoas disputam a última vaga do destino (4 lugares, 3 ocupados)
     pedidos = []
     for k, tel in (("P4", "43999990004"), ("X", "43999990005")):
-        como(c, u[k]); pedidos.append(q(c, "select public.pedir_para_entrar('VAN-4821', %s, %s, 'Cidade A', 'Rua', null, null)", (k, tel))[0][0])
+        como(c, u[k]); pedidos.append(q(c, "select public.pedir_para_entrar(%s, %s, %s, 'Cidade A', 'Rua', null, null)", (u["convite"], k, tel))[0][0])
     r = em_paralelo("t6", [(u["V"], "select public.aceitar_pedido(%s, %s)", (pedidos[0], json.dumps({"nome": "P4", "telefone": "43999990004", "plano": "viagem", "valor": 3000}))),
                            (u["V"], "select public.aceitar_pedido(%s, %s)", (pedidos[1], json.dumps({"nome": "X", "telefone": "43999990005", "plano": "viagem", "valor": 3000})))])
     admin(c); ativos = q(c, "select count(*) from public.matriculas where destino_id='d1' and saiu_em is null")[0][0]
@@ -355,7 +361,7 @@ def t6_t7(base):
 def t8_t9_t10(base):
     c = nova_db(base, "t8"); u = cenario(c); h = u["hoje"]
     # T8.1 interrupção no meio de uma ação: transação desfeita não deixa pedido 'aceito' sem matrícula
-    como(c, u["P4"]); ped = q(c, "select public.pedir_para_entrar('VAN-4821', 'P4', '43999990004', 'Cidade A', 'Rua', null, null)")[0][0]
+    como(c, u["P4"]); ped = q(c, "select public.pedir_para_entrar(%s, 'P4', '43999990004', 'Cidade A', 'Rua', null, null)", (u["convite"],))[0][0]
     c2 = psycopg.connect(DSN.format(db="t8")); como(c2, u["V"])
     q(c2, "select public.aceitar_pedido(%s, %s)", (ped, json.dumps({"nome": "P4", "telefone": "43999990004", "plano": "viagem", "valor": 3000})))
     c2.close()  # conexão cai antes de confirmar
@@ -605,7 +611,7 @@ def c2(base):
     V, H = u["V"], H2
     d = lambda n: H + dt.timedelta(days=n)
     # P4 entra como Quinzenal (dias 5 e 20)
-    como(c, u["P4"]); ped = q(c, "select public.pedir_para_entrar('VAN-4821', 'P4 Teste', '43999990004', 'Cidade A', 'Rua', null, null)")[0][0]
+    como(c, u["P4"]); ped = q(c, "select public.pedir_para_entrar(%s, 'P4 Teste', '43999990004', 'Cidade A', 'Rua', null, null)", (u["convite"],))[0][0]
     como(c, V); q(c, "select public.aceitar_pedido(%s, %s)", (ped, json.dumps({"id": "m4", "nome": "P4 Teste", "telefone": "43999990004", "plano": "quinzenal", "valor": 15000, "vencimento": 5})))
     matricula_manual(c, V, "m7", "d1", "mensal", 30000, 18, "43999990007")
     como(c, V)

@@ -105,6 +105,9 @@ function Privacidade() {
             Quem acertou fora do app pode informar isso no app; fica registrado como informação da pessoa, não como comprovante.
           </li>
           <li>Os registros de erros do app ficam guardados só pelo tempo necessário para corrigir os problemas.</li>
+          <li>
+            Para proteger os códigos de convite, cada código digitado errado fica registrado só com a conta e a hora, por 1 dia.
+          </li>
         </ul>
       </Secao>
 

@@ -277,6 +277,9 @@ export async function pedirParaEntrarNoBanco(convite: string, nome: string, tele
     lng: embarque?.ponto?.lng ?? null,
   });
   if (error) return naoDeu(motivo(error));
+  // Correção 6: the database answers instead of failing, so the attempt is counted (wrong code, or a full van).
+  if (!data) return naoDeu("Código não encontrado. Confira o código com o vanzeiro.");
+  if (data === "#cheia") return naoDeu("A van está cheia. Fale com o vanzeiro.");
   mudarSessaoPassageiro({ nome: nomeDePessoa(nome), telefone: somenteDigitos(telefone), pedidoId: data as string });
   await carregarPassageirosEPedidos();
   return deuCerto;

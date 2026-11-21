@@ -98,6 +98,7 @@ export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; dest
         <p className="mt-2 rounded-2xl bg-primary-soft px-3 py-2 text-sm text-foreground">
           Já está cadastrado neste destino como <span className="font-bold">{cadastro.nome}</span>. Ligando, passa a usar o app com o
           plano que já tem.
+          <span className="mt-1 block font-bold">Só ligue se for a mesma pessoa. Confira o nome e o telefone com ela antes.</span>
         </p>
       )}
       <div className="mt-2.5 grid grid-cols-2 gap-2">

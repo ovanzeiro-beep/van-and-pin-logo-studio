@@ -17,6 +17,9 @@ const falso = vi.hoisted(() => {
   };
   const rpc = async (nome: string, a: Record<string, unknown>) => {
     if (nome === "pedir_para_entrar") {
+      // Correção 6: the database answers instead of failing (so the attempt is counted).
+      if (a["codigo"] === "VAN-ZZZZZZ") return { data: null, error: null };
+      if (a["codigo"] === "VAN-CHE1A2") return { data: "#cheia", error: null };
       const id = `ped-${++n}`;
       banco.pedidos.push({ id, vanzeiro_id: "u-rosa", destino_id: "d1", pessoa_id: "u-beto", nome: a["nome"], telefone: a["telefone"], cidade: a["cidade"], endereco: a["endereco"], ponto_lat: a["lat"], ponto_lng: a["lng"], situacao: "aguardando", matricula_id: null, pedido_em: "2026-11-13", respondido_em: null });
       return { data: id, error: null };
@@ -84,6 +87,13 @@ describe("W4: convite → pedido → aceite → passageiro (Supabase simulado)",
     await pedirParaEntrarNoBanco("VAN-1111", "Outro", "43999990077");
     expect(await recusarPedidoNoBanco("ped-2")).toEqual({ ok: true });
     expect(await recusarPedidoNoBanco("ped-2")).toEqual({ ok: false, motivo: "Este pedido já foi respondido." });
+  });
+
+  it("Correção 6: código errado e van cheia viram mensagens claras e não criam pedido", async () => {
+    const antes = falso.banco.pedidos.length;
+    expect(await pedirParaEntrarNoBanco("VAN-ZZZZZZ", "Beto", "43999990002")).toEqual({ ok: false, motivo: "Código não encontrado. Confira o código com o vanzeiro." });
+    expect(await pedirParaEntrarNoBanco("VAN-CHE1A2", "Beto", "43999990002")).toEqual({ ok: false, motivo: "A van está cheia. Fale com o vanzeiro." });
+    expect(falso.banco.pedidos.length).toBe(antes);
   });
 
   it("mudar onde embarca: o banco mede a distância e diz se precisa do vanzeiro", async () => {

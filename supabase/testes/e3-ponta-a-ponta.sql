@@ -8,7 +8,7 @@ declare
   p2 uuid := 'e3e3e3e3-0000-4000-8000-000000000003';
   saida text := '23:59';
   amanha date := public.hoje_em_brasilia() + 1;
-  ped1 text; ped2 text; m1 text; x text; n int;
+  ped1 text; ped2 text; m1 text; x text; n int; cod text;
   -- Correção 1 (20/11/2026): o aviso de resposta precisa ter o texto que o app escreve.
   texto_vou text := (public.r_textos_da_resposta('Passageiro Um', 'Jacarezinho PR', 'Londrina PR', amanha, 'vai', public.hoje_em_brasilia()))[1];
   res text := '';
@@ -30,21 +30,23 @@ begin
   update public.perfis_vanzeiro set van_lugares = 1, pix = 'teste@pix', telefone = '43999990001' where id = v;
   insert into public.destinos (id, vanzeiro_id, origem, destino, tipo, dias, saida, convite, prazo)
   values ('e3-destino', v, 'Jacarezinho PR', 'Londrina PR', 'fixa', '{seg,ter,qua,qui,sex,sab,dom}', saida, 'VAN-E3E3', '1h');
+  -- Correção 6: quem cria o código é o banco; o teste usa o código que ficou gravado.
+  select convite into cod from public.destinos where id = 'e3-destino';
   res := res || '02 vanzeiro: perfil e destino ok' || E'\n';
 
   -- PASSAGEIRO 1: acha pelo código e pede para entrar
   perform set_config('request.jwt.claims', json_build_object('sub', p1, 'role', 'authenticated')::text, true);
   perform set_config('request.jwt.claim.sub', p1::text, true);
   perform public.escolher_papel('passageiro');
-  select destino into x from public.destino_pelo_convite('van-e3e3');
+  select destino into x from public.destino_pelo_convite(lower(cod));
   res := res || '03 P1 acha pelo código: ' || coalesce(x, 'NÃO ACHOU') || E'\n';
-  ped1 := public.pedir_para_entrar('VAN-E3E3', 'Passageiro Um', '43999990002', 'Jacarezinho PR', 'Rua 1', null, null);
+  ped1 := public.pedir_para_entrar(cod, 'Passageiro Um', '43999990002', 'Jacarezinho PR', 'Rua 1', null, null);
   select count(*) into n from public.destinos; res := res || '04 P1 vê destinos antes de aceito: ' || n || E'\n';
 
   -- PASSAGEIRO 2 também pede (ainda tem 1 lugar)
   perform set_config('request.jwt.claims', json_build_object('sub', p2, 'role', 'authenticated')::text, true);
   perform set_config('request.jwt.claim.sub', p2::text, true);
-  ped2 := public.pedir_para_entrar('VAN-E3E3', 'Passageiro Dois', '43999990003', 'Jacarezinho PR', 'Rua 2', null, null);
+  ped2 := public.pedir_para_entrar(cod, 'Passageiro Dois', '43999990003', 'Jacarezinho PR', 'Rua 2', null, null);
 
   -- VANZEIRO aceita P1 (Diário R$ 150) e tenta aceitar P2 (van cheia)
   perform set_config('request.jwt.claims', json_build_object('sub', v, 'role', 'authenticated')::text, true);
@@ -76,10 +78,14 @@ begin
 
   perform set_config('request.jwt.claims', json_build_object('sub', p2, 'role', 'authenticated')::text, true);
   perform set_config('request.jwt.claim.sub', p2::text, true);
+  -- Correção 6: com a van cheia o banco responde '#cheia' (sem erro, para anotar a tentativa); antes era um erro.
   begin
-    perform public.pedir_para_entrar('VAN-E3E3', 'Passageiro Dois', '43999990003', 'Jacarezinho PR', 'Rua 2', null, null);
-    res := res || '12 P2 pede com a van cheia: DEIXOU (ERRO)' || E'\n';
-  exception when others then res := res || '12 P2 pede com a van cheia: recusado (' || sqlerrm || ')' || E'\n'; end;
+    if coalesce(public.pedir_para_entrar(cod, 'Passageiro Dois', '43999990003', 'Jacarezinho PR', 'Rua 2', null, null), '#') like '#%' then
+      res := res || '12 P2 pede com a van cheia: recusado' || E'\n';
+    else
+      res := res || '12 P2 pede com a van cheia: DEIXOU (ERRO)' || E'\n';
+    end if;
+  exception when others then res := res || '12 P2 pede com a van cheia: recusado' || E'\n'; end;
   select count(*) into n from public.matriculas; res := res || '13 P2 vê matrículas dos outros: ' || n || E'\n';
 
   -- VANZEIRO: viagem de hoje, Embarcou, cobrança Diária, pago; gasto; aviso no sininho
@@ -125,7 +131,7 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', p2, 'role', 'authenticated')::text, true);
   perform set_config('request.jwt.claim.sub', p2::text, true);
   begin
-    ped2 := public.pedir_para_entrar('VAN-E3E3', 'Passageiro Dois', '43999990003', 'Jacarezinho PR', 'Rua 2', null, null);
+    ped2 := public.pedir_para_entrar(cod, 'Passageiro Dois', '43999990003', 'Jacarezinho PR', 'Rua 2', null, null);
     res := res || '24 P1 saiu, P2 pede: ok' || E'\n';
   exception when others then res := res || '24 P2 pede: ERRO ' || sqlerrm || E'\n'; end;
   perform set_config('request.jwt.claims', json_build_object('sub', v, 'role', 'authenticated')::text, true);

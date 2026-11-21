@@ -2176,3 +2176,30 @@ Branch `claude/relatorio-planilha-xlsx` (a partir de `8bc603b`). Nada no banco, 
 | Limite da validação | **A exclusão completa de contas (vanzeiro que sai com dívidas em aberto, aviso "Vanzeiro saiu do app", acerto informado, apagamento dos contatos ao fim da finalidade) foi validada só no laboratório (45/45), NÃO em produção** — por decisão do dono, sem excluir contas reais nem criar dados fictícios na produção |
 | Pendente (fora desta etapa) | Prazo legal máximo dos contatos (`regras_de_guarda`): vazio até o advogado definir |
 | Melhoria futura (anotada, não feita) | Ajustar a largura e a apresentação das colunas da planilha para leitura no celular |
+
+### 21/11/2026 · Correção 6 — convites e telefones — preparada, NÃO implantada
+
+Branch `claude/correcao-6-convites-e-telefones` (a partir de `a72d89b`). Nada na produção, sem merge, sem publicação, códigos reais intactos.
+
+| Decisão do dono | Como ficou |
+| --- | --- |
+| [x] 1. Código "VAN-" + 6 letras e números, sem 0/O, 1/I/L, criado pelo banco | Sorteio seguro do PostgreSQL (`gerar_convite`, 31^6 ≈ 887 milhões), único; o celular não escolhe nem troca o código (gatilho `destino_convite_do_servidor`); o app guarda o código que o banco responde |
+| [x] 2. Trocar os códigos dos 2 destinos ativos | No SQL de implantação (só os que ainda estão no formato antigo; colar 2x não troca de novo); passageiros, pedidos e vínculos iguais; o vanzeiro vê, copia e envia o código novo na tela do destino (já existia) |
+| [x] 3. 10 códigos errados por hora por conta, no servidor | `tentativas_de_convite` (só conta e hora, apagado após 1 dia). Vale para consultar e para pedir; código certo também é recusado durante o bloqueio. Contra muitas contas: alarme (mais de 100 erros de todas as contas em 1 hora → 3 por conta) sem bloquear quem não errou. Pedido repetido para a mesma van é recusado; "van cheia" também conta (não dá para testar telefones). Acesso direto às tabelas continua fechado |
+| [x] 4. Funções de juntar pelo telefone | Sem acesso para o app e sem login; dados preservados |
+| [x] 5. Aviso no "Ligar ao cadastro" | "Só ligue se for a mesma pessoa. Confira o nome e o telefone com ela antes." Verificação de identidade: alternativas apresentadas ao dono, **não implementada** |
+| [x] Política de Privacidade | Uma linha nova: código errado registrado só com conta e hora, por 1 dia |
+
+| Teste | Resultado |
+| --- | --- |
+| Correção 6 no laboratório (`scripts/correcao6-laboratorio.py`): troca dos códigos sobre dados existentes, criação, formato, 10.000 sorteios, 2.000 destinos, jeitos de digitar, limite, alarme, pedidos repetidos, van cheia, "Ligar ao cadastro", acessos | **39/39** (2 rodadas) |
+| Auditoria (`scripts/auditoria-laboratorio.py`) | antes **111/117** → depois **114/117**: T3.2, T3.3 e T3.4 passaram; nenhum outro mudou; faltam T4.2, T9.4, T10.11 (outras etapas) |
+| Correção 5 (45 itens) e ponta a ponta E3 | 45/45 antes e depois; E3 28 linhas idênticas (`10d443a1`) |
+| Ensaio sobre a cópia dos dados reais (`scripts/correcao6-ensaio.py`) | 20/20 tabelas restauradas; só mudou o código dos 2 destinos ativos; colar de novo não muda nada; desfazer volta tudo menos as 2 funções de telefone (fechadas de propósito); colar depois de desfazer funciona |
+| App | **486/486**, tipos e build ok; telas conferidas em 390×844 |
+| Ajustes de testes antigos | Auditoria e E3 passam a usar o código que o banco cria; E3 trata "van cheia" igual nas duas versões |
+
+| Pendente | |
+| --- | --- |
+| [ ] Decisão do dono sobre a verificação de identidade no "Ligar ao cadastro" | |
+| [ ] Implantação (app primeiro, depois o banco) | `docs/implantacao-correcao-6.md` |

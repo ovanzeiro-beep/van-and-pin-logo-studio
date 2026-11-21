@@ -19,7 +19,7 @@ import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { formatarReais } from "@/lib/dinheiro";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
 import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
-import { procurarPorCodigo, type DestinoDoConvite } from "@/lib/convite";
+import { AvisoDoConvite, procurarPorCodigo, type DestinoDoConvite } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
 import { fazer } from "@/lib/acoes";
 import { pedirParaEntrarNoBanco } from "@/lib/banco/passageiros";
@@ -71,8 +71,9 @@ function Codigo({ primeiroUso, aoMudarPasso }: { primeiroUso: boolean; aoMudarPa
       try {
         setAchado(await procurarPorCodigo(codigo, destinos));
         return { ok: true };
-      } catch {
-        return { ok: false, motivo: "Não deu para procurar a van. Confira o sinal e tente de novo." };
+      } catch (e) {
+        // Correção 6: "Muitos códigos errados…" comes from the server and is shown as it is.
+        return { ok: false, motivo: e instanceof AvisoDoConvite ? e.message : "Não deu para procurar a van. Confira o sinal e tente de novo." };
       } finally {
         setProcurando(false);
       }
@@ -99,7 +100,7 @@ function Codigo({ primeiroUso, aoMudarPasso }: { primeiroUso: boolean; aoMudarPa
       >
         <Input
           aria-label="Código de convite"
-          placeholder="Ex.: VAN-4821"
+          placeholder="Ex.: VAN-7K2Q9M"
           value={codigo}
           disabled={procurando}
           autoCapitalize="characters"

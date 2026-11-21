@@ -26,7 +26,7 @@ describe("Destinos", () => {
     const usados = new Set(destinosExemplo.map((d) => d.convite));
     for (let i = 0; i < 200; i++) {
       const codigo = gerarConviteUnico();
-      expect(codigo).toMatch(/^VAN-\d{4}$/);
+      expect(codigo).toMatch(/^VAN-[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/);
       expect(usados.has(codigo)).toBe(false);
       usados.add(codigo);
     }
