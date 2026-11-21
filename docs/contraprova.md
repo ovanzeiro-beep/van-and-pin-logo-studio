@@ -2139,4 +2139,8 @@ Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, se
 | [x] Arquivos na branch `claude/correcao-5-exclusao-de-contas` (`fea98b7`) | Iguais aos locais; colagem `SO-SQL-16` = migração; `main` em `c47b6b6` sem mudanças; função de avisos da produção ainda na versão 10 |
 | [x] Conferência antes (`correcao5-pre-verificar.sql`, produção, só leitura) | 13/13: Correção 5 não aplicada, 7 contas, nenhuma viagem em andamento, proteção ligada, 9 tabelas iguais ao backup |
 | [x] Compatibilidade da estrutura (produção × laboratório sem a Correção 5) | Idênticas: 83 funções, 17 gatilhos, 38 regras de acesso, 107 restrições, 190 colunas, 2 tarefas. Única diferença: `viagem_sinais` tem permissão para `anon` na produção (já existia; RLS ligado e a única regra é para `authenticated`, então quem não entrou não vê nada; a Correção 5 não mexe nela) |
-| [ ] Dono cola `SO-SQL-16-correcao-5.sql` | Aguardando |
+| [x] Dono colou `SO-SQL-16-correcao-5.sql` (21/11, pelo celular) | Resultado `schedule = 9` (tarefa agendada) |
+| [x] 23 verificações depois (`correcao5-verificar.sql`, só leitura) | **23/23**: 5 funções novas, gatilho de avisos, tarefa (`23 * * * *`), 2 tabelas novas com RLS, prazo legal vazio, sem cascata, funções internas fechadas, nada chamável sem login, proteção de cobrança ligada, 12 funções das Correções 1–3, 7 contas, 0 excluídas, 0 avisos duplicados, 9 tabelas iguais ao backup |
+| [x] Estrutura da produção × laboratório com a Correção 5 | Idênticas: 88 funções, 18 gatilhos, 39 regras de acesso, 111 restrições, 200 colunas, 3 tarefas. Permissões: só a diferença antiga de `viagem_sinais`; `acertos_informados` só leitura para quem entrou; `regras_de_guarda` fechada |
+| [x] Cobranças | 9 (3 pagas, 5 canceladas, 1 em aberto), iguais ao backup; 0 acertos |
+| [ ] Merge, publicação no Lovable e função de avisos | Aguardando autorização do dono |
