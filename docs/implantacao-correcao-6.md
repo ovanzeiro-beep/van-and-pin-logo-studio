@@ -20,7 +20,7 @@ Arquivos (branch `claude/correcao-6-convites-e-telefones`):
 4. **Opção A — "Ligar ao cadastro" com código pelo WhatsApp:** o vanzeiro toca em "Enviar código", o app mostra um
    código de 6 números e o botão "Abrir o WhatsApp" já com a mensagem para o telefone **que estava no cadastro**. A
    pessoa digita o código no app e só então vê o cadastro (endereço, histórico, cobranças). Ligar direto, sem código,
-   fica fechado. O banco guarda só a impressão do código; 5 tentativas; vale 1 dia; apagado em até 7 dias.
+   fica fechado. O banco guarda só a impressão do código; 5 tentativas; vale 10 minutos; uso único; apagado em até 7 dias.
 
 ## Ordem (desta vez o APP vem ANTES do banco)
 

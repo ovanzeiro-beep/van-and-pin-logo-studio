@@ -14,7 +14,7 @@
 --  5. "Ligar ao cadastro" (Opção A do dono): o vanzeiro não liga mais direto. Ele pede um código de 6 números e manda
 --     pelo WhatsApp para o telefone QUE JÁ ESTAVA NO CADASTRO; só quando a pessoa digita esse código no app a conta
 --     dela passa a ver o endereço, o histórico e as cobranças do cadastro. O banco guarda só a impressão (hash) do
---     código, aceita 5 tentativas e o código vale 1 dia. Um código novo anula o anterior. Impressões com mais de
+--     código, aceita 5 tentativas, o código vale 10 minutos e só pode ser usado uma vez. Um código novo anula o anterior. Impressões com mais de
 --     7 dias são apagadas.
 -- Tudo numa operação: se falhar, nada muda.
 
@@ -199,7 +199,7 @@ begin
   return query select c, m.telefone, m.nome;
 end $$;
 
--- Passageiro: digita o código. Responde 'ok', 'errado', 'bloqueado' (5 erros), 'vencido' (mais de 1 dia),
+-- Passageiro: digita o código. Responde 'ok', 'errado', 'bloqueado' (5 erros), 'vencido' (mais de 10 minutos),
 -- 'sem_codigo', 'respondido' ou 'mudou' (o cadastro mudou ou a pessoa já está no destino). Sem erro, para o erro contar.
 create or replace function public.confirmar_cadastro_com_codigo(pedido text, codigo text) returns text
 language plpgsql security definer set search_path = '' as $$
@@ -211,7 +211,7 @@ begin
   select * into k from public.confirmacoes_de_cadastro x where x.pedido_id = p.id for update;
   if not found then return 'sem_codigo'; end if;
   if k.tentativas >= 5 then return 'bloqueado'; end if;
-  if k.criado_em < now() - interval '1 day' then return 'vencido'; end if;
+  if k.criado_em < now() - interval '10 minutes' then return 'vencido'; end if;  -- vale 10 minutos
   if k.codigo_hash <> public.r_hash_do_codigo(p.id, codigo) then
     update public.confirmacoes_de_cadastro set tentativas = tentativas + 1 where pedido_id = p.id;
     return case when k.tentativas + 1 >= 5 then 'bloqueado' else 'errado' end;

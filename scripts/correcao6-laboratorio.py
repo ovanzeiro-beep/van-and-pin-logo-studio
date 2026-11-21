@@ -269,14 +269,18 @@ def ligar(base):
     como(c, imp)
     velho = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k1[0]))[0][0] if k1[0] != k2[0] else "errado"
     registra("W10", "Código novo do vanzeiro anula o anterior e zera as tentativas", "o antigo dá errado", velho, velho == "errado")
-    admin(c); q(c, "update public.confirmacoes_de_cadastro set criado_em = now() - interval '25 hours' where pedido_id=%s", (ped,))
+    admin(c); q(c, "update public.confirmacoes_de_cadastro set criado_em = now() - interval '11 minutes' where pedido_id=%s", (ped,))
     como(c, imp); r = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k2[0]))[0][0]
-    registra("W11", "Código com mais de 1 dia vence", "vencido", r, r == "vencido")
+    admin(c); ainda = q(c, "select pessoa_id from public.matriculas where id='mman'")[0][0]
+    registra("W11", "Código com mais de 10 minutos vence (mesmo o certo não liga)", "vencido, sem conta", (r, ainda), r == "vencido" and ainda is None)
     como(c, u["V"]); k3 = q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (ped,))[0]
+    admin(c); q(c, "update public.confirmacoes_de_cadastro set criado_em = now() - interval '9 minutes' where pedido_id=%s", (ped,))
     como(c, imp); r = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k3[0][:3] + " " + k3[0][3:]))[0][0]
     admin(c); est = q(c, "select m.pessoa_id = %s, p.situacao, p.matricula_id, (select count(*) from public.confirmacoes_de_cadastro) from public.matriculas m, public.pedidos p where m.id='mman' and p.id=%s", (imp, ped))[0]
-    registra("W12", "Com o código certo (que só chega ao WhatsApp do cadastro), a conta é ligada; pedido aceito; código apagado", "ok, ligado",
+    registra("W12", "Com o código certo aos 9 minutos (que só chega ao WhatsApp do cadastro), a conta é ligada; pedido aceito; código apagado", "ok, ligado",
              (r, est), r == "ok" and est == (True, "aceito", "mman", 0))
+    como(c, imp); r = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k3[0]))[0][0]
+    registra("W12b", "O mesmo código usado de novo", "não vale (uso único)", r, r == "respondido")
     como(c, imp); vis = q(c, "select endereco from public.matriculas where id='mman'")
     registra("W13", "Depois de ligada, a pessoa vê o próprio cadastro", "Rua do Titular, 5", vis, vis == [("Rua do Titular, 5",)])
     como(c, u["V"]); q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor) values ('mman2', %s, 'd1', 'Outro Titular', '43999990556', 'viagem', 3000)", (u["V"],))

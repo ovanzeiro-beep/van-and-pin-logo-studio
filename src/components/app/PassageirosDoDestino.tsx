@@ -79,7 +79,7 @@ export function CodigoConvite({ destino }: { destino: Destino }) {
 
 /** The WhatsApp message with the code (Correção 6). */
 export function mensagemDoCodigo(nome: string, codigo: string) {
-  return `Olá, ${primeiroNomeDe(nome)}! Para usar o app O Vanzeiro com o seu cadastro, digite este código no app: ${codigo}. Não passe este código para ninguém.`;
+  return `Olá, ${primeiroNomeDe(nome)}! Para usar o app O Vanzeiro com o seu cadastro, digite este código no app: ${codigo}. Ele vale 10 minutos. Não passe este código para ninguém.`;
 }
 
 /** One join request with Aceitar (opens the add-passenger steps prefilled) and Recusar. */
@@ -114,7 +114,7 @@ export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; dest
           <p>
             Código: <span className="font-display text-lg font-bold tracking-widest">{codigo.codigo}</span>
           </p>
-          <p>Mande para {formatarTelefone(codigo.telefone)}, o telefone do cadastro. Quando a pessoa digitar o código no app, o cadastro é ligado.</p>
+          <p>Mande para {formatarTelefone(codigo.telefone)}, o telefone do cadastro. O código vale 10 minutos. Quando a pessoa digitar o código no app, o cadastro é ligado.</p>
           <Button asChild size="lg" variant="success" className="w-full">
             <a href={linkWhatsApp(codigo.telefone, mensagemDoCodigo(codigo.nome, codigo.codigo))} target="_blank" rel="noreferrer">
               <MessageCircle className="!h-5 !w-5" /> Abrir o WhatsApp
@@ -124,7 +124,7 @@ export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; dest
       )}
       {cadastro && !codigo && p.confirmacaoPedidaEm && (
         <p className="mt-2 rounded-2xl bg-surface px-3 py-2 text-sm text-foreground">
-          Código enviado. O cadastro é ligado quando a pessoa digitar o código no app.
+          Código enviado. O cadastro é ligado quando a pessoa digitar o código no app. Passados 10 minutos, toque em “Outro código”.
         </p>
       )}
       <div className="mt-2.5 grid grid-cols-2 gap-2">

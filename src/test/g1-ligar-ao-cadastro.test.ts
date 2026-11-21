@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   adicionarPedido,
   cadastroDoPedido,
@@ -86,6 +86,48 @@ describe("G1 + Correção 6: passageiro cadastrado direto pelo vanzeiro entra no
     if (r2.codigo !== r1.codigo) expect(confirmarCadastroComCodigo(id, r1.codigo).ok).toBe(false);
     // Quem não tem o WhatsApp do cadastro não recebe o código: o cadastro continua sem conta.
     expect(obterPassageiros().find((p) => p.id === fernanda.id)?.pessoaId).toBeUndefined();
+  });
+
+  it("o código vale 10 minutos: aos 9 ainda vale; aos 11, nem o certo liga", () => {
+    const livres = obterPassageiros().filter((p) => !p.pessoaId && p.id !== "p-gabriel");
+    const [a, b] = [livres[1]!, livres[2]!];
+    const agora = Date.now();
+    const relogio = vi.spyOn(Date, "now");
+    try {
+      const idA = adicionarPedido({
+        vanzeiroId: a.vanzeiroId,
+        destinoId: a.destinoId,
+        pessoaId: "conta-a",
+        nome: a.nome,
+        telefone: a.telefone,
+      });
+      relogio.mockReturnValue(agora);
+      const ra = pedirConfirmacaoDoCadastro(idA, AGORA);
+      if (!ra.ok) throw new Error(ra.motivo);
+      relogio.mockReturnValue(agora + 11 * 60 * 1000);
+      expect(confirmarCadastroComCodigo(idA, ra.codigo)).toEqual({
+        ok: false,
+        motivo: "Este código venceu (vale 10 minutos). Peça um código novo ao vanzeiro.",
+      });
+      expect(obterPassageiros().find((p) => p.id === a.id)?.pessoaId).toBeUndefined();
+
+      const idB = adicionarPedido({
+        vanzeiroId: b.vanzeiroId,
+        destinoId: b.destinoId,
+        pessoaId: "conta-b",
+        nome: b.nome,
+        telefone: b.telefone,
+      });
+      relogio.mockReturnValue(agora);
+      const rb = pedirConfirmacaoDoCadastro(idB, AGORA);
+      if (!rb.ok) throw new Error(rb.motivo);
+      relogio.mockReturnValue(agora + 9 * 60 * 1000);
+      expect(confirmarCadastroComCodigo(idB, rb.codigo)).toEqual({ ok: true });
+      // Uso único: o mesmo código não serve de novo.
+      expect(confirmarCadastroComCodigo(idB, rb.codigo).ok).toBe(false);
+    } finally {
+      relogio.mockRestore();
+    }
   });
 
   it("telefone diferente: não acha cadastro (segue o Aceitar normal)", () => {

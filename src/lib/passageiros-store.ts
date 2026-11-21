@@ -326,7 +326,9 @@ export function cadastroDoPedido(lista: Passageiro[], pedido: Pick<PedidoEntrada
  * phone THAT WAS ALREADY IN THE RECORD; only when the person types it in the app does the account get the record.
  * Without the database (samples, tests) the same rule runs here; with it, the database does it.
  */
-const confirmacoes = new Map<string, { codigo: string; matriculaId: string; tentativas: number }>();
+const confirmacoes = new Map<string, { codigo: string; matriculaId: string; tentativas: number; criadoEm: number }>();
+/** The code is good for 10 minutes (Correção 6). */
+export const VALIDADE_DO_CODIGO_MS = 10 * 60 * 1000;
 
 export type CodigoDoCadastro = { ok: true; codigo: string; telefone: string; nome: string } | { ok: false; motivo: string };
 
@@ -337,7 +339,7 @@ export function pedirConfirmacaoDoCadastro(pedidoId: string, agora: string): Cod
   if (!cadastro) return { ok: false, motivo: "Não achamos um cadastro com este telefone neste destino." };
   const n = crypto.getRandomValues(new Uint32Array(1))[0]! % 1_000_000;
   const codigo = String(n).padStart(6, "0");
-  confirmacoes.set(pedidoId, { codigo, matriculaId: cadastro.id, tentativas: 0 });
+  confirmacoes.set(pedidoId, { codigo, matriculaId: cadastro.id, tentativas: 0, criadoEm: Date.now() });
   mudarPedido(pedidoId, { confirmacaoPedidaEm: agora });
   avisar();
   return { ok: true, codigo, telefone: cadastro.telefone, nome: cadastro.nome };
@@ -347,7 +349,7 @@ export function pedirConfirmacaoDoCadastro(pedidoId: string, agora: string): Cod
 export const RESPOSTA_DO_CODIGO: Record<string, string> = {
   errado: "Código errado. Confira a mensagem do vanzeiro e tente de novo.",
   bloqueado: "Muitas tentativas. Peça um código novo ao vanzeiro.",
-  vencido: "Este código venceu. Peça um código novo ao vanzeiro.",
+  vencido: "Este código venceu (vale 10 minutos). Peça um código novo ao vanzeiro.",
   sem_codigo: "O vanzeiro ainda não mandou o código. Aguarde a mensagem dele.",
   respondido: "Este pedido já foi respondido.",
   mudou: "O cadastro mudou. Fale com o vanzeiro.",
@@ -359,6 +361,7 @@ export function confirmarCadastroComCodigo(pedidoId: string, codigo: string): Re
   const k = confirmacoes.get(pedidoId);
   if (!k) return naoDeu(RESPOSTA_DO_CODIGO["sem_codigo"]!);
   if (k.tentativas >= 5) return naoDeu(RESPOSTA_DO_CODIGO["bloqueado"]!);
+  if (Date.now() - k.criadoEm > VALIDADE_DO_CODIGO_MS) return naoDeu(RESPOSTA_DO_CODIGO["vencido"]!);
   if (somenteDigitos(codigo) !== k.codigo) {
     k.tentativas++;
     return naoDeu(RESPOSTA_DO_CODIGO[k.tentativas >= 5 ? "bloqueado" : "errado"]!);

@@ -2259,3 +2259,12 @@ Branch `claude/correcao-6-convites-e-telefones`, atualizada com a `main` (`06555
 | [x] Política de Privacidade | Uma linha sobre a impressão do código (máximo 7 dias) |
 | [x] Testes | Correção 6 **55/55** (16 da Opção A: sem código não liga; ligar direto recusado; outro vanzeiro/outra conta não usam; só hash; 5 erros bloqueiam; código novo anula; vence em 1 dia; recusado não liga; limpeza de 7 dias); auditoria **114/117** (T3.2–T3.4 passaram; nenhum outro mudou); C5 **45/45**; E3 idêntico (`10d443a1`); proteção de descontos **40/40** com a Correção 6 no mesmo banco; ensaio sobre a cópia dos dados reais **PASSOU** (só os 2 códigos mudam; desfazer mantém o "Ligar" com código e o telefone fechado); app **487/487**, tipos e build ok; fluxo completo no navegador (390×844): pedido → código → WhatsApp para o telefone do cadastro → código errado avisado → código certo → Início com a van |
 | [ ] Implantação | Aguarda autorização: app primeiro, depois o banco (`docs/implantacao-correcao-6.md`) |
+
+### 21/11/2026 · Correção 6 — ajustes finais antes da implantação — NÃO implantada
+
+| Item | Situação |
+| --- | --- |
+| [x] Código do WhatsApp vale **10 minutos** (antes 1 dia) | Banco (`confirmar_cadastro_com_codigo`: `interval '10 minutes'`), app sem banco (mesma regra), textos do vanzeiro, da mensagem e do "vencido". Mantidos: uso único, 5 tentativas, código novo anula o anterior, só a impressão guardada, apagada em até 7 dias |
+| [x] Testes | Correção 6 **56/56** (W11: aos 11 minutos nem o certo liga; W12: aos 9 minutos liga; W12b: uso único); ensaio sobre a cópia dos dados reais **PASSOU**; auditoria **114/117** (igual); C5 **45/45**; E3 idêntico (`10d443a1`); proteção de descontos **40/40**; app **488/488** (teste novo dos 10 minutos e do uso único), tipos ok |
+| [x] Acesso para aplicar a migração direto (só verificado, nada executado) | A conexão do Supabase entra como `postgres`, dona das 25 tabelas e das 88 funções do app, com permissão de criar no esquema `public` e sem modo só leitura: **tecnicamente pode aplicar a Correção 6** pela ferramenta de migração (que também registra no histórico de migrações). Limite: cada gravação pede confirmação do dono no aplicativo; no celular Android esse pedido já deixou de aparecer antes (Correções 2 a 5 foram coladas no SQL Editor). Se a confirmação não aparecer, volta-se ao SQL Editor; nunca contornar a confirmação |
+| [ ] Implantação | Aguarda autorização expressa |
