@@ -36,6 +36,22 @@ A ferramenta recusou criar um novo arquivo em `supabase/migrations/`. Não houve
 contorno nem habilitação de outro banco. Registrar este SQL como **nova** migration
 no fluxo externo do proprietário permanece pendente; não editar migrations antigas.
 
+### Conferência do registro em 21/11/2026 (prompt-24)
+
+Todos os oito arquivos da preparação estão salvos em `c133bb7`. Repetidos os testes
+relacionados: 40/40, incluindo matriz financeira 20/20 e C5 45/45.
+
+Uma nova tentativa de criar `supabase/migrations/20261121121000_desconto_protegido.sql`
+foi recusada, sem escrita, pela proteção de todo o diretório. Não houve erro de SQL,
+perda dos arquivos preparados ou alteração de migration antiga. Não usar ferramenta
+de aplicação no banco, ativar outro banco ou contornar a proteção por shell para isso.
+
+Pelo fluxo externo do repositório, registrar **uma cópia integral** de
+`supabase/SO-SQL-17-DESCONTO-PROTEGIDO.sql` no novo caminho acima; verificar igualdade
+dos arquivos e guardar em commit. Isso não deve executar o SQL, publicar ou alterar a
+branch da Correção 6. O nome ordena a nova migration depois da C5. O registro externo
+não foi realizado nesta sessão: o impedimento permanece, com o trabalho preservado.
+
 ## Implantação — somente após aprovação
 
 1. Conferir a versão real de `cobranca_nunca_editada`, a presença do gatilho C5 e
