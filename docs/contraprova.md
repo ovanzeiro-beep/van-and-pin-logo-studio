@@ -2131,3 +2131,12 @@ Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, se
 | [x] SQL definitivo | `supabase/SO-SQL-16-correcao-5.sql` (tudo ou nada). Ensaio da colagem: aplicar, aplicar de novo, desfazer (`SO-SQL-16b`) e reaplicar — conferência 23/23. |
 | [x] Conferências | Antes: `supabase/testes/correcao5-pre-verificar.sql` — rodada na produção (só leitura) em 21/11: tudo igual ao backup, 7 contas, nenhuma viagem em andamento. Depois: `supabase/testes/correcao5-verificar.sql`. |
 | [ ] Implantação | Aguarda autorização do dono. |
+
+### 21/11/2026 · Correção 5 — implantação controlada, passo 1 (conferência antes) — só leitura
+
+| Item | Resultado |
+| --- | --- |
+| [x] Arquivos na branch `claude/correcao-5-exclusao-de-contas` (`fea98b7`) | Iguais aos locais; colagem `SO-SQL-16` = migração; `main` em `c47b6b6` sem mudanças; função de avisos da produção ainda na versão 10 |
+| [x] Conferência antes (`correcao5-pre-verificar.sql`, produção, só leitura) | 13/13: Correção 5 não aplicada, 7 contas, nenhuma viagem em andamento, proteção ligada, 9 tabelas iguais ao backup |
+| [x] Compatibilidade da estrutura (produção × laboratório sem a Correção 5) | Idênticas: 83 funções, 17 gatilhos, 38 regras de acesso, 107 restrições, 190 colunas, 2 tarefas. Única diferença: `viagem_sinais` tem permissão para `anon` na produção (já existia; RLS ligado e a única regra é para `authenticated`, então quem não entrou não vê nada; a Correção 5 não mexe nela) |
+| [ ] Dono cola `SO-SQL-16-correcao-5.sql` | Aguardando |
