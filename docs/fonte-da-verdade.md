@@ -703,6 +703,8 @@ Projeto Supabase do dono: `ovanzeiro` (organização `ovanzeiro-oficial`), ender
 
 **Chegada ao destino no painel do passageiro.** Ao registrar a chegada da ida, o Início mostra um cartão com a rota e o horário previsto de volta, quando configurado. O relógio usa a data da volta e chega a uma espera pelo motorista, que continua responsável por iniciar o retorno. A notificação da chegada ao destino ficou para outra etapa. [Contraprova do cartão de chegada](contraprova.md#cartao-chegada-ao-destino).
 
+**21/11/2026 — P0: descontos sobrescritos por celular antigo.** Preparação sobre `a72d89b`, aguardando aprovação, registro da nova migration pelo fluxo externo e conferência da base real. O defeito T4.2 foi reproduzido e a proteção SQL adicional passou no laboratório: 40 verificações próprias (incluem a matriz financeira 20/20 e C5 45/45), 37 regressões T4/T5/C2/C3 e 478 testes do app. Não aplicado em produção, sem publicação, sem mudar `src/` ou Correção 6. A releitura visual do pagamento não foi confirmada no ensaio isolado; celular real segue pendente. [Implantação e limites](implantacao-desconto-protegido.md) · [Registro](contraprova.md#p0-desconto-protegido).
+
 > **Para qualquer IA que for trabalhar aqui (Claude, GPT, Lovable ou outra):** leia esta seção 22 inteira, depois `CLAUDE.md` e o último registro de `docs/contraprova.md`. Trabalhe uma etapa de 22.6 por vez, registre a prova (22.8) e atualize 22.6 e a contraprova no fim. O que já está pronto está em 22.4a; como mexer no banco está em 22.1a.
 
 ### 22.1 Projeto, objetivo e limites da revisão
