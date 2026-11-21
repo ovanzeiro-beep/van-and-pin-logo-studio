@@ -1,7 +1,7 @@
 import { textoDoCafe } from "@/lib/destinos";
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, Check, Clock, KeyRound, LogOut, MessageCircle, Phone, Search, User, Wallet, XCircle } from "lucide-react";
 import { CampoComIcone } from "@/components/app/CampoComIcone";
 import { VanIcon } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -18,11 +18,11 @@ import { embarqueCompleto, type Embarque } from "@/lib/endereco";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { formatarReais } from "@/lib/dinheiro";
 import { usePerfilDoVanzeiro } from "@/lib/vanzeiro-store";
-import { obterPedidos, usePassageiros, useAceitos } from "@/lib/passageiros-store";
+import { obterPedidos, usePassageiros, useAceitos, usePedidos } from "@/lib/passageiros-store";
 import { AvisoDoConvite, procurarPorCodigo, type DestinoDoConvite } from "@/lib/convite";
 import { PassageiroHeader } from "./PassageiroHeader";
 import { fazer } from "@/lib/acoes";
-import { pedirParaEntrarNoBanco } from "@/lib/banco/passageiros";
+import { confirmarCodigoNoBanco, pedirParaEntrarNoBanco } from "@/lib/banco/passageiros";
 import { USA_BANCO } from "@/lib/supabase";
 
 /** Shown while the passenger is not in any van: invite code → "Pedir para entrar" → waiting for the vanzeiro. */
@@ -42,7 +42,7 @@ export function EntrarNaVan({ outro = false }: { outro?: boolean }) {
       <PassageiroHeader compacto titulo={outro ? "Entrar em outro destino" : "Entrar na van"} subtitulo={subtitulo} />
       <div className="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col space-y-3 overflow-y-auto px-5 pb-4">
         {!outro && <EmAbertoDeQuemSaiu />}
-        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} /> : recusadoOutro ? <Recusado /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} aoMudarPasso={setPassoDoPedido} />}
+        {outro && destinoPedido ? <Aguardando destinoId={destinoPedido.id} pedidoId={sessao.pedidoId} /> : recusadoOutro ? <Recusado /> : s.tipo === "aguardando" ? <Aguardando destinoId={s.destinoId} pedidoId={sessao.pedidoId} /> : s.tipo === "recusado" ? <Recusado /> : <Codigo primeiroUso={!outro} aoMudarPasso={setPassoDoPedido} />}
         {passoDoPedido === 2 ? null : outro ? (
           <Link to="/passageiro/perfil" className="mx-auto flex h-11 w-fit items-center gap-2 px-4 text-sm font-semibold text-muted-foreground">
             <ArrowLeft className="h-4 w-4" /> Voltar ao perfil
@@ -246,8 +246,11 @@ function Confirmar({ destino, voltar, aoMudarPasso }: { destino: DestinoDoConvit
   );
 }
 
-function Aguardando({ destinoId }: { destinoId: string }) {
+function Aguardando({ destinoId, pedidoId }: { destinoId: string; pedidoId?: string | null | undefined }) {
   const destino = useDestino(destinoId);
+  // Correção 6: the vanzeiro sent a code to the WhatsApp of the record: the person types it here.
+  const pedido = usePedidos().find((x) => x.id === pedidoId);
+  if (pedido?.confirmacaoPedidaEm) return <CodigoDoVanzeiro pedidoId={pedido.id} />;
   return (
     <section className="space-y-3 rounded-3xl bg-card p-4 text-center shadow-card">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-warning-soft text-warning">
@@ -256,6 +259,45 @@ function Aguardando({ destinoId }: { destinoId: string }) {
       <p className="font-display text-xl font-bold text-foreground">Aguardando o vanzeiro aceitar</p>
       <p className="text-sm text-muted-foreground">Assim que ele aceitar, o seu painel abre aqui.</p>
       {destino && <CardDaVan destino={destino} />}
+    </section>
+  );
+}
+
+function CodigoDoVanzeiro({ pedidoId }: { pedidoId: string }) {
+  const [codigo, setCodigo] = useState("");
+  const navigate = useNavigate();
+  return (
+    <section className="space-y-3 rounded-3xl bg-card p-4 shadow-card">
+      <div className="flex items-center gap-3">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+          <KeyRound className="h-6 w-6" />
+        </div>
+        <p className="font-semibold leading-snug text-foreground">O vanzeiro te mandou um código pelo WhatsApp. Digite aqui para entrar.</p>
+      </div>
+      <form
+        className="space-y-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void fazer(() => confirmarCodigoNoBanco(pedidoId, codigo)).then(async (r) => {
+            if (r.ok) await navigate({ to: "/passageiro" });
+          });
+        }}
+      >
+        <Input
+          aria-label="Código do vanzeiro"
+          placeholder="000000"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          maxLength={6}
+          value={codigo}
+          onChange={(e) => setCodigo(somenteDigitos(e.target.value).slice(0, 6))}
+          className="h-14 rounded-xl border-input bg-surface text-center font-display text-xl font-bold tracking-widest shadow-none md:text-xl"
+        />
+        <Button type="submit" variant="cta" size="xl" className="w-full" disabled={codigo.length !== 6}>
+          <Check className="!h-5 !w-5" /> Confirmar código
+        </Button>
+      </form>
+      <p className="text-center text-sm text-muted-foreground">O código chega no WhatsApp do telefone que o vanzeiro tem no seu cadastro.</p>
     </section>
   );
 }

@@ -8,7 +8,7 @@ import { nomeDePessoa, nomeProprio } from "@/lib/formatos";
 import {
   aceitarMudancaDeEndereco,
   carregarPassageirosDoBanco,
-  ligarPedidoAoCadastro,
+  confirmarCadastroComCodigo,
   obterMatriculas,
   obterPassageiros,
   obterPedidos,
@@ -16,9 +16,13 @@ import {
   recusarPedido,
   reordenarPassageiro,
   organizarCidade,
+  pedirConfirmacaoDoCadastro,
+  RESPOSTA_DO_CODIGO,
   salvarPassageiro,
+  type CodigoDoCadastro,
   type MudancaDeEndereco,
 } from "@/lib/passageiros-store";
+import { instanteDeAgora } from "@/lib/agora";
 import { somenteDigitos, type MeusDados } from "@/lib/passageiros";
 import { mudarSessaoPassageiro, obterSessao, useSessao } from "@/lib/sessao";
 import { salvarMeusDados } from "@/lib/sessao-passageiro";
@@ -66,6 +70,8 @@ type LinhaPedido = {
   matricula_id: string | null;
   pedido_em: string;
   respondido_em: string | null;
+  /** Correção 6: only after the database has it (older databases simply don't send it). */
+  confirmacao_pedida_em?: string | null;
 };
 type LinhaMudanca = {
   id: string;
@@ -150,6 +156,7 @@ export const pedidoDaLinha = (l: LinhaPedido): PedidoEntrada => ({
   ...(l.matricula_id ? { matriculaId: l.matricula_id } : {}),
   pedidoEm: l.pedido_em,
   ...(l.respondido_em ? { respondidoEm: l.respondido_em } : {}),
+  ...(l.confirmacao_pedida_em ? { confirmacaoPedidaEm: l.confirmacao_pedida_em } : {}),
 });
 
 const mudancaDaLinha = (l: LinhaMudanca): MudancaDeEndereco => ({
@@ -338,13 +345,31 @@ export async function salvarPassageiroNoBanco(p: Passageiro, pedidoId?: string):
   return salvarPassageiro(p, undefined, false);
 }
 
-/** G1 "Ligar ao cadastro": the account of whoever asked becomes the one of the record the vanzeiro made by hand. */
-export async function ligarPedidoAoCadastroNoBanco(pedidoId: string): Promise<Resultado> {
-  if (!usaBanco()) return ligarPedidoAoCadastro(pedidoId);
-  const { error } = await supabase()!.rpc("ligar_pedido_ao_cadastro", { pedido: pedidoId });
+/**
+ * G1 "Ligar ao cadastro", Correção 6 (Opção A): the vanzeiro gets a 6-digit code to send by WhatsApp to the phone of
+ * the record; the account is linked only when the person types it (confirmarCodigoNoBanco).
+ */
+export async function pedirConfirmacaoNoBanco(pedidoId: string): Promise<CodigoDoCadastro> {
+  if (!usaBanco()) return pedirConfirmacaoDoCadastro(pedidoId, instanteDeAgora());
+  const { data, error } = await supabase()!.rpc("pedir_confirmacao_do_cadastro", { pedido: pedidoId });
+  if (error) {
+    // Before the Correção 6 is in the database, the function doesn't exist yet: say so instead of "no signal".
+    if (error.code === "PGRST202" || error.code === "42883") return { ok: false, motivo: "Esta função ainda está sendo instalada. Tente de novo mais tarde." };
+    return { ok: false, motivo: motivo(error) };
+  }
+  const linha = (data as { codigo: string; telefone: string; nome: string }[] | null)?.[0];
+  if (!linha) return { ok: false, motivo: SEM_RESPOSTA };
+  await carregarPassageirosEPedidos();
+  return { ok: true, codigo: linha.codigo, telefone: linha.telefone, nome: linha.nome };
+}
+
+/** The passenger types the code the vanzeiro sent. */
+export async function confirmarCodigoNoBanco(pedidoId: string, codigo: string): Promise<Resultado> {
+  if (!usaBanco()) return confirmarCadastroComCodigo(pedidoId, codigo);
+  const { data, error } = await supabase()!.rpc("confirmar_cadastro_com_codigo", { pedido: pedidoId, codigo: somenteDigitos(codigo) });
   if (error) return naoDeu(motivo(error));
-  // The database is what counts; the screen follows (and the person hears about it on the bell).
-  ligarPedidoAoCadastro(pedidoId);
+  if (data !== "ok") return naoDeu(RESPOSTA_DO_CODIGO[data as string] ?? SEM_RESPOSTA);
+  await carregarPassageirosEPedidos();
   return deuCerto;
 }
 

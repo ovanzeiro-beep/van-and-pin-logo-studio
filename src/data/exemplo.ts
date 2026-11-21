@@ -177,6 +177,8 @@ export type PedidoEntrada = {
   situacao?: SituacaoPedido | undefined;
   /** Quando aceito: a matrícula criada a partir dele. */
   matriculaId?: string | undefined;
+  /** Correção 6: quando o vanzeiro mandou o código para ligar ao cadastro (o passageiro vê o campo do código). */
+  confirmacaoPedidaEm?: string | undefined;
   pedidoEm?: string | undefined;
   respondidoEm?: string | undefined;
 };

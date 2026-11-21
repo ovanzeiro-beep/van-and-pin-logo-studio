@@ -1,7 +1,8 @@
 -- DESFAZER a Correção 6 (só se algo der errado e com autorização do dono).
 -- Volta a consulta do convite e o "pedir para entrar" de antes, tira o sorteio no servidor e o limite de tentativas.
--- NÃO volta: os códigos novos (continuam valendo, a função antiga aceita qualquer código gravado) e o acesso às duas
--- funções antigas de "juntar pelo telefone" (continuam fechadas: o app não usa e elas revelavam telefones).
+-- NÃO volta: os códigos novos (continuam valendo, a função antiga aceita qualquer código gravado), o acesso às duas
+-- funções antigas de "juntar pelo telefone" (continuam fechadas: o app não usa e elas revelavam telefones) e o
+-- "Ligar ao cadastro" com código pelo WhatsApp (o app novo depende dele; ligar direto, sem código, continua fechado).
 drop trigger if exists destino_convite_do_servidor on public.destinos;
 drop function if exists public.destino_convite_do_servidor();
 

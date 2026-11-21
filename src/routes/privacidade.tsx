@@ -108,6 +108,10 @@ function Privacidade() {
           <li>
             Para proteger os códigos de convite, cada código digitado errado fica registrado só com a conta e a hora, por 1 dia.
           </li>
+          <li>
+            Para ligar a sua conta a um cadastro feito pelo vanzeiro, você digita um código que ele manda para o WhatsApp do
+            cadastro. O app guarda só uma impressão do código (não o código), por no máximo 7 dias.
+          </li>
         </ul>
       </Secao>
 

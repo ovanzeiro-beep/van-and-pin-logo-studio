@@ -15,6 +15,11 @@ begin;
 --     Mesmo pedido repetido para a mesma van é recusado enquanto o primeiro espera resposta. "Van cheia" também conta
 --     como tentativa (impede descobrir, testando telefones, quem já está cadastrado).
 --  4. As duas funções antigas de "juntar pelo telefone" (o app não usa) perdem o acesso. Nenhum dado é apagado.
+--  5. "Ligar ao cadastro" (Opção A do dono): o vanzeiro não liga mais direto. Ele pede um código de 6 números e manda
+--     pelo WhatsApp para o telefone QUE JÁ ESTAVA NO CADASTRO; só quando a pessoa digita esse código no app a conta
+--     dela passa a ver o endereço, o histórico e as cobranças do cadastro. O banco guarda só a impressão (hash) do
+--     código, aceita 5 tentativas e o código vale 1 dia. Um código novo anula o anterior. Impressões com mais de
+--     7 dias são apagadas.
 -- Tudo numa operação: se falhar, nada muda.
 
 -- ---------- 1. o código ----------
@@ -153,6 +158,82 @@ end $$;
 revoke all on function public.pedir_juntar_pelo_telefone(text) from public, anon, authenticated;
 revoke all on function public.confirmar_juntar_conta(text, uuid, boolean) from public, anon, authenticated;
 
+-- ---------- 5. "Ligar ao cadastro" só com o código enviado ao WhatsApp do cadastro ----------
+alter table public.pedidos add column if not exists confirmacao_pedida_em timestamptz;
+
+create table if not exists public.confirmacoes_de_cadastro (
+  pedido_id text primary key references public.pedidos (id) on delete cascade,
+  matricula_id text not null references public.matriculas (id) on delete cascade,
+  codigo_hash bytea not null,
+  criado_em timestamptz not null default now(),
+  tentativas int not null default 0
+);
+alter table public.confirmacoes_de_cadastro enable row level security;
+revoke all on public.confirmacoes_de_cadastro from anon, authenticated;
+
+create or replace function public.r_hash_do_codigo(pedido text, codigo text) returns bytea
+language sql immutable set search_path = '' as $$
+  select sha256(convert_to(pedido || ':' || regexp_replace(coalesce(codigo, ''), '[^0-9]', '', 'g'), 'UTF8'))
+$$;
+
+-- Vanzeiro: gera o código para o pedido e recebe o telefone e o nome DO CADASTRO (para onde mandar).
+create or replace function public.pedir_confirmacao_do_cadastro(pedido text)
+returns table (codigo text, telefone text, nome text)
+language plpgsql security definer set search_path = '' as $$
+declare p public.pedidos; m public.matriculas; c text; b bytea; v int;
+begin
+  delete from public.confirmacoes_de_cadastro where criado_em < now() - interval '7 days';  -- nada fica guardado sem fim
+  select * into p from public.pedidos x where x.id = pedido and x.vanzeiro_id = auth.uid() and x.situacao = 'aguardando' for update;
+  if not found then raise exception 'Este pedido já foi respondido.'; end if;
+  select * into m from public.matriculas x where x.destino_id = p.destino_id and x.telefone = p.telefone and x.pessoa_id is null and x.saiu_em is null;
+  if not found then raise exception 'Não achamos um cadastro com este telefone neste destino.'; end if;
+  if exists (select 1 from public.matriculas x where x.destino_id = p.destino_id and x.pessoa_id = p.pessoa_id and x.saiu_em is null) then
+    raise exception 'Esta pessoa já está neste destino.';
+  end if;
+  loop  -- 6 números sorteados com segurança (000000 a 999999, sem preferência)
+    b := uuid_send(gen_random_uuid());
+    v := (get_byte(b, 0) << 16) | (get_byte(b, 1) << 8) | get_byte(b, 2);
+    exit when v < 16000000;
+  end loop;
+  c := lpad((v % 1000000)::text, 6, '0');
+  insert into public.confirmacoes_de_cadastro (pedido_id, matricula_id, codigo_hash)
+    values (p.id, m.id, public.r_hash_do_codigo(p.id, c))
+    on conflict (pedido_id) do update set matricula_id = excluded.matricula_id, codigo_hash = excluded.codigo_hash, criado_em = now(), tentativas = 0;
+  update public.pedidos set confirmacao_pedida_em = now() where id = p.id;
+  return query select c, m.telefone, m.nome;
+end $$;
+
+-- Passageiro: digita o código. Responde 'ok', 'errado', 'bloqueado' (5 erros), 'vencido' (mais de 1 dia),
+-- 'sem_codigo', 'respondido' ou 'mudou' (o cadastro mudou ou a pessoa já está no destino). Sem erro, para o erro contar.
+create or replace function public.confirmar_cadastro_com_codigo(pedido text, codigo text) returns text
+language plpgsql security definer set search_path = '' as $$
+declare eu uuid := auth.uid(); p public.pedidos; k public.confirmacoes_de_cadastro; m public.matriculas;
+begin
+  if eu is null then raise exception 'Entre na sua conta.'; end if;
+  select * into p from public.pedidos x where x.id = pedido and x.pessoa_id = eu and x.situacao = 'aguardando' for update;
+  if not found then return 'respondido'; end if;
+  select * into k from public.confirmacoes_de_cadastro x where x.pedido_id = p.id for update;
+  if not found then return 'sem_codigo'; end if;
+  if k.tentativas >= 5 then return 'bloqueado'; end if;
+  if k.criado_em < now() - interval '1 day' then return 'vencido'; end if;
+  if k.codigo_hash <> public.r_hash_do_codigo(p.id, codigo) then
+    update public.confirmacoes_de_cadastro set tentativas = tentativas + 1 where pedido_id = p.id;
+    return case when k.tentativas + 1 >= 5 then 'bloqueado' else 'errado' end;
+  end if;
+  select * into m from public.matriculas x where x.id = k.matricula_id and x.destino_id = p.destino_id and x.telefone = p.telefone
+    and x.pessoa_id is null and x.saiu_em is null for update;
+  if not found or exists (select 1 from public.matriculas x where x.destino_id = p.destino_id and x.pessoa_id = eu and x.saiu_em is null) then
+    return 'mudou';
+  end if;
+  update public.matriculas set pessoa_id = eu where id = m.id;
+  update public.pedidos set situacao = 'aceito', matricula_id = m.id, respondido_em = public.hoje_em_brasilia() where id = p.id;
+  delete from public.confirmacoes_de_cadastro where pedido_id = p.id;
+  return 'ok';
+end $$;
+
+-- Ligar direto (sem o código) deixa de ser possível pelo app. A função fica guardada (para o desfazer).
+revoke all on function public.ligar_pedido_ao_cadastro(text) from public, anon, authenticated;
+
 -- ---------- acesso ----------
 revoke all on function public.r_codigo_do_convite(text) from public, anon, authenticated;
 -- O gatilho roda como a pessoa que salva o destino, por isso ela pode sortear (só devolve um código novo, livre).
@@ -165,5 +246,10 @@ revoke all on function public.destino_pelo_convite(text) from public, anon;
 grant execute on function public.destino_pelo_convite(text) to authenticated;
 revoke all on function public.pedir_para_entrar(text, text, text, text, text, double precision, double precision) from public, anon;
 grant execute on function public.pedir_para_entrar(text, text, text, text, text, double precision, double precision) to authenticated;
+revoke all on function public.r_hash_do_codigo(text, text) from public, anon, authenticated;
+revoke all on function public.pedir_confirmacao_do_cadastro(text) from public, anon;
+grant execute on function public.pedir_confirmacao_do_cadastro(text) to authenticated;
+revoke all on function public.confirmar_cadastro_com_codigo(text, text) from public, anon;
+grant execute on function public.confirmar_cadastro_com_codigo(text, text) to authenticated;
 
 commit;

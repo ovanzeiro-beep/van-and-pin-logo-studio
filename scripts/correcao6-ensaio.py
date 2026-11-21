@@ -24,7 +24,7 @@ for i in {x["id"] for x in dados["contas"]}:
 for t, linhas in dados.items():
     c.execute(f"insert into public.{t} overriding system value select * from jsonb_populate_recordset(null::public.{t}, %s::jsonb)", (json.dumps(linhas),))
 c.execute("set session_replication_role = origin")
-NOVAS = "- 'excluida_em' - 'conta_excluida_em' - 'saiu_do_app_em'"
+NOVAS = "- 'excluida_em' - 'conta_excluida_em' - 'saiu_do_app_em' - 'confirmacao_pedida_em'"
 
 
 def tabelas(sem_convite=False):

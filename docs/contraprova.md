@@ -2245,3 +2245,17 @@ Branch `claude/correcao-6-convites-e-telefones` (a partir de `a72d89b`). Nada na
 | --- | --- |
 | [ ] Decisão do dono sobre a verificação de identidade no "Ligar ao cadastro" | |
 | [ ] Implantação (app primeiro, depois o banco) | `docs/implantacao-correcao-6.md` |
+
+### 21/11/2026 · Correção 6 — Opção A ("Ligar ao cadastro" com código pelo WhatsApp) — preparada, NÃO implantada
+
+Branch `claude/correcao-6-convites-e-telefones`, atualizada com a `main` (`06555f2`, proteção de descontos: só documentação e SQL preparado; não aplicada em produção — conferido só lendo). O SQL da Correção 6 passou a se chamar `SO-SQL-18` (o 17 é o da proteção de descontos). Nada na produção, sem merge, sem publicação.
+
+| Item | Situação |
+| --- | --- |
+| [x] Acessos conferidos (sem expor credenciais) | GitHub `ovanzeiro-beep/van-and-pin-logo-studio` (leitura e envio de branch); Supabase `rnziztwicggdekmpwpgy` só leitura; laboratório PostgreSQL local descartável |
+| [x] Banco | `pedidos.confirmacao_pedida_em`; tabela `confirmacoes_de_cadastro` (só a impressão SHA-256 do código, fechada ao app); `pedir_confirmacao_do_cadastro` (só o vanzeiro do pedido; devolve o código e o telefone/nome DO CADASTRO); `confirmar_cadastro_com_codigo` (só quem pediu; 5 tentativas; 1 dia; código novo anula o anterior; apagado em até 7 dias); `ligar_pedido_ao_cadastro` sem acesso pelo app |
+| [x] App — vanzeiro | No pedido com cadastro: "Enviar código" → código + "Abrir o WhatsApp" com a mensagem para o telefone do cadastro; depois "Código enviado…" e "Outro código" |
+| [x] App — passageiro | Enquanto espera: "O vanzeiro te mandou um código pelo WhatsApp. Digite aqui para entrar." → "Confirmar código" → Início com a van; mensagens para código errado, bloqueado, vencido |
+| [x] Política de Privacidade | Uma linha sobre a impressão do código (máximo 7 dias) |
+| [x] Testes | Correção 6 **55/55** (16 da Opção A: sem código não liga; ligar direto recusado; outro vanzeiro/outra conta não usam; só hash; 5 erros bloqueiam; código novo anula; vence em 1 dia; recusado não liga; limpeza de 7 dias); auditoria **114/117** (T3.2–T3.4 passaram; nenhum outro mudou); C5 **45/45**; E3 idêntico (`10d443a1`); proteção de descontos **40/40** com a Correção 6 no mesmo banco; ensaio sobre a cópia dos dados reais **PASSOU** (só os 2 códigos mudam; desfazer mantém o "Ligar" com código e o telefone fechado); app **487/487**, tipos e build ok; fluxo completo no navegador (390×844): pedido → código → WhatsApp para o telefone do cadastro → código errado avisado → código certo → Início com a van |
+| [ ] Implantação | Aguarda autorização: app primeiro, depois o banco (`docs/implantacao-correcao-6.md`) |

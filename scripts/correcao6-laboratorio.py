@@ -22,7 +22,8 @@ NAO_EXISTE = "VAN-ZZZZZZ"
 
 def md5(c, tabela, colunas="*"):
     admin(c)
-    return q(c, f"select md5(coalesce(string_agg(t::text, '|' order by t::text), '')) from (select {colunas} from public.{tabela}) t")[0][0]
+    # Colunas novas da Correção 6 (vazias) ficam fora, para medir só os dados que já existiam.
+    return q(c, f"select md5(coalesce(string_agg((to_jsonb(t) - 'confirmacao_pedida_em')::text, '|' order by (to_jsonb(t) - 'confirmacao_pedida_em')::text), '')) from (select {colunas} from public.{tabela}) t")[0][0]
 
 
 def pessoa(c, nome):
@@ -192,8 +193,10 @@ def pedidos(base):
     z = pessoa(c, "Titular do Cadastro"); como(c, z)
     r = tenta(c, "select public.pedir_para_entrar(%s, 'Titular', '43999990555', 'Cidade A', 'Rua', null, null)", (u["convite"],))
     registra("P4", "Van cheia, mas quem já está cadastrado (mesmo telefone) consegue pedir", "pedido criado", r, r[0] == "ok" and not r[1][0][0].startswith("#"))
-    como(c, u["V"]); lig = tenta(c, "select public.ligar_pedido_ao_cadastro(%s)", (r[1][0][0],))
-    registra("P5", "'Ligar ao cadastro' continua funcionando", "mman", lig, lig == ("ok", [("mman",)]))
+    como(c, u["V"]); k = q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (r[1][0][0],))[0]
+    como(c, z); lig = tenta(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (r[1][0][0], k[0]))
+    admin(c); dono = q(c, "select pessoa_id = %s from public.matriculas where id='mman'", (z,))[0][0]
+    registra("P5", "'Ligar ao cadastro' continua funcionando (agora com o código do WhatsApp)", "ok e ligado", (lig, dono), lig == ("ok", [("ok",)]) and dono)
     w = pessoa(c, "Testador de Telefones"); como(c, w)
     res = [tenta(c, "select public.pedir_para_entrar(%s, 'T', %s, 'Cidade A', 'Rua', null, null)", (u["convite"], f"439999906{i:02d}")) for i in range(12)]
     registra("P6", "Testar vários telefones com a van cheia esbarra no limite (10 por hora)", "10 'cheia' e depois bloqueio",
@@ -230,10 +233,75 @@ def acessos(base):
     c.close()
 
 
+def ligar(base):
+    """Opção A: 'Ligar ao cadastro' só com o código enviado ao WhatsApp do telefone do cadastro."""
+    c = nova_db(base, "c6_ligar"); u = cenario(c, lugares=12)
+    como(c, u["V"]); q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, endereco, plano, valor) values ('mman', %s, 'd1', 'Titular Teste', '43999990555', 'Rua do Titular, 5', 'viagem', 3000)", (u["V"],))
+    imp = pessoa(c, "Impostor Teste"); como(c, imp)
+    ped = q(c, "select public.pedir_para_entrar(%s, 'Impostor', '43999990555', 'Cidade A', 'Rua', null, null)", (u["convite"],))[0][0]
+    r = tenta(c, "select public.confirmar_cadastro_com_codigo(%s, '123456')", (ped,))
+    registra("W1", "Antes do vanzeiro mandar o código, não há o que confirmar", "sem_codigo", r, r == ("ok", [("sem_codigo",)]))
+    como(c, u["V"]); r = tenta(c, "select public.ligar_pedido_ao_cadastro(%s)", (ped,))
+    registra("W2", "Vanzeiro não consegue mais ligar direto (sem o código)", "sem permissão", r, r[0] == "erro" and "permission denied" in r[1])
+    como(c, u["V2"]); r = tenta(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (ped,))
+    registra("W3", "Outro vanzeiro não gera código para pedido alheio", "recusado", r, r[0] == "erro")
+    como(c, u["V"]); k1 = q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (ped,))[0]
+    registra("W4", "Vanzeiro gera o código: 6 números e o telefone/nome DO CADASTRO (não o do pedido)", "telefone 43999990555, nome Titular",
+             (len(k1[0]), k1[1], k1[2]), re.match(r"^\d{6}$", k1[0]) is not None and k1[1] == "43999990555" and k1[2] == "Titular Teste")
+    admin(c); guardado = q(c, "select encode(codigo_hash, 'hex') from public.confirmacoes_de_cadastro where pedido_id=%s", (ped,))[0][0]
+    registra("W5", "O banco guarda só a impressão (hash) do código", "sem o código", len(guardado), k1[0] not in guardado and len(guardado) == 64)
+    lidos = []
+    for k in (u["V"], imp):
+        como(c, k); lidos.append(tenta(c, "select count(*) from public.confirmacoes_de_cadastro")[0])
+    registra("W6", "Ninguém lê a tabela de códigos pelo app (vanzeiro e passageiro)", "recusado", lidos, lidos == ["erro", "erro"])
+    como(c, imp); vis = q(c, "select count(*) from public.matriculas where id='mman'")[0][0]
+    pedvis = q(c, "select confirmacao_pedida_em is not null from public.pedidos where id=%s", (ped,))[0][0]
+    registra("W7", "Antes de confirmar, quem pediu não vê o cadastro (endereço, histórico); vê que o código foi enviado", "(0, True)", (vis, pedvis), vis == 0 and pedvis)
+    como(c, u["X"]); r = tenta(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k1[0]))
+    registra("W8", "Outra conta usa o código certo no pedido de outra pessoa", "respondido (não liga)", r, r == ("ok", [("respondido",)]))
+    como(c, imp); errado = "000000" if k1[0] != "000000" else "000001"
+    rs = [q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, errado))[0][0] for _ in range(5)]
+    certo = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k1[0]))[0][0]
+    admin(c); dono = q(c, "select pessoa_id from public.matriculas where id='mman'")[0][0]
+    registra("W9", "5 códigos errados bloqueiam, até o certo; o cadastro continua sem conta", "4 errado, bloqueado, bloqueado, sem conta",
+             (rs, certo, dono), rs == ["errado"] * 4 + ["bloqueado"] and certo == "bloqueado" and dono is None)
+    como(c, u["V"]); k2 = q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (ped,))[0]
+    como(c, imp)
+    velho = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k1[0]))[0][0] if k1[0] != k2[0] else "errado"
+    registra("W10", "Código novo do vanzeiro anula o anterior e zera as tentativas", "o antigo dá errado", velho, velho == "errado")
+    admin(c); q(c, "update public.confirmacoes_de_cadastro set criado_em = now() - interval '25 hours' where pedido_id=%s", (ped,))
+    como(c, imp); r = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k2[0]))[0][0]
+    registra("W11", "Código com mais de 1 dia vence", "vencido", r, r == "vencido")
+    como(c, u["V"]); k3 = q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (ped,))[0]
+    como(c, imp); r = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (ped, k3[0][:3] + " " + k3[0][3:]))[0][0]
+    admin(c); est = q(c, "select m.pessoa_id = %s, p.situacao, p.matricula_id, (select count(*) from public.confirmacoes_de_cadastro) from public.matriculas m, public.pedidos p where m.id='mman' and p.id=%s", (imp, ped))[0]
+    registra("W12", "Com o código certo (que só chega ao WhatsApp do cadastro), a conta é ligada; pedido aceito; código apagado", "ok, ligado",
+             (r, est), r == "ok" and est == (True, "aceito", "mman", 0))
+    como(c, imp); vis = q(c, "select endereco from public.matriculas where id='mman'")
+    registra("W13", "Depois de ligada, a pessoa vê o próprio cadastro", "Rua do Titular, 5", vis, vis == [("Rua do Titular, 5",)])
+    como(c, u["V"]); q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor) values ('mman2', %s, 'd1', 'Outro Titular', '43999990556', 'viagem', 3000)", (u["V"],))
+    z = pessoa(c, "Pessoa Z"); como(c, z)
+    p2 = q(c, "select public.pedir_para_entrar(%s, 'Z', '43999990556', 'Cidade A', 'Rua', null, null)", (u["convite"],))[0][0]
+    como(c, u["V"]); k4 = q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (p2,))[0]; q(c, "select public.recusar_pedido(%s)", (p2,))
+    como(c, z); r = q(c, "select public.confirmar_cadastro_com_codigo(%s, %s)", (p2, k4[0]))[0][0]
+    registra("W14", "Pedido recusado depois do código: o código não liga mais", "respondido", r, r == "respondido")
+    admin(c); q(c, "update public.confirmacoes_de_cadastro set criado_em = now() - interval '8 days'")
+    velhas = q(c, "select count(*) from public.confirmacoes_de_cadastro")[0][0]
+    como(c, u["V"]); q(c, "insert into public.matriculas (id, vanzeiro_id, destino_id, nome, telefone, plano, valor) values ('mman3', %s, 'd1', 'Terceiro', '43999990557', 'viagem', 3000)", (u["V"],))
+    t3 = pessoa(c, "Pessoa T"); como(c, t3)
+    p3 = q(c, "select public.pedir_para_entrar(%s, 'T', '43999990557', 'Cidade A', 'Rua', null, null)", (u["convite"],))[0][0]
+    como(c, u["V"]); q(c, "select * from public.pedir_confirmacao_do_cadastro(%s)", (p3,))
+    admin(c); depois = q(c, "select count(*) from public.confirmacoes_de_cadastro where criado_em < now() - interval '7 days'")[0][0]
+    registra("W16", "Impressões de código com mais de 7 dias são apagadas", "0 velhas", (velhas, depois), velhas >= 1 and depois == 0)
+    anon(c); r = [tenta(c, s, (p2,))[0] for s in ("select * from public.pedir_confirmacao_do_cadastro(%s)", "select public.confirmar_cadastro_com_codigo(%s, '000000')")]
+    registra("W15", "Sem login: gerar ou confirmar código", "recusado", r, r == ["erro", "erro"])
+    c.close()
+
+
 if __name__ == "__main__":
     parte_a()
     base = montar_base("vz_c6_depois")
-    for g in (criacao, limite, alarme, pedidos, acessos):
+    for g in (criacao, limite, alarme, pedidos, acessos, ligar):
         try:
             g(base)
         except Exception as e:
