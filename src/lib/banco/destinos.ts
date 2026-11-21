@@ -124,8 +124,9 @@ export async function salvarDestinoNoBanco(d: Destino): Promise<Resultado> {
   const novo = !obterDestinos().some((x) => x.id === d.id);
   let atual = d;
   for (let tentativa = 0; tentativa < 5; tentativa++) {
-    const { error } = await sb.from("destinos").upsert(linhaDoDestino(atual));
-    if (!error) return salvarDestino(atual);
+    // Correção 6: the database chooses the code (and never changes it): the app keeps the one it answers.
+    const { data, error } = await sb.from("destinos").upsert(linhaDoDestino(atual)).select("convite").maybeSingle();
+    if (!error) return salvarDestino(data?.convite ? { ...atual, convite: data.convite as string } : atual);
     if (!(novo && error.code === "23505" && /convite/.test(error.message ?? ""))) return naoDeu(motivo(error));
     atual = { ...atual, convite: gerarConviteUnico() };
   }

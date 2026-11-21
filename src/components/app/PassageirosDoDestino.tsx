@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Check, ChevronRight, Copy, GripVertical, Link2, MapPin, MessageCircle, Phone, Route, Ticket, UserPlus, Users } from "lucide-react";
+import { Check, ChevronRight, Copy, GripVertical, KeyRound, MapPin, MessageCircle, Phone, Route, Ticket, UserPlus, Users } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -23,10 +23,11 @@ import type { Destino, Passageiro, PedidoEntrada } from "@/data/exemplo";
 import { cn } from "@/lib/utils";
 import { mensagemConvite } from "@/lib/destinos";
 import { useDestino } from "@/lib/destinos-store";
-import { descricaoPlano, formatarTelefone, numerosDaBusca, porCidade } from "@/lib/passageiros";
+import { descricaoPlano, formatarTelefone, linkWhatsApp, numerosDaBusca, porCidade } from "@/lib/passageiros";
+import { primeiroNomeDe } from "@/lib/datas";
 import { cadastroDoPedido, usePassageiros, usePassageirosDoDestino, usePedidosDoDestino } from "@/lib/passageiros-store";
 import { fazer } from "@/lib/acoes";
-import { ligarPedidoAoCadastroNoBanco, organizarCidadeNoBanco, reordenarNoBanco } from "@/lib/banco/passageiros";
+import { organizarCidadeNoBanco, pedirConfirmacaoNoBanco, reordenarNoBanco } from "@/lib/banco/passageiros";
 import { textoDaOcupacao } from "@/lib/lugares";
 import { usePerfilVanzeiro } from "@/lib/vanzeiro-store";
 
@@ -76,10 +77,17 @@ export function CodigoConvite({ destino }: { destino: Destino }) {
   );
 }
 
+/** The WhatsApp message with the code (Correção 6). */
+export function mensagemDoCodigo(nome: string, codigo: string) {
+  return `Olá, ${primeiroNomeDe(nome)}! Para usar o app O Vanzeiro com o seu cadastro, digite este código no app: ${codigo}. Ele vale 10 minutos. Não passe este código para ninguém.`;
+}
+
 /** One join request with Aceitar (opens the add-passenger steps prefilled) and Recusar. */
 export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; destino?: string | undefined }) {
   // G1: the same phone as someone added by hand in this destino: link the account instead of a second passenger.
   const cadastro = cadastroDoPedido(usePassageiros(), p);
+  // Correção 6: the code is shown only on this phone, right after it is made (the database keeps only its hash).
+  const [codigo, setCodigo] = useState<{ codigo: string; telefone: string; nome: string } | null>(null);
   return (
     <li className={destino ? "rounded-3xl bg-card p-4 shadow-card" : "rounded-2xl bg-surface p-3"}>
       <p className="font-bold leading-snug text-foreground">{p.nome}</p>
@@ -96,14 +104,43 @@ export function PedidoCard({ pedido: p, destino }: { pedido: PedidoEntrada; dest
       )}
       {cadastro && (
         <p className="mt-2 rounded-2xl bg-primary-soft px-3 py-2 text-sm text-foreground">
-          Já está cadastrado neste destino como <span className="font-bold">{cadastro.nome}</span>. Ligando, passa a usar o app com o
-          plano que já tem.
+          Já está cadastrado neste destino como <span className="font-bold">{cadastro.nome}</span>. Para ligar, mande um código para o
+          WhatsApp do cadastro: só quem tem esse telefone consegue entrar.
+          <span className="mt-1 block font-bold">Só ligue se for a mesma pessoa. Confira o nome e o telefone com ela antes.</span>
+        </p>
+      )}
+      {cadastro && codigo && (
+        <div className="mt-2 space-y-2 rounded-2xl bg-surface px-3 py-2 text-sm text-foreground">
+          <p>
+            Código: <span className="font-display text-lg font-bold tracking-widest">{codigo.codigo}</span>
+          </p>
+          <p>Mande para {formatarTelefone(codigo.telefone)}, o telefone do cadastro. O código vale 10 minutos. Quando a pessoa digitar o código no app, o cadastro é ligado.</p>
+          <Button asChild size="lg" variant="success" className="w-full">
+            <a href={linkWhatsApp(codigo.telefone, mensagemDoCodigo(codigo.nome, codigo.codigo))} target="_blank" rel="noreferrer">
+              <MessageCircle className="!h-5 !w-5" /> Abrir o WhatsApp
+            </a>
+          </Button>
+        </div>
+      )}
+      {cadastro && !codigo && p.confirmacaoPedidaEm && (
+        <p className="mt-2 rounded-2xl bg-surface px-3 py-2 text-sm text-foreground">
+          Código enviado. O cadastro é ligado quando a pessoa digitar o código no app. Passados 10 minutos, toque em “Outro código”.
         </p>
       )}
       <div className="mt-2.5 grid grid-cols-2 gap-2">
         {cadastro ? (
-          <Button size="lg" variant="success" onClick={() => void fazer(() => ligarPedidoAoCadastroNoBanco(p.id))}>
-            <Link2 className="!h-5 !w-5" /> Ligar
+          <Button
+            size="lg"
+            variant={codigo ? "outline" : "success"}
+            onClick={() =>
+              void fazer(async () => {
+                const r = await pedirConfirmacaoNoBanco(p.id);
+                if (r.ok) setCodigo(r);
+                return r;
+              })
+            }
+          >
+            <KeyRound className="!h-5 !w-5" /> {codigo || p.confirmacaoPedidaEm ? "Outro código" : "Enviar código"}
           </Button>
         ) : (
           <Button asChild size="lg" variant="success">

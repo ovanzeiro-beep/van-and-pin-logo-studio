@@ -321,27 +321,73 @@ export function cadastroDoPedido(lista: Passageiro[], pedido: Pick<PedidoEntrada
   return lista.find((x) => x.destinoId === pedido.destinoId && !x.pessoaId && somenteDigitos(x.telefone) === somenteDigitos(pedido.telefone));
 }
 
-export function ligarPedidoAoCadastro(pedidoId: string): Resultado {
+/**
+ * Correção 6 (Opção A): the vanzeiro no longer links directly. He gets a 6-digit code and sends it by WhatsApp to the
+ * phone THAT WAS ALREADY IN THE RECORD; only when the person types it in the app does the account get the record.
+ * Without the database (samples, tests) the same rule runs here; with it, the database does it.
+ */
+const confirmacoes = new Map<string, { codigo: string; matriculaId: string; tentativas: number; criadoEm: number }>();
+/** The code is good for 10 minutes (Correção 6). */
+export const VALIDADE_DO_CODIGO_MS = 10 * 60 * 1000;
+
+export type CodigoDoCadastro = { ok: true; codigo: string; telefone: string; nome: string } | { ok: false; motivo: string };
+
+export function pedirConfirmacaoDoCadastro(pedidoId: string, agora: string): CodigoDoCadastro {
   const pedido = pedidos.find((p) => p.id === pedidoId);
-  if (!pedido) return naoDeu("Este pedido já foi respondido.");
+  if (!pedido) return { ok: false, motivo: "Este pedido já foi respondido." };
   const cadastro = cadastroDoPedido(passageiros, pedido);
-  if (!cadastro) return naoDeu("Não achamos um cadastro com este telefone neste destino.");
+  if (!cadastro) return { ok: false, motivo: "Não achamos um cadastro com este telefone neste destino." };
+  const n = crypto.getRandomValues(new Uint32Array(1))[0]! % 1_000_000;
+  const codigo = String(n).padStart(6, "0");
+  confirmacoes.set(pedidoId, { codigo, matriculaId: cadastro.id, tentativas: 0, criadoEm: Date.now() });
+  mudarPedido(pedidoId, { confirmacaoPedidaEm: agora });
+  avisar();
+  return { ok: true, codigo, telefone: cadastro.telefone, nome: cadastro.nome };
+}
+
+/** The answers of the database: 'ok', 'errado', 'bloqueado', 'vencido', 'sem_codigo', 'respondido', 'mudou'. */
+export const RESPOSTA_DO_CODIGO: Record<string, string> = {
+  errado: "Código errado. Confira a mensagem do vanzeiro e tente de novo.",
+  bloqueado: "Muitas tentativas. Peça um código novo ao vanzeiro.",
+  vencido: "Este código venceu (vale 10 minutos). Peça um código novo ao vanzeiro.",
+  sem_codigo: "O vanzeiro ainda não mandou o código. Aguarde a mensagem dele.",
+  respondido: "Este pedido já foi respondido.",
+  mudou: "O cadastro mudou. Fale com o vanzeiro.",
+};
+
+export function confirmarCadastroComCodigo(pedidoId: string, codigo: string): Resultado {
+  const pedido = pedidos.find((p) => p.id === pedidoId);
+  if (!pedido) return naoDeu(RESPOSTA_DO_CODIGO["respondido"]!);
+  const k = confirmacoes.get(pedidoId);
+  if (!k) return naoDeu(RESPOSTA_DO_CODIGO["sem_codigo"]!);
+  if (k.tentativas >= 5) return naoDeu(RESPOSTA_DO_CODIGO["bloqueado"]!);
+  if (Date.now() - k.criadoEm > VALIDADE_DO_CODIGO_MS) return naoDeu(RESPOSTA_DO_CODIGO["vencido"]!);
+  if (somenteDigitos(codigo) !== k.codigo) {
+    k.tentativas++;
+    return naoDeu(RESPOSTA_DO_CODIGO[k.tentativas >= 5 ? "bloqueado" : "errado"]!);
+  }
+  const cadastro = passageiros.find((x) => x.id === k.matriculaId && !x.pessoaId && somenteDigitos(x.telefone) === somenteDigitos(pedido.telefone));
+  if (!cadastro) return naoDeu(RESPOSTA_DO_CODIGO["mudou"]!);
+  confirmacoes.delete(pedidoId);
+  ligarAoCadastro(pedido, cadastro);
+  return deuCerto;
+}
+
+/** The database already linked (the person typed the right code): the screen follows. */
+export function cadastroLigado(pedidoId: string): Resultado {
+  const pedido = pedidos.find((p) => p.id === pedidoId);
+  const cadastro = pedido && cadastroDoPedido(passageiros, pedido);
+  if (!pedido || !cadastro) return deuCerto;
+  confirmacoes.delete(pedidoId);
+  ligarAoCadastro(pedido, cadastro);
+  return deuCerto;
+}
+
+function ligarAoCadastro(pedido: PedidoEntrada, cadastro: Passageiro) {
   const ligado = { ...cadastro, ...(pedido.pessoaId ? { pessoaId: pedido.pessoaId } : {}) };
   matriculas = matriculas.map((x) => (x.id === cadastro.id ? ligado : x));
   mudarPedido(pedido.id, { situacao: "aceito", matriculaId: cadastro.id, respondidoEm: dataDeHoje() });
   avisar();
-  const destino = obterDestinos().find((d) => d.id === cadastro.destinoId);
-  criarAviso({
-    vanzeiroId: cadastro.vanzeiroId,
-    tipo: "pedido_aceito",
-    paraVanzeiroOuPassageiroId: identidadePassageiro(ligado),
-    passageiroId: cadastro.id,
-    destinoId: cadastro.destinoId,
-    dataCriacao: dataDeHoje(),
-    lido: false,
-    textoResumido: `O vanzeiro aceitou seu pedido para ${destino ? nomeDestino(destino) : "o destino"}`,
-  });
-  return deuCerto;
 }
 
 export function recusarPedido(id: string): Resultado {

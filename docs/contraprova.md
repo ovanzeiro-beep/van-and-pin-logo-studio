@@ -2218,3 +2218,62 @@ Branch `claude/relatorio-planilha-xlsx` (a partir de `8bc603b`). Nada no banco, 
 - Entrega apenas documental: procedimento de leitura prévia, registro externo da migration, instalação autorizada e critérios de encerramento em `docs/implantacao-desconto-protegido.md`; resumo único nesta seção e na seção 22. Sem checklist concorrente, mudanças de arquitetura ou publicação.
 - Como comprovar: definições reais compatíveis; instalação autorizada; quatro verificações de leitura verdadeiras e definição adicional exata; dados preservados em janela coordenada; regressões existentes em cópia da estrutura real; envio antigo, releitura e pagamento/cancelamento em dois aparelhos de homologação. SQL não recupera perdas anteriores; investigar separadamente sem alterar cobranças encerradas.
 - Próximo passo e bloqueio: obter leitura autorizada do banco externo ou resultados do SQL Editor do dono; registrar arquivo novo pelo fluxo externo. Aplicação aguarda autorização expressa. Nenhuma escrita em produção, merge ou publicação; Correções 1–5 e branch C6 preservadas. Navegador/celular não testados nesta conferência.
+
+### 21/11/2026 · Correção 6 — convites e telefones — preparada, NÃO implantada
+
+Branch `claude/correcao-6-convites-e-telefones` (a partir de `a72d89b`). Nada na produção, sem merge, sem publicação, códigos reais intactos.
+
+| Decisão do dono | Como ficou |
+| --- | --- |
+| [x] 1. Código "VAN-" + 6 letras e números, sem 0/O, 1/I/L, criado pelo banco | Sorteio seguro do PostgreSQL (`gerar_convite`, 31^6 ≈ 887 milhões), único; o celular não escolhe nem troca o código (gatilho `destino_convite_do_servidor`); o app guarda o código que o banco responde |
+| [x] 2. Trocar os códigos dos 2 destinos ativos | No SQL de implantação (só os que ainda estão no formato antigo; colar 2x não troca de novo); passageiros, pedidos e vínculos iguais; o vanzeiro vê, copia e envia o código novo na tela do destino (já existia) |
+| [x] 3. 10 códigos errados por hora por conta, no servidor | `tentativas_de_convite` (só conta e hora, apagado após 1 dia). Vale para consultar e para pedir; código certo também é recusado durante o bloqueio. Contra muitas contas: alarme (mais de 100 erros de todas as contas em 1 hora → 3 por conta) sem bloquear quem não errou. Pedido repetido para a mesma van é recusado; "van cheia" também conta (não dá para testar telefones). Acesso direto às tabelas continua fechado |
+| [x] 4. Funções de juntar pelo telefone | Sem acesso para o app e sem login; dados preservados |
+| [x] 5. Aviso no "Ligar ao cadastro" | "Só ligue se for a mesma pessoa. Confira o nome e o telefone com ela antes." Verificação de identidade: alternativas apresentadas ao dono, **não implementada** |
+| [x] Política de Privacidade | Uma linha nova: código errado registrado só com conta e hora, por 1 dia |
+
+| Teste | Resultado |
+| --- | --- |
+| Correção 6 no laboratório (`scripts/correcao6-laboratorio.py`): troca dos códigos sobre dados existentes, criação, formato, 10.000 sorteios, 2.000 destinos, jeitos de digitar, limite, alarme, pedidos repetidos, van cheia, "Ligar ao cadastro", acessos | **39/39** (2 rodadas) |
+| Auditoria (`scripts/auditoria-laboratorio.py`) | antes **111/117** → depois **114/117**: T3.2, T3.3 e T3.4 passaram; nenhum outro mudou; faltam T4.2, T9.4, T10.11 (outras etapas) |
+| Correção 5 (45 itens) e ponta a ponta E3 | 45/45 antes e depois; E3 28 linhas idênticas (`10d443a1`) |
+| Ensaio sobre a cópia dos dados reais (`scripts/correcao6-ensaio.py`) | 20/20 tabelas restauradas; só mudou o código dos 2 destinos ativos; colar de novo não muda nada; desfazer volta tudo menos as 2 funções de telefone (fechadas de propósito); colar depois de desfazer funciona |
+| App | **486/486**, tipos e build ok; telas conferidas em 390×844 |
+| Ajustes de testes antigos | Auditoria e E3 passam a usar o código que o banco cria; E3 trata "van cheia" igual nas duas versões |
+
+| Pendente | |
+| --- | --- |
+| [ ] Decisão do dono sobre a verificação de identidade no "Ligar ao cadastro" | |
+| [ ] Implantação (app primeiro, depois o banco) | `docs/implantacao-correcao-6.md` |
+
+### 21/11/2026 · Correção 6 — Opção A ("Ligar ao cadastro" com código pelo WhatsApp) — preparada, NÃO implantada
+
+Branch `claude/correcao-6-convites-e-telefones`, atualizada com a `main` (`06555f2`, proteção de descontos: só documentação e SQL preparado; não aplicada em produção — conferido só lendo). O SQL da Correção 6 passou a se chamar `SO-SQL-18` (o 17 é o da proteção de descontos). Nada na produção, sem merge, sem publicação.
+
+| Item | Situação |
+| --- | --- |
+| [x] Acessos conferidos (sem expor credenciais) | GitHub `ovanzeiro-beep/van-and-pin-logo-studio` (leitura e envio de branch); Supabase `rnziztwicggdekmpwpgy` só leitura; laboratório PostgreSQL local descartável |
+| [x] Banco | `pedidos.confirmacao_pedida_em`; tabela `confirmacoes_de_cadastro` (só a impressão SHA-256 do código, fechada ao app); `pedir_confirmacao_do_cadastro` (só o vanzeiro do pedido; devolve o código e o telefone/nome DO CADASTRO); `confirmar_cadastro_com_codigo` (só quem pediu; 5 tentativas; 1 dia; código novo anula o anterior; apagado em até 7 dias); `ligar_pedido_ao_cadastro` sem acesso pelo app |
+| [x] App — vanzeiro | No pedido com cadastro: "Enviar código" → código + "Abrir o WhatsApp" com a mensagem para o telefone do cadastro; depois "Código enviado…" e "Outro código" |
+| [x] App — passageiro | Enquanto espera: "O vanzeiro te mandou um código pelo WhatsApp. Digite aqui para entrar." → "Confirmar código" → Início com a van; mensagens para código errado, bloqueado, vencido |
+| [x] Política de Privacidade | Uma linha sobre a impressão do código (máximo 7 dias) |
+| [x] Testes | Correção 6 **55/55** (16 da Opção A: sem código não liga; ligar direto recusado; outro vanzeiro/outra conta não usam; só hash; 5 erros bloqueiam; código novo anula; vence em 1 dia; recusado não liga; limpeza de 7 dias); auditoria **114/117** (T3.2–T3.4 passaram; nenhum outro mudou); C5 **45/45**; E3 idêntico (`10d443a1`); proteção de descontos **40/40** com a Correção 6 no mesmo banco; ensaio sobre a cópia dos dados reais **PASSOU** (só os 2 códigos mudam; desfazer mantém o "Ligar" com código e o telefone fechado); app **487/487**, tipos e build ok; fluxo completo no navegador (390×844): pedido → código → WhatsApp para o telefone do cadastro → código errado avisado → código certo → Início com a van |
+| [ ] Implantação | Aguarda autorização: app primeiro, depois o banco (`docs/implantacao-correcao-6.md`) |
+
+### 21/11/2026 · Correção 6 — ajustes finais antes da implantação — NÃO implantada
+
+| Item | Situação |
+| --- | --- |
+| [x] Código do WhatsApp vale **10 minutos** (antes 1 dia) | Banco (`confirmar_cadastro_com_codigo`: `interval '10 minutes'`), app sem banco (mesma regra), textos do vanzeiro, da mensagem e do "vencido". Mantidos: uso único, 5 tentativas, código novo anula o anterior, só a impressão guardada, apagada em até 7 dias |
+| [x] Testes | Correção 6 **56/56** (W11: aos 11 minutos nem o certo liga; W12: aos 9 minutos liga; W12b: uso único); ensaio sobre a cópia dos dados reais **PASSOU**; auditoria **114/117** (igual); C5 **45/45**; E3 idêntico (`10d443a1`); proteção de descontos **40/40**; app **488/488** (teste novo dos 10 minutos e do uso único), tipos ok |
+| [x] Acesso para aplicar a migração direto (só verificado, nada executado) | A conexão do Supabase entra como `postgres`, dona das 25 tabelas e das 88 funções do app, com permissão de criar no esquema `public` e sem modo só leitura: **tecnicamente pode aplicar a Correção 6** pela ferramenta de migração (que também registra no histórico de migrações). Limite: cada gravação pede confirmação do dono no aplicativo; no celular Android esse pedido já deixou de aparecer antes (Correções 2 a 5 foram coladas no SQL Editor). Se a confirmação não aparecer, volta-se ao SQL Editor; nunca contornar a confirmação |
+| [ ] Implantação | Aguarda autorização expressa |
+
+### 21/11/2026 · Conferência para implantar a Correção 6 e a proteção de descontos (SO-SQL-17) na mesma janela — só leitura e laboratório
+
+| Item | Resultado |
+| --- | --- |
+| Produção (só leitura) | Estrutura idêntica ao laboratório sem a Correção 6 (88 funções, 18 gatilhos, 39 regras, 111 restrições, 200 colunas, 3 tarefas; só a permissão antiga de `viagem_sinais`); nenhum nome da Correção 6 já existe; dependências presentes; 20 tabelas idênticas ao backup de 21/11 (backup ainda válido); SO-SQL-17 não aplicada; `tarefas_do_relogio` SECURITY DEFINER do `postgres`; 1 cobrança em aberto; tarefa automática a cada 5 minutos |
+| Os 3 testes pendentes da auditoria | Falhas reais, nenhuma ligada a convites/telefones: T4.2 (desconto sobrescrito pelo celular — financeiro), T9.4 (pago com data futura), T10.11 (registro de erros sem limite; ninguém lê sem login, conferido na produção) |
+| **Achado na SO-SQL-17** | **Não implantar como está.** Quando o celular do vanzeiro (app aberto, confere o prazo a cada minuto) grava a falta antes da tarefa do banco (a cada 5 minutos), a tarefa não desconta (a falta já existe) e a SO-SQL-17 ignora o desconto enviado pelo celular: **o desconto some**. Reproduzido em `scripts/teste-desconto-celular-primeiro.py`: sem a SO-SQL-17 → 1 falta (R$ 10); com ela → 0. Os testes anteriores só simulavam a tarefa chegando primeiro. Na produção, a única falta registrada é de plano "Por viagem" (sem desconto): nenhuma cobrança real afetada até agora |
+| Encaminhamento | Correção 6 pode seguir sozinha; a proteção de descontos precisa de uma versão corrigida (a tarefa do banco passa a descontar toda falta no prazo ainda não descontada, seja quem for que a gravou), com novos testes, antes de implantar |

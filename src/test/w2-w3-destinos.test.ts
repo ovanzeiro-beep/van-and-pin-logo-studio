@@ -29,13 +29,17 @@ const falso = vi.hoisted(() => {
       ...consulta(nome),
       upsert: (linha: Record<string, unknown>) => {
         estado.chamadas.push(`upsert ${nome}`);
-        if (estado.erroNaProxima) return responder(null);
+        // Like the real database, the answer can be read back (".select(...).maybeSingle()").
+        const comLeitura = (r: Promise<{ data: unknown; error: unknown }>, salvo?: Record<string, unknown>) =>
+          Object.assign(r, { select: () => ({ maybeSingle: () => r.then((x) => (x.error ? x : { data: salvo ?? null, error: null })) }) });
+        if (estado.erroNaProxima) return comLeitura(responder(null));
         const t = tabela(nome);
         const chave = nome === "dias_sem_viagem" ? (l: Record<string, unknown>) => l["destino_id"] === linha["destino_id"] && l["data"] === linha["data"] : (l: Record<string, unknown>) => l["id"] === linha["id"];
         const i = t.findIndex(chave);
-        if (i >= 0) t[i] = { ...t[i], ...linha };
+        // Correção 6: the database never changes a code that already exists.
+        if (i >= 0) t[i] = { ...t[i], ...linha, ...(nome === "destinos" ? { convite: t[i]!["convite"] } : {}) };
         else t.push(linha);
-        return responder(null);
+        return comLeitura(responder(null), t.find(chave));
       },
       update: (mudanca: Record<string, unknown>) => ({
         eq: (c: string, v: unknown) => {
@@ -109,7 +113,15 @@ describe("W2/W3: perfil e destinos no banco (Supabase simulado)", () => {
     expect(r).toEqual({ ok: true });
     const salvo = obterDestinos().find((d) => d.id === "d-outro")!;
     expect(salvo.convite).not.toBe("VAN-7002");
-    expect(salvo.convite).toMatch(/^VAN-\d{4}$/);
+    expect(salvo.convite).toMatch(/^VAN-[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/);
+  });
+
+  it("Correção 6: salvar o destino de novo não troca o código (quem manda no código é o banco)", async () => {
+    const antes = obterDestinos().find((d) => d.id === "d-novo")!.convite;
+    expect(await salvarDestinoNoBanco({ ...obterDestinos().find((d) => d.id === "d-novo")!, origem: "Outra origem", convite: "VAN-TROCAD" })).toEqual({ ok: true });
+    const depois = obterDestinos().find((d) => d.id === "d-novo")!;
+    expect(depois.origem).toBe("Outra origem");
+    expect(depois.convite).toBe(antes);
   });
 
   it("pausar, dia sem viagem e desfazer gravam no banco; erro desfaz na tela", async () => {
