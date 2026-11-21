@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronRight, Handshake } from "lucide-react";
+import { useAcertoInformado } from "@/lib/acertos-store";
 import { StatusBadge } from "@/components/app/InfoCard";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
@@ -43,6 +44,9 @@ export function CobrancaItem({
   const s = situacao(c, dataDeHoje());
   const doPassageiro = para === "passageiro";
   const conta = doPassageiro ? contaDoDesconto(c) : null;
+  // Correção 5: a settlement informed by the passenger is shown, but the charge stays open (it is not a payment).
+  const acerto = useAcertoInformado(c.id);
+  const comAcerto = acerto && (s === "pendente" || s === "devendo");
   return (
     <Link
       to={doPassageiro ? "/passageiro/pagamentos/$cid" : "/vanzeiro/financeiro/$cid"}
@@ -77,6 +81,14 @@ export function CobrancaItem({
         {linhaDaData(c)}
       </p>
       {conta && <p className="mt-1.5 rounded-xl bg-surface px-2.5 py-1.5 text-xs font-semibold text-foreground">{conta}</p>}
+      {comAcerto && (
+        <p className="mt-1.5 flex items-start gap-1.5 rounded-xl bg-muted px-2.5 py-1.5 text-xs text-foreground">
+          <Handshake className="mt-px h-3.5 w-3.5 shrink-0" />
+          <span>
+            <span className="font-semibold">Acerto informado {doPassageiro ? "por você" : "pelo passageiro"} em {diaMes(acerto)}.</span> Não é comprovante: continua em aberto.
+          </span>
+        </p>
+      )}
     </Link>
   );
 }

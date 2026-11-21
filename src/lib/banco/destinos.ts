@@ -35,7 +35,7 @@ type LinhaDestino = {
   ativo: boolean;
 };
 type LinhaDiaSemViagem = { destino_id: string; data: string; motivo: string; cancelado_em: string };
-type LinhaPerfil = { id: string; nome: string; telefone: string; pix: string; van_modelo: string; van_placa: string; van_lugares: number | null };
+type LinhaPerfil = { id: string; nome: string; telefone: string; pix: string; van_modelo: string; van_placa: string; van_lugares: number | null; saiu_do_app_em?: string | null };
 
 const usaBanco = () => USA_BANCO.destinos && supabase() !== null;
 
@@ -97,6 +97,7 @@ export const perfilDaLinha = (l: LinhaPerfil): PerfilVanzeiro => ({
   telefone: l.telefone,
   pix: l.pix,
   van: { modelo: l.van_modelo, placa: l.van_placa, lugares: l.van_lugares },
+  saiuDoAppEm: l.saiu_do_app_em ?? null,
 });
 
 /** On login: the profiles this person may see and their destinos (not deleted), from the database. */
@@ -104,7 +105,7 @@ export async function carregarPerfisEDestinos(): Promise<void> {
   const sb = supabase();
   if (!USA_BANCO.destinos || !sb) return;
   const [perfis, destinos, dias] = await Promise.all([
-    sb.from("perfis_vanzeiro").select("id, nome, telefone, pix, van_modelo, van_placa, van_lugares"),
+    sb.from("perfis_vanzeiro").select("id, nome, telefone, pix, van_modelo, van_placa, van_lugares, saiu_do_app_em"),
     sb.from("destinos").select("id, vanzeiro_id, origem, destino, tipo, dias, data, saida, volta, volta_data, paradas, cafe_parada, cafe_minutos, cafe_local, convite, prazo, ativo, criado_em").is("excluido_em", null).order("criado_em", { ascending: false }),
     sb.from("dias_sem_viagem").select("destino_id, data, motivo, cancelado_em"),
   ]);

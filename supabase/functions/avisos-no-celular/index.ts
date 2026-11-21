@@ -28,6 +28,7 @@ const TITULO: Record<string, string> = {
   ausencia_registrada: "Ausência registrada",
   proxima_parada: "A van está chegando",
   boa_viagem: "Boa viagem!",
+  vanzeiro_saiu: "Vanzeiro saiu do app",
 };
 
 /** The keys are made once, here, and never leave the database. */

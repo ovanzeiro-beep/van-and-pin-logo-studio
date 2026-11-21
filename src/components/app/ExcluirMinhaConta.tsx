@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +13,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { excluirContaDoBanco, sairDaConta } from "@/lib/conta";
-import { contaComViagemEmAndamento, excluirMinhaConta } from "@/lib/exclusoes";
+import { aReceberAntesDeExcluir, contaComViagemEmAndamento, excluirMinhaConta } from "@/lib/exclusoes";
+import { obterCobrancas, useCobrancas } from "@/lib/cobrancas-store";
+import { obterGastos } from "@/lib/gastos-store";
+import { formatarReais } from "@/lib/dinheiro";
+import { baixarArquivo, relatorioDoVanzeiro } from "@/lib/relatorio";
+import { idDoVanzeiro } from "@/lib/sessao";
+import { dataDeHoje } from "@/lib/agora";
 import { useViagensDoDia } from "@/lib/viagem-store";
 import { fazer } from "@/lib/acoes";
 
@@ -24,6 +30,11 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
   const navigate = useNavigate();
   useViagensDoDia();
   const emViagem = contaComViagemEmAndamento(papel);
+  useCobrancas();
+  // Correção 5: before deleting, the vanzeiro sees what is still open and can download the report.
+  const aReceber = papel === "vanzeiro" ? aReceberAntesDeExcluir() : { quantos: 0, valor: 0 };
+  const baixar = () =>
+    baixarArquivo(`o-vanzeiro-relatorio-${dataDeHoje()}.csv`, relatorioDoVanzeiro(obterCobrancas(), obterGastos(), idDoVanzeiro()));
 
   const excluir = async () => {
     const r = await fazer(() => excluirMinhaConta(papel));
@@ -52,14 +63,27 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
               <ul className="space-y-1 text-left">
                 {papel === "vanzeiro" ? (
                   <>
+                    {aReceber.valor > 0 && (
+                      <li className="rounded-2xl bg-warning-soft px-3 py-2 font-semibold text-warning">
+                        Você tem {formatarReais(aReceber.valor)} a receber de {aReceber.quantos === 1 ? "1 passageiro" : `${aReceber.quantos} passageiros`}.
+                        Antes, marque o que já recebeu. O resto continua em aberto: o passageiro vê que você saiu do app e combina o
+                        acerto direto com você.
+                      </li>
+                    )}
                     <li>
                       {numDestinos === 0
                         ? "Você não tem destinos."
                         : `${plural(numDestinos, "destino é excluído", "destinos são excluídos")} como se você tivesse excluído cada um.`}
                     </li>
-                    <li>Cobranças pendentes são canceladas.</li>
-                    <li>Cobranças que estão devendo continuam a receber.</li>
-                    <li>Seus dados pessoais são apagados.</li>
+                    <li>Os passageiros são avisados e saem dos destinos. Só as cobranças de períodos futuros são canceladas.</li>
+                    <li>O histórico de viagens e pagamentos fica para os passageiros.</li>
+                    <li>Seu nome, a van e os gastos são apagados. Telefone e Pix ficam só para quem ainda tem valor em aberto com você, até o acerto.</li>
+                    <li>
+                      <button type="button" onClick={baixar} className="inline-flex items-center gap-1.5 font-bold text-primary underline underline-offset-2">
+                        <Download className="h-4 w-4" /> Baixar meu relatório (planilha)
+                      </button>{" "}
+                      com gastos e recebimentos, antes de excluir.
+                    </li>
                     <li>O app volta para a tela Entrar.</li>
                   </>
                 ) : (
@@ -69,9 +93,8 @@ export function ExcluirMinhaConta({ papel, numDestinos }: { papel: "vanzeiro" | 
                         ? "Você não está em nenhum destino."
                         : `Você sai de ${plural(numDestinos, "destino", "destinos")} como se tivesse saído de cada um.`}
                     </li>
-                    <li>Cobranças pendentes são canceladas.</li>
-                    <li>Cobranças que estão devendo continuam a receber.</li>
-                    <li>Seus dados pessoais são apagados.</li>
+                    <li>Viagens feitas e mensalidades já começadas continuam a receber. As de períodos futuros são canceladas.</li>
+                    <li>Seu nome e endereço são apagados. O vanzeiro continua com o histórico e o telefone.</li>
                     <li>O app volta para a tela Entrar.</li>
                   </>
               )}

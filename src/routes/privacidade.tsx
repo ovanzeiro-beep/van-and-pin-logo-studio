@@ -92,9 +92,17 @@ function Privacidade() {
         <ul>
           <li>Enquanto a sua conta existir.</li>
           <li>
-            Ao <strong>excluir a conta</strong>, seu login, seu nome e seu endereço são apagados. O vanzeiro continua com o
-            histórico das viagens e cobranças e com o telefone que ele mesmo cadastrou, pelo tempo que a lei exigir. Para
-            apagar também esses dados, peça no contato abaixo.
+            Ao <strong>excluir a conta</strong>, seu login, seu nome e seu endereço são apagados, inclusive das cobranças.
+            O vanzeiro continua com o histórico das viagens e cobranças. Seu telefone fica só nas cobranças ainda em aberto
+            com um vanzeiro que continua no app, e só ele vê; é apagado quando o valor for acertado ou ao fim do prazo previsto
+            em lei. Para pedir que algo seja apagado antes, fale com o contato abaixo.
+          </li>
+          <li>
+            Se o <strong>vanzeiro</strong> excluir a conta, o nome, os dados da van e os gastos dele são apagados (antes, ele pode
+            baixar um relatório com os gastos e recebimentos). Nenhuma dívida é perdoada sozinha: o que estava em aberto continua
+            registrado. O telefone e o Pix dele ficam visíveis só para quem ainda tem valor em aberto com ele, até o acerto ou o
+            fim do prazo previsto em lei. Os passageiros continuam vendo o histórico das viagens e pagamentos feitos com ele.
+            Quem acertou fora do app pode informar isso no app; fica registrado como informação da pessoa, não como comprovante.
           </li>
           <li>Os registros de erros do app ficam guardados só pelo tempo necessário para corrigir os problemas.</li>
         </ul>

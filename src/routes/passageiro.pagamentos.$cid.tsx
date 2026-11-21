@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Check, CircleCheck, Copy, Info, MapPin, MessageCircle, QrCode, ReceiptText, type LucideIcon } from "lucide-react";
+import { CalendarDays, Check, CircleCheck, Copy, Handshake, Info, MapPin, MessageCircle, QrCode, ReceiptText, type LucideIcon } from "lucide-react";
 import { BadgeSituacao } from "@/components/app/CobrancaItem";
 import { ContaDasFaltas } from "@/components/app/ContaDasFaltas";
 import { PassageiroHeader } from "@/components/app/passageiro/PassageiroHeader";
@@ -14,7 +14,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { AlertDialogAction } from "@/components/ui/alert-dialog";
+import { useAcertoInformado } from "@/lib/acertos-store";
+import { informarAcertoNoBanco } from "@/lib/banco/acertos";
+import { fazer } from "@/lib/acoes";
 import { dataDeHoje } from "@/lib/agora";
 import { formatarReais } from "@/lib/dinheiro";
 import { FORMA_ROTULO, diaMes, mensagemJaPaguei, situacao, valorFinal } from "@/lib/cobrancas";
@@ -51,6 +55,8 @@ function MinhaCobranca() {
   const destino = useDestino(c?.destinoId ?? "");
   // The vanzeiro of THIS charge (the passenger may ride with more than one).
   const vanzeiro = usePerfilDoVanzeiro(c?.vanzeiroId ?? "");
+  // Correção 5: the vanzeiro deleted the account; what is open stays open and the passenger can inform a settlement.
+  const acerto = useAcertoInformado(cid);
 
   const botaoVoltar = (
     <BotaoVoltar senao="/passageiro/pagamentos" />
@@ -120,7 +126,32 @@ function MinhaCobranca() {
 
         {c.periodoFaltas && <ContaDasFaltas c={c} />}
 
-        {aberta && (
+        {aberta && vanzeiro.saiuDoAppEm && (
+          <section className="space-y-3 rounded-3xl border-2 border-warning/40 bg-card p-4 shadow-card">
+            <p className="font-bold text-foreground">O vanzeiro saiu do app em {diaMes(vanzeiro.saiuDoAppEm)}.</p>
+            <p className="text-sm text-muted-foreground">
+              Esta cobrança continua em aberto. Combine o acerto direto com ele{vanzeiro.pix || vanzeiro.telefone ? ":" : "."}
+            </p>
+            {vanzeiro.pix && <PagarComPix chave={vanzeiro.pix} nome={vanzeiro.nome} cidade={destino?.origem ?? ""} valor={valorFinal(c)} />}
+            {vanzeiro.telefone && (
+              <Button asChild size="lg" variant="outline" className="w-full">
+                <a href={linkWhatsApp(vanzeiro.telefone, mensagemJaPaguei(c, vanzeiro.nome))} target="_blank" rel="noreferrer">
+                  <MessageCircle className="!h-5 !w-5 text-success" /> Falar com o vanzeiro
+                </a>
+              </Button>
+            )}
+            {acerto ? (
+              <p className="rounded-2xl bg-muted px-3.5 py-2.5 text-sm">
+                <span className="font-bold text-foreground">Acerto informado por você em {diaMes(acerto)}.</span>{" "}
+                <span className="text-muted-foreground">Fica registrado como informação sua. Não é comprovante de pagamento.</span>
+              </p>
+            ) : (
+              <InformarAcerto cobrancaId={c.id} />
+            )}
+          </section>
+        )}
+
+        {aberta && !vanzeiro.saiuDoAppEm && (
           <div className="space-y-3 pt-1">
             {vanzeiro.pix && <PagarComPix chave={vanzeiro.pix} nome={vanzeiro.nome} cidade={destino?.origem ?? ""} valor={valorFinal(c)} />}
             <Button asChild size="lg" variant="outline" className="w-full">
@@ -202,5 +233,33 @@ function Linha({ icon: Icon, rotulo, valor, className }: { icon: LucideIcon; rot
       <dt className="flex-1 text-sm text-muted-foreground">{rotulo}</dt>
       <dd className="text-sm font-bold text-foreground">{valor}</dd>
     </div>
+  );
+}
+
+/** Correção 5: the passenger's statement of a settlement made outside the app (never a payment). */
+function InformarAcerto({ cobrancaId }: { cobrancaId: string }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="lg" variant="outline" className="w-full">
+          <Handshake className="!h-5 !w-5" /> Informar que acertei com o vanzeiro
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="max-w-[calc(100%-2.5rem)] rounded-3xl sm:max-w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Informar acerto feito fora do app?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Use só se você já pagou ou combinou direto com o vanzeiro. Fica registrado que você informou o acerto hoje. Isso não é um
+            comprovante de pagamento e não dá para desfazer.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="gap-2">
+          <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Voltar</AlertDialogCancel>
+          <AlertDialogAction className={buttonVariants({ size: "lg" })} onClick={() => void fazer(() => informarAcertoNoBanco(cobrancaId))}>
+            <Handshake className="!h-5 !w-5" /> Informar acerto
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

@@ -2076,3 +2076,71 @@ A versão consultada no GitHub segue em `d4d4dd9`. O dono pediu uma contraprova 
 | Antes do merge | Branch `claude/integracao-correcoes-1-a-4` (`34a1d34`): 472/472 testes, tipos ok, build ok. `main` (`1206cbd`) ancestral direta: merge por avanço, sem conflito. |
 | Merge e publicação | Autorizados pelo dono. Merge por avanço na `main`; publicação no Lovable em seguida (conferência abaixo). |
 | Não feito | Correção 5 (não iniciada, por decisão do dono). Nenhum SQL novo além de C2 e C3. Branch `claude/visualizar-main-1gamow` mantida intacta em `d4d4dd9` (cópia de segurança antiga). |
+
+### 20/11/2026 · Lançamento fictício de R$ 150 regularizado
+Pagamento por Pix de 20/11 marcado no teste do celular (não houve dinheiro). Dono autorizou a correção única: arquivo testado em cópia isolada (caso certo, rodar 2 vezes, cobrança inexistente, valor diferente), aplicado pelo dono no SQL Editor. Conferido só em leitura: cobrança `passageiro-mwpc18iw-10_destino-mwpbl3wm-10_2026-11-20` sem pagamento, cancelada com o motivo "Lançamento de teste: o Pix marcado em 20/11/2026 não aconteceu. Corrigido pelo dono."; proteção `cobranca_sem_edicao` ligada; 8 cobranças antigas idênticas; 9 verificações certas.
+
+---
+
+## Correção 5 — exclusão de contas sem perder histórico (21/11/2026) — preparada, NÃO implantada
+
+Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, sem publicação.
+
+| Campo | Resultado |
+| --- | --- |
+| Problema (auditoria) | Vanzeiro: apagar o login apagava em cascata destinos, matrículas, viagens, **cobranças** e avisos (T1.10). Passageiro: o nome continuava nas cobranças (D3). Texto da tela ainda dizia "Cobranças pendentes são canceladas" (desatualizado desde a Correção 2). |
+| Banco (`20261121120000_correcao5_exclusao_de_contas.sql`) | Login não apaga mais a conta (sem cascata); a conta vira "Conta excluída" (`excluida_em`). Histórico (destinos, matrículas, viagens, cobranças, pedidos, perfil) passa a impedir apagar a conta. Vanzeiro: destinos excluídos (avisos e Correção 2), pedidos recusados, em aberto cancelado com "Conta do vanzeiro excluída" [decisão A], perfil sem nome/telefone/Pix/van, gastos apagados [decisão C]. Passageiro: como antes + nome sai das cobranças, mudanças de endereço e avisos de resposta; telefone fica [decisão B]. Bloqueado no meio de uma viagem de hoje. Única exceção à "cobrança nunca editada": trocar o nome por "Conta excluída", só dentro da função. |
+| App | Texto da confirmação atualizado; mesma regra nos dados de exemplo; Política de Privacidade atualizada. |
+| Laboratório | Banco descartável montado com todas as migrações + 4 funções espelhadas da produção (`supabase/testes/espelho-producao-4-funcoes-20261121.sql`): **83/83 funções idênticas à produção**. |
+| Testes | C5 (`supabase/testes/correcao5-exclusao-de-contas.sql`): **30/30**. Ponta a ponta E3: 28 linhas idênticas antes e depois. Auditoria (`scripts/auditoria-laboratorio.py`): **111/117** (antes 110/117): T1.10 passou; T1.7 mantido; as 6 que faltam são das próximas etapas (T3.2, T3.3, T3.4, T4.2, T9.4, T10.11). App: **475/475**, tipos e build ok. |
+| Reverter | `supabase/testes/correcao5-reverter.sql`: no laboratório, funções voltaram idênticas; ligações iguais (login → conta volta como NOT VALID, de propósito). |
+| Achado | 4 funções em produção diferem dos arquivos do GitHub (`conta_so_por_funcao`, `destino_com_lugar`, `mudar_meu_embarque`, `responder`): versões coladas à mão em algum momento. Não muda a Correção 5; registrar as versões da produção numa etapa de documentação. |
+| Depende do dono | Decisões A, B e C; autorização para aplicar no Supabase (pelo SQL Editor), merge e publicação; teste no celular. |
+
+### 21/11/2026 · Correção 5 revisada com as decisões do dono — preparada, NÃO implantada
+
+Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, sem publicação.
+
+| Decisão | Como ficou |
+| --- | --- |
+| A — dívidas | Nenhuma dívida legítima é cancelada sozinha: viagens feitas, vencidas e períodos já começados continuam em aberto; só as cobranças de período futuro são canceladas (regra da Correção 2). Pagas e canceladas não mudam. Antes de excluir, o vanzeiro vê quanto tem a receber e pode marcar o que recebeu. Quem tem valor em aberto recebe o aviso "Vanzeiro saiu do app". Depois, o passageiro pode **informar um acerto** feito fora do app (`informar_acerto`, tabela `acertos_informados`): fica registrado como declaração dele com data, **não** como pagamento (a cobrança não muda); só vale para o próprio passageiro, só em cobrança em aberto e só quando o vanzeiro saiu do app. |
+| B — contatos | Telefone e Pix do vanzeiro que saiu: só enquanto algum passageiro **com conta** tem valor em aberto sem acerto informado, e só esses passageiros veem (regra de acesso do perfil). Telefone de quem excluiu a conta: só nas cobranças em aberto com vanzeiro que continua no app; apagado das pagas, canceladas, pedidos e cadastros sem finalidade. Passageiros sem conta de um vanzeiro que saiu ficam sem nome, endereço e telefone (dívida continua registrada). Tarefa `encerrar_finalidade_dos_contatos` (de hora em hora, na exclusão e a cada acerto) apaga ao fim da finalidade. Prazo legal máximo: `regras_de_guarda` (vazio até o advogado definir; a tarefa já aplica quando for preenchido). Lembretes automáticos de cobrança param para o vanzeiro que saiu. |
+| C — gastos | "Baixar meu relatório (planilha)" na confirmação de exclusão (recebidos, a receber, cancelados e gastos); depois os gastos são apagados. Sem totais para estatística. |
+| Reversão | `supabase/testes/correcao5-reverter.sql` nunca volta a cascata nem a ligação login → conta (sem NOT VALID). Testado: só `excluir_minha_conta` fica diferente da base (de propósito); 0 cascatas; ponta a ponta idêntico. |
+| 4 funções "divergentes" | `conta_so_por_funcao`, `destino_com_lugar`, `mudar_meu_embarque` e `responder`: **funcionamento idêntico** ao GitHub — o código é o mesmo; só os comentários (`--`) não estão na produção. Nada a aplicar. |
+
+| Teste | Resultado |
+| --- | --- |
+| Correção 5 no laboratório (`supabase/testes/correcao5-exclusao-de-contas.sql`): exclusão com dívidas abertas, vários passageiros (com e sem conta), acertos, contatos, lembretes, prazo legal, viagem em andamento, proteções | **45/45** |
+| Ponta a ponta E3 | idêntico antes/depois |
+| Auditoria (`scripts/auditoria-laboratorio.py`) | **111/117**; C1, C2 e C3: 57/57; as 6 restantes são das próximas etapas |
+| App | **477/477**, tipos e build ok; telas conferidas em 390×844 |
+
+Implantação (depende de autorização): backup novo → dono cola a Correção 5 no SQL Editor → conferência só em leitura → merge → publicação → função de avisos com o título "Vanzeiro saiu do app" → teste no celular com contas de teste → advogado define o prazo legal.
+
+### 21/11/2026 · Correção 5 — preparação da implantação (ajustes finais) — NÃO implantada
+
+Branch `claude/correcao-5-exclusao-de-contas`. Nada na produção, sem merge, sem publicação. Roteiro: `docs/implantacao-correcao-5.md`.
+
+| Item | Situação |
+| --- | --- |
+| [x] Listas de cobranças | Com acerto informado, a cobrança mostra "Acerto informado por você/pelo passageiro em DD/MM. Não é comprovante: continua em aberto." Etiqueta (Pendente/Devendo), valor e saldo não mudam (teste). |
+| [x] Título "Vanzeiro saiu do app" | `supabase/functions/avisos-no-celular/index.ts` = versão 10 da produção + 1 linha. Não publicado. |
+| [x] Testes | App **478/478**, sem erros soltos (a carga dos acertos ficou protegida contra falha), tipos e build ok. |
+| [x] Backup | Lógico, 20 tabelas, 198 linhas, fora do GitHub. Ensaio (`scripts/backup-ensaio-correcao5.py`): restauração 20/20 idêntica; Correção 5 não muda dados; tarefas 2x sem mudança; desfazer ok, 0 cascatas. **Não é backup completo** (sem logins, chaves e celulares). |
+| [x] SQL definitivo | `supabase/SO-SQL-16-correcao-5.sql` (tudo ou nada). Ensaio da colagem: aplicar, aplicar de novo, desfazer (`SO-SQL-16b`) e reaplicar — conferência 23/23. |
+| [x] Conferências | Antes: `supabase/testes/correcao5-pre-verificar.sql` — rodada na produção (só leitura) em 21/11: tudo igual ao backup, 7 contas, nenhuma viagem em andamento. Depois: `supabase/testes/correcao5-verificar.sql`. |
+| [ ] Implantação | Aguarda autorização do dono. |
+
+### 21/11/2026 · Correção 5 — implantação controlada, passo 1 (conferência antes) — só leitura
+
+| Item | Resultado |
+| --- | --- |
+| [x] Arquivos na branch `claude/correcao-5-exclusao-de-contas` (`fea98b7`) | Iguais aos locais; colagem `SO-SQL-16` = migração; `main` em `c47b6b6` sem mudanças; função de avisos da produção ainda na versão 10 |
+| [x] Conferência antes (`correcao5-pre-verificar.sql`, produção, só leitura) | 13/13: Correção 5 não aplicada, 7 contas, nenhuma viagem em andamento, proteção ligada, 9 tabelas iguais ao backup |
+| [x] Compatibilidade da estrutura (produção × laboratório sem a Correção 5) | Idênticas: 83 funções, 17 gatilhos, 38 regras de acesso, 107 restrições, 190 colunas, 2 tarefas. Única diferença: `viagem_sinais` tem permissão para `anon` na produção (já existia; RLS ligado e a única regra é para `authenticated`, então quem não entrou não vê nada; a Correção 5 não mexe nela) |
+| [x] Dono colou `SO-SQL-16-correcao-5.sql` (21/11, pelo celular) | Resultado `schedule = 9` (tarefa agendada) |
+| [x] 23 verificações depois (`correcao5-verificar.sql`, só leitura) | **23/23**: 5 funções novas, gatilho de avisos, tarefa (`23 * * * *`), 2 tabelas novas com RLS, prazo legal vazio, sem cascata, funções internas fechadas, nada chamável sem login, proteção de cobrança ligada, 12 funções das Correções 1–3, 7 contas, 0 excluídas, 0 avisos duplicados, 9 tabelas iguais ao backup |
+| [x] Estrutura da produção × laboratório com a Correção 5 | Idênticas: 88 funções, 18 gatilhos, 39 regras de acesso, 111 restrições, 200 colunas, 3 tarefas. Permissões: só a diferença antiga de `viagem_sinais`; `acertos_informados` só leitura para quem entrou; `regras_de_guarda` fechada |
+| [x] Cobranças | 9 (3 pagas, 5 canceladas, 1 em aberto), iguais ao backup; 0 acertos |
+| [ ] Merge, publicação no Lovable e função de avisos | Aguardando autorização do dono |

@@ -12,6 +12,8 @@ export type PerfilVanzeiro = {
   pix: string;
   /** lugares: seats for passengers (null = não informado, nothing is limited). */
   van: { modelo: string; placa: string; lugares: number | null };
+  /** Correção 5: the vanzeiro deleted the account on this day (the passenger sees how to settle what is open). */
+  saiuDoAppEm?: string | null | undefined;
 };
 
 // One profile per vanzeiro (by vanzeiroId). The Pix key saved here is the one THEIR passengers see:
